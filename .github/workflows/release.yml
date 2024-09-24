@@ -1,0 +1,46 @@
+name: Generate release (Pypi, tag, & GitHub Release)
+on: workflow_dispatch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@main
+
+    - name: Set up Python
+      uses: actions/setup-python@main
+      with:
+        python-version: '3.12'
+    
+    - name: Install Python dependencies
+      run: pip install --upgrade poetry
+    
+    - name: Install Package
+      run: pip install -e .
+    
+    - name: Get package version
+      id: version
+      run: |
+        export VERSION=$(pip show ${{ vars.MODULE_NAME }} | grep Version | awk '{print $2}')
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version number: $VERSION"
+    
+    - name: Build and publish
+      run: |
+        poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+        poetry publish --build
+    
+    - name: Generate tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: ${{ steps.version.outputs.VERSION }}
+    
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@main
+      with:
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: ${{ steps.version.outputs.VERSION }}

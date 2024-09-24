@@ -1,0 +1,55 @@
+name: Build package in standalone version
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version:
+        - '3.8'
+        - '3.9'
+        - '3.10'
+        - '3.11'
+        - '3.12'
+    
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@main
+        with:
+          python-version: ${{ matrix.python-version }}
+        
+      - name: Checkout repository
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Install dependencies
+        run: python -m pip install poetry
+
+      - name: Install project
+        working-directory: ${{ github.workspace }}
+        run: poetry install
+
+      - name: Use CLI standalone
+        run: poetry run xmipp3_installer -h
+      
+      - name: Use CLI as Python module
+        run: poetry run python -m xmipp3_installer -h
+      
+      #- name: Run unitary tests
+      #  env:
+      #    SCRIPT_PATH: ./scripts/run-tests.sh
+      #  run: |
+      #    chmod +x $SCRIPT_PATH
+      #    poetry run $SCRIPT_PATH
+      #
+      #- name: Check source code with Ruff
+      #  run: poetry run python -m ruff check --config ./conf/ruff-src.toml
+      #
+      #- name: Check tests code with Ruff
+      #  run: poetry run python -m ruff check --config ./conf/ruff-tests.toml

@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "xmipp3-installer"
+version = "1.0.0"
+description = "Package to handle the installation of Xmipp3"
+authors = ["Martín Salinas <ssalinasmartin@gmail.com>"]
+readme = "README.md"
+license = "LICENSE"
+keywords = ["xmipp3", "installer"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.1.1"
+pytest-cov = "^5"
+ruff = "^0.6"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["*_test.py"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+xmipp3_testrunner = "xmipp3_testrunner.__main__:main"

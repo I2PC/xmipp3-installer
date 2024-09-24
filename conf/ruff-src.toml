@@ -1,0 +1,16 @@
+target-version = "py38"
+
+include = [
+  "src/**/*.py"
+]
+
+[lint]
+preview = true
+extend-select = [
+  "UP",  # pyupgrade
+  "D",   # pydocstyle
+  "PL",  # pylint
+]
+
+[lint.pydocstyle]
+convention = "pep257"
