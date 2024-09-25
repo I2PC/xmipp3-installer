@@ -1,4 +1,4 @@
-"""Submodule containing all constants needed for handling errors during Xmipp's installation."""
+"""### Submodule containing all constants needed for handling errors during Xmipp's installation."""
 
 # Error codes
 INTERRUPTED_ERROR = -1
