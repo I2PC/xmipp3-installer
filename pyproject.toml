@@ -24,4 +24,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-xmipp3_testrunner = "xmipp3_testrunner.__main__:main"
+xmipp3_installer = "xmipp3_installer.__main__:main"
