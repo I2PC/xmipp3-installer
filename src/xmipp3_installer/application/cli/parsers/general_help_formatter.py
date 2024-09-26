@@ -1,4 +1,6 @@
 
+from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
 from xmipp3_installer.application.logger.logger import logger
 
@@ -17,12 +19,12 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		- (str): Args text for given mode.
 		"""
 		# Getting argument list for the mode  
-		arg_list = MODE_ARGS[mode]
+		arg_list = arguments.MODE_ARGS[mode]
 
 		# Formatting every element
 		param_names = []
 		for param in arg_list:
-			param_name = getParamFirstName(param)
+			param_name = self.get_param_first_name(param)
 			if param_name:
 				param_names.append(f'[{param_name}]')
 
@@ -44,7 +46,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		mode_help_str = ''
 
 		# Find mode group containing current mode
-		mode_help_str = getModeHelp(mode)
+		mode_help_str = self.get_mode_help(mode)
 
 		# Return formatted text formed by the previous text, 
 		# the args for the mode, and its help text
@@ -73,6 +75,6 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 
 		# Adding note about mode specific help
 		note_message = "Note: You can also view a specific help message for each mode with \"./xmipp [mode] -h\".\n"
-		note_message += f"Example: ./xmipp {MODE_ALL} -h\n"
+		note_message += f"Example: ./xmipp {arguments.MODE_ALL} -h\n"
 		help_message += logger.yellow(note_message)
-		return self.get_formatting_tabs(help_message)
+		return format.get_formatting_tabs(help_message)

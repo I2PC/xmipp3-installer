@@ -1,6 +1,11 @@
+"""### Help formatter specific for non-generic usage modes."""
 
-from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
+from typing import List
+
+from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.parsers import format
+from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
+from xmipp3_installer.application.logger.logger import logger
 
 class ModeHelpFormatter(BaseHelpFormatter):
 	"""
@@ -31,16 +36,16 @@ class ModeHelpFormatter(BaseHelpFormatter):
 		mode = self._prog.split(' ')[-1]
 
 		# Initialize the help message
-		help_message = getModeHelp(mode, general=False) + '\n\n'
+		help_message = self.get_mode_help(mode, general=False) + '\n\n'
 
 		# Get mode args
-		args = MODE_ARGS[mode]
+		args = arguments.MODE_ARGS[mode]
 
 		# Add extra messages deppending on if there are args
 		options_str = ''
 		separator = ''
 		if len(args) > 0:
-			arg_names = [getParamFirstName(arg_name) for arg_name in args]
+			arg_names = [self.get_param_first_name(arg_name) for arg_name in args]
 			if self.__argsContainOptional(arg_names):
 				help_message += logger.yellow("Note: only params starting with '-' are optional. The rest are required.\n")
 			options_str = ' [options]'
@@ -49,10 +54,10 @@ class ModeHelpFormatter(BaseHelpFormatter):
 
 		# Adding arg info
 		for arg in args:
-			help_message += textWithLimits('\t' + ', '.join(getParamNames(arg)), PARAMS[arg][DESCRIPTION])
+			help_message += textWithLimits('\t' + ', '.join(getParamNames(arg)), arguments.PARAMS[arg][arguments.DESCRIPTION])
 
 		# Adding a few examples
-		examples = MODE_EXAMPLES[mode]
+		examples = arguments.MODE_EXAMPLES[mode]
 		for i in range(len(examples)):
 			number_str = '' if len(examples) == 1 else f' {i+1}'	
 			help_message += f"\nExample{number_str}: {examples[i]}"
