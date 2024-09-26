@@ -11,6 +11,9 @@ CMAKE_COMPILE_ERROR = 5
 CMAKE_INSTALL_ERROR = 6
 IO_ERROR = 7
 
+##############TMP
+LOG_FILE = 'compilation.log'
+
 # Error messages
 __CMAKE_INSTALL_DOCS_URL = 'https://i2pc.github.io/docs/Installation/InstallationNotes/index.html#cmake'
 __CHECK_LOG_MESSAGE = f'Check the inside file \'{LOG_FILE}\'.'
