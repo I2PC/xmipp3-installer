@@ -1,6 +1,6 @@
 """### Common formatting functions for parsers."""
 
-__TAB_SIZE = 4
+TAB_SIZE = 4
 
 def get_formatting_tabs(text: str) -> str:
 	"""
@@ -12,4 +12,4 @@ def get_formatting_tabs(text: str) -> str:
 	### Returns:
 	- (str): Formatted text.
 	"""
-	return text.expandtabs(__TAB_SIZE)
+	return text.expandtabs(TAB_SIZE)
