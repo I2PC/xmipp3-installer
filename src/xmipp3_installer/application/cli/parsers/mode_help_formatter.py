@@ -49,12 +49,12 @@ class ModeHelpFormatter(BaseHelpFormatter):
 			if self.__argsContainOptional(arg_names):
 				help_message += logger.yellow("Note: only params starting with '-' are optional. The rest are required.\n")
 			options_str = ' [options]'
-			separator = helpSeparator() + '\t# Options #\n\n'
+			separator = self.get_help_separator() + '\t# Options #\n\n'
 		help_message += f'Usage: xmipp {mode}{options_str}\n{separator}'
 
 		# Adding arg info
 		for arg in args:
-			help_message += textWithLimits('\t' + ', '.join(getParamNames(arg)), arguments.PARAMS[arg][arguments.DESCRIPTION])
+			help_message += self.text_with_limits('\t' + ', '.join(getParamNames(arg)), arguments.PARAMS[arg][arguments.DESCRIPTION])
 
 		# Adding a few examples
 		examples = arguments.MODE_EXAMPLES[mode]

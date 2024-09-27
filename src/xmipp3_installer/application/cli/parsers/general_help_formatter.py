@@ -50,7 +50,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 
 		# Return formatted text formed by the previous text, 
 		# the args for the mode, and its help text
-		return textWithLimits(previous_text + self.__getModeArgsStr(mode), mode_help_str)
+		return self.text_with_limits(previous_text + self.__getModeArgsStr(mode), mode_help_str)
 
 	def format_help(self):
 		"""
@@ -62,7 +62,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		# Add every section
 		for section in list(arguments.MODES.keys()):
 			# Adding section separator and section name
-			help_message += helpSeparator() + f"\t# {section} #\n\n"
+			help_message += self.get_help_separator() + f"\t# {section} #\n\n"
 
 			# Adding help text for every mode in each section
 			for mode in list(arguments.MODES[section].keys()):
