@@ -130,34 +130,11 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		### Returns:
 		- (str): Formatted text.
 		"""
-		if len(text) <= size_limit:
-			# If its size is within the limits, return as is
-			formatted_text = text
-		else:
-			# If size exceeds limits, split into lines
-			# We need to calculate each word size to not split the string in the
-			# middle of a word
-			text_words = text.split(' ')
-
-			# Initializing list to store lines
-			lines = []
-
-			# While there are still words outside of a line, parse them into one.
-			while text_words:
-				# Getting new line and removing fitted words in such line
-				line, text_words = self.__fit_words_in_line(text_words, size_limit)
-
-				# Add line to list
-				if line:
-					# If it's not the first line, add the left fill
-					line = left_fill + line if lines else line
-					lines.append(line)
-
-			# Join lines into a single string
-			formatted_text = '\n'.join(lines)
-		
-		# Return resulting text
-		return formatted_text
+		return (
+			text
+			if len(text) <= size_limit else
+			self.__format_text_in_lines(text, size_limit, left_fill)
+		)
 
 	def __fit_words_in_line(self, words: List[str], size_limit: int) -> Tuple[str, List[str]]:
 		"""
@@ -214,3 +191,24 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		else:
 			line = word
 		return line, remaining_words[1:]
+
+	def __format_text_in_lines(self, text: str, size_limit: int, left_fill: str):
+		"""
+		### Returns the text formatted into size-limited lines.
+
+		#### Params:
+		- text (str): Text to format.
+		- size_limit (int): Max number of characters allowed in a single line.
+		- left_fill (str): Starting characters of each line.
+
+		#### Returns:
+		- (str): Text formatted into lines.
+		"""
+		words = text.split(' ')
+		lines = []
+		while words:
+			line, words = self.__fit_words_in_line(words, size_limit)
+			if line:
+				line = left_fill + line if lines else line
+				lines.append(line)
+		return '\n'.join(lines)
