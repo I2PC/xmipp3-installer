@@ -67,33 +67,13 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		### Returns:
 		- (str): Formatted text.
 		"""
-		previous_length = len(format.get_formatting_tabs(previous_text))
-
-		# Check if such length exceeds the space reserved for modes and params
-		if previous_length >= self.__SECTION_HELP_START:
-			# If so, it means that section space for modes and params 
-			# is too low and should be set to a higher number, but for now we need to print anyways, 
-			# so we reduce space from the one reserved for mode help
-			remaining_space = self.__getLineSize() - previous_length
-
-			# Add minimum fill in space possible
-			fill_in_space = ' '
-		else:
-			# If such section is within the expected size range, calculate remaining size
-			# based on the expected help section beginning
-			remaining_space = self.__getLineSize() - self.__SECTION_HELP_START
-
-			# Add fill in space
-			fill_in_space = ''.join([' ' for _ in range(self.__SECTION_HELP_START - previous_length)])
-		
-		# Format string so it does not exceed size limit
+		remaining_space, fill_in_space = self.__get_spaces(previous_text)
 		formatted_help = self.__multi_line_help_text(
 			text,
 			remaining_space,
-			''.join([' ' for _ in range(self.__SECTION_HELP_START)])
+			self.__get_start_section_fill_in_space('')
 		)
-
-		return previous_text + fill_in_space + formatted_help + '\n'
+		return f"{previous_text}{fill_in_space}{formatted_help}\n"
 
 	def __get_message_from_list(self, messages: List[str], only_general: bool) -> str:
 		"""
@@ -212,3 +192,53 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 				line = left_fill + line if lines else line
 				lines.append(line)
 		return '\n'.join(lines)
+
+	def __get_spaces(self, start_section_text: str) -> Tuple[str, str]:
+		if self.__is_start_section_text_exceeding_size_limit(start_section_text):
+			# If text exceeds size limit, it means that section space for modes and params 
+			# is too low and should be set to a higher number, but for now we need to print anyways, 
+			# so we reduce space from the one reserved for mode help and add minimum fill-in space
+			remaining_space = self.__getLineSize() - self.__get_text_length(start_section_text)
+			fill_in_space = ' '
+		else:
+			remaining_space = self.__getLineSize() - self.__SECTION_HELP_START
+			fill_in_space = self.__get_start_section_fill_in_space(start_section_text)
+		return remaining_space, fill_in_space
+
+	def __get_start_section_fill_in_space(self, text: str) -> str:
+		"""
+		### Returns the fill-in space for the start section.
+
+		#### Params:
+		- text (str): Text inside the start section.
+
+		#### Returns:
+		- (str): The required number of spaces to generate the start section's fill-in.
+		"""
+		return ''.join(
+			[' ' for _ in range(self.__SECTION_HELP_START - self.__get_text_length(text))]
+		)
+	
+	def __is_start_section_text_exceeding_size_limit(self, start_section_text: str) -> bool:
+		"""
+		### Indicates if the given start section text exceedes allowed size limit.
+
+		#### Params:
+		- start_section_text (str): Text to measure.
+
+		#### Returns:
+		- (bool): True if the text exceedes allowed size limit.
+		"""
+		return self.__get_text_length(start_section_text) >= self.__SECTION_HELP_START
+
+	def __get_text_length(self, text: str) -> int:
+		"""
+		### Returns the length of a text that might contain tabs.
+
+		#### Params:
+		- text (str): Text to measure.
+
+		#### Returns:
+		- (int): Text's length.
+		"""
+		return len(format.get_formatting_tabs(text))
