@@ -2,6 +2,7 @@
 
 import math
 import shutil
+from typing import Self
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger import urls
@@ -10,7 +11,7 @@ class Logger:
 	"""
 	### Logger class for keeping track of installation messages.
 	"""
-
+	__instance = None
 	__UP = "\x1B[1A\r"
 	__REMOVE_LINE = '\033[K'
 	__BOLD = "\033[1m"
@@ -20,6 +21,22 @@ class Logger:
 	__YELLOW = "\033[93m"
 	__END_FORMAT = "\033[0m"
 	__FORMATTING_CHARACTERS = [__UP, __REMOVE_LINE, __BOLD, __BLUE, __RED, __GREEN, __YELLOW, __END_FORMAT]
+ 
+	def __new__(cls, *args, **kwrgs) -> Self:
+		"""
+		### Singleton instancer.
+
+		#### Params:
+		- cls (self): Current class.
+		- *args (any): Positional params.
+		- **kwargs (any): Argument params.
+
+		#### Returns:
+		- (self): Instance of current class.
+		"""
+		if not cls.__instance:
+			cls.__instance = super().__new__(cls, *args, **kwrgs)
+		return cls.__instance
  
 	def __init__(self, output_to_console: bool = False):
 		"""
