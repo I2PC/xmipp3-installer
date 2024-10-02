@@ -16,7 +16,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 	__SECTION_HELP_START = format.TAB_SIZE + __SECTION_N_DASH + __SECTION_SPACE_MODE_HELP
 	__LINE_SIZE_LOWER_LIMIT = int(__SECTION_HELP_START * 1.5)
 
-	def get_mode_help(self, mode: str, general: bool=True) -> str:
+	def _get_mode_help(self, mode: str, general: bool=True) -> str:
 		"""
 		### Returns the help message of a given mode.
 
@@ -33,7 +33,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 				return self.__get_message_from_list(messages, general)
 		return ''
 	
-	def get_param_first_name(self, param_key: str) -> str:
+	def _get_param_first_name(self, param_key: str) -> str:
 		"""
 		### Returns the first name of the given param key. Short name has priority over long name.
 
@@ -46,7 +46,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		param = arguments.PARAMS[param_key]
 		return param.get(arguments.SHORT_VERSION, param.get(arguments.LONG_VERSION, ''))
 
-	def get_help_separator(self) -> str:
+	def _get_help_separator(self) -> str:
 		"""
 		### Returns the line that separates sections inside the help message.
 
@@ -56,7 +56,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		dashes = ['-' for _ in range(self.__SECTION_N_DASH)]
 		return format.get_formatting_tabs(f"\t{''.join(dashes)}\n")
 
-	def text_with_limits(self, previous_text: str, text: str) -> str:
+	def _text_with_limits(self, previous_text: str, text: str) -> str:
 		"""
 		### Returns the given text, formatted so that it does not exceed the character limit by line for the param help section.
 
@@ -74,6 +74,18 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 			self.__get_start_section_fill_in_space('')
 		)
 		return f"{previous_text}{fill_in_space}{formatted_help}\n"
+
+	def _get_text_length(self, text: str) -> int:
+		"""
+		### Returns the length of a text that might contain tabs.
+
+		#### Params:
+		- text (str): Text to measure.
+
+		#### Returns:
+		- (int): Text's length.
+		"""
+		return len(format.get_formatting_tabs(text))
 
 	def __get_message_from_list(self, messages: List[str], only_general: bool) -> str:
 		"""
@@ -198,7 +210,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 			# If text exceeds size limit, it means that section space for modes and params 
 			# is too low and should be set to a higher number, but for now we need to print anyways, 
 			# so we reduce space from the one reserved for mode help and add minimum fill-in space
-			remaining_space = self.__getLineSize() - self.__get_text_length(start_section_text)
+			remaining_space = self.__getLineSize() - self._get_text_length(start_section_text)
 			fill_in_space = ' '
 		else:
 			remaining_space = self.__getLineSize() - self.__SECTION_HELP_START
@@ -216,7 +228,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		- (str): The required number of spaces to generate the start section's fill-in.
 		"""
 		return ''.join(
-			[' ' for _ in range(self.__SECTION_HELP_START - self.__get_text_length(text))]
+			[' ' for _ in range(self.__SECTION_HELP_START - self._get_text_length(text))]
 		)
 	
 	def __is_start_section_text_exceeding_size_limit(self, start_section_text: str) -> bool:
@@ -229,16 +241,4 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		#### Returns:
 		- (bool): True if the text exceedes allowed size limit.
 		"""
-		return self.__get_text_length(start_section_text) >= self.__SECTION_HELP_START
-
-	def __get_text_length(self, text: str) -> int:
-		"""
-		### Returns the length of a text that might contain tabs.
-
-		#### Params:
-		- text (str): Text to measure.
-
-		#### Returns:
-		- (int): Text's length.
-		"""
-		return len(format.get_formatting_tabs(text))
+		return self._get_text_length(start_section_text) >= self.__SECTION_HELP_START
