@@ -13,16 +13,8 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		### Prints the help message of the argument parser.
 		"""
 		help_message = "Run Xmipp's installer script\n\nUsage: xmipp [options]\n"
-
-		# Add every section
 		for section in list(arguments.MODES.keys()):
-			# Adding section separator and section name
-			help_message += self._get_help_separator() + f"\t# {section} #\n\n"
-
-			# Adding help text for every mode in each section
-			for mode in list(arguments.MODES[section].keys()):
-				help_message += self.__get_mode_args_and_help_str(f"\t{mode} ", mode)
-
+			help_message += self.__get_section_message(section)
 		help_message += f"\n{self.__get_epilog()}"
 		help_message += self.__get_note()
 		return self._get_text_length(help_message)
@@ -82,3 +74,18 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		note_message = "Note: You can also view a specific help message for each mode with \"./xmipp [mode] -h\".\n"
 		note_message += f"Example: ./xmipp {arguments.MODE_ALL} -h\n"
 		return logger.yellow(note_message)
+
+	def __get_section_message(self, section: str) -> str:
+		"""
+		### Returns the given section's message.
+
+		#### Params:
+		- section (str): Section name.
+
+		#### Return:
+		- (str): Section's message.
+		"""
+		section_message = self._get_help_separator() + f"\t# {section} #\n\n"
+		for mode in list(arguments.MODES[section].keys()):
+			section_message += self.__get_mode_args_and_help_str(f"\t{mode} ", mode)
+		return section_message
