@@ -9,7 +9,7 @@ from xmipp3_installer.application.logger.logger import logger
 
 class ModeHelpFormatter(BaseHelpFormatter):
 	"""
-	This class overrides the default help formatter to display a custom help message deppending on the mode selected.
+	### Overrides the default help formatter to display a custom help message deppending on the mode selected.
 	"""
 	def format_help(self):
 		"""

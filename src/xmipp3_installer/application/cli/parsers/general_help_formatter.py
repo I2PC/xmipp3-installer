@@ -6,7 +6,7 @@ from xmipp3_installer.application.logger.logger import logger
 
 class GeneralHelpFormatter(BaseHelpFormatter):
 	"""
-	This class overrides the default help formatter to display a custom help message.
+	### Overrides the default help formatter to display a custom help message.
 	"""
 	def format_help(self):
 		"""
