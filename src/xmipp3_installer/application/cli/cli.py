@@ -2,6 +2,7 @@
 
 import argparse
 
+from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.parsers.error_handler_parser import ErrorHandlerArgumentParser
 from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
 
@@ -20,7 +21,7 @@ def __generate_parser() -> argparse.ArgumentParser:
 	- (ArgumentParser): Argument parser.
 	"""
 	return ErrorHandlerArgumentParser(
-		prog="xmipp",
+		prog=arguments.XMIPP_PROGRAM_NAME,
 		formatter_class=GeneralHelpFormatter,
 	)
 
