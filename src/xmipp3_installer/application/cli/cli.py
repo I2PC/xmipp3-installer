@@ -3,6 +3,7 @@
 import argparse
 import multiprocessing
 import os
+import sys
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.parsers import format
@@ -14,8 +15,8 @@ def main():
 	"""### Main entry point function that starts the execution."""
 	parser = __generate_parser()
 	parser = __add_params(parser)
+	__add_default_usage_mode()
 	#args = __get_args_from_parser(parser)
-	#test_service.test_scipion_plugin(args)
 
 def __generate_parser() -> argparse.ArgumentParser:
 	"""
@@ -212,3 +213,33 @@ def __get_project_root_dir() -> str:
 	- (str): Absolute path to Xmipp's root directory.
 	"""
 	return os.path.dirname(os.path.abspath(__file__))
+
+def __add_default_usage_mode():
+	"""
+	### Sets the usage mode as the default one when a mode has not been specifically provided.
+	"""
+	no_args_provided = len(sys.argv) == 1
+	args_provided = len(sys.argv) > 1
+	if no_args_provided or (
+		args_provided and __is_first_arg_optional() and not __help_requested()
+		): 
+		sys.argv.insert(1, arguments.MODE_ALL)
+
+def __is_first_arg_optional() -> bool:
+	"""
+	### Returns True if the first argument provided is optional.
+
+	#### Returns:
+	- (bool): True if the first argument received is optional.
+	"""
+	return sys.argv[1].startswith('-')
+
+def __help_requested() -> bool:
+	"""
+	### Returns True if help is at least one of the args.
+
+	#### Returns:
+	- (bool): True if help is at least one of the args.
+	"""
+	return '-h' in sys.argv or '--help' in sys.argv
+
