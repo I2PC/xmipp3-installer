@@ -4,6 +4,7 @@ import argparse
 import multiprocessing
 import os
 import sys
+from typing import Dict, Any
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.parsers import format
@@ -17,7 +18,7 @@ def main():
 	parser = __generate_parser()
 	parser = __add_params(parser)
 	__add_default_usage_mode()
-	args = parser.parse_args()
+	args = vars(parser.parse_args())
 	__validate_args(args, parser)
 	__move_to_root_dir()
 	# Run selected mode
@@ -247,21 +248,22 @@ def __help_requested() -> bool:
 	"""
 	return '-h' in sys.argv or '--help' in sys.argv
 
-def __validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser):
+def __validate_args(args: Dict[str, Any], parser: argparse.ArgumentParser):
 	"""
 	### Performs validations on the arguments.
 
 	#### Params:
-	- args (Namespace): Arguments to be validated.
+	- args (dict(str, any)): Arguments to be validated.
 	- parser (ArgumentParser): Argument parser.
 	"""
-	if hasattr(args, 'jobs') and args.jobs < 1:
+	if args.get('jobs', 1) < 1:
 		parser.error(f"Wrong job number \"{args.jobs}\". Number of jobs has to be 1 or greater.")
 	
-	if hasattr(args, "branch") and args.branch is not None and len(args.branch.split(' ')) > 1:
-		parser.error(f"Incorrect branch name \"{args.branch}\". Branch names can only be one word long.")
+	branch = args.get('branch')
+	if branch is not None and len(branch.split(' ')) > 1:
+		parser.error(f"Incorrect branch name \"{branch}\". Branch names can only be one word long.")
 	
-	if hasattr(args, "keep_output") and args.keep_output:
+	if args.get('keep_output', False):
 		logger.set_allow_substitution(False)
 
 def __move_to_root_dir():
