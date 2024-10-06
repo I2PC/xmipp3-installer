@@ -1,6 +1,7 @@
 """### Help formatter specific for generic usage mode."""
 
 from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
 from xmipp3_installer.application.logger.logger import logger
 
@@ -17,7 +18,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 			help_message += self.__get_section_message(section)
 		help_message += f"\n{self.__get_epilog()}"
 		help_message += self.__get_note()
-		return self._get_text_length(help_message)
+		return format.get_formatting_tabs(help_message)
 	
 	def __get_mode_args_str(self, mode: str) -> str:
 		"""
