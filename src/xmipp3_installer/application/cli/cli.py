@@ -1,15 +1,19 @@
 """### Command Line Interface that interacts with the installer."""
 
 import argparse
+import multiprocessing
+import os
 
 from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli.parsers.error_handler_parser import ErrorHandlerArgumentParser
 from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
+from xmipp3_installer.application.cli.parsers.mode_help_formatter import ModeHelpFormatter
 
 def main():
 	"""### Main entry point function that starts the execution."""
 	parser = __generate_parser()
-	#parser = __add_params(parser)
+	parser = __add_params(parser)
 	#args = __get_args_from_parser(parser)
 	#test_service.test_scipion_plugin(args)
 
@@ -25,70 +29,186 @@ def __generate_parser() -> argparse.ArgumentParser:
 		formatter_class=GeneralHelpFormatter,
 	)
 
-#def __add_params(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-#	"""
-#	### Inserts the params into the given parser.
-#
-#	#### Params:
-#	- parser (ArgumentParser): Argument parser.
-#
-#	#### Returns:
-#	- (ArgumentParser): Argument parser with inserted params.
-#	"""
-#	subparsers = parser.add_subparsers(dest="mode")
-#
-#	# Arguments for mode 'addModel'
-#	add_model_subparser = subparsers.add_parser(MODE_ADD_MODEL, formatter_class=custom_parser.ModeHelpFormatter)
-#	add_model_subparser.add_argument(*getParamNames(PARAM_LOGIN))
-#	add_model_subparser.add_argument(*getParamNames(PARAM_MODEL_PATH))
-#	add_model_subparser.add_argument(*getParamNames(PARAM_UPDATE), action='store_true')
-#
-#	# Arguments for mode 'all'
-#	all_subparser = subparsers.add_parser(MODE_ALL, formatter_class=custom_parser.ModeHelpFormatter)
-#	all_subparser.add_argument(*getParamNames(PARAM_JOBS), type=int, default=JOBS)
-#	all_subparser.add_argument(*getParamNames(PARAM_BRANCH))
-#	all_subparser.add_argument(*getParamNames(PARAM_KEEP_OUTPUT), action='store_true')
-#
-#	# Arguments for mode 'cleanAll'
-#	clean_all_subparser = subparsers.add_parser(MODE_CLEAN_ALL, formatter_class=custom_parser.ModeHelpFormatter)
-#
-#	# Arguments for mode 'cleanBin'
-#	clean_bin_subparser = subparsers.add_parser(MODE_CLEAN_BIN, formatter_class=custom_parser.ModeHelpFormatter)
-#
-#	# Arguments for mode 'compileAndInstall'
-#	compile_and_install_subparser = subparsers.add_parser(MODE_COMPILE_AND_INSTALL, formatter_class=custom_parser.ModeHelpFormatter)
-#	compile_and_install_subparser.add_argument(*getParamNames(PARAM_JOBS), type=int, default=JOBS)
-#	compile_and_install_subparser.add_argument(*getParamNames(PARAM_BRANCH))
-#	compile_and_install_subparser.add_argument(*getParamNames(PARAM_KEEP_OUTPUT), action='store_true')
-#
-#	# Arguments for mode 'configBuild'
-#	buildConfigSubparser = subparsers.add_parser(MODE_CONFIG_BUILD, formatter_class=custom_parser.ModeHelpFormatter)
-#	buildConfigSubparser.add_argument(*getParamNames(PARAM_KEEP_OUTPUT), action='store_true')
-#
-#	# Arguments for mode 'config'
-#	configSubparser = subparsers.add_parser(MODE_CONFIG, formatter_class=custom_parser.ModeHelpFormatter)
-#	configSubparser.add_argument(*getParamNames(PARAM_OVERWRITE), action='store_true')
-#
-#	# Arguments for mode 'getModels'
-#	getModelsSubparser = subparsers.add_parser(MODE_GET_MODELS, formatter_class=custom_parser.ModeHelpFormatter)
-#	getModelsSubparser.add_argument(*getParamNames(PARAM_MODELS_DIRECTORY), default=os.path.join(__getProjectRootDir(), DEFAULT_MODELS_DIR))
-#
-#	# Arguments for mode 'getSources'
-#	getSourcesSubparser = subparsers.add_parser(MODE_GET_SOURCES, formatter_class=custom_parser.ModeHelpFormatter)
-#	getSourcesSubparser.add_argument(*getParamNames(PARAM_BRANCH))
-#	getSourcesSubparser.add_argument(*getParamNames(PARAM_KEEP_OUTPUT), action='store_true')
-#
-#	# Arguments for mode 'git'
-#	gitSubparser = subparsers.add_parser(MODE_GIT, formatter_class=custom_parser.ModeHelpFormatter)
-#	gitSubparser.add_argument(*getParamNames(PARAM_GIT_COMMAND), nargs='+')
-#
-#	# Arguments for mode 'test'
-#	testSubparser = subparsers.add_parser(MODE_TEST, formatter_class=custom_parser.ModeHelpFormatter)
-#	testSubparser.add_argument(*getParamNames(PARAM_TEST_NAME), nargs='?', default=None)
-#	testSubparser.add_argument(*getParamNames(PARAM_SHOW_TESTS), action='store_true')
-#
-#	# Arguments for mode 'version'
-#	versionSubparser = subparsers.add_parser(MODE_VERSION, formatter_class=custom_parser.ModeHelpFormatter)
-#	versionSubparser.add_argument(*getParamNames(PARAM_SHORT), action='store_true')
-#
-#	return parser
+def __add_params(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+	"""
+	### Inserts the params into the given parser.
+
+	#### Params:
+	- parser (ArgumentParser): Argument parser.
+
+	#### Returns:
+	- (ArgumentParser): Argument parser with inserted params.
+	"""
+	subparsers = parser.add_subparsers(dest="mode")
+	default_jobs = __get_default_job_number()
+
+	add_model_subparser = subparsers.add_parser(arguments.MODE_ADD_MODEL, formatter_class=ModeHelpFormatter)
+	__add_params_mode_add_model(add_model_subparser)
+
+	all_subparser = subparsers.add_parser(arguments.MODE_ALL, formatter_class=ModeHelpFormatter)
+	__add_params_mode_all(all_subparser, default_jobs)
+
+	subparsers.add_parser(arguments.MODE_CLEAN_ALL, formatter_class=ModeHelpFormatter)
+
+	subparsers.add_parser(arguments.MODE_CLEAN_BIN, formatter_class=ModeHelpFormatter)
+
+	compile_and_install_subparser = subparsers.add_parser(arguments.MODE_COMPILE_AND_INSTALL, formatter_class=ModeHelpFormatter)
+	__add_params_mode_compile_and_install(compile_and_install_subparser, default_jobs)
+
+	build_config_subparser = subparsers.add_parser(arguments.MODE_CONFIG_BUILD, formatter_class=ModeHelpFormatter)
+	__add_params_mode_config_build(build_config_subparser)
+
+	config_subparser = subparsers.add_parser(arguments.MODE_CONFIG, formatter_class=ModeHelpFormatter)
+	__add_params_mode_config(config_subparser)
+
+	get_models_subparser = subparsers.add_parser(arguments.MODE_GET_MODELS, formatter_class=ModeHelpFormatter)
+	__add_params_mode_get_models(get_models_subparser)
+
+	get_sources_subparser = subparsers.add_parser(arguments.MODE_GET_SOURCES, formatter_class=ModeHelpFormatter)
+	__add_params_mode_get_sources(get_sources_subparser)
+
+	git_subparser = subparsers.add_parser(arguments.MODE_GIT, formatter_class=ModeHelpFormatter)
+	__add_params_mode_git(git_subparser)
+
+	test_subparser = subparsers.add_parser(arguments.MODE_TEST, formatter_class=ModeHelpFormatter)
+	__add_params_mode_test(test_subparser)
+
+	version_subparser = subparsers.add_parser(arguments.MODE_VERSION, formatter_class=ModeHelpFormatter)
+	__add_params_mode_version(version_subparser)
+
+	return parser
+
+def __add_params_mode_add_model(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "addModel"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_LOGIN))
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_MODEL_PATH))
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_UPDATE), action='store_true')
+
+def __add_params_mode_all(subparser: argparse.ArgumentParser, default_jobs: int):
+	"""
+	### Adds params for mode "all"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	- default_jobs (int): Default number of jobs to run the task.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_JOBS), type=int, default=default_jobs)
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_BRANCH))
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_KEEP_OUTPUT), action='store_true')
+
+def __add_params_mode_compile_and_install(subparser: argparse.ArgumentParser, default_jobs: int):
+	"""
+	### Adds params for mode "compileAndInstall"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	- default_jobs (int): Default number of jobs to run the task.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_JOBS), type=int, default=default_jobs)
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_BRANCH))
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_KEEP_OUTPUT), action='store_true')
+
+def __add_params_mode_config_build(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "configBuild"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_KEEP_OUTPUT), action='store_true')
+
+def __add_params_mode_config(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "config"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_OVERWRITE), action='store_true')
+
+def __add_params_mode_get_models(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "getModels"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(
+		*format.get_param_names(arguments.PARAM_MODELS_DIRECTORY),
+		default=__get_project_root_subpath(arguments.DEFAULT_MODELS_DIR)
+	)
+
+def __add_params_mode_get_sources(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "getSources"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_BRANCH))
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_KEEP_OUTPUT), action='store_true')
+
+def __add_params_mode_git(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "git"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_GIT_COMMAND), nargs='+')
+
+def __add_params_mode_test(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "test"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_TEST_NAME), nargs='?', default=None)
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_SHOW_TESTS), action='store_true')
+
+def __add_params_mode_version(subparser: argparse.ArgumentParser):
+	"""
+	### Adds params for mode "version"
+
+	#### Params:
+	- subparser (ArgumentParser): Subparser to add the params to.
+	"""
+	subparser.add_argument(*format.get_param_names(arguments.PARAM_SHORT), action='store_true')
+
+def __get_default_job_number() -> int:
+	"""
+	### Gets the default number of jobs to be used by parallelizable tasks.
+	Returned number will be 120% of CPU cores, due to not all jobs taking 
+	100% of CPU time continuously.
+
+	#### Returns:
+	- (int): Default number of jobs.
+	"""
+	return multiprocessing.cpu_count() + int(multiprocessing.cpu_count() * 0.2)
+
+def __get_project_root_subpath(subpath: str) -> str:
+	"""
+	### Returns a subpath of Xmipp's root directory.
+
+	#### Params:
+	- subpath (str): Subpath inside the root directory.
+
+	#### Returns:
+	- (str): Absolute path to given subpath.
+	"""
+	return os.path.join(__get_project_root_dir(), subpath)
+
+def __get_project_root_dir() -> str:
+	"""
+	### Returns the root directory of Xmipp.
+
+	#### Returns:
+	- (str): Absolute path to Xmipp's root directory.
+	"""
+	return os.path.dirname(os.path.abspath(__file__))
