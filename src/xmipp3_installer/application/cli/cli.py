@@ -10,13 +10,17 @@ from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli.parsers.error_handler_parser import ErrorHandlerArgumentParser
 from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
 from xmipp3_installer.application.cli.parsers.mode_help_formatter import ModeHelpFormatter
+from xmipp3_installer.application.logger.logger import logger
 
 def main():
 	"""### Main entry point function that starts the execution."""
 	parser = __generate_parser()
 	parser = __add_params(parser)
 	__add_default_usage_mode()
-	#args = __get_args_from_parser(parser)
+	args = parser.parse_args()
+	__validate_args(args, parser)
+	__move_to_root_dir()
+	# Run selected mode
 
 def __generate_parser() -> argparse.ArgumentParser:
 	"""
@@ -243,3 +247,25 @@ def __help_requested() -> bool:
 	"""
 	return '-h' in sys.argv or '--help' in sys.argv
 
+def __validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser):
+	"""
+	### Performs validations on the arguments.
+
+	#### Params:
+	- args (Namespace): Arguments to be validated.
+	- parser (ArgumentParser): Argument parser.
+	"""
+	if hasattr(args, 'jobs') and args.jobs < 1:
+		parser.error(f"Wrong job number \"{args.jobs}\". Number of jobs has to be 1 or greater.")
+	
+	if hasattr(args, "branch") and args.branch is not None and len(args.branch.split(' ')) > 1:
+		parser.error(f"Incorrect branch name \"{args.branch}\". Branch names can only be one word long.")
+	
+	if hasattr(args, "keep_output") and args.keep_output:
+		logger.set_allow_substitution(False)
+
+def __move_to_root_dir():
+	"""
+	### Changes the current working directory to the project's root directory.
+	"""
+	os.chdir(__get_project_root_dir())
