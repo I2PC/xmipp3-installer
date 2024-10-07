@@ -22,6 +22,7 @@ def main():
 	__validate_args(args, parser)
 	__move_to_root_dir()
 	# Run selected mode
+	return args
 
 def __generate_parser() -> argparse.ArgumentParser:
 	"""
