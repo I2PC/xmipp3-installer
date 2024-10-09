@@ -25,18 +25,18 @@ __PARAMS = {
 }
 
 @pytest.mark.parametrize(
-	"tab_size",
+	"tab_size,expected_length",
 	[
-		pytest.param(4),
-		pytest.param(0),
-		pytest.param(1),
-		pytest.param(-1),
+		pytest.param(4, 8),
+		pytest.param(0, 0),
+		pytest.param(1, 2),
+		pytest.param(-1, 0)
 	],
 )
-def test_expands_tabs_with_expected_length(tab_size):
+def test_expands_tabs_with_expected_length(tab_size, expected_length):
 	with patch.object(format, "TAB_SIZE", tab_size):
 		assert (
-			len(format.get_formatting_tabs("		")) == 2*tab_size
+			len(format.get_formatting_tabs("		")) == expected_length
 		), "Received text with different length than expected."
 
 @pytest.mark.parametrize(
