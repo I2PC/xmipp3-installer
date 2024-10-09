@@ -165,7 +165,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 			return len(line + ' ' + word) <= size_limit
 		return len(word) < size_limit
 
-	def __add_word_to_line(self, line: str, word: str, remaining_words: list[str]) -> Tuple[str, list[str]]:
+	def __add_word_to_line(self, line: str, word: str, remaining_words: List[str]) -> Tuple[str, List[str]]:
 		"""
 		### Adds a word to the current line and updates the list of remaining words.
 
