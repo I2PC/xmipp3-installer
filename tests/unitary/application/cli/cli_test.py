@@ -9,7 +9,6 @@ from xmipp3_installer.application.cli import arguments
 
 __USER = "test@test.com"
 __DUMMY_PATH = "/path/to/dummy"
-__DEFAULT_ADD_MODEL_ARGS = {"update": False}
 __DEFAULT_JOBS = 4
 __DEFAULT_COMPILATION_ARGS = {
 	"branch": None,
@@ -18,13 +17,26 @@ __DEFAULT_COMPILATION_ARGS = {
 }
 
 def test_calls_add_default_usage_mode(
-	__mock_sys_argv, 
+	__mock_sys_argv,
 	__mock_add_default_usage_mode,
 	__mock_print
 ):
 	with pytest.raises(SystemExit):
 		cli.main()
 	__mock_add_default_usage_mode.assert_called_once()
+
+@pytest.mark.parametrize(
+	"__mock_sys_argv,expected_args",
+	[
+		pytest.param(["test"], ["test"]),
+		pytest.param(["all"], ["all"]),
+		pytest.param([], ["all"])
+	],
+	indirect=["__mock_sys_argv"]
+)
+def test_adds_default_usage_mode(__mock_sys_argv, expected_args):
+	cli.__add_default_usage_mode()
+	assert (sys.argv == [arguments.XMIPP_PROGRAM_NAME, *expected_args]), "Obtained different arguments than expected."
 
 def test_calls_parse_args(
 	__mock_sys_argv,
@@ -34,28 +46,6 @@ def test_calls_parse_args(
 ):
 	cli.main()
 	__mock_parse_args.assert_called_once()
-
-def test_calls_validate_args(
-	__mock_sys_argv,
-	__mock_add_default_usage_mode,
-	__mock_parse_args,
-	__mock_validate_args,
-	__mock_move_to_root_dir,
-	__mock_print
-):
-	cli.main()
-	__mock_validate_args.assert_called_once()
-
-def test_calls_move_to_root_dir(
-	__mock_sys_argv,
-	__mock_add_default_usage_mode,
-	__mock_parse_args,
-	__mock_validate_args,
-	__mock_move_to_root_dir,
-	__mock_print
-):
-	cli.main()
-	__mock_move_to_root_dir.assert_called_once()
 
 @pytest.mark.parametrize(
 	"__mock_sys_argv,expected_args",
@@ -78,7 +68,7 @@ def test_returns_expected_mode_add_model(
 	__mock_move_to_root_dir,
 	__mock_print
 ):
-	__test_args_in_mode("addModel", __DEFAULT_ADD_MODEL_ARGS, expected_args)
+	__test_args_in_mode("addModel", {"update": False}, expected_args)
 
 @pytest.mark.parametrize(
 	"__mock_sys_argv,expected_args",
@@ -275,6 +265,66 @@ def test_returns_expected_mode_version_args(
 ):
 	__test_args_in_mode("version", {"short": False}, expected_args)
 
+def test_calls_validate_args(
+	__mock_sys_argv,
+	__mock_add_default_usage_mode,
+	__mock_parse_args,
+	__mock_validate_args,
+	__mock_move_to_root_dir,
+	__mock_print
+):
+	cli.main()
+	__mock_validate_args.assert_called_once()
+
+@pytest.mark.parametrize(
+	"args,exit_with_error",
+	[
+		pytest.param({}, False),
+		pytest.param({"jobs": 1}, False),
+		pytest.param({"jobs": 0}, True),
+		pytest.param({"jobs": -1}, True),
+		pytest.param({"branch": None}, False),
+		pytest.param({"branch": "mybranch"}, False),
+		pytest.param({"branch": "my branch"}, True),
+	],
+)
+def test_returns_expected_arg_validation(args, exit_with_error):
+	parser = cli.__generate_parser()
+	if exit_with_error:
+		with pytest.raises(SystemExit):
+			cli.__validate_args(args, parser)
+	else:
+		cli.__validate_args(args, parser)
+
+def test_deactivates_output_substitution_on_args_validation(__mock_logger_set_allow_substitution):
+	cli.__validate_args({"keep_output": True}, cli.__generate_parser())
+	__mock_logger_set_allow_substitution.assert_called_once_with(False)
+
+@pytest.mark.parametrize(
+	"args",
+	[
+		pytest.param({}),
+		pytest.param({"keep_output": False})
+	],
+)
+def test_does_not_deactivate_output_substitution_on_args_validation(
+	args,
+	__mock_logger_set_allow_substitution
+):
+	cli.__validate_args(args, cli.__generate_parser())
+	__mock_logger_set_allow_substitution.assert_not_called()
+
+def test_calls_move_to_root_dir(
+	__mock_sys_argv,
+	__mock_add_default_usage_mode,
+	__mock_parse_args,
+	__mock_validate_args,
+	__mock_move_to_root_dir,
+	__mock_print
+):
+	cli.main()
+	__mock_move_to_root_dir.assert_called_once()
+
 def __test_args_in_mode(mode, default_args, expected_args):
 	expected_args = {**default_args, "mode": mode, **expected_args}
 	assert (cli.main() == expected_args), f"Generated different args than expected for mode \"{mode}\"."
@@ -332,4 +382,11 @@ def __mock_get_project_root_subpath():
 		"xmipp3_installer.application.cli.cli.__get_project_root_subpath"
 	) as mock_method:
 		mock_method.return_value = os.path.join(__DUMMY_PATH, "default")
+		yield mock_method
+
+@pytest.fixture
+def __mock_logger_set_allow_substitution():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.set_allow_substitution"
+	) as mock_method:
 		yield mock_method
