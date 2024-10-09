@@ -9,6 +9,7 @@ keywords = ["xmipp3", "installer"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+typing-extensions = "^4.12"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.1.1"

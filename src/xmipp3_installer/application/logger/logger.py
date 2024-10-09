@@ -2,7 +2,7 @@
 
 import math
 import shutil
-from typing import Self
+from typing_extensions import Self
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger import urls
