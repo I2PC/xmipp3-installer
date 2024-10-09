@@ -257,8 +257,9 @@ def __validate_args(args: Dict[str, Any], parser: argparse.ArgumentParser):
 	- args (dict(str, any)): Arguments to be validated.
 	- parser (ArgumentParser): Argument parser.
 	"""
-	if args.get('jobs', 1) < 1:
-		parser.error(f"Wrong job number \"{args.jobs}\". Number of jobs has to be 1 or greater.")
+	jobs = args.get('jobs', 1)
+	if jobs < 1:
+		parser.error(f"Wrong job number \"{jobs}\". Number of jobs has to be 1 or greater.")
 	
 	branch = args.get('branch')
 	if branch is not None and len(branch.split(' ')) > 1:
