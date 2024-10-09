@@ -41,13 +41,13 @@ jobs:
       - name: Use CLI as Python module
         run: poetry run python -m xmipp3_installer -h
       
-      #- name: Run unitary tests
-      #  env:
-      #    SCRIPT_PATH: ./scripts/run-tests.sh
-      #  run: |
-      #    chmod +x $SCRIPT_PATH
-      #    poetry run $SCRIPT_PATH
-      #
+      - name: Run unitary tests
+        env:
+          SCRIPT_PATH: ./scripts/run-tests.sh
+        run: |
+          chmod +x $SCRIPT_PATH
+          poetry run $SCRIPT_PATH
+      
       #- name: Check source code with Ruff
       #  run: poetry run python -m ruff check --config ./conf/ruff-src.toml
       #
