@@ -174,6 +174,57 @@ def test_gets_expected_text_len(
 		__setup_parser._get_text_length(text) == expected_length
 	), "Received different text length than expected."
 
+@pytest.mark.parametrize(
+	"__mock_get_terminal_column_size,__mock_line_size_lower_limit,expected_size",
+	[
+		pytest.param(25, 10, 25),
+		pytest.param(25, 25, 25),
+		pytest.param(25, 26, 26),
+		pytest.param(0, -1, 0),
+		pytest.param(-1, -1, -1),
+		pytest.param(-1, 0, 0)
+	],
+	indirect=["__mock_get_terminal_column_size", "__mock_line_size_lower_limit"]
+)
+def test_gets_expected_line_size(
+	__mock_get_terminal_column_size,
+	__mock_line_size_lower_limit,
+	expected_size,
+	__setup_parser
+):
+	assert (
+		__setup_parser._BaseHelpFormatter__get_line_size() == expected_size
+	), "Received different line size than expected."
+	
+@pytest.mark.parametrize(
+	"text,size_limit,left_fill,expected_formatted_text",
+	[
+		pytest.param("", 5, "", ""),
+		pytest.param("test", 5, "", "test"),
+		pytest.param("test", 5, "  ", "test"),
+		pytest.param("test", 8, "  ", "test"),
+		pytest.param("test test", 5, "", "test\ntest"),
+		pytest.param("test", 2, "", "test"),
+		pytest.param("test1 test2", 12, "  ", "test1 test2"),
+		pytest.param("test1 test2", 8, "  ", "test1\n  test2"),
+		pytest.param("test1 test2butlong", 8, "  ", "test1\n  test2butlong")
+	],
+)
+def test_calls_format_text_in_lines_when_getting_multi_line_help_text(
+	text,
+	size_limit,
+	left_fill,
+	expected_formatted_text,
+	__setup_parser
+):
+	assert (
+		__setup_parser._BaseHelpFormatter__multi_line_help_text(
+			text,
+			size_limit,
+			left_fill
+		) == expected_formatted_text
+	), "Received different formatted text than expected."
+
 @pytest.fixture
 def __setup_parser():
 	yield BaseHelpFormatter("test")
@@ -224,3 +275,22 @@ def __mock_get_formatting_tabs():
 		"xmipp3_installer.application.cli.parsers.format.get_formatting_tabs"
 	) as mock_method:
 		yield mock_method
+
+@pytest.fixture
+def __mock_get_terminal_column_size(request):
+	class MockTerminalSize:
+		def __init__(self, columns):
+			self.columns = columns
+		def __iter__(self):
+			return iter((self.columns, 5))
+	with patch("shutil.get_terminal_size") as mock_method:
+		mock_method.return_value = MockTerminalSize(
+			request.param if hasattr(request, "param") else 25
+		)
+		yield mock_method
+
+@pytest.fixture
+def __mock_line_size_lower_limit(request):
+	size = request.param if hasattr(request, "param") else 5
+	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__LINE_SIZE_LOWER_LIMIT", size):
+		yield

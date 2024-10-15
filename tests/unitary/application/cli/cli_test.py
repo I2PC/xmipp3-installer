@@ -288,7 +288,7 @@ def test_calls_validate_args(
 		pytest.param({"branch": "my branch"}, True),
 	],
 )
-def test_returns_expected_arg_validation(args, exit_with_error):
+def test_returns_expected_arg_validation(args, exit_with_error, __mock_print):
 	parser = cli.__generate_parser()
 	if exit_with_error:
 		with pytest.raises(SystemExit):
