@@ -7,6 +7,8 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 
+from ... import get_assertion_message
+
 __USER = "test@test.com"
 __DUMMY_PATH = "/path/to/dummy"
 __DEFAULT_JOBS = 4
@@ -36,7 +38,9 @@ def test_calls_add_default_usage_mode(
 )
 def test_adds_default_usage_mode(__mock_sys_argv, expected_args):
 	cli.__add_default_usage_mode()
-	assert (sys.argv == [arguments.XMIPP_PROGRAM_NAME, *expected_args]), "Obtained different arguments than expected."
+	assert (
+		sys.argv == [arguments.XMIPP_PROGRAM_NAME, *expected_args]
+	), get_assertion_message("arguments", [arguments.XMIPP_PROGRAM_NAME, *expected_args], sys.argv)
 
 def test_calls_parse_args(
 	__mock_sys_argv,
@@ -327,7 +331,10 @@ def test_calls_move_to_root_dir(
 
 def __test_args_in_mode(mode, default_args, expected_args):
 	expected_args = {**default_args, "mode": mode, **expected_args}
-	assert (cli.main() == expected_args), f"Generated different args than expected for mode \"{mode}\"."
+	args = cli.main()
+	assert (
+		args == expected_args
+	), get_assertion_message(f"args for mode \"{mode}\"", expected_args, args)
 
 @pytest.fixture
 def __mock_sys_argv(request):
