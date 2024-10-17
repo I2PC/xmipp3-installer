@@ -7,6 +7,8 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 
+from ... import get_assertion_message
+
 __USER = "test@test.com"
 __DUMMY_PATH = "/path/to/dummy"
 __DEFAULT_JOBS = 4
@@ -19,7 +21,7 @@ __DEFAULT_COMPILATION_ARGS = {
 def test_calls_add_default_usage_mode(
 	__mock_sys_argv,
 	__mock_add_default_usage_mode,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	with pytest.raises(SystemExit):
 		cli.main()
@@ -36,13 +38,15 @@ def test_calls_add_default_usage_mode(
 )
 def test_adds_default_usage_mode(__mock_sys_argv, expected_args):
 	cli.__add_default_usage_mode()
-	assert (sys.argv == [arguments.XMIPP_PROGRAM_NAME, *expected_args]), "Obtained different arguments than expected."
+	assert (
+		sys.argv == [arguments.XMIPP_PROGRAM_NAME, *expected_args]
+	), get_assertion_message("arguments", [arguments.XMIPP_PROGRAM_NAME, *expected_args], sys.argv)
 
 def test_calls_parse_args(
 	__mock_sys_argv,
 	__mock_add_default_usage_mode,
 	__mock_parse_args,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	cli.main()
 	__mock_parse_args.assert_called_once()
@@ -66,7 +70,7 @@ def test_returns_expected_mode_add_model(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("addModel", {"update": False}, expected_args)
 
@@ -95,7 +99,7 @@ def test_returns_expected_mode_all_args(
 	__mock_validate_args,
 	__mock_move_to_root_dir,
 	__mock_get_default_job_number,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("all", __DEFAULT_COMPILATION_ARGS, expected_args)
 
@@ -103,7 +107,7 @@ def test_returns_expected_mode_clean_all_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "cleanAll"]):
 		__test_args_in_mode("cleanAll", {}, {})
@@ -111,7 +115,7 @@ def test_returns_expected_mode_clean_all_args(
 def test_returns_expected_mode_clean_bin_args(
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "cleanBin"]):
 		__test_args_in_mode("cleanBin", {}, {})
@@ -140,7 +144,7 @@ def test_returns_expected_mode_compile_and_install_args(
 	__mock_validate_args,
 	__mock_move_to_root_dir,
 	__mock_get_default_job_number,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("compileAndInstall", __DEFAULT_COMPILATION_ARGS, expected_args)
 
@@ -157,7 +161,7 @@ def test_returns_expected_mode_config_build_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("configBuild", {"keep_output": False}, expected_args)
 
@@ -175,7 +179,7 @@ def test_returns_expected_mode_config_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("config", {"overwrite": False}, expected_args)
 
@@ -194,7 +198,7 @@ def test_returns_expected_mode_get_models_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print,
+	__mock_stdout_stderr,
 	__mock_get_project_root_subpath
 ):
 	__test_args_in_mode("getModels", {"directory": os.path.join(__DUMMY_PATH, "default")}, expected_args)
@@ -219,14 +223,14 @@ def test_returns_expected_mode_get_sources_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("getSources", {"branch": None, "keep_output": False}, expected_args)
 
 def test_returns_expected_mode_git_args(
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "git", "clone", "test_url"]):
 		__test_args_in_mode("git", {}, {"command": ["clone", "test_url"]})
@@ -244,7 +248,7 @@ def test_returns_expected_mode_test_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("test", {"show": False}, expected_args)
 
@@ -261,7 +265,7 @@ def test_returns_expected_mode_version_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	__test_args_in_mode("version", {"short": False}, expected_args)
 
@@ -271,7 +275,7 @@ def test_calls_validate_args(
 	__mock_parse_args,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	cli.main()
 	__mock_validate_args.assert_called_once()
@@ -288,7 +292,7 @@ def test_calls_validate_args(
 		pytest.param({"branch": "my branch"}, True),
 	],
 )
-def test_returns_expected_arg_validation(args, exit_with_error):
+def test_returns_expected_arg_validation(args, exit_with_error, __mock_stdout_stderr):
 	parser = cli.__generate_parser()
 	if exit_with_error:
 		with pytest.raises(SystemExit):
@@ -320,14 +324,17 @@ def test_calls_move_to_root_dir(
 	__mock_parse_args,
 	__mock_validate_args,
 	__mock_move_to_root_dir,
-	__mock_print
+	__mock_stdout_stderr
 ):
 	cli.main()
 	__mock_move_to_root_dir.assert_called_once()
 
 def __test_args_in_mode(mode, default_args, expected_args):
 	expected_args = {**default_args, "mode": mode, **expected_args}
-	assert (cli.main() == expected_args), f"Generated different args than expected for mode \"{mode}\"."
+	args = cli.main()
+	assert (
+		args == expected_args
+	), get_assertion_message(f"args for mode \"{mode}\"", expected_args, args)
 
 @pytest.fixture
 def __mock_sys_argv(request):
@@ -372,9 +379,10 @@ def __mock_get_default_job_number():
 		yield mock_method
 
 @pytest.fixture
-def __mock_print():
-	with patch("builtins.print") as mock_method:
-		yield mock_method
+def __mock_stdout_stderr():
+	with patch('sys.stdout', new_callable=lambda: open(os.devnull, 'w')), \
+	patch('sys.stderr', new_callable=lambda: open(os.devnull, 'w')):
+		yield
 
 @pytest.fixture
 def __mock_get_project_root_subpath():
