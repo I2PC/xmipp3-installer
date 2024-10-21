@@ -19,6 +19,7 @@ ruff = "^0.6"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["*_test.py"]
+addopts = "--capture=no"
 
 [build-system]
 requires = ["poetry-core"]

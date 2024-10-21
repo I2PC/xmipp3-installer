@@ -34,13 +34,11 @@ def test_prints_expected_help_message(
 	__mock_tab_size,
 	__mock_sys_argv
 ):
-	stdout, stderr = __mock_stdout_stderr
+	stdout, _ = __mock_stdout_stderr
 	expected_message = message_object[__mock_get_terminal_column_size().columns]
 	with pytest.raises(SystemExit):
 		cli.main()
 	stdout_value = stdout.getvalue()
-	if stdout_value == "":
-		print("STDOUT EMPTY:", stderr.getvalue())
 	assert (
 		expected_message in stdout_value
 	), get_assertion_message("help message", expected_message, stdout_value)
@@ -62,6 +60,7 @@ def __mock_stdout_stderr():
 	new_stdout, new_stderr = StringIO(), StringIO()
 	with patch('sys.stdout', new=new_stdout), patch('sys.stderr', new=new_stderr):
 		yield new_stdout, new_stderr
+		from xmipp3_installer.application.logger.logger import logger
 
 @pytest.fixture
 def __mock_tab_size(request):
