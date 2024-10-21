@@ -216,20 +216,6 @@ def test_does_not_call_logger_yellow_when_getting_args_message(
 	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
 	__mock_logger_yellow.assert_not_called()
 
-def test_calls_get_help_separator_when_getting_args_message(
-	__mock_mode_args,
-	__mock_xmipp_program_name,
-	__mock_get_param_first_name,
-	__mock_args_contain_optional,
-	__mock_logger_yellow,
-	__mock_get_help_separator,
-	__mock_get_args_info,
-	__setup_formatter
-):
-	mode = "mode1"
-	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
-	__mock_args_contain_optional.assert_called_once()
-
 def test_does_not_call_get_help_separator_when_getting_args_message(
 	__mock_mode_args,
 	__mock_xmipp_program_name,
@@ -248,7 +234,7 @@ def test_does_not_call_get_help_separator_when_getting_args_message(
 	"mode",
 	[pytest.param("mode1"), pytest.param("mode2")],
 )
-def test_calls_get_help_separator_when_getting_args_message(
+def test_calls_get_args_info_when_getting_args_message(
 	mode,
 	__mock_mode_args,
 	__mock_xmipp_program_name,
@@ -262,7 +248,6 @@ def test_calls_get_help_separator_when_getting_args_message(
 	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
 	__mock_get_args_info.assert_called_once_with(__MODE_ARGS[mode])
 
-"""
 @pytest.mark.parametrize(
 	"mode,__mock_args_contain_optional",
 	[
@@ -284,12 +269,99 @@ def test_returns_expected_args_message(
 	__mock_get_args_info,
 	__setup_formatter
 ):
+	expected_help_message = __get_args_help_message(
+		mode,
+		__mock_args_contain_optional.return_value,
+		__setup_formatter,
+		__mock_logger_yellow,
+		__mock_get_args_info
+	)
 	help_message = __setup_formatter._ModeHelpFormatter__get_args_message(mode)
 	assert (
-		help_message == ""
-	), get_assertion_message("args help message", "", help_message)
-"""
-	
+		help_message == expected_help_message
+	), get_assertion_message("args help message", expected_help_message, help_message)
+
+def test_calls_get_mode_when_formatting_help(
+	__mock_get_mode,
+	__mock_get_mode_help,
+	__mock_get_args_message,
+	__mock_get_examples_message,
+	__mock_get_formatting_tabs,
+	__setup_formatter
+):
+	__setup_formatter.format_help()
+	__mock_get_mode.assert_called_once()
+
+def test_calls_get_mode_help_when_formatting_help(
+	__mock_get_mode,
+	__mock_get_mode_help,
+	__mock_get_args_message,
+	__mock_get_examples_message,
+	__mock_get_formatting_tabs,
+	__setup_formatter
+):
+	__setup_formatter.format_help()
+	__mock_get_mode_help.assert_called_once_with(__mock_get_mode(), general=False)
+
+def test_calls_get_args_message_when_formatting_help(
+	__mock_get_mode,
+	__mock_get_mode_help,
+	__mock_get_args_message,
+	__mock_get_examples_message,
+	__mock_get_formatting_tabs,
+	__setup_formatter
+):
+	__setup_formatter.format_help()
+	__mock_get_args_message.assert_called_once_with(__mock_get_mode())
+
+def test_calls_get_examples_message_when_formatting_help(
+	__mock_get_mode,
+	__mock_get_mode_help,
+	__mock_get_args_message,
+	__mock_get_examples_message,
+	__mock_get_formatting_tabs,
+	__setup_formatter
+):
+	__setup_formatter.format_help()
+	__mock_get_examples_message.assert_called_once_with(__mock_get_mode())
+
+def test_returns_expected_help_message_when_formatting_help(
+	__mock_get_mode,
+	__mock_get_mode_help,
+	__mock_get_args_message,
+	__mock_get_examples_message,
+	__mock_get_formatting_tabs,
+	__setup_formatter
+):
+	formatted_help = __setup_formatter.format_help()
+	mode = __mock_get_mode()
+	expected_formatted_help = ''.join([
+		f"{__mock_get_mode_help(mode, general=False)}\n\n",
+		__mock_get_args_message(mode),
+		__mock_get_examples_message(mode)
+	])
+	expected_formatted_help = __mock_get_formatting_tabs(expected_formatted_help)
+	assert (
+		formatted_help == expected_formatted_help
+	), get_assertion_message("formatted help", expected_formatted_help, formatted_help)
+
+def __get_args_help_message(
+	mode: str,
+	contains_optional: bool,
+	formatter: ModeHelpFormatter,
+	logger_yellow,
+	get_args_info
+) -> str:
+	args = __MODE_ARGS[mode]
+	exist_args = len(args) > 0
+	return ''.join([
+		logger_yellow(__NOTE_MESSAGE) if exist_args > 0 and contains_optional else "",
+		f"Usage: {arguments.XMIPP_PROGRAM_NAME} {mode}",
+		f"{' [options]' if len(args) > 0 else ''}\n",
+		f"{formatter._get_help_separator()}\t# Options #\n\n" if exist_args else "",
+		get_args_info(args)
+	])
+
 @pytest.fixture
 def __setup_formatter():
 	yield ModeHelpFormatter("test")
@@ -389,4 +461,52 @@ def __mock_get_args_info():
 		def __get_info(args: List[str]) -> str:
 			return f'info-{"_".join(args)}-info'
 		mock_method.side_effect = __get_info
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_mode():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_mode"
+	) as mock_method:
+		mock_method.return_value = "mode1"
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_mode_help():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._get_mode_help"
+	) as mock_method:
+		def __get_mode_help(mode: str, general: bool=False):
+			return f"help-{mode}-{general}-help"
+		mock_method.side_effect = __get_mode_help
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_args_message():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_args_message"
+	) as mock_method:
+		def __get_args_message(mode: str):
+			return f"args_message-{mode}-args_message"
+		mock_method.side_effect = __get_args_message
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_examples_message():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_examples_message"
+	) as mock_method:
+		def __get_examples_message(mode: str):
+			return f"examples_message-{mode}-examples_message"
+		mock_method.side_effect = __get_examples_message
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_formatting_tabs():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.format.get_formatting_tabs"
+	) as mock_method:
+		def __add_format(text: str) -> str:
+			return f"format_start - {text} - format_end"
+		mock_method.side_effect = __add_format
 		yield mock_method
