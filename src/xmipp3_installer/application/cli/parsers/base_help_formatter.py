@@ -100,7 +100,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		"""
 		return messages[0] if only_general else '\n'.join(messages)
 
-	def __getLineSize(self) -> int:
+	def __get_line_size(self) -> int:
 		"""
 		### Returns the maximum size for a line.
 
@@ -162,8 +162,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		- (bool): True if the word fits in the line, False otherwise.
 		"""
 		if line:
-			return len(line + ' ' + word) <= size_limit
-		return len(word) < size_limit
+			return len(f"{line} {word}") <= size_limit
+		return len(word) <= size_limit
 
 	def __add_word_to_line(self, line: str, word: str, remaining_words: List[str]) -> Tuple[str, List[str]]:
 		"""
@@ -179,7 +179,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		- (list[str]): The updated list of remaining words.
 		"""
 		if line:
-			line += ' ' + word
+			line += f" {word}"
 		else:
 			line = word
 		return line, remaining_words[1:]
@@ -199,7 +199,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		words = text.split(' ')
 		lines = []
 		while words:
-			line, words = self.__fit_words_in_line(words, size_limit)
+			iteration_size_limit = size_limit if size_limit >= len(words[0]) else len(words[0])
+			line, words = self.__fit_words_in_line(words, iteration_size_limit)
 			if line:
 				line = left_fill + line if lines else line
 				lines.append(line)
@@ -210,10 +211,10 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 			# If text exceeds size limit, it means that section space for modes and params 
 			# is too low and should be set to a higher number, but for now we need to print anyways, 
 			# so we reduce space from the one reserved for mode help and add minimum fill-in space
-			remaining_space = self.__getLineSize() - self._get_text_length(start_section_text)
+			remaining_space = self.__get_line_size() - self._get_text_length(start_section_text)
 			fill_in_space = ' '
 		else:
-			remaining_space = self.__getLineSize() - self.__SECTION_HELP_START
+			remaining_space = self.__get_line_size() - self.__SECTION_HELP_START
 			fill_in_space = self.__get_start_section_fill_in_space(start_section_text)
 		return remaining_space, fill_in_space
 
