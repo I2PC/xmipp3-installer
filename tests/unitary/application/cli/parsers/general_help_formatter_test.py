@@ -11,7 +11,7 @@ ___EPILOG_TEXT = """Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
 """
 __NOTE_TEXT = f"""Note: You can also view a specific help message for each mode with \"./xmipp [mode] -h\".
-"Example: ./xmipp {arguments.MODE_ALL} -h
+Example: ./xmipp {arguments.MODE_ALL} -h
 """
 
 """
@@ -28,15 +28,27 @@ def test_gets_expected_epilog(__setup_general_help_formatter):
     epilog == ___EPILOG_TEXT
   ), assertion_message
 
-
-"""
-def test_gets_expected_note(__setup_general_help_formatter):
+def test_gets_expected_note(__setup_general_help_formatter, __mock_logger_yellow):
   note = __setup_general_help_formatter._GeneralHelpFormatter__get_note()
+  expected_note = __mock_logger_yellow(__NOTE_TEXT)
   assert (
-    note == __NOTE_TEXT
-  ), get_assertion_message("note", __NOTE_TEXT, note)
-"""
+    note == expected_note
+  ), get_assertion_message("note", expected_note, note)
+
+def test_calls_logger_yellow_with_expected_params(__setup_general_help_formatter, __mock_logger_yellow):
+  __setup_general_help_formatter._GeneralHelpFormatter__get_note()
+  __mock_logger_yellow.assert_called_once_with(__NOTE_TEXT)
 
 @pytest.fixture
 def __setup_general_help_formatter():
   yield GeneralHelpFormatter("test")
+
+@pytest.fixture
+def __mock_logger_yellow():
+  with patch(
+    "xmipp3_installer.application.logger.logger.Logger.yellow"
+  ) as mock_method:
+    def __return_with_afixes(text):
+      return f"format-start-{text}-format-end"
+    mock_method.side_effect = __return_with_afixes
+    yield mock_method
