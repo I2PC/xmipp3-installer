@@ -23,6 +23,7 @@ __MODE_ARGS = {
 	"mode1": ["mode1-arg1"],
 	"mode2": []
 }
+__NOTE_MESSAGE = "Note: only params starting with '-' are optional. The rest are required.\n"
 
 @pytest.mark.parametrize(
 	"__mock_formatter_prog,expected_mode",
@@ -131,7 +132,7 @@ def test_returns_expected_examples_message(
 		examples_message == expected_message
 	), get_assertion_message("examples message", expected_message, examples_message)
 
-def test_calls_get_param_first_name(
+def test_calls_get_param_first_name_when_getting_args_message(
 	__mock_mode_args,
 	__mock_xmipp_program_name,
 	__mock_get_param_first_name,
@@ -147,7 +148,7 @@ def test_calls_get_param_first_name(
 		__MODE_ARGS[mode][0]
 	)
 
-def test_does_not_call_get_param_first_name(
+def test_does_not_call_get_param_first_name_when_getting_args_message(
 	__mock_mode_args,
 	__mock_xmipp_program_name,
 	__mock_get_param_first_name,
@@ -161,6 +162,134 @@ def test_does_not_call_get_param_first_name(
 	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
 	__mock_get_param_first_name.assert_not_called()
 
+def test_calls_args_contain_optional_when_getting_args_message(
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	mode = "mode1"
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	__mock_args_contain_optional.assert_called_once_with(
+		[__mock_get_param_first_name(__MODE_ARGS[mode][0])]
+	)
+
+def test_calls_logger_yellow_when_getting_args_message(
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	mode = "mode1"
+	__mock_args_contain_optional.return_value = True
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	__mock_logger_yellow.assert_called_once_with(__NOTE_MESSAGE)
+
+@pytest.mark.parametrize(
+	"mode,__mock_args_contain_optional",
+	[
+		pytest.param("mode1", False),
+		pytest.param("mode2", False),
+		pytest.param("mode2", True)
+	],
+	indirect=["__mock_args_contain_optional"]
+)
+def test_does_not_call_logger_yellow_when_getting_args_message(
+	mode,
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	__mock_logger_yellow.assert_not_called()
+
+def test_calls_get_help_separator_when_getting_args_message(
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	mode = "mode1"
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	__mock_args_contain_optional.assert_called_once()
+
+def test_does_not_call_get_help_separator_when_getting_args_message(
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	mode = "mode2"
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	__mock_get_help_separator.assert_not_called()
+
+@pytest.mark.parametrize(
+	"mode",
+	[pytest.param("mode1"), pytest.param("mode2")],
+)
+def test_calls_get_help_separator_when_getting_args_message(
+	mode,
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	__mock_get_args_info.assert_called_once_with(__MODE_ARGS[mode])
+
+"""
+@pytest.mark.parametrize(
+	"mode,__mock_args_contain_optional",
+	[
+		pytest.param("mode1", False),
+		pytest.param("mode1", True),
+		pytest.param("mode2", False),
+		pytest.param("mode2", True)
+	],
+	indirect=["__mock_args_contain_optional"]
+)
+def test_returns_expected_args_message(
+	mode,
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	help_message = __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	assert (
+		help_message == ""
+	), get_assertion_message("args help message", "", help_message)
+"""
+	
 @pytest.fixture
 def __setup_formatter():
 	yield ModeHelpFormatter("test")
