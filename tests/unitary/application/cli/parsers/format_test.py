@@ -5,6 +5,8 @@ import pytest
 from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli import arguments
 
+from .... import get_assertion_message
+
 __PARAMS = {
 	"test1": {
 		arguments.SHORT_VERSION: "short_name",
@@ -35,9 +37,10 @@ __PARAMS = {
 )
 def test_expands_tabs_with_expected_length(tab_size, expected_length):
 	with patch.object(format, "TAB_SIZE", tab_size):
+		text_length = len(format.get_formatting_tabs("		"))
 		assert (
-			len(format.get_formatting_tabs("		")) == expected_length
-		), "Received text with different length than expected."
+			text_length == expected_length
+		), get_assertion_message("text length", expected_length, text_length)
 
 @pytest.mark.parametrize(
 	"key,expected_n_names",
@@ -51,6 +54,7 @@ def test_expands_tabs_with_expected_length(tab_size, expected_length):
 )
 def test_gets_expected_param_names(key, expected_n_names):
 	with patch.object(arguments, "PARAMS", __PARAMS):
+		name_amount = len(format.get_param_names(key))
 		assert (
-			len(format.get_param_names(key)) == expected_n_names
-		), "Received different amount of names than expected."
+			name_amount == expected_n_names
+		), get_assertion_message("name amount", expected_n_names, name_amount)
