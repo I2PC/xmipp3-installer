@@ -64,10 +64,9 @@ def test_formats_help(
 
 def test_gets_expected_epilog(__setup_formatter):
 	epilog = __setup_formatter._GeneralHelpFormatter__get_epilog()
-	assertion_message = get_assertion_message("epilog", ___EPILOG_TEXT, epilog)
 	assert (
 		epilog == ___EPILOG_TEXT
-	), assertion_message
+	), get_assertion_message("epilog", ___EPILOG_TEXT, epilog)
 
 def test_gets_expected_note(__setup_formatter, __mock_logger_yellow):
 	note = __setup_formatter._GeneralHelpFormatter__get_note()
