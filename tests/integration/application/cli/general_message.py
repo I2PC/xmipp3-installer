@@ -6,7 +6,7 @@ __NOTE_MESSAGE = logger.yellow(
   'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h\n'
 )
 
-GENERAL_HELP_MESSAGE = {
+HELP_MESSAGE = {
   terminal_sizes.LARGE_TERMINAL_WIDTH: f"""Run Xmipp's installer script
 
 Usage: xmipp [options]
