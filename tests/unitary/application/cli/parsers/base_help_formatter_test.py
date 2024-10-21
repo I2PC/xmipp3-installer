@@ -225,6 +225,30 @@ def test_calls_format_text_in_lines_when_getting_multi_line_help_text(
 		) == expected_formatted_text
 	), "Received different formatted text than expected."
 
+@pytest.mark.parametrize(
+	"text,__mock_section_help_start,expected_fill_in_space,expected_remaining_space",
+	[
+		pytest.param("test", 10, "      ", 70),
+		pytest.param("testmaslargo", 10, " ", 68)
+	],
+	indirect=["__mock_section_help_start"]
+)
+def test_returns_expected_spaces(
+	text,
+	__mock_section_help_start,
+	expected_fill_in_space,
+	expected_remaining_space,
+	__mock_get_line_size,
+	__setup_parser
+):
+	__mock_get_line_size.return_value = 80
+	assert (
+		__setup_parser._BaseHelpFormatter__get_spaces(text) == (
+			expected_remaining_space,
+			expected_fill_in_space
+		)
+	), "Received different spaces than expected."
+
 @pytest.fixture
 def __setup_parser():
 	yield BaseHelpFormatter("test")
@@ -294,3 +318,16 @@ def __mock_line_size_lower_limit(request):
 	size = request.param if hasattr(request, "param") else 5
 	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__LINE_SIZE_LOWER_LIMIT", size):
 		yield
+
+@pytest.fixture
+def __mock_section_help_start(request):
+	size = request.param if hasattr(request, "param") else 5
+	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_HELP_START", size):
+		yield
+
+@pytest.fixture
+def __mock_get_line_size():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_line_size"
+	) as mock_method:
+		yield mock_method
