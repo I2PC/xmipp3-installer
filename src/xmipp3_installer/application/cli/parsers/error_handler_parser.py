@@ -29,8 +29,9 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
 			extra_line_break = ''
 
 		error_message = logger.red(f"{mode}: error: {message}\n")
-		self.exit(1, format.get_formatting_tabs(
-			f"{args}{extra_line_break}{error_message}")
+		self.exit(
+			1,
+			format.get_formatting_tabs(f"{args}{extra_line_break}{error_message}")
 		)
 	
 	def __get_args(self) -> List[str]:
