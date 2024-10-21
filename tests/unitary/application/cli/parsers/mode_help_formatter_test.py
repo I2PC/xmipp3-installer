@@ -243,6 +243,6 @@ def __mock_get_args_info():
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_args_info"
 	) as mock_method:
 		def __get_info(args: List[str]) -> str:
-			return f'info-{'_'.join(args)}-info'
+			return f'info-{"_".join(args)}-info'
 		mock_method.side_effect = __get_info
 		yield mock_method
