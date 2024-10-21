@@ -3,8 +3,7 @@ from xmipp3_installer.application.logger.logger import logger
 from . import terminal_sizes
 
 GENERAL_HELP_MESSAGE = {
-  terminal_sizes.LARGE_TERMINAL_WIDTH: f"""
-Run Xmipp's installer script
+  terminal_sizes.LARGE_TERMINAL_WIDTH: f"""Run Xmipp's installer script
 
 Usage: xmipp [options]
     ---------------------------------------------
@@ -27,7 +26,7 @@ Usage: xmipp [options]
     # Clean #
 
     cleanBin                                       Removes all compiled binaries.
-    cleanAll                                       Removes all compiled binaries and sources, leaves the repository as if freshly cloned (without pulling).       
+    cleanAll                                       Removes all compiled binaries and sources, leaves the repository as if freshly cloned (without pulling).
     ---------------------------------------------
     # Test #
 
@@ -41,11 +40,9 @@ Usage: xmipp [options]
 Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
 {logger.yellow(
-  'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h'
-)}
-  """,
-  terminal_sizes.SHORT_TERMINAL_WIDTH: f"""
-Run Xmipp's installer script
+  'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h\n'
+)}""",
+  terminal_sizes.SHORT_TERMINAL_WIDTH: f"""Run Xmipp's installer script
 
 Usage: xmipp [options]
     ---------------------------------------------
@@ -105,7 +102,6 @@ action
 Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
 {logger.yellow(
-  'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h'
-)}
-  """
+  'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h\n'
+)}"""
 }

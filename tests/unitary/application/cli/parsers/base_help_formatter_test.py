@@ -6,7 +6,7 @@ from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHel
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
 __MODES = {
 	"group1": {

@@ -5,7 +5,7 @@ import pytest
 from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli.arguments import params
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
 __PARAMS = {
 	"test1": {
