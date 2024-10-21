@@ -40,7 +40,7 @@ def test_prints_expected_help_message(
 		cli.main()
 	stdout_value = stdout.getvalue()
 	assert (
-		expected_message in stdout_value
+		stdout_value == expected_message
 	), get_assertion_message("help message", expected_message, stdout_value)
 
 @pytest.fixture
