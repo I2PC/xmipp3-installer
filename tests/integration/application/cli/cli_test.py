@@ -8,22 +8,18 @@ from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli import arguments
 
-from . import terminal_sizes, general_message
+from . import general_message
+from .terminal_sizes import LARGE_TERMINAL_WIDTH, SHORT_TERMINAL_WIDTH
+from .modes import mode_all_message
 from .... import get_assertion_message, MockTerminalSize
 
 @pytest.mark.parametrize(
 	"__mock_get_terminal_column_size,__mock_sys_argv,message_object",
 	[
-		pytest.param(
-			terminal_sizes.LARGE_TERMINAL_WIDTH,
-			[],
-			general_message.GENERAL_HELP_MESSAGE
-		),
-		pytest.param(
-			terminal_sizes.SHORT_TERMINAL_WIDTH,
-			[],
-			general_message.GENERAL_HELP_MESSAGE
-		)
+		pytest.param(LARGE_TERMINAL_WIDTH, [], general_message.GENERAL_HELP_MESSAGE),
+		pytest.param(SHORT_TERMINAL_WIDTH, [], general_message.GENERAL_HELP_MESSAGE),
+		pytest.param(LARGE_TERMINAL_WIDTH, ["all"], mode_all_message.GENERAL_HELP_MESSAGE),
+		pytest.param(SHORT_TERMINAL_WIDTH, ["all"], mode_all_message.GENERAL_HELP_MESSAGE),
 	],
 	indirect=["__mock_get_terminal_column_size", "__mock_sys_argv"]
 )
@@ -46,7 +42,7 @@ def test_prints_expected_help_message(
 @pytest.fixture
 def __mock_get_terminal_column_size(request):
 	with patch("shutil.get_terminal_size") as mock_method:
-		width = request.param if hasattr(request, "param") else terminal_sizes.LARGE_TERMINAL_WIDTH
+		width = request.param if hasattr(request, "param") else LARGE_TERMINAL_WIDTH
 		mock_method.return_value = MockTerminalSize(width)
 		yield mock_method
 
