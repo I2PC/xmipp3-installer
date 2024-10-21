@@ -18,3 +18,5 @@ class MockTerminalSize:
   """### This class is used to mock the terminal width."""
   def __init__(self, columns):
     self.columns = columns
+  def __iter__(self):
+    return iter((self.columns, 5))
