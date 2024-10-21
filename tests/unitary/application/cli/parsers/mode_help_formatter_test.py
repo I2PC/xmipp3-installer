@@ -5,6 +5,7 @@ import pytest
 
 from xmipp3_installer.application.cli.parsers.mode_help_formatter import ModeHelpFormatter
 from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import modes, params
 
 from .... import get_assertion_message
 
@@ -374,12 +375,12 @@ def __mock_formatter_prog(request, __setup_formatter):
 
 @pytest.fixture
 def __mock_params():
-	with patch.object(arguments, "PARAMS", __PARAMS):
+	with patch.object(params, "PARAMS", __PARAMS):
 		yield
 
 @pytest.fixture
 def __mock_description():
-	with patch.object(arguments, "DESCRIPTION", __INNER_KEY):
+	with patch.object(params, "DESCRIPTION", __INNER_KEY):
 		yield
 
 @pytest.fixture
@@ -404,12 +405,12 @@ def __mock_text_with_limits():
 
 @pytest.fixture
 def __mock_mode_examples():
-	with patch.object(arguments, "MODE_EXAMPLES", __MODE_EXAMPLES):
+	with patch.object(modes, "MODE_EXAMPLES", __MODE_EXAMPLES):
 		yield
 
 @pytest.fixture
 def __mock_mode_args():
-	with patch.object(arguments, "MODE_ARGS", __MODE_ARGS):
+	with patch.object(modes, "MODE_ARGS", __MODE_ARGS):
 		yield
 
 @pytest.fixture

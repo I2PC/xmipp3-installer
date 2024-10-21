@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
-from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
 
 from .... import get_assertion_message
@@ -19,14 +19,14 @@ __MODES = {
 }
 __PARAMS = {
 	"param1": {
-		arguments.SHORT_VERSION: "param1-short",
-		arguments.LONG_VERSION: "param1-long"
+		params.SHORT_VERSION: "param1-short",
+		params.LONG_VERSION: "param1-long"
 	},
 	"param2": {
-		arguments.SHORT_VERSION: "param2-short"
+		params.SHORT_VERSION: "param2-short"
 	},
 	"param3": {
-		arguments.LONG_VERSION: "param3-long"
+		params.LONG_VERSION: "param3-long"
 	},
 	"param4": {}
 }
@@ -58,9 +58,9 @@ def test_returns_expected_help_message(
 @pytest.mark.parametrize(
 	"key,expected_name",
 	[
-		pytest.param("param1", __PARAMS["param1"][arguments.SHORT_VERSION]),
-		pytest.param("param2", __PARAMS["param2"][arguments.SHORT_VERSION]),
-		pytest.param("param3", __PARAMS["param3"][arguments.LONG_VERSION]),
+		pytest.param("param1", __PARAMS["param1"][params.SHORT_VERSION]),
+		pytest.param("param2", __PARAMS["param2"][params.SHORT_VERSION]),
+		pytest.param("param3", __PARAMS["param3"][params.LONG_VERSION]),
 		pytest.param("param4", "")
 	],
 )
@@ -266,12 +266,12 @@ def __setup_parser():
 
 @pytest.fixture
 def __mock_modes():
-	with patch.object(arguments, "MODES", __MODES):
+	with patch.object(modes, "MODES", __MODES):
 		yield
 
 @pytest.fixture
 def __mock_params():
-	with patch.object(arguments, "PARAMS", __PARAMS):
+	with patch.object(params, "PARAMS", __PARAMS):
 		yield
 
 @pytest.fixture

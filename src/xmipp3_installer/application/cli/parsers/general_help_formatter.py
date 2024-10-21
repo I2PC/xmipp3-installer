@@ -1,6 +1,6 @@
 """### Help formatter specific for generic usage mode."""
 
-from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
 from xmipp3_installer.application.logger.logger import logger
@@ -14,7 +14,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		### Prints the help message of the argument parser.
 		"""
 		help_message = "Run Xmipp's installer script\n\nUsage: xmipp [options]\n"
-		for section in list(arguments.MODES.keys()):
+		for section in list(modes.MODES.keys()):
 			help_message += self.__get_section_message(section)
 		help_message += f"\n{self.__get_epilog()}"
 		help_message += self.__get_note()
@@ -30,7 +30,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		### Returns:
 		- (str): Args text for given mode.
 		"""
-		arg_list = arguments.MODE_ARGS[mode]
+		arg_list = modes.MODE_ARGS[mode]
 		param_names = []
 		for param in arg_list:
 			param_name = self._get_param_first_name(param)
@@ -73,7 +73,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		- (str): Note message.
 		"""
 		note_message = "Note: You can also view a specific help message for each mode with \"./xmipp [mode] -h\".\n"
-		note_message += f"Example: ./xmipp {arguments.MODE_ALL} -h\n"
+		note_message += f"Example: ./xmipp {modes.MODE_ALL} -h\n"
 		return logger.yellow(note_message)
 
 	def __get_section_message(self, section: str) -> str:
@@ -87,6 +87,6 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 		- (str): Section's message.
 		"""
 		section_message = self._get_help_separator() + f"\t# {section} #\n\n"
-		for mode in list(arguments.MODES[section].keys()):
+		for mode in list(modes.MODES[section].keys()):
 			section_message += self.__get_mode_args_and_help_str(f"\t{mode} ", mode)
 		return section_message

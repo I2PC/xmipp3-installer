@@ -3,6 +3,7 @@
 from typing import List
 
 from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
 from xmipp3_installer.application.logger.logger import logger
@@ -43,7 +44,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
 		#### Returns:
 		- (str): Help section containing all parameters.
 		"""
-		args = arguments.MODE_ARGS[mode]
+		args = modes.MODE_ARGS[mode]
 		help_message = ''
 		options_str = ''
 		separator = ''
@@ -88,7 +89,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
 		for arg in args:
 			help_message += self._text_with_limits(
 				'\t' + ', '.join(format.get_param_names(arg)),
-				arguments.PARAMS[arg][arguments.DESCRIPTION]
+				params.PARAMS[arg][params.DESCRIPTION]
 			)
 		return help_message
 
@@ -103,7 +104,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
 		- (str): Message section containing usage examples.
 		"""
 		help_message = ''
-		examples = arguments.MODE_EXAMPLES[mode]
+		examples = modes.MODE_EXAMPLES[mode]
 		for i in range(len(examples)):
 			number_str = '' if len(examples) == 1 else f' {i+1}'	
 			help_message += f"\nExample{number_str}: {examples[i]}"

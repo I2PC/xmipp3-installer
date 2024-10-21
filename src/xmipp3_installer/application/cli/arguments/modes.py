@@ -1,11 +1,11 @@
-"""### Containis all constants needed for the argument parsing part of Xmipp's installation."""
+"""### Containis all mode constants needed for the argument parsing part of Xmipp's installation."""
 
-XMIPP_PROGRAM_NAME = "xmipp"
-
-# Other variables
-COMMON_USAGE_HELP_MESSAGE = 'Run \"./xmipp -h\" for usage help.'
-DEFAULT_BUILD_DIR = 'build'
-DEFAULT_MODELS_DIR = DEFAULT_BUILD_DIR
+from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments.params import (
+  PARAM_SHORT, PARAM_JOBS, PARAM_BRANCH, PARAM_KEEP_OUTPUT, PARAM_OVERWRITE,
+  PARAM_MODELS_DIRECTORY, PARAM_TEST_NAME, PARAM_SHOW_TESTS, PARAM_GIT_COMMAND,
+  PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE, PARAMS, SHORT_VERSION, LONG_VERSION
+)
 
 # Mode list (alphabetical order)
 MODE_ADD_MODEL = 'addModel'
@@ -33,7 +33,7 @@ MODES = {
 		MODE_CONFIG: ['Generates a config file template with default values.'],
 	},
 	'Downloads': {
-		MODE_GET_MODELS: [f'Download the DeepLearning Models at dir/models ({DEFAULT_MODELS_DIR} by default).'],
+		MODE_GET_MODELS: [f'Download the DeepLearning Models at dir/models ({arguments.DEFAULT_MODELS_DIR} by default).'],
 		MODE_GET_SOURCES: ['Clone all Xmipp\'s sources.']
 	},
 	'Clean': {
@@ -63,78 +63,6 @@ MODES = {
 			"The model name will be the folder name in <modelsPath>",
 			"Must have write permisions to such machine."
 		]
-	}
-}
-
-# Definition of all params found in the
-SHORT_VERSION = 'short'
-LONG_VERSION = 'long'
-DESCRIPTION = 'description'
-# Possible param list
-PARAM_SHORT = 'short'
-PARAM_JOBS = 'jobs'
-PARAM_BRANCH = 'branch'
-PARAM_MODELS_DIRECTORY = 'models-directory'
-PARAM_TEST_NAME = 'test-name'
-PARAM_SHOW_TESTS = 'show-tests'
-PARAM_GIT_COMMAND = 'git-command'
-PARAM_LOGIN = 'login'
-PARAM_MODEL_PATH = 'model-path'
-PARAM_UPDATE = 'update'
-PARAM_OVERWRITE = 'overwrite'
-PARAM_KEEP_OUTPUT = "keep-output"
-PARAMS = {
-	PARAM_SHORT: {
-		LONG_VERSION: "--short",
-		DESCRIPTION: "If set, only version number is shown."
-	},
-	PARAM_JOBS: {
-		SHORT_VERSION: "-j",
-		LONG_VERSION: "--jobs",
-		DESCRIPTION: "Number of jobs. Defaults to all available."
-	},
-	PARAM_BRANCH: {
-		SHORT_VERSION: "-b",
-		LONG_VERSION: "--branch",
-		DESCRIPTION: "Branch for the source repositories."
-	},
-	PARAM_MODELS_DIRECTORY: {
-		SHORT_VERSION: "-d",
-		LONG_VERSION: "--directory",
-		DESCRIPTION: f"Directory where models will be saved. Default is \"{DEFAULT_BUILD_DIR}\"."
-	},
-	PARAM_TEST_NAME: {
-		SHORT_VERSION: "testName",
-		DESCRIPTION: "Run certain test. If combined with --show, greps the test name from the test list."
-	},
-	PARAM_SHOW_TESTS: {
-		LONG_VERSION: "--show",
-		DESCRIPTION: "Shows the tests available and how to invoke those."
-	},
-	PARAM_GIT_COMMAND: {
-		SHORT_VERSION: "command",
-		DESCRIPTION: "Git command to run on all source repositories."
-	},
-	PARAM_LOGIN: {
-		SHORT_VERSION: "login",
-		DESCRIPTION: "Login (usr@server) for Nolan machine to upload the model with. Must have write permisions to such machine."
-	},
-	PARAM_MODEL_PATH: {
-		SHORT_VERSION: "modelPath",
-		DESCRIPTION: "Path to the model to upload to Nolan."
-	},
-	PARAM_UPDATE: {
-		LONG_VERSION: "--update",
-		DESCRIPTION: "Flag to update an existing model"
-	},
-	PARAM_OVERWRITE: {
-		SHORT_VERSION: "-o",
-		LONG_VERSION: "--overwrite",
-		DESCRIPTION: "If set, current config file will be overwritten with a new one."
-	},
-	PARAM_KEEP_OUTPUT: {
-		LONG_VERSION: "--keep-output",
-		DESCRIPTION: "If set, output sent through the terminal won't substitute lines, looking more like the log."
 	}
 }
 
