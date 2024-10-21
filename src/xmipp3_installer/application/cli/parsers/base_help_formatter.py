@@ -201,9 +201,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		while words:
 			iteration_size_limit = size_limit if size_limit >= len(words[0]) else len(words[0])
 			line, words = self.__fit_words_in_line(words, iteration_size_limit)
-			if line:
-				line = left_fill + line if lines else line
-				lines.append(line)
+			line = left_fill + line if lines else line
+			lines.append(line)
 		return '\n'.join(lines)
 
 	def __get_spaces(self, start_section_text: str) -> Tuple[str, str]:
