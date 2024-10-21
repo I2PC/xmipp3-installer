@@ -20,7 +20,8 @@ __MODE_EXAMPLES = {
 	"mode3": []
 }
 __MODE_ARGS = {
-	"mode1": ["mode1-arg1"]
+	"mode1": ["mode1-arg1"],
+	"mode2": []
 }
 
 @pytest.mark.parametrize(
@@ -29,7 +30,7 @@ __MODE_ARGS = {
 		pytest.param("the test mode is all", "all"),
 		pytest.param("now the mode is new", "new"),
 		pytest.param("mode", "mode")
-  ],
+	],
 	indirect=["__mock_formatter_prog"]
 )
 def test_get_mode(
@@ -39,7 +40,7 @@ def test_get_mode(
 	mode = __mock_formatter_prog._ModeHelpFormatter__get_mode()
 	assert (
 		mode == expected_mode
-  ), get_assertion_message("mode", expected_mode, mode)
+	), get_assertion_message("mode", expected_mode, mode)
 
 @pytest.mark.parametrize(
 	"args,expected_contains",
@@ -145,6 +146,20 @@ def test_calls_get_param_first_name(
 	__mock_get_param_first_name.assert_called_once_with(
 		__MODE_ARGS[mode][0]
 	)
+
+def test_does_not_call_get_param_first_name(
+	__mock_mode_args,
+	__mock_xmipp_program_name,
+	__mock_get_param_first_name,
+	__mock_args_contain_optional,
+	__mock_logger_yellow,
+	__mock_get_help_separator,
+	__mock_get_args_info,
+	__setup_formatter
+):
+	mode = "mode2"
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
+	__mock_get_param_first_name.assert_not_called()
 
 @pytest.fixture
 def __setup_formatter():
