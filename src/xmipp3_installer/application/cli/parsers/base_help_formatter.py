@@ -4,7 +4,7 @@ import argparse
 import shutil
 from typing import List, Tuple
 
-from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
 
 class BaseHelpFormatter(argparse.HelpFormatter):
@@ -27,9 +27,9 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		### Returns:
 		- (str): Help of the mode (empty if mode not found).
 		"""
-		for group in list(arguments.MODES.keys()):
-			if mode in list(arguments.MODES[group].keys()):
-				messages = arguments.MODES[group][mode]
+		for group in list(modes.MODES.keys()):
+			if mode in list(modes.MODES[group].keys()):
+				messages = modes.MODES[group][mode]
 				return self.__get_message_from_list(messages, general)
 		return ''
 	
@@ -43,8 +43,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 		### Returns:
 		- (str): Formatted text.
 		"""
-		param = arguments.PARAMS[param_key]
-		return param.get(arguments.SHORT_VERSION, param.get(arguments.LONG_VERSION, ''))
+		param = params.PARAMS[param_key]
+		return param.get(params.SHORT_VERSION, param.get(params.LONG_VERSION, ''))
 
 	def _get_help_separator(self) -> str:
 		"""

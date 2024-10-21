@@ -2,7 +2,7 @@
 
 from typing import List
 
-from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import params
 
 TAB_SIZE = 4
 
@@ -29,7 +29,7 @@ def get_param_names(param_key: str) -> List[str]:
 	- (list[str]): Names of the given param.
 	"""
 	names = [
-		arguments.PARAMS[param_key].get(arguments.SHORT_VERSION, ''),
-		arguments.PARAMS[param_key].get(arguments.LONG_VERSION, '')
+		params.PARAMS[param_key].get(params.SHORT_VERSION, ''),
+		params.PARAMS[param_key].get(params.LONG_VERSION, '')
 	]
 	return [name for name in names if name]

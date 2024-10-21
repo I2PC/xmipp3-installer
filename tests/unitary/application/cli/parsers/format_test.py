@@ -3,25 +3,25 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.cli.parsers import format
-from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import params
 
 from .... import get_assertion_message
 
 __PARAMS = {
 	"test1": {
-		arguments.SHORT_VERSION: "short_name",
-		arguments.LONG_VERSION: "long_name"
+		params.SHORT_VERSION: "short_name",
+		params.LONG_VERSION: "long_name"
 	},
 	"test2": {
-		arguments.LONG_VERSION: "long_name"
+		params.LONG_VERSION: "long_name"
 	},
 	"test3": {
-		arguments.SHORT_VERSION: "short_name"
+		params.SHORT_VERSION: "short_name"
 	},
 	"test4": {},
 	"test5": {
-		arguments.SHORT_VERSION: "short_name",
-		arguments.LONG_VERSION: "long_name",
+		params.SHORT_VERSION: "short_name",
+		params.LONG_VERSION: "long_name",
 		"non-needed-key": "whatever"
 	},
 }
@@ -53,7 +53,7 @@ def test_expands_tabs_with_expected_length(tab_size, expected_length):
 	],
 )
 def test_gets_expected_param_names(key, expected_n_names):
-	with patch.object(arguments, "PARAMS", __PARAMS):
+	with patch.object(params, "PARAMS", __PARAMS):
 		name_amount = len(format.get_param_names(key))
 		assert (
 			name_amount == expected_n_names

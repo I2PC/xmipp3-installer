@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
-from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.application.cli.arguments import modes, params
 
 from .... import get_assertion_message
 
@@ -11,18 +11,18 @@ ___EPILOG_TEXT = """Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
 """
 __NOTE_TEXT = f"""Note: You can also view a specific help message for each mode with \"./xmipp [mode] -h\".
-Example: ./xmipp {arguments.MODE_ALL} -h
+Example: ./xmipp {modes.MODE_ALL} -h
 """
 __PARAMS = {
 	"param1": {
-		arguments.SHORT_VERSION: "param1-short",
-		arguments.LONG_VERSION: "param1-long"
+		params.SHORT_VERSION: "param1-short",
+		params.LONG_VERSION: "param1-long"
 	},
 	"param2": {
-		arguments.SHORT_VERSION: "param2-short"
+		params.SHORT_VERSION: "param2-short"
 	},
 	"param3": {
-		arguments.LONG_VERSION: "param3-long"
+		params.LONG_VERSION: "param3-long"
 	},
 	"param4": {}
 }
@@ -173,12 +173,12 @@ def __mock_get_mode_help():
 
 @pytest.fixture
 def __mock_mode_args():
-	with patch.object(arguments, "MODE_ARGS", __MODE_ARGS):
+	with patch.object(modes, "MODE_ARGS", __MODE_ARGS):
 		yield
 
 @pytest.fixture
 def __mock_params():
-	with patch.object(arguments, "PARAMS", __PARAMS):
+	with patch.object(params, "PARAMS", __PARAMS):
 		yield
 
 @pytest.fixture
@@ -201,7 +201,7 @@ def __mock_get_help_separator():
 
 @pytest.fixture
 def __mock_modes():
-	with patch.object(arguments, "MODES", __MODES):
+	with patch.object(modes, "MODES", __MODES):
 		yield
 
 @pytest.fixture
