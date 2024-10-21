@@ -6,6 +6,8 @@ from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHel
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.parsers import format
 
+from .... import get_assertion_message
+
 __MODES = {
 	"group1": {
 		"mode1": ["mode1-message1", "mode1-message2"],
@@ -48,9 +50,10 @@ def test_returns_expected_help_message(
 	__setup_parser,
 	__mock_modes
 ):
+	help_message = __setup_parser._get_mode_help(mode, general=general)
 	assert (
-		__setup_parser._get_mode_help(mode, general=general) == expected_help_message
-	), "Received different help message than expected."
+		help_message == expected_help_message
+	), get_assertion_message("help message", expected_help_message, help_message)
 
 @pytest.mark.parametrize(
 	"key,expected_name",
@@ -67,9 +70,10 @@ def test_returns_expected_param_first_name(
 	__setup_parser,
 	__mock_params
 ):
+	first_name = __setup_parser._get_param_first_name(key)
 	assert (
-		__setup_parser._get_param_first_name(key) == expected_name
-	), "Received different param first name than expected."
+		first_name == expected_name
+	), get_assertion_message("param first name", expected_name, first_name)
 
 @pytest.mark.parametrize(
 	"n_dashes,__mock_tab_size,expected_separator",
@@ -90,9 +94,10 @@ def test_gets_expected_help_separator(
 	__setup_parser
 ):
 	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_N_DASH", n_dashes):
+		help_separator = __setup_parser._get_help_separator()
 		assert (
-			__setup_parser._get_help_separator() == expected_separator
-		), "Received different help separator than expected."
+			help_separator == expected_separator
+		), get_assertion_message("help separator", expected_separator, help_separator)
 
 def test_calls_get_spaces_when_getting_text_with_limits(
 	__mock_get_spaces,
@@ -141,9 +146,10 @@ def test_gets_expected_text_with_limits(
 	__setup_parser
 ):
 	full_expected_text = f"{expected_text}\n"
+	text_with_limits = __setup_parser._text_with_limits(previous_text, "test")
 	assert (
-		__setup_parser._text_with_limits(previous_text, "test") == full_expected_text
-	), "Received different text with limits than expected."
+		text_with_limits == full_expected_text
+	), get_assertion_message("text with limits", full_expected_text, text_with_limits)
 
 def test_calls_formatting_tabs_when_getting_expected_text_len(
 	__mock_get_formatting_tabs,
@@ -170,9 +176,10 @@ def test_gets_expected_text_len(
 	expected_length,
 	__setup_parser
 ):
+	text_length = __setup_parser._get_text_length(text)
 	assert (
-		__setup_parser._get_text_length(text) == expected_length
-	), "Received different text length than expected."
+		text_length == expected_length
+	), get_assertion_message("text length", expected_length, text_length)
 
 @pytest.mark.parametrize(
 	"__mock_get_terminal_column_size,__mock_line_size_lower_limit,expected_size",
@@ -192,9 +199,10 @@ def test_gets_expected_line_size(
 	expected_size,
 	__setup_parser
 ):
+	line_size = __setup_parser._BaseHelpFormatter__get_line_size()
 	assert (
-		__setup_parser._BaseHelpFormatter__get_line_size() == expected_size
-	), "Received different line size than expected."
+		line_size == expected_size
+	), get_assertion_message("line size", expected_size, line_size)
 	
 @pytest.mark.parametrize(
 	"text,size_limit,left_fill,expected_formatted_text",
@@ -217,13 +225,14 @@ def test_calls_format_text_in_lines_when_getting_multi_line_help_text(
 	expected_formatted_text,
 	__setup_parser
 ):
+	formatted_text = __setup_parser._BaseHelpFormatter__multi_line_help_text(
+		text,
+		size_limit,
+		left_fill
+	)
 	assert (
-		__setup_parser._BaseHelpFormatter__multi_line_help_text(
-			text,
-			size_limit,
-			left_fill
-		) == expected_formatted_text
-	), "Received different formatted text than expected."
+		formatted_text == expected_formatted_text
+	), get_assertion_message("formatted text", expected_formatted_text, formatted_text)
 
 @pytest.mark.parametrize(
 	"text,__mock_section_help_start,expected_fill_in_space,expected_remaining_space",
@@ -242,12 +251,14 @@ def test_returns_expected_spaces(
 	__setup_parser
 ):
 	__mock_get_line_size.return_value = 80
+	remaining_space, fill_in_space = __setup_parser._BaseHelpFormatter__get_spaces(text)
 	assert (
-		__setup_parser._BaseHelpFormatter__get_spaces(text) == (
-			expected_remaining_space,
-			expected_fill_in_space
-		)
-	), "Received different spaces than expected."
+		(remaining_space, fill_in_space) == (expected_remaining_space, expected_fill_in_space)
+	), get_assertion_message(
+		"remaining space or fill in space",
+		(expected_remaining_space, expected_fill_in_space),
+		(remaining_space, fill_in_space)
+	)
 
 @pytest.fixture
 def __setup_parser():
