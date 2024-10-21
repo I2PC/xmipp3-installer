@@ -36,7 +36,9 @@ __PARAMS = {
 		pytest.param("mode1", False, "mode1-message1\nmode1-message2"),
 		pytest.param("mode2", True, "mode2-message1"),
 		pytest.param("mode3", True, "mode3-message1"),
-		pytest.param("mode3", False, "mode3-message1")
+		pytest.param("mode3", False, "mode3-message1"),
+		pytest.param("does-not-exist", False, ""),
+		pytest.param("does-not-exist", True, "")
 	],
 )
 def test_returns_expected_help_message(
@@ -143,6 +145,35 @@ def test_gets_expected_text_with_limits(
 		__setup_parser._text_with_limits(previous_text, "test") == full_expected_text
 	), "Received different text with limits than expected."
 
+def test_calls_formatting_tabs_when_getting_expected_text_len(
+	__mock_get_formatting_tabs,
+	__setup_parser
+):
+	test_text = "my text"
+	__setup_parser._get_text_length(test_text)
+	__mock_get_formatting_tabs.assert_called_once_with(test_text)
+
+@pytest.mark.parametrize(
+	"text,__mock_tab_size,expected_length",
+	[
+		pytest.param("", 0, 0),
+		pytest.param("	", 2, 2),
+		pytest.param("test", 0, 4),
+		pytest.param("	test", 0, 4),
+		pytest.param("	test", 1, 5)
+	],
+	indirect=["__mock_tab_size"]
+)
+def test_gets_expected_text_len(
+	text,
+	__mock_tab_size,
+	expected_length,
+	__setup_parser
+):
+	assert (
+		__setup_parser._get_text_length(text) == expected_length
+	), "Received different text length than expected."
+
 @pytest.fixture
 def __setup_parser():
 	yield BaseHelpFormatter("test")
@@ -185,4 +216,11 @@ def __mock_get_start_section_fill_in_space():
 		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_start_section_fill_in_space"
 	) as mock_method:
 		mock_method.return_value = ""
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_formatting_tabs():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.format.get_formatting_tabs"
+	) as mock_method:
 		yield mock_method
