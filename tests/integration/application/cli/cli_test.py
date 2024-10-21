@@ -10,16 +10,18 @@ from xmipp3_installer.application.cli import arguments
 
 from . import general_message
 from .terminal_sizes import LARGE_TERMINAL_WIDTH, SHORT_TERMINAL_WIDTH
-from .modes import mode_all_message
+from .modes import mode_all_message, mode_compile_and_install_message
 from .... import get_assertion_message, MockTerminalSize
 
 @pytest.mark.parametrize(
 	"__mock_get_terminal_column_size,__mock_sys_argv,message_object",
 	[
-		pytest.param(LARGE_TERMINAL_WIDTH, [], general_message.GENERAL_HELP_MESSAGE),
-		pytest.param(SHORT_TERMINAL_WIDTH, [], general_message.GENERAL_HELP_MESSAGE),
-		pytest.param(LARGE_TERMINAL_WIDTH, ["all"], mode_all_message.GENERAL_HELP_MESSAGE),
-		pytest.param(SHORT_TERMINAL_WIDTH, ["all"], mode_all_message.GENERAL_HELP_MESSAGE),
+		pytest.param(LARGE_TERMINAL_WIDTH, [], general_message.HELP_MESSAGE),
+		pytest.param(SHORT_TERMINAL_WIDTH, [], general_message.HELP_MESSAGE),
+		pytest.param(LARGE_TERMINAL_WIDTH, ["all"], mode_all_message.HELP_MESSAGE),
+		pytest.param(SHORT_TERMINAL_WIDTH, ["all"], mode_all_message.HELP_MESSAGE),
+		pytest.param(LARGE_TERMINAL_WIDTH, ["compileAndInstall"], mode_compile_and_install_message.HELP_MESSAGE),
+		pytest.param(SHORT_TERMINAL_WIDTH, ["compileAndInstall"], mode_compile_and_install_message.HELP_MESSAGE),
 	],
 	indirect=["__mock_get_terminal_column_size", "__mock_sys_argv"]
 )
