@@ -9,7 +9,7 @@ from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.cli import arguments
 
 from . import terminal_sizes, general_message
-from .... import get_assertion_message
+from .... import get_assertion_message, MockTerminalSize
 
 @pytest.mark.parametrize(
 	"__mock_get_terminal_column_size,__mock_sys_argv,message_object",
@@ -45,11 +45,6 @@ def test_prints_expected_help_message(
 
 @pytest.fixture
 def __mock_get_terminal_column_size(request):
-	class MockTerminalSize:
-		def __init__(self, columns):
-			self.columns = columns
-		def __iter__(self):
-			return iter((self.columns, 5))
 	with patch("shutil.get_terminal_size") as mock_method:
 		width = request.param if hasattr(request, "param") else terminal_sizes.LARGE_TERMINAL_WIDTH
 		mock_method.return_value = MockTerminalSize(width)

@@ -6,7 +6,7 @@ from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHel
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
 
-from ..... import get_assertion_message
+from ..... import get_assertion_message, MockTerminalSize
 
 __MODES = {
 	"group1": {
@@ -313,11 +313,6 @@ def __mock_get_formatting_tabs():
 
 @pytest.fixture
 def __mock_get_terminal_column_size(request):
-	class MockTerminalSize:
-		def __init__(self, columns):
-			self.columns = columns
-		def __iter__(self):
-			return iter((self.columns, 5))
 	with patch("shutil.get_terminal_size") as mock_method:
 		mock_method.return_value = MockTerminalSize(
 			request.param if hasattr(request, "param") else 25

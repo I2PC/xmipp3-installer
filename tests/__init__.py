@@ -13,3 +13,10 @@ def get_assertion_message(item: str, expected: Any, received: Any) -> str:
   - (str): Assertion message for the given item.
   """
   return f"Received different {item} than expected.\nExpected: {expected}\nReceived: {received}"
+
+class MockTerminalSize:
+  """### This class is used to mock the terminal width."""
+  def __init__(self, columns):
+    self.columns = columns
+  def __iter__(self):
+    return iter((self.columns, 5))
