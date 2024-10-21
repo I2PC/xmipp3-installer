@@ -5,7 +5,7 @@ import pytest
 from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
 from xmipp3_installer.application.cli.arguments import modes, params
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
 ___EPILOG_TEXT = """Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4

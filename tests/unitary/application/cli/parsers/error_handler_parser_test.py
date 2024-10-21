@@ -5,7 +5,7 @@ import pytest
 
 from xmipp3_installer.application.cli.parsers.error_handler_parser import ErrorHandlerArgumentParser
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
 __FORMATTED_HELP = "This is the formatted help"
 

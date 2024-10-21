@@ -7,7 +7,7 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 
-from ... import get_assertion_message
+from .... import get_assertion_message
 
 __USER = "test@test.com"
 __DUMMY_PATH = "/path/to/dummy"

@@ -7,7 +7,7 @@ from xmipp3_installer.application.cli.parsers.mode_help_formatter import ModeHel
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
 __PROGRAM_NAME = "test-program"
 __INNER_KEY = "key"
