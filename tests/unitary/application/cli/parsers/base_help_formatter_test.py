@@ -92,6 +92,32 @@ def test_gets_expected_help_separator(
 			__setup_parser._get_help_separator() == expected_separator
 		), "Received different help separator than expected."
 
+def test_calls_get_spaces_when_getting_text_with_limits(
+	__mock_get_spaces,
+	__mock_multi_line_help_text,
+	__setup_parser
+):
+	previous_text = "test-previous"
+	__setup_parser._text_with_limits(previous_text, "test")
+	__mock_get_spaces.assert_called_once_with(previous_text)
+
+def test_calls_multi_line_help_text_when_getting_text_with_limits(
+	__mock_get_spaces,
+	__mock_multi_line_help_text,
+	__mock_get_start_section_fill_in_space,
+	__setup_parser
+):
+	previous_text = "test-previous"
+	test_text = "test"
+	remaining_spaces = 0
+	__mock_get_spaces.return_value = (remaining_spaces, "fill-in")
+	__setup_parser._text_with_limits(previous_text, test_text)
+	__mock_multi_line_help_text.assert_called_once_with(
+		test_text,
+		remaining_spaces,
+		__mock_get_start_section_fill_in_space()
+	)
+
 @pytest.mark.parametrize(
 	"previous_text,__mock_get_spaces,__mock_multi_line_help_text,expected_text",
 	[
@@ -151,4 +177,12 @@ def __mock_multi_line_help_text(request):
 		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__multi_line_help_text"
 	) as mock_method:
 		mock_method.return_value = request.param if hasattr(request, "param") else ''
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_start_section_fill_in_space():
+	with patch(
+		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_start_section_fill_in_space"
+	) as mock_method:
+		mock_method.return_value = ""
 		yield mock_method
