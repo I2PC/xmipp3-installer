@@ -157,14 +157,14 @@ def __mock_logger_yellow():
 @pytest.fixture
 def __mock_text_with_limits():
 	with patch(
-		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._text_with_limits"
+		"xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._text_with_limits"
 	) as mock_method:
 		yield mock_method
 
 @pytest.fixture
 def __mock_get_mode_help():
 	with patch(
-		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._get_mode_help"
+		"xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_mode_help"
 	) as mock_method:
 		def __get_help(mode: str) -> str:
 			return f"this is mode {mode}'s help"
@@ -194,7 +194,7 @@ def __mock_get_mode_args_str():
 @pytest.fixture
 def __mock_get_help_separator():
 	with patch(
-		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._get_help_separator"
+		"xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_help_separator"
 	) as mock_method:
 		mock_method.return_value = '_____'
 		yield mock_method
