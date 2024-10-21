@@ -49,9 +49,9 @@ def test_formats_help(
 	__mock_get_epilog,
 	__mock_get_note,
 	__mock_get_formatting_tabs,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
-	formatted_help = __setup_general_help_formatter.format_help()
+	formatted_help = __setup_formatter.format_help()
 	expected_formatted_help = "Run Xmipp's installer script\n\nUsage: xmipp [options]\n"
 	expected_formatted_help += __mock_get_section_message("section1")
 	expected_formatted_help += __mock_get_section_message("section2")
@@ -62,22 +62,22 @@ def test_formats_help(
 		formatted_help == expected_formatted_help
 	), get_assertion_message("formatted help", expected_formatted_help, formatted_help)
 
-def test_gets_expected_epilog(__setup_general_help_formatter):
-	epilog = __setup_general_help_formatter._GeneralHelpFormatter__get_epilog()
+def test_gets_expected_epilog(__setup_formatter):
+	epilog = __setup_formatter._GeneralHelpFormatter__get_epilog()
 	assertion_message = get_assertion_message("epilog", ___EPILOG_TEXT, epilog)
 	assert (
 		epilog == ___EPILOG_TEXT
 	), assertion_message
 
-def test_gets_expected_note(__setup_general_help_formatter, __mock_logger_yellow):
-	note = __setup_general_help_formatter._GeneralHelpFormatter__get_note()
+def test_gets_expected_note(__setup_formatter, __mock_logger_yellow):
+	note = __setup_formatter._GeneralHelpFormatter__get_note()
 	expected_note = __mock_logger_yellow(__NOTE_TEXT)
 	assert (
 		note == expected_note
 	), get_assertion_message("note", expected_note, note)
 
-def test_calls_logger_yellow_when_getting_note(__setup_general_help_formatter, __mock_logger_yellow):
-	__setup_general_help_formatter._GeneralHelpFormatter__get_note()
+def test_calls_logger_yellow_when_getting_note(__setup_formatter, __mock_logger_yellow):
+	__setup_formatter._GeneralHelpFormatter__get_note()
 	__mock_logger_yellow.assert_called_once_with(__NOTE_TEXT)
 
 @pytest.mark.parametrize(
@@ -95,9 +95,9 @@ def test_gets_expected_mode_args_str(
 	expected_args_str,
 	__mock_mode_args,
 	__mock_params,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
-	mode_args_str = __setup_general_help_formatter._GeneralHelpFormatter__get_mode_args_str(mode)
+	mode_args_str = __setup_formatter._GeneralHelpFormatter__get_mode_args_str(mode)
 	assert (
 		mode_args_str == expected_args_str
 	), get_assertion_message("arguments string", expected_args_str, mode_args_str)
@@ -106,11 +106,11 @@ def test_calls_text_with_limits_when_getting_mode_args_and_help_str(
 	__mock_text_with_limits,
 	__mock_get_mode_args_str,
 	__mock_get_mode_help,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
 	previous_text_message = "this is the previous text message"
 	mode = "my_test_mode"
-	__setup_general_help_formatter._GeneralHelpFormatter__get_mode_args_and_help_str(
+	__setup_formatter._GeneralHelpFormatter__get_mode_args_and_help_str(
 		previous_text_message,
 		mode
 	)
@@ -132,16 +132,16 @@ def test_returns_expected_section_message(
 	__mock_get_help_separator,
 	__mock_modes,
 	__mock_get_mode_args_and_help_str,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
-	section_message = __setup_general_help_formatter._GeneralHelpFormatter__get_section_message(section)
+	section_message = __setup_formatter._GeneralHelpFormatter__get_section_message(section)
 	expected_section_message = f"{__mock_get_help_separator()}\t# {section} #\n\n{expected_mode_args_and_help}"
 	assert (
 		section_message == expected_section_message
 	), get_assertion_message("section message", expected_section_message, section_message)
 	
 @pytest.fixture
-def __setup_general_help_formatter():
+def __setup_formatter():
 	yield GeneralHelpFormatter("test")
 
 @pytest.fixture

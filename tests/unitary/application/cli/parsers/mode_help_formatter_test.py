@@ -52,9 +52,9 @@ def test_get_mode(
 def test_checks_if_args_contain_optional(
 	args,
 	expected_contains,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
-	contains = __setup_general_help_formatter._ModeHelpFormatter__args_contain_optional(args)
+	contains = __setup_formatter._ModeHelpFormatter__args_contain_optional(args)
 	assert (
 		contains == expected_contains
 	), get_assertion_message("optional arg check result", expected_contains, contains)
@@ -76,9 +76,9 @@ def test_returns_expected_args_info(
 	__mock_description,
 	__mock_get_param_names,
 	__mock_text_with_limits,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
-	args_info = __setup_general_help_formatter._ModeHelpFormatter__get_args_info(args)
+	args_info = __setup_formatter._ModeHelpFormatter__get_args_info(args)
 	assert (
 		args_info == expected_arg_info
 	), get_assertion_message("args info", expected_arg_info, args_info)
@@ -88,10 +88,10 @@ def test_calls_text_with_limits_with_expected_params_when_getting_arg_info(
 	__mock_description,
 	__mock_get_param_names,
 	__mock_text_with_limits,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
 	params = ["param1"]
-	__setup_general_help_formatter._ModeHelpFormatter__get_args_info(params)
+	__setup_formatter._ModeHelpFormatter__get_args_info(params)
 	__mock_text_with_limits.assert_called_once_with(
 		f"\t{params[0]}-1, {params[0]}-2",
 		__PARAMS[params[0]][__INNER_KEY]
@@ -102,10 +102,10 @@ def test_calls_get_param_names_with_expected_params_when_getting_arg_info(
 	__mock_description,
 	__mock_get_param_names,
 	__mock_text_with_limits,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
 	params = ["param1"]
-	__setup_general_help_formatter._ModeHelpFormatter__get_args_info(params)
+	__setup_formatter._ModeHelpFormatter__get_args_info(params)
 	__mock_get_param_names.assert_called_once_with(params[0])
 
 @pytest.mark.parametrize(
@@ -123,9 +123,9 @@ def test_returns_expected_examples_message(
 	mode,
 	expected_message,
 	__mock_mode_examples,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
-	examples_message = __setup_general_help_formatter._ModeHelpFormatter__get_examples_message(mode)
+	examples_message = __setup_formatter._ModeHelpFormatter__get_examples_message(mode)
 	assert (
 		examples_message == expected_message
 	), get_assertion_message("examples message", expected_message, examples_message)
@@ -138,23 +138,23 @@ def test_calls_get_param_first_name(
 	__mock_logger_yellow,
 	__mock_get_help_separator,
 	__mock_get_args_info,
-	__setup_general_help_formatter
+	__setup_formatter
 ):
 	mode = "mode1"
-	__setup_general_help_formatter._ModeHelpFormatter__get_args_message(mode)
+	__setup_formatter._ModeHelpFormatter__get_args_message(mode)
 	__mock_get_param_first_name.assert_called_once_with(
 		__MODE_ARGS[mode][0]
 	)
 
 @pytest.fixture
-def __setup_general_help_formatter():
+def __setup_formatter():
 	yield ModeHelpFormatter("test")
 
 @pytest.fixture
-def __mock_formatter_prog(request, __setup_general_help_formatter):
+def __mock_formatter_prog(request, __setup_formatter):
 	mode = request.param if hasattr(request, "param") else "this is the mode: default_mode"
-	with patch.object(__setup_general_help_formatter, "_prog", mode):
-		yield __setup_general_help_formatter
+	with patch.object(__setup_formatter, "_prog", mode):
+		yield __setup_formatter
 
 @pytest.fixture
 def __mock_params():
