@@ -2,6 +2,10 @@ from xmipp3_installer.application.logger.logger import logger
 
 from . import terminal_sizes
 
+__NOTE_MESSAGE = logger.yellow(
+  'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h\n'
+)
+
 GENERAL_HELP_MESSAGE = {
   terminal_sizes.LARGE_TERMINAL_WIDTH: f"""Run Xmipp's installer script
 
@@ -39,9 +43,7 @@ Usage: xmipp [options]
 
 Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
-{logger.yellow(
-  'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h\n'
-)}""",
+{__NOTE_MESSAGE}""",
   terminal_sizes.SHORT_TERMINAL_WIDTH: f"""Run Xmipp's installer script
 
 Usage: xmipp [options]
@@ -101,7 +103,5 @@ action
 
 Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
-{logger.yellow(
-  'Note: You can also view a specific help message for each mode with "./xmipp [mode] -h".\nExample: ./xmipp all -h\n'
-)}"""
+{__NOTE_MESSAGE}"""
 }
