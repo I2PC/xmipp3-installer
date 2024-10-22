@@ -12,7 +12,7 @@ from . import general_message
 from .terminal_sizes import LARGE_TERMINAL_WIDTH, SHORT_TERMINAL_WIDTH
 from .mode_messages import (
 	mode_all, mode_version, mode_compile_and_install, mode_config_build, mode_config,
-	mode_get_models, mode_get_sources, mode_clean_bin, mode_clean_all
+	mode_get_models, mode_get_sources, mode_clean_bin, mode_clean_all, mode_test
 )
 from .... import get_assertion_message, MockTerminalSize
 
@@ -39,6 +39,8 @@ from .... import get_assertion_message, MockTerminalSize
 		pytest.param(SHORT_TERMINAL_WIDTH, ["cleanBin"], mode_clean_bin.HELP_MESSAGE),
 		pytest.param(LARGE_TERMINAL_WIDTH, ["cleanAll"], mode_clean_all.HELP_MESSAGE),
 		pytest.param(SHORT_TERMINAL_WIDTH, ["cleanAll"], mode_clean_all.HELP_MESSAGE),
+		pytest.param(LARGE_TERMINAL_WIDTH, ["test"], mode_test.HELP_MESSAGE),
+		pytest.param(SHORT_TERMINAL_WIDTH, ["test"], mode_test.HELP_MESSAGE),
 	],
 	indirect=["__mock_get_terminal_column_size", "__mock_sys_argv"]
 )
