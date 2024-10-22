@@ -199,14 +199,14 @@ class Logger:
 	
 	def __format_text(self, text: str, format_code: str) -> str:
 		"""
-		### Returns the given text formatted in bold.
+		### Returns the given text formatted in the given format code.
 
 		#### Params:
 		- text (str): Text to format.
 		- format_code (str): Formatting character.
 
 		#### Returns:
-		- (str): Text formatted in bold.
+		- (str): Text formatted.
 		"""
 		return f"{format_code}{text}{self.__END_FORMAT}"
 
