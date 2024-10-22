@@ -11,8 +11,9 @@ from xmipp3_installer.application.cli import arguments
 from . import general_message
 from .terminal_sizes import LARGE_TERMINAL_WIDTH, SHORT_TERMINAL_WIDTH
 from .mode_messages import (
-	mode_all, mode_version, mode_compile_and_install, mode_config_build, mode_config,
-	mode_get_models, mode_get_sources, mode_clean_bin, mode_clean_all, mode_test, mode_git
+	mode_all, mode_version, mode_compile_and_install, mode_config_build,
+	mode_config, mode_get_models, mode_get_sources, mode_clean_bin,
+	mode_clean_all, mode_test, mode_git, mode_add_model
 )
 from .... import get_assertion_message, MockTerminalSize
 
@@ -43,6 +44,8 @@ from .... import get_assertion_message, MockTerminalSize
 		pytest.param(SHORT_TERMINAL_WIDTH, ["test"], mode_test.HELP_MESSAGE),
 		pytest.param(LARGE_TERMINAL_WIDTH, ["git"], mode_git.HELP_MESSAGE),
 		pytest.param(SHORT_TERMINAL_WIDTH, ["git"], mode_git.HELP_MESSAGE),
+		pytest.param(LARGE_TERMINAL_WIDTH, ["addModel"], mode_add_model.HELP_MESSAGE),
+		pytest.param(SHORT_TERMINAL_WIDTH, ["addModel"], mode_add_model.HELP_MESSAGE),
 	],
 	indirect=["__mock_get_terminal_column_size", "__mock_sys_argv"]
 )
