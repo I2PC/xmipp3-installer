@@ -6,14 +6,30 @@ from xmipp3_installer.application.logger.logger import Logger
 
 from .... import get_assertion_message
 
+__SAMPLE_TEXT = "this is some sample text"
+
+def test_returns_new_instance(__mock_singleton):
+	logger1 = Logger()
+	with patch.object(Logger, "_Logger__instance", None):
+		logger2 = Logger()
+	assert (
+		logger1 is not logger2
+	), "Received same logger instance, when should have been different."
+
+def test_returns_same_instance(__mock_singleton):
+	logger1 = Logger()
+	logger2 = Logger()
+	assert (
+		logger1 is logger2
+	), get_assertion_message("Logger instance", logger1, logger2)
+
 def test_formats_green(
 	__mock_color_green,
 	__mock_reset_format
 ):
-	original_text = "this is some sample text"
 	logger = Logger()
-	formatted_text = logger.green(original_text)
-	expected_formatted_text = f"{__mock_color_green}{original_text}{__mock_reset_format}"
+	formatted_text = logger.green(__SAMPLE_TEXT)
+	expected_formatted_text = f"{__mock_color_green}{__SAMPLE_TEXT}{__mock_reset_format}"
 	assert (
 		formatted_text == expected_formatted_text
 	), get_assertion_message("green format", expected_formatted_text, formatted_text)
@@ -22,49 +38,45 @@ def test_formats_yellow(
 	__mock_color_yellow,
 	__mock_reset_format
 ):
-	original_text = "this is some sample text"
 	logger = Logger()
-	formatted_text = logger.yellow(original_text)
-	expected_formatted_text = f"{__mock_color_yellow}{original_text}{__mock_reset_format}"
+	formatted_text = logger.yellow(__SAMPLE_TEXT)
+	expected_formatted_text = f"{__mock_color_yellow}{__SAMPLE_TEXT}{__mock_reset_format}"
 	assert (
 		formatted_text == expected_formatted_text
-	), get_assertion_message("green format", expected_formatted_text, formatted_text)
+	), get_assertion_message("yellow format", expected_formatted_text, formatted_text)
 
 def test_formats_red(
 	__mock_color_red,
 	__mock_reset_format
 ):
-	original_text = "this is some sample text"
 	logger = Logger()
-	formatted_text = logger.red(original_text)
-	expected_formatted_text = f"{__mock_color_red}{original_text}{__mock_reset_format}"
+	formatted_text = logger.red(__SAMPLE_TEXT)
+	expected_formatted_text = f"{__mock_color_red}{__SAMPLE_TEXT}{__mock_reset_format}"
 	assert (
 		formatted_text == expected_formatted_text
-	), get_assertion_message("green format", expected_formatted_text, formatted_text)
+	), get_assertion_message("red format", expected_formatted_text, formatted_text)
 
 def test_formats_blue(
 	__mock_color_blue,
 	__mock_reset_format
 ):
-	original_text = "this is some sample text"
 	logger = Logger()
-	formatted_text = logger.blue(original_text)
-	expected_formatted_text = f"{__mock_color_blue}{original_text}{__mock_reset_format}"
+	formatted_text = logger.blue(__SAMPLE_TEXT)
+	expected_formatted_text = f"{__mock_color_blue}{__SAMPLE_TEXT}{__mock_reset_format}"
 	assert (
 		formatted_text == expected_formatted_text
-	), get_assertion_message("green format", expected_formatted_text, formatted_text)
+	), get_assertion_message("blue format", expected_formatted_text, formatted_text)
 
 def test_formats_bold(
 	__mock_bold,
 	__mock_reset_format
 ):
-	original_text = "this is some sample text"
 	logger = Logger()
-	formatted_text = logger.bold(original_text)
-	expected_formatted_text = f"{__mock_bold}{original_text}{__mock_reset_format}"
+	formatted_text = logger.bold(__SAMPLE_TEXT)
+	expected_formatted_text = f"{__mock_bold}{__SAMPLE_TEXT}{__mock_reset_format}"
 	assert (
 		formatted_text == expected_formatted_text
-	), get_assertion_message("green format", expected_formatted_text, formatted_text)
+	), get_assertion_message("bold format", expected_formatted_text, formatted_text)
 
 def test_calls_start_log_file(__mock_open, __mock_singleton):
 	log_file_name = "test_log_file"
@@ -78,6 +90,36 @@ def test_starts_log_file(__mock_open, __mock_singleton):
 	assert (
 		logger._Logger__log_file is not None
 	), "Log file did not get properly assigned"
+
+@pytest.mark.parametrize(
+	"expected_console_output",
+	[
+		pytest.param(False),
+		pytest.param(True)
+	],
+)
+def test_sets_console_output(expected_console_output, __mock_singleton):
+	logger = Logger()
+	logger.set_console_output(expected_console_output)
+	console_output = logger._Logger__output_to_console
+	assert (
+		console_output == expected_console_output
+	), get_assertion_message("console output value", expected_console_output, console_output)
+
+@pytest.mark.parametrize(
+	"expected_allow_substitution",
+	[
+		pytest.param(False),
+		pytest.param(True)
+	],
+)
+def test_sets_allow_substitution(expected_allow_substitution, __mock_singleton):
+	logger = Logger()
+	logger.set_allow_substitution(expected_allow_substitution)
+	allow_substitution = logger._Logger__allow_substitution
+	assert (
+		allow_substitution == expected_allow_substitution
+	), get_assertion_message("allow substitution value", expected_allow_substitution, allow_substitution)
 
 @pytest.fixture
 def __mock_singleton():
