@@ -151,8 +151,7 @@ class Logger:
 			
 		if self.__output_to_console or force_console_output:
 			# Calculate number of lines to substitute if substitution was requested
-			substitution_str = ''.join([f'{self.__UP}{self.__REMOVE_LINE}' for _ in range(self.__get_n_last_lines())])
-			text = f"{substitution_str}{text}" if self.__allow_substitution and substitute else text
+			text = self.__substitute_lines(text) if self.__allow_substitution and substitute else text
 			print(text, flush=True)
 			# Store length of printed string for next substitution calculation
 			self.__len_last_printed_elem = len(self.__remove_non_printable(text))
@@ -209,6 +208,19 @@ class Logger:
 		- (str): Text formatted.
 		"""
 		return f"{format_code}{text}{self.__END_FORMAT}"
+
+	def __substitute_lines(self, text: str) -> str:
+		"""
+		### Removes the appropiate lines from the terminal to show a given text.
+
+		#### Params:
+		- text (str): Text to show substituting some lines.
+
+		#### Returns:
+		- (str): Text with line substitution characters as a prefix.
+		"""
+		substitution_chars = [f'{self.__UP}{self.__REMOVE_LINE}' for _ in range(self.__get_n_last_lines())]
+		return f"{''.join(substitution_chars)}{text}"
 
 """
 ### Global logger.
