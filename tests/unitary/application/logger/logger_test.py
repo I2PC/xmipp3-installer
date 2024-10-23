@@ -3,10 +3,18 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.logger.logger import Logger
+from xmipp3_installer.application.logger import errors, urls
 
 from .... import get_assertion_message
 
 __SAMPLE_TEXT = "this is some sample text"
+__ERROR_CODES = {
+	1: ['Error 1 first', 'error 1 second'],
+	2: ['Error 2 first', ''],
+	3: ['', ''],
+	4: ['', 'Error 4 second']
+}
+__PORTAL_LINK_MESSAGE = f"\nMore details on the Xmipp documentation portal: {urls.DOCUMENTATION_URL}"
 
 def test_returns_new_instance(__mock_singleton):
 	logger1 = Logger()
@@ -121,6 +129,44 @@ def test_sets_allow_substitution(expected_allow_substitution, __mock_singleton):
 		allow_substitution == expected_allow_substitution
 	), get_assertion_message("allow substitution value", expected_allow_substitution, allow_substitution)
 
+@pytest.mark.parametrize(
+	"ret_code,add_link,add_link_message,first_expected_message,second_expected_message",
+	[
+		pytest.param(1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param(1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param(2, False, '',  __ERROR_CODES[2][0], ''),
+		pytest.param(2, True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[2][0], ''),
+		pytest.param(3, False, '', '', ''),
+		pytest.param(3, True, __PORTAL_LINK_MESSAGE, '', ''),
+		pytest.param(4, False, '', '', f"\n{__ERROR_CODES[4][1]} "),
+		pytest.param(4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} ")
+	],
+)
+def test_calls_logger_with_expected_params_when_logging_error(
+	ret_code,
+	add_link,
+	add_link_message,
+	first_expected_message,
+	second_expected_message,
+	__mock_call,
+	__mock_color_red,
+	__mock_reset_format,
+	__mock_errors,
+	__mock_singleton
+):
+	error_message = "Test error message"
+	logger = Logger()
+	logger.log_error(error_message, ret_code=ret_code, add_portal_link=add_link)
+	__mock_call.assert_called_once_with(
+		logger.red(''.join([
+			f"{error_message}\n\n",
+			f"Error {ret_code}: {first_expected_message}",
+			second_expected_message,
+			add_link_message
+		])),
+		force_console_output=True
+	)
+
 @pytest.fixture
 def __mock_singleton():
 	with patch.object(Logger, "_Logger__instance", None):
@@ -166,3 +212,13 @@ def __mock_bold():
 def __mock_open():
 	with patch("builtins.open") as mock_method:
 		yield mock_method
+
+@pytest.fixture
+def __mock_call():
+	with patch("xmipp3_installer.application.logger.logger.Logger.__call__") as mock_method:
+		yield mock_method
+
+@pytest.fixture
+def __mock_errors():
+	with patch.object(errors, "ERROR_CODES", __ERROR_CODES):
+		yield
