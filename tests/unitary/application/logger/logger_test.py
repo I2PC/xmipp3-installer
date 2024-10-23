@@ -5,7 +5,7 @@ import pytest
 from xmipp3_installer.application.logger.logger import Logger
 from xmipp3_installer.application.logger import errors, urls
 
-from .... import get_assertion_message
+from .... import get_assertion_message, MockTerminalSize
 
 __SAMPLE_TEXT = "this is some sample text"
 __ERROR_CODES = {
@@ -177,6 +177,36 @@ def test_returns_expected_text_when_removing_non_printable_characters(__mock_sin
 		modified_text == printable_text
 	), get_assertion_message("text without printable characters", printable_text, modified_text)
 
+@pytest.mark.parametrize(
+	"__mock_get_terminal_column_size,len_last_printed_element,expected_n_last_lines",
+	[
+		pytest.param(2, 1, 1),
+		pytest.param(2, 3, 2),
+		pytest.param(2, 2, 1)
+	],
+	indirect=["__mock_get_terminal_column_size"]
+)
+def test_returns_expected_n_last_lines(
+	__mock_get_terminal_column_size,
+	len_last_printed_element,
+	expected_n_last_lines,
+	__mock_singleton
+):
+	logger = Logger()
+	with patch.object(logger, "_Logger__len_last_printed_elem", len_last_printed_element):
+		n_last_lines = logger._Logger__get_n_last_lines()
+	assert (
+		n_last_lines == expected_n_last_lines
+	), get_assertion_message("number of lines from last print", expected_n_last_lines, n_last_lines)
+
+def test_raises_division_by_zero_exception_if_terminal_size_is_zero(
+	__mock_get_terminal_column_size,
+	__mock_singleton
+):
+	logger = Logger()
+	with pytest.raises(ZeroDivisionError):
+		logger._Logger__get_n_last_lines()
+
 @pytest.fixture
 def __mock_singleton():
 	with patch.object(Logger, "_Logger__instance", None):
@@ -232,3 +262,10 @@ def __mock_call():
 def __mock_errors():
 	with patch.object(errors, "ERROR_CODES", __ERROR_CODES):
 		yield
+
+@pytest.fixture
+def __mock_get_terminal_column_size(request):
+	with patch("shutil.get_terminal_size") as mock_method:
+		width = request.param if hasattr(request, "param") else 0
+		mock_method.return_value = MockTerminalSize(width)
+		yield mock_method
