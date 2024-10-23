@@ -1,3 +1,4 @@
+from io import BytesIO
 from unittest.mock import patch
 
 import pytest
@@ -15,6 +16,7 @@ __ERROR_CODES = {
 	4: ['', 'Error 4 second']
 }
 __PORTAL_LINK_MESSAGE = f"\nMore details on the Xmipp documentation portal: {urls.DOCUMENTATION_URL}"
+__DUMMY_FILE = BytesIO()
 
 def test_returns_new_instance(__mock_singleton):
 	logger1 = Logger()
@@ -95,9 +97,10 @@ def test_calls_start_log_file(__mock_open, __mock_singleton):
 def test_starts_log_file(__mock_open, __mock_singleton):
 	logger = Logger()
 	logger.start_log_file("test_log_file")
+	log_file = logger._Logger__log_file
 	assert (
-		logger._Logger__log_file is not None
-	), "Log file did not get properly assigned"
+		log_file is __DUMMY_FILE
+	), get_assertion_message("log file", __DUMMY_FILE, log_file)
 
 @pytest.mark.parametrize(
 	"expected_console_output",
@@ -230,6 +233,125 @@ def test_returns_the_expected_text_when_substituting_lines(
 		substituted_text == expected_substituted_text
 	), get_assertion_message("text with substitution characters", expected_substituted_text, substituted_text)
 
+@pytest.mark.parametrize(
+	"output_to_console,force_console_output,substitute",
+	[
+		pytest.param(False, True, False),
+		pytest.param(False, True, True),
+		pytest.param(True, False, False),
+		pytest.param(True, False, True),
+		pytest.param(True, True, False),
+		pytest.param(True, True, True)
+	],
+)
+def test_calls_print_when_calling_logger_without_file_and_with_substitution(
+	output_to_console,
+	force_console_output,
+	substitute,
+	__mock_substitute_lines,
+	__mock_print,
+	__mock_singleton
+):
+	logger = Logger()
+	logger.set_console_output(output_to_console)
+	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	expected_text = __mock_substitute_lines(__SAMPLE_TEXT) if substitute else __SAMPLE_TEXT
+	__mock_print.assert_called_once_with(
+		expected_text,
+		flush=True
+	)
+
+@pytest.mark.parametrize(
+	"output_to_console,force_console_output,substitute",
+	[
+		pytest.param(False, True, False),
+		pytest.param(False, True, True),
+		pytest.param(True, False, False),
+		pytest.param(True, False, True),
+		pytest.param(True, True, False),
+		pytest.param(True, True, True)
+	],
+)
+def test_calls_print_when_calling_logger_without_file_and_without_substitution(
+	output_to_console,
+	force_console_output,
+	substitute,
+	__mock_substitute_lines,
+	__mock_print,
+	__mock_singleton
+):
+	logger = Logger()
+	logger.set_console_output(output_to_console)
+	logger.set_allow_substitution(False)
+	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	__mock_print.assert_called_once_with(
+		__SAMPLE_TEXT,
+		flush=True
+	)
+
+@pytest.mark.parametrize(
+	"output_to_console,force_console_output,substitute",
+	[
+		pytest.param(False, True, False),
+		pytest.param(False, True, True),
+		pytest.param(True, False, False),
+		pytest.param(True, False, True),
+		pytest.param(True, True, False),
+		pytest.param(True, True, True)
+	],
+)
+def test_sets_expected_len_for_last_printed_element_when_calling_logger(
+	output_to_console,
+	force_console_output,
+	substitute,
+	__mock_remove_non_printable,
+	__mock_print,
+	__mock_singleton
+):
+	logger = Logger()
+	logger.set_console_output(output_to_console)
+	logger.set_allow_substitution(False)
+	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	last_printed_elem_len = logger._Logger__len_last_printed_elem
+	expected_len = len(__mock_remove_non_printable(__SAMPLE_TEXT))
+	assert (
+		last_printed_elem_len == expected_len
+	), get_assertion_message("stored length for last printed element", expected_len, last_printed_elem_len)
+
+@pytest.mark.parametrize(
+	"output_to_console,force_console_output,substitute",
+	[
+		pytest.param(False, False, False),
+		pytest.param(False, False, True)
+	],
+)
+def test_does_not_call_print_when_calling_logger_without_file(
+	output_to_console,
+	force_console_output,
+	substitute,
+	__mock_print,
+	__mock_singleton
+):
+	logger = Logger()
+	logger.set_console_output(output_to_console)
+	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	__mock_print.assert_not_called()
+
+def test_calls_print_when_calling_logger_with_file(
+	__mock_open,
+	__mock_remove_non_printable,
+	__mock_print,
+	__mock_singleton
+):
+	logger = Logger()
+	logger.start_log_file("dummy_file_name")
+	logger(__SAMPLE_TEXT)
+	__mock_print.assert_called_once_with(
+		__mock_remove_non_printable(__SAMPLE_TEXT),
+		file=__mock_open(),
+		flush=True
+	)
+
 def __get_substitution_chars(up_char: str, remove_line_char: str, n_lines: int):
 	substitution_chars = ''
 	for _ in range(n_lines):
@@ -280,6 +402,7 @@ def __mock_bold():
 @pytest.fixture
 def __mock_open():
 	with patch("builtins.open") as mock_method:
+		mock_method.return_value = __DUMMY_FILE
 		yield mock_method
 
 @pytest.fixture
@@ -315,4 +438,25 @@ def __mock_remove_line():
 def __mock_get_n_last_lines(request):
 	with patch("xmipp3_installer.application.logger.logger.Logger._Logger__get_n_last_lines") as mock_method:
 		mock_method.return_value = request.param if hasattr(request, "param") else 0
+		yield mock_method
+
+@pytest.fixture
+def __mock_print():
+	with patch("builtins.print") as mock_method:
+		yield mock_method
+
+@pytest.fixture
+def __mock_remove_non_printable():
+	def __return_with_affix(text: str) -> str:
+		return f"non_printable_affix-{text}-non_printable_affix"
+	with patch("xmipp3_installer.application.logger.logger.Logger._Logger__remove_non_printable") as mock_method:
+		mock_method.side_effect = __return_with_affix
+		yield mock_method
+
+@pytest.fixture
+def __mock_substitute_lines():
+	def __return_with_affix(text: str) -> str:
+		return f"substitute_lines_affix-{text}-non_printable_affix"
+	with patch("xmipp3_installer.application.logger.logger.Logger._Logger__substitute_lines") as mock_method:
+		mock_method.side_effect = __return_with_affix
 		yield mock_method
