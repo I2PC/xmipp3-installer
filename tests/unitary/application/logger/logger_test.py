@@ -167,6 +167,16 @@ def test_calls_logger_with_expected_params_when_logging_error(
 		force_console_output=True
 	)
 
+def test_returns_expected_text_when_removing_non_printable_characters(__mock_singleton):
+	printable_text = "This text should remain"
+	logger = Logger()
+	modified_text = logger._Logger__remove_non_printable(
+		logger.blue(logger.yellow(logger.red(logger.bold(logger.green(printable_text)))))
+	)
+	assert (
+		modified_text == printable_text
+	), get_assertion_message("text without printable characters", printable_text, modified_text)
+
 @pytest.fixture
 def __mock_singleton():
 	with patch.object(Logger, "_Logger__instance", None):
