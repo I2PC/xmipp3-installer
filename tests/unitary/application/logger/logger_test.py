@@ -207,6 +207,35 @@ def test_raises_division_by_zero_exception_if_terminal_size_is_zero(
 	with pytest.raises(ZeroDivisionError):
 		logger._Logger__get_n_last_lines()
 
+@pytest.mark.parametrize(
+	"__mock_get_n_last_lines",
+	[
+		pytest.param(1),
+		pytest.param(2),
+		pytest.param(0)
+	],
+	indirect=["__mock_get_n_last_lines"]
+)
+def test_returns_the_expected_text_when_substituting_lines(
+	__mock_get_n_last_lines,
+	__mock_up,
+	__mock_remove_line,
+	__mock_singleton
+):
+	sample_text = "This is some sample text"
+	logger = Logger()
+	substituted_text = logger._Logger__substitute_lines(sample_text)
+	expected_substituted_text = f"{__get_substitution_chars(__mock_up, __mock_remove_line, __mock_get_n_last_lines())}{sample_text}"
+	assert (
+		substituted_text == expected_substituted_text
+	), get_assertion_message("text with substitution characters", expected_substituted_text, substituted_text)
+
+def __get_substitution_chars(up_char: str, remove_line_char: str, n_lines: int):
+	substitution_chars = ''
+	for _ in range(n_lines):
+		substitution_chars += f"{up_char}{remove_line_char}"
+	return substitution_chars
+
 @pytest.fixture
 def __mock_singleton():
 	with patch.object(Logger, "_Logger__instance", None):
@@ -268,4 +297,22 @@ def __mock_get_terminal_column_size(request):
 	with patch("shutil.get_terminal_size") as mock_method:
 		width = request.param if hasattr(request, "param") else 0
 		mock_method.return_value = MockTerminalSize(width)
+		yield mock_method
+
+@pytest.fixture
+def __mock_up():
+	new_format_code = "up-"
+	with patch.object(Logger, "_Logger__UP", new_format_code):
+		yield new_format_code
+
+@pytest.fixture
+def __mock_remove_line():
+	new_format_code = "line_remove-"
+	with patch.object(Logger, "_Logger__REMOVE_LINE", new_format_code):
+		yield new_format_code
+
+@pytest.fixture
+def __mock_get_n_last_lines(request):
+	with patch("xmipp3_installer.application.logger.logger.Logger._Logger__get_n_last_lines") as mock_method:
+		mock_method.return_value = request.param if hasattr(request, "param") else 0
 		yield mock_method
