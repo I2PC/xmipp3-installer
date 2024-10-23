@@ -150,7 +150,6 @@ class Logger:
 			print(self.__remove_non_printable(text), file=self.__log_file, flush=True)
 			
 		if self.__output_to_console or force_console_output:
-			# Calculate number of lines to substitute if substitution was requested
 			text = self.__substitute_lines(text) if self.__allow_substitution and substitute else text
 			print(text, flush=True)
 			# Store length of printed string for next substitution calculation
