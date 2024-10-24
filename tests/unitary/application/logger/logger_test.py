@@ -128,7 +128,9 @@ def test_sets_allow_substitution(expected_allow_substitution, __mock_singleton):
 		pytest.param(3, False, '', '', ''),
 		pytest.param(3, True, __PORTAL_LINK_MESSAGE, '', ''),
 		pytest.param(4, False, '', '', f"\n{__ERROR_CODES[4][1]} "),
-		pytest.param(4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} ")
+		pytest.param(4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} "),
+		pytest.param('no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param('no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} ")
 	],
 )
 def test_calls_logger_with_expected_params_when_logging_error(
