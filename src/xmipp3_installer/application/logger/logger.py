@@ -38,7 +38,7 @@ class Logger:
 			cls.__instance = super().__new__(cls, *args, **kwrgs)
 		return cls.__instance
  
-	def __init__(self, output_to_console: bool = False):
+	def __init__(self):
 		"""
 		### Constructor.
 		
@@ -46,7 +46,6 @@ class Logger:
 		- ouputToConsoloe (bool): Print messages to console.
 		"""
 		self.__log_file = None
-		self.__output_to_console = output_to_console
 		self.__len_last_printed_elem = 0
 		self.__allow_substitution = True
 	
@@ -119,15 +118,6 @@ class Logger:
 		"""
 		self.__log_file = open(log_path, 'w')
 
-	def set_console_output(self, output_to_console: bool):
-		"""
-		### Modifies console output behaviour.
-		
-		#### Params:
-		- ouputToConsoloe (str): Enable printing messages to console.
-		"""
-		self.__output_to_console = output_to_console
- 
 	def set_allow_substitution(self, allow_substitution: bool):
 		"""
 		### Modifies console output behaviour, allowing or disallowing substitutions.
@@ -149,7 +139,7 @@ class Logger:
 		if self.__log_file is not None:
 			print(self.__remove_non_printable(text), file=self.__log_file, flush=True)
 			
-		if self.__output_to_console or show_in_terminal:
+		if show_in_terminal:
 			text = self.__substitute_lines(text) if self.__allow_substitution and substitute else text
 			print(text, flush=True)
 			# Store length of printed string for next substitution calculation
