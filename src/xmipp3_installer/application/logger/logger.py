@@ -154,9 +154,10 @@ class Logger:
 		- ret_code (int): Optional. Return code to end the exection with.
 		- add_portal_link (bool): If True, a message linking the documentation portal is shown.
 		"""
+		error = errors.ERROR_CODES.get(ret_code, errors.ERROR_CODES[errors.UNKOW_ERROR])
 		error_str = error_msg + '\n\n'
-		error_str += f'Error {ret_code}: {errors.ERROR_CODES[ret_code][0]}'
-		error_str += f"\n{errors.ERROR_CODES[ret_code][1]} " if errors.ERROR_CODES[ret_code][1] else ''
+		error_str += f'Error {ret_code}: {error[0]}'
+		error_str += f"\n{error[1]} " if error[1] else ''
 		if add_portal_link:
 			error_str += f'\nMore details on the Xmipp documentation portal: {urls.DOCUMENTATION_URL}'
 
