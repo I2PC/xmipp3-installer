@@ -153,7 +153,7 @@ def test_calls_logger_with_expected_params_when_logging_error(
 			second_expected_message,
 			add_link_message
 		])),
-		force_console_output=True
+		show_in_terminal=True
 	)
 
 def test_returns_expected_text_when_removing_non_printable_characters(__mock_singleton):
