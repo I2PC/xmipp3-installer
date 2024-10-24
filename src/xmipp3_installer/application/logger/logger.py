@@ -5,7 +5,7 @@ import shutil
 from typing_extensions import Self
 
 from xmipp3_installer.application.logger import errors
-from xmipp3_installer.application.logger import urls
+from xmipp3_installer.domain import urls
 
 class Logger:
 	"""
