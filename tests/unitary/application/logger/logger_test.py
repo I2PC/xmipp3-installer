@@ -103,21 +103,6 @@ def test_starts_log_file(__mock_open, __mock_singleton):
 	), get_assertion_message("log file", __DUMMY_FILE, log_file)
 
 @pytest.mark.parametrize(
-	"expected_console_output",
-	[
-		pytest.param(False),
-		pytest.param(True)
-	],
-)
-def test_sets_console_output(expected_console_output, __mock_singleton):
-	logger = Logger()
-	logger.set_console_output(expected_console_output)
-	console_output = logger._Logger__output_to_console
-	assert (
-		console_output == expected_console_output
-	), get_assertion_message("console output value", expected_console_output, console_output)
-
-@pytest.mark.parametrize(
 	"expected_allow_substitution",
 	[
 		pytest.param(False),
@@ -234,18 +219,13 @@ def test_returns_the_expected_text_when_substituting_lines(
 	), get_assertion_message("text with substitution characters", expected_substituted_text, substituted_text)
 
 @pytest.mark.parametrize(
-	"output_to_console,show_in_terminal,substitute",
+	"show_in_terminal,substitute",
 	[
-		pytest.param(False, True, False),
-		pytest.param(False, True, True),
-		pytest.param(True, False, False),
-		pytest.param(True, False, True),
-		pytest.param(True, True, False),
-		pytest.param(True, True, True)
+		pytest.param(True, False),
+		pytest.param(True, True)
 	],
 )
 def test_calls_print_when_calling_logger_without_file_and_with_substitution(
-	output_to_console,
 	show_in_terminal,
 	substitute,
 	__mock_substitute_lines,
@@ -253,7 +233,6 @@ def test_calls_print_when_calling_logger_without_file_and_with_substitution(
 	__mock_singleton
 ):
 	logger = Logger()
-	logger.set_console_output(output_to_console)
 	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	expected_text = __mock_substitute_lines(__SAMPLE_TEXT) if substitute else __SAMPLE_TEXT
 	__mock_print.assert_called_once_with(
@@ -262,18 +241,13 @@ def test_calls_print_when_calling_logger_without_file_and_with_substitution(
 	)
 
 @pytest.mark.parametrize(
-	"output_to_console,show_in_terminal,substitute",
+	"show_in_terminal,substitute",
 	[
-		pytest.param(False, True, False),
-		pytest.param(False, True, True),
-		pytest.param(True, False, False),
-		pytest.param(True, False, True),
-		pytest.param(True, True, False),
-		pytest.param(True, True, True)
+		pytest.param(True, False),
+		pytest.param(True, True)
 	],
 )
 def test_calls_print_when_calling_logger_without_file_and_without_substitution(
-	output_to_console,
 	show_in_terminal,
 	substitute,
 	__mock_substitute_lines,
@@ -281,7 +255,6 @@ def test_calls_print_when_calling_logger_without_file_and_without_substitution(
 	__mock_singleton
 ):
 	logger = Logger()
-	logger.set_console_output(output_to_console)
 	logger.set_allow_substitution(False)
 	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	__mock_print.assert_called_once_with(
@@ -290,18 +263,13 @@ def test_calls_print_when_calling_logger_without_file_and_without_substitution(
 	)
 
 @pytest.mark.parametrize(
-	"output_to_console,show_in_terminal,substitute",
+	"show_in_terminal,substitute",
 	[
-		pytest.param(False, True, False),
-		pytest.param(False, True, True),
-		pytest.param(True, False, False),
-		pytest.param(True, False, True),
-		pytest.param(True, True, False),
-		pytest.param(True, True, True)
+		pytest.param(True, False),
+		pytest.param(True, True)
 	],
 )
 def test_sets_expected_len_for_last_printed_element_when_calling_logger(
-	output_to_console,
 	show_in_terminal,
 	substitute,
 	__mock_remove_non_printable,
@@ -309,7 +277,6 @@ def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 	__mock_singleton
 ):
 	logger = Logger()
-	logger.set_console_output(output_to_console)
 	logger.set_allow_substitution(False)
 	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	last_printed_elem_len = logger._Logger__len_last_printed_elem
@@ -319,21 +286,19 @@ def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 	), get_assertion_message("stored length for last printed element", expected_len, last_printed_elem_len)
 
 @pytest.mark.parametrize(
-	"output_to_console,show_in_terminal,substitute",
+	"show_in_terminal,substitute",
 	[
-		pytest.param(False, False, False),
-		pytest.param(False, False, True)
+		pytest.param(False, False),
+		pytest.param(False, True)
 	],
 )
 def test_does_not_call_print_when_calling_logger_without_file(
-	output_to_console,
 	show_in_terminal,
 	substitute,
 	__mock_print,
 	__mock_singleton
 ):
 	logger = Logger()
-	logger.set_console_output(output_to_console)
 	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	__mock_print.assert_not_called()
 
