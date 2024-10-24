@@ -4,7 +4,8 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.logger.logger import Logger
-from xmipp3_installer.application.logger import errors, urls
+from xmipp3_installer.application.logger import errors
+from xmipp3_installer.domain import urls
 
 from .... import get_assertion_message, MockTerminalSize
 
