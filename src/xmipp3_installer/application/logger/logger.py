@@ -137,7 +137,7 @@ class Logger:
 		"""
 		self.__allow_substitution = allow_substitution
 
-	def __call__(self, text: str, show_in_terminal: bool = False, substitute: bool = False):
+	def __call__(self, text: str, show_in_terminal: bool = True, substitute: bool = False):
 		"""
 		### Log a message.
 		

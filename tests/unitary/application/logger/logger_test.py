@@ -345,7 +345,7 @@ def test_calls_print_when_calling_logger_with_file(
 ):
 	logger = Logger()
 	logger.start_log_file("dummy_file_name")
-	logger(__SAMPLE_TEXT)
+	logger(__SAMPLE_TEXT, show_in_terminal=False)
 	__mock_print.assert_called_once_with(
 		__mock_remove_non_printable(__SAMPLE_TEXT),
 		file=__mock_open(),
