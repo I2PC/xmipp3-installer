@@ -137,19 +137,19 @@ class Logger:
 		"""
 		self.__allow_substitution = allow_substitution
 
-	def __call__(self, text: str, force_console_output: bool = False, substitute: bool = False):
+	def __call__(self, text: str, show_in_terminal: bool = False, substitute: bool = False):
 		"""
 		### Log a message.
 		
 		#### Params:
 		- text (str): Message to be logged. Supports fancy formatting.
-		- force_console_output (bool): Optional. If True, text is also printed through terminal.
-		- substitute (bool): Optional. If True, previous line is substituted with new text. Only used when force_console_output = True.
+		- show_in_terminal (bool): Optional. If True, text is also printed through terminal.
+		- substitute (bool): Optional. If True, previous line is substituted with new text. Only used when show_in_terminal = True.
 		"""
 		if self.__log_file is not None:
 			print(self.__remove_non_printable(text), file=self.__log_file, flush=True)
 			
-		if self.__output_to_console or force_console_output:
+		if self.__output_to_console or show_in_terminal:
 			text = self.__substitute_lines(text) if self.__allow_substitution and substitute else text
 			print(text, flush=True)
 			# Store length of printed string for next substitution calculation

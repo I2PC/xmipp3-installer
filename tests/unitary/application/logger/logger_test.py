@@ -234,7 +234,7 @@ def test_returns_the_expected_text_when_substituting_lines(
 	), get_assertion_message("text with substitution characters", expected_substituted_text, substituted_text)
 
 @pytest.mark.parametrize(
-	"output_to_console,force_console_output,substitute",
+	"output_to_console,show_in_terminal,substitute",
 	[
 		pytest.param(False, True, False),
 		pytest.param(False, True, True),
@@ -246,7 +246,7 @@ def test_returns_the_expected_text_when_substituting_lines(
 )
 def test_calls_print_when_calling_logger_without_file_and_with_substitution(
 	output_to_console,
-	force_console_output,
+	show_in_terminal,
 	substitute,
 	__mock_substitute_lines,
 	__mock_print,
@@ -254,7 +254,7 @@ def test_calls_print_when_calling_logger_without_file_and_with_substitution(
 ):
 	logger = Logger()
 	logger.set_console_output(output_to_console)
-	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	expected_text = __mock_substitute_lines(__SAMPLE_TEXT) if substitute else __SAMPLE_TEXT
 	__mock_print.assert_called_once_with(
 		expected_text,
@@ -262,7 +262,7 @@ def test_calls_print_when_calling_logger_without_file_and_with_substitution(
 	)
 
 @pytest.mark.parametrize(
-	"output_to_console,force_console_output,substitute",
+	"output_to_console,show_in_terminal,substitute",
 	[
 		pytest.param(False, True, False),
 		pytest.param(False, True, True),
@@ -274,7 +274,7 @@ def test_calls_print_when_calling_logger_without_file_and_with_substitution(
 )
 def test_calls_print_when_calling_logger_without_file_and_without_substitution(
 	output_to_console,
-	force_console_output,
+	show_in_terminal,
 	substitute,
 	__mock_substitute_lines,
 	__mock_print,
@@ -283,14 +283,14 @@ def test_calls_print_when_calling_logger_without_file_and_without_substitution(
 	logger = Logger()
 	logger.set_console_output(output_to_console)
 	logger.set_allow_substitution(False)
-	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	__mock_print.assert_called_once_with(
 		__SAMPLE_TEXT,
 		flush=True
 	)
 
 @pytest.mark.parametrize(
-	"output_to_console,force_console_output,substitute",
+	"output_to_console,show_in_terminal,substitute",
 	[
 		pytest.param(False, True, False),
 		pytest.param(False, True, True),
@@ -302,7 +302,7 @@ def test_calls_print_when_calling_logger_without_file_and_without_substitution(
 )
 def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 	output_to_console,
-	force_console_output,
+	show_in_terminal,
 	substitute,
 	__mock_remove_non_printable,
 	__mock_print,
@@ -311,7 +311,7 @@ def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 	logger = Logger()
 	logger.set_console_output(output_to_console)
 	logger.set_allow_substitution(False)
-	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	last_printed_elem_len = logger._Logger__len_last_printed_elem
 	expected_len = len(__mock_remove_non_printable(__SAMPLE_TEXT))
 	assert (
@@ -319,7 +319,7 @@ def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 	), get_assertion_message("stored length for last printed element", expected_len, last_printed_elem_len)
 
 @pytest.mark.parametrize(
-	"output_to_console,force_console_output,substitute",
+	"output_to_console,show_in_terminal,substitute",
 	[
 		pytest.param(False, False, False),
 		pytest.param(False, False, True)
@@ -327,14 +327,14 @@ def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 )
 def test_does_not_call_print_when_calling_logger_without_file(
 	output_to_console,
-	force_console_output,
+	show_in_terminal,
 	substitute,
 	__mock_print,
 	__mock_singleton
 ):
 	logger = Logger()
 	logger.set_console_output(output_to_console)
-	logger(__SAMPLE_TEXT, force_console_output=force_console_output, substitute=substitute)
+	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
 	__mock_print.assert_not_called()
 
 def test_calls_print_when_calling_logger_with_file(
