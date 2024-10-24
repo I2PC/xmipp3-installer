@@ -40,20 +40,16 @@ def is_branch_up_to_date(dir: str='./') -> bool:
 	- (bool): True if the current branch is up to date, or False otherwise or if some error happened.
 	"""
 	current_branch = get_current_branch(dir=dir)
-	if current_branch is None:
+	if not current_branch:
 		return False
 	
-	# Update branch
-	ret_code = shell_handler.run_insistent_shell_command("git fetch")[0]
+	ret_code = shell_handler.run_insistent_shell_command("git fetch", cwd=dir)[0]
 	if ret_code != 0:
 		return False
 
-	# Get latest local commit
-	local_commit = shell_handler.run_shell_command(f"git rev-parse {current_branch}")[1]
-
-	# Get latest remote commit
-	ret_code, remote_commit = shell_handler.run_insistent_shell_command(f"git rev-parse origin/{current_branch}")
+	latest_local_commit = shell_handler.run_shell_command(f"git rev-parse {current_branch}", cwd=dir)[1]
+	ret_code, latest_remote_commit = shell_handler.run_insistent_shell_command(f"git rev-parse origin/{current_branch}")
 	if ret_code != 0:
 		return False
 	
-	return local_commit == remote_commit
+	return latest_local_commit == latest_remote_commit
