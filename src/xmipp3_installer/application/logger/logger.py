@@ -160,7 +160,7 @@ class Logger:
 		if add_portal_link:
 			error_str += f'\nMore details on the Xmipp documentation portal: {urls.DOCUMENTATION_URL}'
 
-		self.__call__(self.red(error_str), force_console_output=True)
+		self.__call__(self.red(error_str), show_in_terminal=True)
 
 	def __remove_non_printable(self, text: str) -> str:
 		"""
