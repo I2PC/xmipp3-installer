@@ -43,47 +43,6 @@ def run_shell_command(
 	
 	return ret_code, output_str
 
-#def run_insistent_shell_command(
-#	cmd: str,
-#	cwd: str='./',
-#	show_output: bool=False,
-#	show_error: bool=False,
-#	show_command: bool=False,
-#	n_retries: int=3
-#) -> Tuple[int, str]:
-#	"""
-#	### This function runs the given network command and retries it the number given of times until one of the succeeds or it fails for all the retries.
-#
-#	#### Params:
-#	- cmd (str): Command to run.
-#	- cwd (str): Optional. Path to run the command from. Default is current directory.
-#	- show_output (bool): Optional. If True, output is printed.
-#	- show_error (bool): Optional. If True, errors are printed.
-#	- show_command (bool): Optional. If True, command is printed in blue.
-#	- n_retries (int): Optional. Maximum number of retries for the command.
-#
-#	#### Returns:
-#	- (int): Return code.
-#	- (str): Output of the command, regardless of if it is an error or regular output.
-#	"""
-#	# Running command up to n_retries times (improves resistance to small network errors)
-#	for _ in range(n_retries):
-#		ret_code, output = run_shell_command(cmd, cwd=cwd)
-#		# Break loop if success was achieved
-#		if ret_code == 0:
-#			break
-#	
-#	# Enforce message showing deppending on value
-#	if show_command:
-#		print(blue(cmd))
-#	if show_output:
-#		print('{}\n'.format(output))
-#	if show_error:
-#		print(red(output))
-#	
-#	# Returning output and return code
-#	return ret_code, output
-
 def __run_command(cmd: str, cwd: str='./') -> Tuple[int, str]:
 	"""
 	### Runs the given shell command.
