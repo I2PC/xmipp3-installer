@@ -116,7 +116,8 @@ class Logger:
 		#### Params:
 		- log_path (str): Path to the log file.
 		"""
-		self.__log_file = open(log_path, 'w')
+		if self.__log_file is None:
+			self.__log_file = open(log_path, 'w')
 
 	def set_allow_substitution(self, allow_substitution: bool):
 		"""
