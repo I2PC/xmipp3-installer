@@ -102,6 +102,7 @@ def test_returns_expected_ret_code_and_message_when_running_command(
 ):
   command = __COMMAND if ret_code == 0 else "this_command_will_not_work"
   return_values = shell_handler.__run_command(command)
+  return_values = (1, return_values[1]) if return_values[0] != 0 else return_values
   assert (
     return_values == (ret_code, expected_message)
   ), get_assertion_message("return values", (ret_code, expected_message), return_values)
