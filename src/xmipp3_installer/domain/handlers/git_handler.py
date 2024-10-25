@@ -43,12 +43,12 @@ def is_branch_up_to_date(dir: str='./') -> bool:
 	if not current_branch:
 		return False
 	
-	ret_code = shell_handler.run_insistent_shell_command("git fetch", cwd=dir)[0]
+	ret_code = shell_handler.run_shell_command("git fetch", cwd=dir)[0]
 	if ret_code != 0:
 		return False
 
 	latest_local_commit = shell_handler.run_shell_command(f"git rev-parse {current_branch}", cwd=dir)[1]
-	ret_code, latest_remote_commit = shell_handler.run_insistent_shell_command(f"git rev-parse origin/{current_branch}")
+	ret_code, latest_remote_commit = shell_handler.run_shell_command(f"git rev-parse origin/{current_branch}")
 	if ret_code != 0:
 		return False
 	
