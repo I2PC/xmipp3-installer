@@ -89,11 +89,24 @@ def test_formats_bold(
 		formatted_text == expected_formatted_text
 	), get_assertion_message("bold format", expected_formatted_text, formatted_text)
 
-def test_calls_start_log_file(__mock_open, __mock_singleton):
+def test_calls_open_when_starting_log_file_and_log_file_is_not_open(
+	__mock_open,
+	__mock_singleton
+):
 	log_file_name = "test_log_file"
 	logger = Logger()
 	logger.start_log_file(log_file_name)
 	__mock_open.assert_called_once_with(log_file_name, 'w')
+
+def test_does_not_call_open_when_starting_log_file_and_log_file_is_open(
+	__mock_open,
+	__mock_singleton
+):
+	log_file_name = "test_log_file"
+	logger = Logger()
+	logger._Logger__log_file = "Something not None"
+	logger.start_log_file(log_file_name)
+	__mock_open.assert_not_called()
 
 def test_starts_log_file(__mock_open, __mock_singleton):
 	logger = Logger()
