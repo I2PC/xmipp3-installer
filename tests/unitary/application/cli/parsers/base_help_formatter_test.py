@@ -262,7 +262,7 @@ def test_returns_expected_spaces(
 
 @pytest.fixture
 def __setup_parser():
-	yield BaseHelpFormatter("test")
+	return BaseHelpFormatter("test")
 
 @pytest.fixture
 def __mock_modes():

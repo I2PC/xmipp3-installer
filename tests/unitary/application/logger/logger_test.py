@@ -481,18 +481,14 @@ def __mock_print():
 
 @pytest.fixture
 def __mock_remove_non_printable():
-	def __return_with_affix(text: str) -> str:
-		return f"non_printable_affix-{text}-non_printable_affix"
 	with patch("xmipp3_installer.application.logger.logger.Logger._Logger__remove_non_printable") as mock_method:
-		mock_method.side_effect = __return_with_affix
+		mock_method.side_effect = lambda text: f"non_printable_affix-{text}-non_printable_affix"
 		yield mock_method
 
 @pytest.fixture
 def __mock_substitute_lines():
-	def __return_with_affix(text: str) -> str:
-		return f"substitute_lines_affix-{text}-non_printable_affix"
 	with patch("xmipp3_installer.application.logger.logger.Logger._Logger__substitute_lines") as mock_method:
-		mock_method.side_effect = __return_with_affix
+		mock_method.side_effect = lambda text: f"substitute_lines_affix-{text}-non_printable_affix"
 		yield mock_method
 
 @pytest.fixture

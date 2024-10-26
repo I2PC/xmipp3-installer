@@ -27,20 +27,20 @@ __PARAMS = {
 }
 
 @pytest.mark.parametrize(
-	"tab_size,expected_length",
+	"__mock_tab_size,expected_length",
 	[
 		pytest.param(4, 8),
 		pytest.param(0, 0),
 		pytest.param(1, 2),
 		pytest.param(-1, 0)
 	],
+	indirect=["__mock_tab_size"]
 )
-def test_expands_tabs_with_expected_length(tab_size, expected_length):
-	with patch.object(format, "TAB_SIZE", tab_size):
-		text_length = len(format.get_formatting_tabs("		"))
-		assert (
-			text_length == expected_length
-		), get_assertion_message("text length", expected_length, text_length)
+def test_expands_tabs_with_expected_length(__mock_tab_size, expected_length):
+	text_length = len(format.get_formatting_tabs("		"))
+	assert (
+		text_length == expected_length
+	), get_assertion_message("text length", expected_length, text_length)
 
 @pytest.mark.parametrize(
 	"key,expected_n_names",
@@ -52,9 +52,19 @@ def test_expands_tabs_with_expected_length(tab_size, expected_length):
 		pytest.param("test5", 2)
 	],
 )
-def test_gets_expected_param_names(key, expected_n_names):
+def test_gets_expected_param_names(key, expected_n_names, __mock_params):
+	name_amount = len(format.get_param_names(key))
+	assert (
+		name_amount == expected_n_names
+	), get_assertion_message("name amount", expected_n_names, name_amount)
+
+@pytest.fixture
+def __mock_tab_size(request):
+	tab_size = request.param if hasattr(request, "param") else 4
+	with patch.object(format, "TAB_SIZE", tab_size):
+		yield
+
+@pytest.fixture
+def __mock_params():
 	with patch.object(params, "PARAMS", __PARAMS):
-		name_amount = len(format.get_param_names(key))
-		assert (
-			name_amount == expected_n_names
-		), get_assertion_message("name amount", expected_n_names, name_amount)
+		yield

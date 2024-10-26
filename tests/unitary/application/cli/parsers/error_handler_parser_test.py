@@ -111,7 +111,7 @@ def __format_tabs(text: str) -> str:
 
 @pytest.fixture
 def __setup_parser():
-	yield ErrorHandlerArgumentParser("test")
+	return ErrorHandlerArgumentParser("test")
 
 @pytest.fixture
 def __mock_formatter_prog(request, __setup_parser):

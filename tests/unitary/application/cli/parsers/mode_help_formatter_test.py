@@ -388,9 +388,7 @@ def __mock_get_param_names():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.format.get_param_names"
 	) as mock_method:
-		def __return_in_list(arg: str) -> List[str]:
-			return [f"{arg}-1", f"{arg}-2"]
-		mock_method.side_effect = __return_in_list
+		mock_method.side_effect = lambda arg: [f"{arg}-1", f"{arg}-2"]
 		yield mock_method
 
 @pytest.fixture
@@ -398,9 +396,7 @@ def __mock_text_with_limits():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._text_with_limits"
 	) as mock_method:
-		def __append_text(original: str, appended: str) -> str:
-			return f"{original}{appended}"
-		mock_method.side_effect = __append_text
+		mock_method.side_effect = lambda original, appended: f"{original}{appended}"
 		yield mock_method
 
 @pytest.fixture
@@ -423,9 +419,7 @@ def __mock_get_param_first_name():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._get_param_first_name"
 	) as mock_method:
-		def __get_name(arg_name: str) -> str:
-			return f"{arg_name}-name"
-		mock_method.side_effect = __get_name
+		mock_method.side_effect = lambda arg_name: f"{arg_name}-name"
 		yield mock_method
 
 @pytest.fixture
@@ -441,9 +435,7 @@ def __mock_logger_yellow():
 	with patch(
 		"xmipp3_installer.application.logger.logger.Logger.yellow"
 	) as mock_method:
-		def __return_with_afixes(text):
-			return f"format-start-{text}-format-end"
-		mock_method.side_effect = __return_with_afixes
+		mock_method.side_effect = lambda text: f"format-start-{text}-format-end"
 		yield mock_method
 
 @pytest.fixture
@@ -459,9 +451,7 @@ def __mock_get_args_info():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_args_info"
 	) as mock_method:
-		def __get_info(args: List[str]) -> str:
-			return f'info-{"_".join(args)}-info'
-		mock_method.side_effect = __get_info
+		mock_method.side_effect = lambda args: f'info-{"_".join(args)}-info'
 		yield mock_method
 
 @pytest.fixture
@@ -477,9 +467,7 @@ def __mock_get_mode_help():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._get_mode_help"
 	) as mock_method:
-		def __get_mode_help(mode: str, general: bool=False):
-			return f"help-{mode}-{general}-help"
-		mock_method.side_effect = __get_mode_help
+		mock_method.side_effect = lambda mode, general=False: f"help-{mode}-{general}-help"
 		yield mock_method
 
 @pytest.fixture
@@ -487,9 +475,7 @@ def __mock_get_args_message():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_args_message"
 	) as mock_method:
-		def __get_args_message(mode: str):
-			return f"args_message-{mode}-args_message"
-		mock_method.side_effect = __get_args_message
+		mock_method.side_effect = lambda mode: f"args_message-{mode}-args_message"
 		yield mock_method
 
 @pytest.fixture
@@ -497,9 +483,7 @@ def __mock_get_examples_message():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_examples_message"
 	) as mock_method:
-		def __get_examples_message(mode: str):
-			return f"examples_message-{mode}-examples_message"
-		mock_method.side_effect = __get_examples_message
+		mock_method.side_effect = lambda mode: f"examples_message-{mode}-examples_message"
 		yield mock_method
 
 @pytest.fixture
@@ -507,7 +491,5 @@ def __mock_get_formatting_tabs():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.format.get_formatting_tabs"
 	) as mock_method:
-		def __add_format(text: str) -> str:
-			return f"format_start - {text} - format_end"
-		mock_method.side_effect = __add_format
+		mock_method.side_effect = lambda text: f"format_start - {text} - format_end"
 		yield mock_method
