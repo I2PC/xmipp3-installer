@@ -107,27 +107,6 @@ def getPackageVersionCmd(packageName: str) -> Optional[str]:
 	return output if retCode == 0 else None
 
 ####################### AUX FUNCTIONS (INTERNAL USE ONLY) #######################
-def __handleOutput(stream: BufferedReader, show: bool=False, substitute: bool=False, err: bool=False):
-	"""
-	### This function receives a process output stream and logs its lines.
-
-	#### Params:
-	- stream (BufferedReader): Function to run.
-	- show (bool): Optional. If True, output will also be printed through terminal.
-	- substitute (bool): Optional. If True, output will replace previous line. Only used when show is True.
-	- err (bool): Optional. If True, the stream contains an error. Otherwise, it is regular output.
-	"""
-	# If print through terminal is enabled with substitution, add a first line break
-	if show and substitute:
-		print("")
-
-	# Print all lines in the process output
-	for line in iter(stream.readline, b''):
-		line = line.decode().replace("\n", "")
-		if err:
-			line = red(line)
-		logger(line, forceConsoleOutput=show, substitute=substitute)
-
 def __runLambda(function: Callable, args: Tuple[Any]=()):
 	"""
 	### This function is used to run other functions (intented for use inside a worker pool, so it can be picked).
