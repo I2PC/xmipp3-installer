@@ -2,6 +2,7 @@
 
 import math
 import shutil
+from io import BufferedReader
 from typing_extensions import Self
 
 from xmipp3_installer.application.logger import errors
@@ -128,7 +129,7 @@ class Logger:
 		"""
 		self.__allow_substitution = allow_substitution
 
-	def __call__(self, text: str, show_in_terminal: bool = True, substitute: bool = False):
+	def __call__(self, text: str, show_in_terminal: bool=True, substitute: bool=False):
 		"""
 		### Log a message.
 		
@@ -148,7 +149,7 @@ class Logger:
 	 
 	def log_error(self, error_msg: str, ret_code: int=1, add_portal_link: bool=True):
 		"""
-		### This function prints an error message.
+		### Prints an error message.
 
 		#### Params:
 		- error_msg (str): Error message to show.
@@ -163,6 +164,25 @@ class Logger:
 			error_str += f'\nMore details on the Xmipp documentation portal: {urls.DOCUMENTATION_URL}'
 
 		self.__call__(self.red(error_str), show_in_terminal=True)
+
+	def log_in_streaming(self, stream: BufferedReader, show_in_terminal: bool=False, substitute: bool=False, err: bool=False):
+		"""
+		### Receives a process output stream and logs its lines.
+
+		#### Params:
+		- stream (BufferedReader): Function to run.
+		- show_in_terminal (bool): Optional. If True, output will also be printed through terminal.
+		- substitute (bool): Optional. If True, output will replace previous line. Only used when show is True.
+		- err (bool): Optional. If True, the stream contains an error. Otherwise, it is regular output.
+		"""
+		if show_in_terminal and self.__allow_substitution and substitute:
+			print("")
+		
+		for line in iter(stream.readline, b''):
+			line = line.decode().replace("\n", "")
+			if err:
+				line = self.red(line)
+			self.__call__(line, show_in_terminal=show_in_terminal, substitute=substitute)
 
 	def __remove_non_printable(self, text: str) -> str:
 		"""

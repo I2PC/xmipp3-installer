@@ -1,5 +1,5 @@
 from io import BytesIO
-from unittest.mock import patch
+from unittest.mock import patch, Mock, call
 
 import pytest
 
@@ -18,6 +18,8 @@ __ERROR_CODES = {
 }
 __PORTAL_LINK_MESSAGE = f"\nMore details on the Xmipp documentation portal: {urls.DOCUMENTATION_URL}"
 __DUMMY_FILE = BytesIO()
+__STREAM_READLINE = [b'line1\n', b'line2\n', b'']
+__STREAM_READLINE_DECODED = ['line1', 'line2']
 
 def test_returns_new_instance(__mock_singleton):
 	logger1 = Logger()
@@ -333,6 +335,57 @@ def test_calls_print_when_calling_logger_with_file(
 		flush=True
 	)
 
+def test_calls_print_when_substitution_enabled_when_logging_in_streaming(
+	__mock_print,
+	__mock_stream
+):
+	__mock_stream.readline.side_effect = []
+	logger = Logger()
+	logger.set_allow_substitution(True)
+	logger.log_in_streaming(__mock_stream, show_in_terminal=True, substitute=True)
+	__mock_print.assert_called_once_with("")
+
+def test_calls_stream_readline_when_logging_in_streaming(__mock_stream):
+	__mock_stream.readline.side_effect = []
+	logger = Logger()
+	logger.log_in_streaming(__mock_stream)
+	__mock_stream.readline.assert_called_once()
+
+@pytest.mark.parametrize(
+	"error,show_in_terminal,substitute",
+	[
+		pytest.param(False, False, False),
+		pytest.param(False, False, True),
+		pytest.param(False, True, False),
+		pytest.param(False, True, True),
+		pytest.param(True, False, False),
+		pytest.param(True, False, True),
+		pytest.param(True, True, False),
+		pytest.param(True, True, True)
+	]
+)
+def test_calls_logger_with_expected_params_when_logging_in_streaming(
+	error,
+	show_in_terminal,
+	substitute,
+	__mock_stream,
+	__mock_call
+):
+	logger = Logger()
+	logger.log_in_streaming(
+		__mock_stream,
+		show_in_terminal=show_in_terminal,
+		substitute=substitute,
+		err=error
+	)
+	__mock_call.assert_has_calls([
+		call(
+			logger.red(line) if error else line,
+			show_in_terminal=show_in_terminal,
+			substitute=substitute
+		) for line in __STREAM_READLINE_DECODED
+	])
+
 def __get_substitution_chars(up_char: str, remove_line_char: str, n_lines: int):
 	substitution_chars = ''
 	for _ in range(n_lines):
@@ -441,3 +494,9 @@ def __mock_substitute_lines():
 	with patch("xmipp3_installer.application.logger.logger.Logger._Logger__substitute_lines") as mock_method:
 		mock_method.side_effect = __return_with_affix
 		yield mock_method
+
+@pytest.fixture
+def __mock_stream():
+	mock_stream = Mock()
+	mock_stream.readline.side_effect = __STREAM_READLINE
+	return mock_stream
