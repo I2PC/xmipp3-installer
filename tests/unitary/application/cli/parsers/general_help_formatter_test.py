@@ -141,16 +141,14 @@ def test_returns_expected_section_message(
 	
 @pytest.fixture
 def __setup_formatter():
-	yield GeneralHelpFormatter("test")
+	return GeneralHelpFormatter("test")
 
 @pytest.fixture
 def __mock_logger_yellow():
 	with patch(
 		"xmipp3_installer.application.logger.logger.Logger.yellow"
 	) as mock_method:
-		def __return_with_afixes(text):
-			return f"format-start-{text}-format-end"
-		mock_method.side_effect = __return_with_afixes
+		mock_method.side_effect = lambda text: f"format-start-{text}-format-end"
 		yield mock_method
 
 @pytest.fixture
@@ -165,9 +163,7 @@ def __mock_get_mode_help():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_mode_help"
 	) as mock_method:
-		def __get_help(mode: str) -> str:
-			return f"this is mode {mode}'s help"
-		mock_method.side_effect = __get_help
+		mock_method.side_effect = lambda mode: f"this is mode {mode}'s help"
 		yield mock_method
 
 @pytest.fixture
@@ -185,9 +181,7 @@ def __mock_get_mode_args_str():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_mode_args_str"
 	) as mock_method:
-		def __get_mode_args_str(mode: str) -> str:
-			return f"[mode-{mode}-param1]"
-		mock_method.side_effect = __get_mode_args_str
+		mock_method.side_effect = lambda mode: f"[mode-{mode}-param1]"
 		yield mock_method
 
 @pytest.fixture
@@ -208,9 +202,7 @@ def __mock_get_mode_args_and_help_str():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_mode_args_and_help_str"
 	) as mock_method:
-		def __get_mode_help_start(mode_start: str, _:str):
-			return mode_start
-		mock_method.side_effect = __get_mode_help_start
+		mock_method.side_effect = lambda mode_start, _: mode_start
 		yield mock_method
 
 @pytest.fixture
@@ -218,9 +210,7 @@ def __mock_get_section_message():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_section_message"
 	) as mock_method:
-		def __get_section_message(section: str):
-			return f"section message for section {section}"
-		mock_method.side_effect = __get_section_message
+		mock_method.side_effect = lambda section: f"section message for section {section}"
 		yield mock_method
 
 @pytest.fixture
@@ -244,7 +234,5 @@ def __mock_get_formatting_tabs():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.format.get_formatting_tabs"
 	) as mock_method:
-		def __add_format(text: str) -> str:
-			return f"FORMAT START - {text} - FORMAT END"
-		mock_method.side_effect = __add_format
+		mock_method.side_effect = lambda text: f"FORMAT START - {text} - FORMAT END"
 		yield mock_method
