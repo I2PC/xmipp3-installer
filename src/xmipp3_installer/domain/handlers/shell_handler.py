@@ -67,8 +67,16 @@ def run_shell_command_in_streaming(
 	logger(cmd)
 	process = Popen(cmd, cwd=cwd, stdout=PIPE, stderr=PIPE, shell=True)
 	
-	thread_out = Thread(target=logger.log_in_streaming, args=(process.stdout, show_output, substitute))
-	thread_err = Thread(target=logger.log_in_streaming, args=(process.stderr, show_error, substitute, True))
+	thread_out = Thread(
+		target=logger.log_in_streaming,
+		args=(process.stdout),
+		kwargs={"show_in_terminal": show_output, "substitute": substitute, "err": False}
+	)
+	thread_err = Thread(
+		target=logger.log_in_streaming,
+		args=(process.stderr),
+		kwargs={"show_in_terminal": show_error, "substitute": substitute, "err": True}
+	)
 	thread_out.start()
 	thread_err.start()
 
