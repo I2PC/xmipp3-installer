@@ -69,12 +69,12 @@ def run_shell_command_in_streaming(
 	
 	thread_out = Thread(
 		target=logger.log_in_streaming,
-		args=(process.stdout),
+		args=(process.stdout,),
 		kwargs={"show_in_terminal": show_output, "substitute": substitute, "err": False}
 	)
 	thread_err = Thread(
 		target=logger.log_in_streaming,
-		args=(process.stderr),
+		args=(process.stderr,),
 		kwargs={"show_in_terminal": show_error, "substitute": substitute, "err": True}
 	)
 	thread_out.start()

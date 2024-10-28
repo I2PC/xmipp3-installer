@@ -1,4 +1,5 @@
-from unittest.mock import patch
+from subprocess import PIPE
+from unittest.mock import patch, MagicMock
 
 import pytest
 
@@ -107,6 +108,32 @@ def test_returns_expected_ret_code_and_message_when_running_command(
     return_values == (ret_code, expected_message)
   ), get_assertion_message("return values", (ret_code, expected_message), return_values)
 
+def test_run_shell_command_in_streaming(
+  __mock_popen,
+  __mock_stdout,
+  __mock_thread,
+  __mock_logger,
+  __mock_log_in_streaming
+):
+  # Call the function
+  shell_handler.run_shell_command_in_streaming(__COMMAND, show_output=True, show_error=True)
+
+  # Check if Popen was called correctly
+  __mock_popen.assert_called_with(__COMMAND, cwd='./', stdout=PIPE, stderr=PIPE, shell=True)
+
+  # Check if threads were created and started
+  assert __mock_thread.call_count == 2
+  __mock_thread.assert_any_call(target=logger.log_in_streaming, args=(__mock_stdout,), kwargs={"show_in_terminal": True, "substitute": False, "err": False})
+  __mock_thread.assert_any_call(target=logger.log_in_streaming, args=(mock_stderr,), kwargs={"show_in_terminal": True, "substitute": False, "err": True})
+
+  # Check if process.wait() was called
+  mock_process.wait.assert_called_once()
+
+  # Simulate process.wait() raising KeyboardInterrupt
+  mock_process.wait.side_effect = KeyboardInterrupt
+  ret_code = shell_handler.run_shell_command_in_streaming(__COMMAND, show_output=True, show_error=True)
+  assert ret_code 
+
 @pytest.fixture
 def __mock_run_command():
   with patch(
@@ -144,3 +171,36 @@ def __mock_process_communicate(request):
   with patch("subprocess.Popen.communicate") as mock_method:
     mock_method.return_value = messages
     yield mock_method
+
+@pytest.fixture
+def __mock_log_in_streaming():
+  with patch(
+    "xmipp3_installer.application.logger.logger.Logger.log_in_streaming"
+  ) as mock_method:
+    yield mock_method
+
+@pytest.fixture
+def __mock_popen():
+  with patch("subprocess.Popen") as mock_method:
+    mock_stdout = MagicMock()
+    mock_stderr = MagicMock()
+    mock_stdout.read.return_value = b"Hi\n"
+    mock_stderr.read.return_value = b"Error\n"
+
+    mock_process = MagicMock()
+    mock_process.stdout = mock_stdout
+    mock_process.stderr = mock_stderr
+
+    mock_method.return_value = mock_process
+    yield mock_method
+
+@pytest.fixture
+def __mock_thread():
+  with patch("threading.Popen") as mock_method:
+    yield mock_method
+
+@pytest.fixture
+def __mock_stdout():
+  mock_stdout = MagicMock()
+  mock_stdout.read.return_value = b"Hi\n"
+  return mock_stdout
