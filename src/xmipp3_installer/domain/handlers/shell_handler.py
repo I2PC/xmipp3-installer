@@ -2,6 +2,7 @@
 
 import os
 
+from threading import Thread
 from subprocess import Popen, PIPE
 from typing import Tuple
 
@@ -42,6 +43,43 @@ def run_shell_command(
 		logger.log_error(output_str, ret_code=ret_code, substitute=substitute)
 	
 	return ret_code, output_str
+
+def run_shell_command_in_streaming(
+	cmd: str,
+	cwd: str='./',
+	show_output: bool=False,
+	show_error: bool=False,
+	substitute: bool=False
+) -> int:
+	"""
+	### Runs the given command and shows its output as it is being generated.
+
+	#### Params:
+	- cmd (str): Command to run.
+	- cwd (str): Optional. Path to run the command from. Default is current directory.
+	- show_output (bool): Optional. If True, output is printed.
+	- show_error (bool): Optional. If True, errors are printed.
+	- substitute (bool): Optional. If True, output will replace previous line.
+
+	#### Returns:
+	- (int): Return code.
+	"""
+	logger(cmd)
+	process = Popen(cmd, cwd=cwd, stdout=PIPE, stderr=PIPE, shell=True)
+	
+	thread_out = Thread(target=logger.log_in_streaming, args=(process.stdout, show_output, substitute))
+	thread_err = Thread(target=logger.log_in_streaming, args=(process.stderr, show_error, substitute, True))
+	thread_out.start()
+	thread_err.start()
+
+	try:
+		process.wait()
+		thread_out.join()
+		thread_err.join()
+	except KeyboardInterrupt:
+		process.returncode = errors.INTERRUPTED_ERROR
+	
+	return process.returncode
 
 def __run_command(cmd: str, cwd: str='./') -> Tuple[int, str]:
 	"""
