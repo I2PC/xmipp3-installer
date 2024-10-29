@@ -36,10 +36,10 @@ jobs:
         run: poetry install
 
       - name: Use CLI standalone
-        run: poetry run xmipp3_installer -h
+        run: poetry run ${{ vars.MODULE_NAME }} -h
       
       - name: Use CLI as Python module
-        run: poetry run python -m xmipp3_installer -h
+        run: poetry run python -m ${{ vars.MODULE_NAME }} -h
       
       - name: Run unitary & integration tests
         env:
