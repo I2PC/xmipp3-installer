@@ -63,7 +63,7 @@ def test_calls_logger_to_show_error_when_running_shell_command(
   )
 
 def test_returns_interrupted_error_if_receives_keyboard_interrupt_when_running_command(
-  __mock_process_wait
+  __mock_process_wait_keyboard_interrupt
 ):
   ret_code = shell_handler.__run_command(__COMMAND)[0]
   assert (
@@ -83,9 +83,8 @@ def test_returns_expected_ret_code_and_message_when_running_command(
   __mock_process_communicate,
   expected_message
 ):
-  command = __COMMAND if ret_code == 0 else "this_command_will_not_work"
-  return_values = shell_handler.__run_command(command)
-  return_values = (1, return_values[1]) if return_values[0] != 0 else return_values
+  __mock_process_communicate().returncode = ret_code
+  return_values = shell_handler.__run_command(__COMMAND)
   assert (
     return_values == (ret_code, expected_message)
   ), get_assertion_message("return values", (ret_code, expected_message), return_values)
@@ -161,12 +160,11 @@ def test_calls_process_wait_when_running_shell_command_in_streaming(
   __mock_popen().wait.assert_called_once()
 
 def test_returns_interrupted_error_when__keyboard_interrupt_while_running_shell_command_in_streaming(
-  __mock_popen,
+  __mock_process_wait_keyboard_interrupt,
   __mock_thread,
   __mock_logger,
   __mock_log_in_streaming
 ):
-  __mock_popen().wait.side_effect = KeyboardInterrupt
   ret_code = shell_handler.run_shell_command_in_streaming(__COMMAND)
   assert (
     ret_code == errors.INTERRUPTED_ERROR
@@ -209,25 +207,16 @@ def __mock_logger_error():
     yield mock_method
 
 @pytest.fixture
-def __mock_process_wait():
-  with patch("subprocess.Popen.wait") as mock_method:
-    mock_method.side_effect = KeyboardInterrupt
-    yield mock_method
+def __mock_stdout():
+  mock_stdout = Mock()
+  mock_stdout.read.return_value = b"Hi\n"
+  return mock_stdout
 
 @pytest.fixture
-def __mock_process_communicate(request):
-  raw_messages = request.param if hasattr(request, "param") else ('defaulf_output', 'default_err')
-  messages = (raw_messages[0].encode(), raw_messages[1].encode())
-  with patch("subprocess.Popen.communicate") as mock_method:
-    mock_method.return_value = messages
-    yield mock_method
-
-@pytest.fixture
-def __mock_log_in_streaming():
-  with patch(
-    "xmipp3_installer.application.logger.logger.Logger.log_in_streaming"
-  ) as mock_method:
-    yield mock_method
+def __mock_stderr():
+  mock_stderr = Mock()
+  mock_stderr.read.return_value =b"Error\n"
+  return mock_stderr
 
 @pytest.fixture
 def __mock_popen(__mock_stdout, __mock_stderr):
@@ -241,6 +230,25 @@ def __mock_popen(__mock_stdout, __mock_stderr):
     yield mock_method
 
 @pytest.fixture
+def __mock_process_wait_keyboard_interrupt(__mock_popen):
+  __mock_popen().wait.side_effect = KeyboardInterrupt
+  yield __mock_popen
+
+@pytest.fixture
+def __mock_process_communicate(request, __mock_popen):
+  raw_messages = request.param if hasattr(request, "param") else ('defaulf_output', 'default_err')
+  messages = (raw_messages[0].encode(), raw_messages[1].encode())
+  __mock_popen().communicate.return_value = messages
+  yield __mock_popen
+
+@pytest.fixture
+def __mock_log_in_streaming():
+  with patch(
+    "xmipp3_installer.application.logger.logger.Logger.log_in_streaming"
+  ) as mock_method:
+    yield mock_method
+
+@pytest.fixture
 def __mock_thread():
   with patch("threading.Thread") as mock_method:
     mock_thread = Mock()
@@ -249,15 +257,3 @@ def __mock_thread():
 
     mock_method.return_value = mock_thread
     yield mock_method
-
-@pytest.fixture
-def __mock_stdout():
-  mock_stdout = Mock()
-  mock_stdout.read.return_value = b"Hi\n"
-  return mock_stdout
-
-@pytest.fixture
-def __mock_stderr():
-  mock_stderr = Mock()
-  mock_stderr.read.return_value =b"Error\n"
-  return mock_stderr
