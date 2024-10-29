@@ -1,5 +1,5 @@
 from subprocess import PIPE
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, Mock, call
 
 import pytest
 
@@ -11,13 +11,7 @@ from .... import get_assertion_message
 
 __COMMAND = "echo Hi"
 
-@pytest.mark.parametrize(
-  "substitute",
-  [
-    pytest.param(False),
-    pytest.param(True)
-  ]
-)
+@pytest.mark.parametrize("substitute", [pytest.param(False), pytest.param(True)])
 def test_calls_logger_to_show_command_when_running_shell_command(
   substitute,
   __mock_logger,
@@ -33,13 +27,7 @@ def test_calls_logger_to_show_command_when_running_shell_command(
     substitute=substitute
   )
 
-@pytest.mark.parametrize(
-  "substitute",
-  [
-    pytest.param(False),
-    pytest.param(True)
-  ]
-)
+@pytest.mark.parametrize("substitute", [pytest.param(False), pytest.param(True)])
 def test_calls_logger_to_show_output_when_running_shell_command(
   substitute,
   __mock_logger,
@@ -55,13 +43,7 @@ def test_calls_logger_to_show_output_when_running_shell_command(
     substitute=substitute
   )
 
-@pytest.mark.parametrize(
-  "substitute,ret_code",
-  [
-    pytest.param(False, 1),
-    pytest.param(True, 2)
-  ]
-)
+@pytest.mark.parametrize("substitute,ret_code", [pytest.param(False, 1), pytest.param(True, 2)])
 def test_calls_logger_to_show_error_when_running_shell_command(
   substitute,
   ret_code,
@@ -108,31 +90,101 @@ def test_returns_expected_ret_code_and_message_when_running_command(
     return_values == (ret_code, expected_message)
   ), get_assertion_message("return values", (ret_code, expected_message), return_values)
 
-def test_run_shell_command_in_streaming(
+def test_calls_logger_when_running_shell_command_in_streaming(
   __mock_popen,
-  __mock_stdout,
   __mock_thread,
   __mock_logger,
   __mock_log_in_streaming
 ):
-  # Call the function
-  shell_handler.run_shell_command_in_streaming(__COMMAND, show_output=True, show_error=True)
+  shell_handler.run_shell_command_in_streaming(__COMMAND)
+  __mock_logger.assert_called_once_with(__COMMAND)
 
-  # Check if Popen was called correctly
+def test_calls_popen_when_running_shell_command_in_streaming(
+  __mock_popen,
+  __mock_thread,
+  __mock_logger,
+  __mock_log_in_streaming
+):
+  shell_handler.run_shell_command_in_streaming(__COMMAND)
   __mock_popen.assert_called_with(__COMMAND, cwd='./', stdout=PIPE, stderr=PIPE, shell=True)
 
-  # Check if threads were created and started
-  assert __mock_thread.call_count == 2
-  __mock_thread.assert_any_call(target=logger.log_in_streaming, args=(__mock_stdout,), kwargs={"show_in_terminal": True, "substitute": False, "err": False})
-  __mock_thread.assert_any_call(target=logger.log_in_streaming, args=(mock_stderr,), kwargs={"show_in_terminal": True, "substitute": False, "err": True})
+@pytest.mark.parametrize(
+  "show_output,show_error,substitute",
+  [
+    pytest.param(False, False, False),
+    pytest.param(False, False, True),
+    pytest.param(False, True, False),
+    pytest.param(False, True, True),
+    pytest.param(True, False, False),
+    pytest.param(True, False, True),
+    pytest.param(True, True, False),
+    pytest.param(True, True, True)
+  ]
+)
+def test_calls_thread_when_running_shell_command_in_streaming(
+  show_output,
+  show_error,
+  substitute,
+  __mock_popen,
+  __mock_thread,
+  __mock_logger,
+  __mock_log_in_streaming
+):
+  shell_handler.run_shell_command_in_streaming(
+    __COMMAND,
+    show_output=show_output,
+    show_error=show_error,
+    substitute=substitute
+  )
+  mock_stdout = __mock_popen().stdout
+  mock_stderr = __mock_popen().stderr
+  __mock_thread.assert_has_calls([
+    call(
+      target=__mock_log_in_streaming,
+      args=(mock_stdout,),
+      kwargs={"show_in_terminal": show_output, "substitute": substitute, "err": False}
+    ),
+    call(
+      target=__mock_log_in_streaming,
+      args=(mock_stderr,),
+      kwargs={"show_in_terminal": show_error, "substitute": substitute, "err": True}
+    )
+  ])
 
-  # Check if process.wait() was called
-  mock_process.wait.assert_called_once()
+def test_calls_process_wait_when_running_shell_command_in_streaming(
+  __mock_popen,
+  __mock_thread,
+  __mock_logger,
+  __mock_log_in_streaming
+):
+  shell_handler.run_shell_command_in_streaming(__COMMAND)
+  __mock_popen().wait.assert_called_once()
 
-  # Simulate process.wait() raising KeyboardInterrupt
-  mock_process.wait.side_effect = KeyboardInterrupt
-  ret_code = shell_handler.run_shell_command_in_streaming(__COMMAND, show_output=True, show_error=True)
-  assert ret_code 
+def test_returns_interrupted_error_when__keyboard_interrupt_while_running_shell_command_in_streaming(
+  __mock_popen,
+  __mock_thread,
+  __mock_logger,
+  __mock_log_in_streaming
+):
+  __mock_popen().wait.side_effect = KeyboardInterrupt
+  ret_code = shell_handler.run_shell_command_in_streaming(__COMMAND)
+  assert (
+    ret_code == errors.INTERRUPTED_ERROR
+  ), get_assertion_message("return code", errors.INTERRUPTED_ERROR, ret_code)
+
+@pytest.mark.parametrize("expected_ret_code", [pytest.param(0), pytest.param(1)])
+def test_returns_expected_ret_code_when_running_shell_command_in_streaming(
+  expected_ret_code,
+  __mock_popen,
+  __mock_thread,
+  __mock_logger,
+  __mock_log_in_streaming
+):
+  __mock_popen().returncode = expected_ret_code
+  ret_code = shell_handler.run_shell_command_in_streaming(__COMMAND)
+  assert (
+    ret_code == expected_ret_code
+  ), get_assertion_message("return code", expected_ret_code, ret_code)
 
 @pytest.fixture
 def __mock_run_command():
@@ -158,10 +210,8 @@ def __mock_logger_error():
 
 @pytest.fixture
 def __mock_process_wait():
-  def __raise_keyboard_interrupt():
-    raise KeyboardInterrupt
   with patch("subprocess.Popen.wait") as mock_method:
-    mock_method.side_effect = __raise_keyboard_interrupt
+    mock_method.side_effect = KeyboardInterrupt
     yield mock_method
 
 @pytest.fixture
@@ -180,27 +230,34 @@ def __mock_log_in_streaming():
     yield mock_method
 
 @pytest.fixture
-def __mock_popen():
+def __mock_popen(__mock_stdout, __mock_stderr):
   with patch("subprocess.Popen") as mock_method:
-    mock_stdout = MagicMock()
-    mock_stderr = MagicMock()
-    mock_stdout.read.return_value = b"Hi\n"
-    mock_stderr.read.return_value = b"Error\n"
-
-    mock_process = MagicMock()
-    mock_process.stdout = mock_stdout
-    mock_process.stderr = mock_stderr
+    mock_process = Mock()
+    mock_process.stdout = __mock_stdout()
+    mock_process.stderr = __mock_stderr()
+    mock_process.wait.return_value = None
 
     mock_method.return_value = mock_process
     yield mock_method
 
 @pytest.fixture
 def __mock_thread():
-  with patch("threading.Popen") as mock_method:
+  with patch("threading.Thread") as mock_method:
+    mock_thread = Mock()
+    mock_thread.start.return_value = None
+    mock_thread.join.return_value = None
+
+    mock_method.return_value = mock_thread
     yield mock_method
 
 @pytest.fixture
 def __mock_stdout():
-  mock_stdout = MagicMock()
+  mock_stdout = Mock()
   mock_stdout.read.return_value = b"Hi\n"
   return mock_stdout
+
+@pytest.fixture
+def __mock_stderr():
+  mock_stderr = Mock()
+  mock_stderr.read.return_value =b"Error\n"
+  return mock_stderr
