@@ -1,6 +1,6 @@
 """### Submodule containing all constants needed for handling errors during Xmipp's installation."""
 
-from xmipp3_installer.domain.urls import CMAKE_INSTALL_DOCS_URL
+from xmipp3_installer.installer.urls import CMAKE_INSTALL_DOCS_URL
 
 # Error codes
 INTERRUPTED_ERROR = -1

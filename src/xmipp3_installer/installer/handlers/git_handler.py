@@ -1,6 +1,6 @@
 """### Functions that interact with Git via shell."""
 
-from xmipp3_installer.domain.handlers import shell_handler
+from xmipp3_installer.installer.handlers import shell_handler
 
 def get_current_branch(dir: str='./') -> str:
 	"""

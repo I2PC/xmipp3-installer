@@ -2,7 +2,7 @@ from unittest.mock import patch, call, Mock
 
 import pytest
 
-from xmipp3_installer.domain.handlers import git_handler
+from xmipp3_installer.installer.handlers import git_handler
 
 from .... import get_assertion_message
 
@@ -102,7 +102,7 @@ def test_returns_expected_value_when_checking_if_branch_is_up_to_date(
 		for return_value in run_shell_command_returns
 	]
 	with patch(
-		"xmipp3_installer.domain.handlers.shell_handler.run_shell_command",
+		"xmipp3_installer.installer.handlers.shell_handler.run_shell_command",
 		new=mock_run_shell_command,
 	):
 		is_up_to_date = git_handler.is_branch_up_to_date(dir=__CWD)
@@ -117,7 +117,7 @@ def __return_unchanged(value):
 def __mock_run_shell_command(request):
 	return_values = request.param if hasattr(request, "param") else (0, "default_output")
 	with patch(
-		"xmipp3_installer.domain.handlers.shell_handler.run_shell_command"
+		"xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
 	) as mock_method:
 		mock_method.return_value = return_values
 		yield mock_method
@@ -126,7 +126,7 @@ def __mock_run_shell_command(request):
 def __mock_get_current_branch(request):
 	branch = request.param if hasattr(request, "param") else "default_branch"
 	with patch(
-		"xmipp3_installer.domain.handlers.git_handler.get_current_branch"
+		"xmipp3_installer.installer.handlers.git_handler.get_current_branch"
 	) as mock_method:
 		mock_method.return_value = branch
 		yield mock_method
