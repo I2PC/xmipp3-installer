@@ -54,7 +54,7 @@ def checkPackage(package: str, config: Dict[str, Any]) -> bool:
 
 def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
 	"""
-	### Obtains the library versions from the file compiled by CMake.
+	### Obtains the library versions from the CMake cache file.
 
 	#### Params:
 	- path (str): Path to the file containing all versions.
