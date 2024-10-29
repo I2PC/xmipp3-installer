@@ -1,9 +1,9 @@
 """### Functions that interact with the shell."""
 
 import os
+import subprocess
+import threading
 
-from threading import Thread
-from subprocess import Popen, PIPE
 from typing import Tuple
 
 from xmipp3_installer.application.logger.logger import logger
@@ -65,14 +65,14 @@ def run_shell_command_in_streaming(
 	- (int): Return code.
 	"""
 	logger(cmd)
-	process = Popen(cmd, cwd=cwd, stdout=PIPE, stderr=PIPE, shell=True)
+	process = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 	
-	thread_out = Thread(
+	thread_out = threading.Thread(
 		target=logger.log_in_streaming,
 		args=(process.stdout,),
 		kwargs={"show_in_terminal": show_output, "substitute": substitute, "err": False}
 	)
-	thread_err = Thread(
+	thread_err = threading.Thread(
 		target=logger.log_in_streaming,
 		args=(process.stderr,),
 		kwargs={"show_in_terminal": show_error, "substitute": substitute, "err": True}
@@ -101,7 +101,7 @@ def __run_command(cmd: str, cwd: str='./') -> Tuple[int, str]:
 	- (int): Return code of the operation.
 	- (str): Return message of the operation.
 	"""
-	process = Popen(cmd, cwd=cwd, env=os.environ, stdout=PIPE, stderr=PIPE, shell=True)
+	process = subprocess.Popen(cmd, cwd=cwd, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 	try:
 		process.wait()
 	except KeyboardInterrupt:
