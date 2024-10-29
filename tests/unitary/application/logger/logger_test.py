@@ -5,7 +5,7 @@ import pytest
 
 from xmipp3_installer.application.logger.logger import Logger
 from xmipp3_installer.application.logger import errors
-from xmipp3_installer.domain import urls
+from xmipp3_installer.installer import urls
 
 from .... import get_assertion_message, MockTerminalSize
 

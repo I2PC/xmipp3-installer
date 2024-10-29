@@ -6,7 +6,7 @@ from io import BufferedReader
 from typing_extensions import Self
 
 from xmipp3_installer.application.logger import errors
-from xmipp3_installer.domain import urls
+from xmipp3_installer.installer import urls
 
 class Logger:
 	"""

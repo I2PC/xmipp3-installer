@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock, call
 
 import pytest
 
-from xmipp3_installer.domain.handlers import shell_handler
+from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.application.logger import errors
 
@@ -188,7 +188,7 @@ def test_returns_expected_ret_code_when_running_shell_command_in_streaming(
 @pytest.fixture
 def __mock_run_command():
   with patch(
-    "xmipp3_installer.domain.handlers.shell_handler.__run_command"
+    "xmipp3_installer.installer.handlers.shell_handler.__run_command"
   ) as mock_method:
     mock_method.return_value = (0, 'test_output')
     yield mock_method

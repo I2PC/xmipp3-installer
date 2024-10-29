@@ -3,7 +3,7 @@
 import multiprocessing
 from typing import List, Tuple, Callable, Any, Optional
 
-from xmipp3_installer.domain.handlers import shell_handler
+from xmipp3_installer.installer.handlers import shell_handler
 
 def run_parallel_jobs(funcs: List[Callable], func_args: List[Tuple[Any]], n_jobs: int=multiprocessing.cpu_count()) -> List:
 	"""
