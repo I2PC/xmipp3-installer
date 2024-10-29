@@ -32,7 +32,7 @@ from typing import Dict, Optional
 
 # Self imports
 from .cmake import parseCmakeVersions
-from .utils import runJob, getCurrentBranch, isBranchUpToDate, runParallelJobs
+from .utils import runJob, getCurrentBranch, isBranchUpToDate, run_parallel_jobs
 from .constants import (API_URL, LOG_FILE, TAIL_LOG_NCHARS, UNKNOWN_VALUE,
 	XMIPP_VERSIONS, XMIPP, VERSION_KEY, MASTER_BRANCHNAME, VERSION_FILE, CMAKE_PYTHON,
 	CMAKE_CUDA, CMAKE_MPI, CMAKE_HDF5, CMAKE_JPEG, CMAKE_SQLITE, CMAKE_JAVA,
@@ -120,7 +120,7 @@ def __getJSON(retCode: int=0) -> Optional[Dict]:
 	
 	# Obtaining variables in parallel
 	data = parseCmakeVersions(VERSION_FILE)
-	jsonData = runParallelJobs([
+	jsonData = run_parallel_jobs([
 		(getOSReleaseName, ()),
 		(__getArchitectureName, ()),
 		(getCurrentBranch, ()),
