@@ -10,6 +10,7 @@ from xmipp3_installer.application.logger import errors
 from .... import get_assertion_message
 
 __COMMAND = "echo Hi"
+__RET_CODE_TEXT = "return code"
 
 @pytest.mark.parametrize("substitute", [pytest.param(False), pytest.param(True)])
 def test_calls_logger_to_show_command_when_running_shell_command(
@@ -68,7 +69,7 @@ def test_returns_interrupted_error_if_receives_keyboard_interrupt_when_running_c
   ret_code = shell_handler.__run_command(__COMMAND)[0]
   assert (
     ret_code == errors.INTERRUPTED_ERROR
-  ), get_assertion_message("return code", errors.INTERRUPTED_ERROR, ret_code)
+  ), get_assertion_message(__RET_CODE_TEXT, errors.INTERRUPTED_ERROR, ret_code)
 
 @pytest.mark.parametrize(
   "ret_code,__mock_process_communicate,expected_message",
@@ -168,7 +169,7 @@ def test_returns_interrupted_error_when__keyboard_interrupt_while_running_shell_
   ret_code = shell_handler.run_shell_command_in_streaming(__COMMAND)
   assert (
     ret_code == errors.INTERRUPTED_ERROR
-  ), get_assertion_message("return code", errors.INTERRUPTED_ERROR, ret_code)
+  ), get_assertion_message(__RET_CODE_TEXT, errors.INTERRUPTED_ERROR, ret_code)
 
 @pytest.mark.parametrize("expected_ret_code", [pytest.param(0), pytest.param(1)])
 def test_returns_expected_ret_code_when_running_shell_command_in_streaming(
@@ -182,7 +183,7 @@ def test_returns_expected_ret_code_when_running_shell_command_in_streaming(
   ret_code = shell_handler.run_shell_command_in_streaming(__COMMAND)
   assert (
     ret_code == expected_ret_code
-  ), get_assertion_message("return code", expected_ret_code, ret_code)
+  ), get_assertion_message(__RET_CODE_TEXT, expected_ret_code, ret_code)
 
 @pytest.fixture
 def __mock_run_command():
