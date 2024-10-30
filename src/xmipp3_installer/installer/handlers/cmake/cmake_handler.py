@@ -3,7 +3,8 @@
 import shutil
 from typing import Dict, Any, List
 
-from xmipp3_installer.installer.handlers import shell_handler
+__CMAKE = 'CMAKE'
+__DEFAULT_CMAKE = 'cmake'
 
 def get_cmake_path(config: Dict[str, Any]) -> str:
 	"""
@@ -15,7 +16,7 @@ def get_cmake_path(config: Dict[str, Any]) -> str:
 	#### Returns:
 	- (dict): Param 'packages' with the 'CMAKE' key updated based on the availability of 'cmake'.
 	"""
-	return config.get(CMAKE) or shutil.which(DEFAULT_CMAKE)
+	return config.get(__CMAKE) or shutil.which(__DEFAULT_CMAKE)
 
 def getCMakeVars(config: Dict) -> List[str]:
 	"""
@@ -30,27 +31,14 @@ def getCMakeVars(config: Dict) -> List[str]:
 			result.append(f"-D{key}={value}")
 	return result
 
-def getCMakeVarsStr(config: Dict) -> str:
+def getCMakeVarsStr(config: Dict[str, Any]) -> str:
 	"""
 	### Converts the variables in the config dictionary into a string as CMake args.
 	
 	#### Params:
-	- configDict (dict): Dictionary to obtain the parameters from.
+	- configDict (dict(str, any)): Dictionary to obtain the parameters from.
 	"""
 	return ' '.join(getCMakeVars(config))
-
-def checkPackage(package: str, config: Dict[str, Any]) -> bool:
-	cmake = get_cmake_path(config)
-	args = []
-	args.append(f'-DNAME={package}')
-	args.append('-DCOMPILER_ID=GNU')
-	args.append('-DLANGUAGE=C')
-	args.append('-DMODE=EXIST')
-	args += getCMakeVars(config)
-	
-	cmd = cmake + ' ' + ' '.join(args)
-	ret_code = shell_handler.run_shell_command(cmd)[0]
-	return ret_code == 0
 
 def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
 	"""

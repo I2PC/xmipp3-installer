@@ -61,19 +61,6 @@ def getCMakeVarsStr(config: Dict) -> str:
 	"""
 	return ' '.join(getCMakeVars(config))
 
-def checkPackage(package: str, config: Dict[str, Any]) -> bool:
-	cmake = getCMake(config)
-	args = []
-	args.append(f'-DNAME={package}')
-	args.append('-DCOMPILER_ID=GNU')
-	args.append('-DLANGUAGE=C')
-	args.append('-DMODE=EXIST')
-	args += getCMakeVars(config)
-	
-	cmd = cmake + ' ' + ' '.join(args)
-	ret, _ = runJob(cmd)
-	return ret == 0
-
 def parseCmakeVersions(path: str) -> Dict[str, Any]:
 	"""
 	### This function parses the file where versions found by CMake have been extracted.
