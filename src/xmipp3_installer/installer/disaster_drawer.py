@@ -1,6 +1,7 @@
 """### To be defined where to place this"""
 
 import multiprocessing
+import os
 from typing import List, Tuple, Callable, Any, Optional
 
 from xmipp3_installer.installer.handlers import shell_handler
@@ -33,3 +34,12 @@ def get_package_version(package_name: str) -> Optional[str]:
 	"""
 	ret_code, output = shell_handler.run_shell_command(f'{package_name} --version')
 	return output if ret_code == 0 else None
+
+def get_conda_prefix_path() -> Optional[str]:
+	"""
+	### Returns the path for the current Conda enviroment.
+
+	#### Returns:
+	- (str | None): Path for current Conda enviroment.
+	"""
+	return os.environ.get(vars.CONDA_PREFIX)
