@@ -5,7 +5,7 @@ from typing import Optional
 
 from xmipp3_installer.repository.config_vars import vars
 
-def __get_prefix_path() -> Optional[str]:
+def __get_conda_prefix_path() -> Optional[str]:
 	"""
 	### Returns the path for the current Conda enviroment.
 
@@ -27,7 +27,7 @@ CONFIG_DEFAULT_VALUES = {
 	vars.CC_FLAGS: vars.TUNE_FLAG,
 	vars.CXX_FLAGS: vars.TUNE_FLAG,
 	vars.CUDA_COMPILER: None,
-	vars.PREFIX_PATH: __get_prefix_path(),
+	vars.PREFIX_PATH: __get_conda_prefix_path(),
 	vars.MPI_HOME: None,
 	vars.PYTHON_HOME: None,
 	vars.FFTW_HOME: None,
