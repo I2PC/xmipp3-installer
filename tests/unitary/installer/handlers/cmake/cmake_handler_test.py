@@ -48,6 +48,22 @@ def test_returns_expected_cmake_path(
     cmake_path == expected_cmake_path
   ), get_assertion_message("CMake path", expected_cmake_path, cmake_path)
 
+@pytest.mark.parametrize(
+  "line,expected_library_version",
+  [
+    pytest.param("", {}),
+    pytest.param("TEST=1", {"TEST": "1"}),
+    pytest.param("TEST=1\n", {"TEST": "1"}),
+    pytest.param("TEST=", {"TEST": None}),
+    pytest.param("TEST=\n", {"TEST": None})
+  ]
+)
+def test_gets_expected_library_version_from_line(line, expected_library_version):
+  library_version = cmake_handler.__get_library_version_from_line(line)
+  assert (
+    library_version == expected_library_version
+  ), get_assertion_message("library version", expected_library_version, library_version)
+
 @pytest.fixture
 def __mock_which(request):
   with patch("shutil.which") as mock_method:
