@@ -3,8 +3,9 @@ import re
 from typing import Optional, List, Dict
 
 from xmipp3_installer.installer.handlers import shell_handler, git_handler
+from xmipp3_installer.installer.handlers.cmake import cmake_constants
+from xmipp3_installer.installer import constants
 
-__LOG_FILE = 'compilation.log'
 __TAIL_LOG_NCHARS = 300
 __UNKNOWN_VALUE = 'Unknown'
 
@@ -41,16 +42,16 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 		"version": {
 			"os": json_data[0],
 			"architecture": json_data[1],
-			"cuda": data.get(CMAKE_CUDA),
-			"cmake": data.get(CMAKE_CMAKE),
-			"gcc": data.get(CMAKE_GCC),
-			"gpp": data.get(CMAKE_GPP),
-			"mpi": data.get(CMAKE_MPI),
-			"python": data.get(CMAKE_PYTHON),
-			"sqlite": data.get(CMAKE_SQLITE),
-			"java": data.get(CMAKE_JAVA),
-			"hdf5": data.get(CMAKE_HDF5),
-			"jpeg": data.get(CMAKE_JPEG)
+			"cuda": data.get(cmake_constants.CMAKE_CUDA),
+			"cmake": data.get(cmake_constants.CMAKE_CMAKE),
+			"gcc": data.get(cmake_constants.CMAKE_GCC),
+			"gpp": data.get(cmake_constants.CMAKE_GPP),
+			"mpi": data.get(cmake_constants.CMAKE_MPI),
+			"python": data.get(cmake_constants.CMAKE_PYTHON),
+			"sqlite": data.get(cmake_constants.CMAKE_SQLITE),
+			"java": data.get(cmake_constants.CMAKE_JAVA),
+			"hdf5": data.get(cmake_constants.CMAKE_HDF5),
+			"jpeg": data.get(cmake_constants.CMAKE_JPEG)
 		},
 		"xmipp": {
 			"branch": branch_name,
@@ -98,7 +99,7 @@ def __get_log_tail() -> Optional[str]:
 	- (str | None): Installation log's last lines, or None if there were any errors.
 	"""
 	ret_code, output = shell_handler.run_shell_command(
-		f"tail -n {__TAIL_LOG_NCHARS} {__LOG_FILE}"
+		f"tail -n {__TAIL_LOG_NCHARS} {constants.LOG_FILE}"
 	)
 	return output if ret_code == 0 else None
 
