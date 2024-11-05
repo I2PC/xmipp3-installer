@@ -2,12 +2,9 @@ import hashlib
 import re
 from typing import Optional, List, Dict
 
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.handlers import shell_handler, git_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
-from xmipp3_installer.installer import constants
-
-__TAIL_LOG_NCHARS = 300
-__UNKNOWN_VALUE = 'Unknown'
 
 def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	"""
@@ -83,13 +80,10 @@ def __get_architecture_name() -> str:
 	#### Returns:
 	- (str): Architecture name.
 	"""
-	arch_name = __UNKNOWN_VALUE
 	ret_code, architecture = shell_handler.run_shell_command(
 		'cat /sys/devices/cpu/caps/pmu_name'
 	)
-	if ret_code == 0 and architecture:
-		arch_name = architecture
-	return arch_name
+	return constants.UNKNOWN_VALUE if ret_code != 0 or not architecture else architecture
 
 def __get_log_tail() -> Optional[str]:
 	"""
@@ -99,7 +93,7 @@ def __get_log_tail() -> Optional[str]:
 	- (str | None): Installation log's last lines, or None if there were any errors.
 	"""
 	ret_code, output = shell_handler.run_shell_command(
-		f"tail -n {__TAIL_LOG_NCHARS} {constants.LOG_FILE}"
+		f"tail -n {constants.TAIL_LOG_NCHARS} {constants.LOG_FILE}"
 	)
 	return output if ret_code == 0 else None
 
