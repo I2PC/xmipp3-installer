@@ -1,32 +1,32 @@
 """### Contains the defaukt values for the config variables."""
 
-from xmipp3_installer.repository.config_vars import vars
+from xmipp3_installer.repository.config_vars import variables
 from xmipp3_installer.installer import disaster_drawer
 
 ON = 'ON'
 OFF = 'OFF'
 CONFIG_DEFAULT_VALUES = {
-	vars.SEND_INSTALLATION_STATISTICS: ON,
-	vars.CMAKE: None,
-	vars.CUDA: ON,
-	vars.MPI: ON,
-	vars.CC: None,
-	vars.CXX: None,
-	vars.CMAKE_INSTALL_PREFIX: INSTALL_PATH,
-	vars.CC_FLAGS: vars.TUNE_FLAG,
-	vars.CXX_FLAGS: vars.TUNE_FLAG,
-	vars.CUDA_COMPILER: None,
-	vars.PREFIX_PATH: disaster_drawer.get_conda_prefix_path(),
-	vars.MPI_HOME: None,
-	vars.PYTHON_HOME: None,
-	vars.FFTW_HOME: None,
-	vars.TIFF_HOME: None,
-	vars.HDF5_HOME: None,
-	vars.JPEG_HOME: None,
-	vars.SQLITE_HOME: None,
-	vars.CUDA_CXX: None,
-	vars.MATLAB: ON,
-	vars.LINK_SCIPION: ON,
-	vars.BUILD_TESTING: ON,
- 	vars.SKIP_RPATH: ON
+	variables.SEND_INSTALLATION_STATISTICS: ON,
+	variables.CMAKE: None,
+	variables.CUDA: ON,
+	variables.MPI: ON,
+	variables.CC: None,
+	variables.CXX: None,
+	variables.CMAKE_INSTALL_PREFIX: INSTALL_PATH,
+	variables.CC_FLAGS: variables.TUNE_FLAG,
+	variables.CXX_FLAGS: variables.TUNE_FLAG,
+	variables.CUDA_COMPILER: None,
+	variables.PREFIX_PATH: disaster_drawer.get_conda_prefix_path(),
+	variables.MPI_HOME: None,
+	variables.PYTHON_HOME: None,
+	variables.FFTW_HOME: None,
+	variables.TIFF_HOME: None,
+	variables.HDF5_HOME: None,
+	variables.JPEG_HOME: None,
+	variables.SQLITE_HOME: None,
+	variables.CUDA_CXX: None,
+	variables.MATLAB: ON,
+	variables.LINK_SCIPION: ON,
+	variables.BUILD_TESTING: ON,
+ 	variables.SKIP_RPATH: ON
 }

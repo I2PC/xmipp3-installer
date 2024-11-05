@@ -4,7 +4,7 @@ import shutil
 from typing import Dict, Any, List
 
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
-from xmipp3_installer.repository.config_vars import vars
+from xmipp3_installer.repository.config_vars import variables
 
 def get_cmake_path(config: Dict[str, Any]) -> str:
 	"""
@@ -16,7 +16,7 @@ def get_cmake_path(config: Dict[str, Any]) -> str:
 	#### Returns:
 	- (dict): Param 'packages' with the 'CMAKE' key updated based on the availability of 'cmake'.
 	"""
-	return config.get(vars.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE)
+	return config.get(variables.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE)
 
 #def getCMakeVars(config: Dict) -> List[str]:
 #	"""
