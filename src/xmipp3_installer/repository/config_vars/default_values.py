@@ -1,7 +1,8 @@
 """### Contains the defaukt values for the config variables."""
 
-from xmipp3_installer.repository.config_vars import variables
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer import disaster_drawer
+from xmipp3_installer.repository.config_vars import variables
 
 ON = 'ON'
 OFF = 'OFF'
@@ -12,7 +13,7 @@ CONFIG_DEFAULT_VALUES = {
 	variables.MPI: ON,
 	variables.CC: None,
 	variables.CXX: None,
-	variables.CMAKE_INSTALL_PREFIX: INSTALL_PATH,
+	variables.CMAKE_INSTALL_PREFIX: constants.INSTALL_PATH,
 	variables.CC_FLAGS: variables.TUNE_FLAG,
 	variables.CXX_FLAGS: variables.TUNE_FLAG,
 	variables.CUDA_COMPILER: None,
