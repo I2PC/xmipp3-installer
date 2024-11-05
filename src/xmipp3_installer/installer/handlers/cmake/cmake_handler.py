@@ -3,8 +3,8 @@
 import shutil
 from typing import Dict, Any, List
 
-__CMAKE = 'CMAKE'
-__DEFAULT_CMAKE = 'cmake'
+from xmipp3_installer.installer.handlers.cmake import cmake_constants
+from xmipp3_installer.repository.config_vars import vars
 
 def get_cmake_path(config: Dict[str, Any]) -> str:
 	"""
@@ -16,29 +16,29 @@ def get_cmake_path(config: Dict[str, Any]) -> str:
 	#### Returns:
 	- (dict): Param 'packages' with the 'CMAKE' key updated based on the availability of 'cmake'.
 	"""
-	return config.get(__CMAKE) or shutil.which(__DEFAULT_CMAKE)
+	return config.get(vars.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE)
 
-def getCMakeVars(config: Dict) -> List[str]:
-	"""
-	### Converts the variables in the config dictionary into a list as CMake args.
-	
-	#### Params:
-	- configDict (dict): Dictionary to obtain the parameters from.
-	"""
-	result = []
-	for (key, value) in config.items():
-		if key not in INTERNAL_LOGIC_VARS and bool(value):
-			result.append(f"-D{key}={value}")
-	return result
-
-def getCMakeVarsStr(config: Dict[str, Any]) -> str:
-	"""
-	### Converts the variables in the config dictionary into a string as CMake args.
-	
-	#### Params:
-	- configDict (dict(str, any)): Dictionary to obtain the parameters from.
-	"""
-	return ' '.join(getCMakeVars(config))
+#def getCMakeVars(config: Dict) -> List[str]:
+#	"""
+#	### Converts the variables in the config dictionary into a list as CMake args.
+#	
+#	#### Params:
+#	- configDict (dict): Dictionary to obtain the parameters from.
+#	"""
+#	result = []
+#	for (key, value) in config.items():
+#		if key not in INTERNAL_LOGIC_VARS and bool(value):
+#			result.append(f"-D{key}={value}")
+#	return result
+#
+#def getCMakeVarsStr(config: Dict[str, Any]) -> str:
+#	"""
+#	### Converts the variables in the config dictionary into a string as CMake args.
+#	
+#	#### Params:
+#	- configDict (dict(str, any)): Dictionary to obtain the parameters from.
+#	"""
+#	return ' '.join(getCMakeVars(config))
 
 def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
 	"""
