@@ -1,7 +1,7 @@
 """### Functions that interact with CMake."""
 
 import shutil
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
 from xmipp3_installer.repository.config_vars import variables
@@ -18,7 +18,7 @@ def get_cmake_path(config: Dict[str, Any]) -> str:
 	"""
 	return config.get(variables.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE)
 
-def get_cmake_vars(config: Dict[str, Any]) -> List[str]:
+def get_cmake_vars_str(config: Dict[str, Any]) -> str:
 	"""
 	### Converts the variables in the config dictionary into a list as CMake args.
 	
@@ -29,16 +29,7 @@ def get_cmake_vars(config: Dict[str, Any]) -> List[str]:
 	for (key, value) in config.items():
 		if key not in variables.INTERNAL_LOGIC_VARS and bool(value):
 			result.append(f"-D{key}={value}")
-	return result
-
-#def getCMakeVarsStr(config: Dict[str, Any]) -> str:
-#	"""
-#	### Converts the variables in the config dictionary into a string as CMake args.
-#	
-#	#### Params:
-#	- configDict (dict(str, any)): Dictionary to obtain the parameters from.
-#	"""
-#	return ' '.join(getCMakeVars(config))
+	return ' '.join(result)
 
 def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
 	"""

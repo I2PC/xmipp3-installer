@@ -102,22 +102,23 @@ def test_returns_expected_library_versions_from_cmake_file(__mock_open):
 @pytest.mark.parametrize(
   "config_dict,__mock_internal_logic_vars,expected_cmake_vars",
   [
-    pytest.param({}, [], []),
-    pytest.param({"var1": "somevalue"}, [], ["-Dvar1=somevalue"]),
-    pytest.param({"var1": "somevalue"}, ["var1"], []),
-    pytest.param({"var1": "somevalue", "var2": "othervalue"}, ["var1"], ["-Dvar2=othervalue"])
+    pytest.param({}, [], ""),
+    pytest.param({"var1": "somevalue"}, [], "-Dvar1=somevalue"),
+    pytest.param({"var1": "somevalue"}, ["var1"], ""),
+    pytest.param({"var1": "somevalue", "var2": "othervalue"}, ["var1"], "-Dvar2=othervalue"),
+    pytest.param({"var1": "test", "var2": "test2"}, [], "-Dvar1=test -Dvar2=test2")
   ],
   indirect=["__mock_internal_logic_vars"]
 )
-def test_returns_expected_cmake_vars(
+def test_returns_expected_cmake_vars_str(
   config_dict,
   __mock_internal_logic_vars,
   expected_cmake_vars
 ):
-  cmake_vars = cmake_handler.get_cmake_vars(config_dict)
+  cmake_vars = cmake_handler.get_cmake_vars_str(config_dict)
   assert (
     cmake_vars == expected_cmake_vars
-  ), get_assertion_message("CMake variables", expected_cmake_vars, cmake_vars)
+  ), get_assertion_message("CMake variables string", expected_cmake_vars, cmake_vars)
 
 @pytest.fixture
 def __mock_which(request):
