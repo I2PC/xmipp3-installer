@@ -18,19 +18,19 @@ def get_cmake_path(config: Dict[str, Any]) -> str:
 	"""
 	return config.get(variables.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE)
 
-#def getCMakeVars(config: Dict) -> List[str]:
-#	"""
-#	### Converts the variables in the config dictionary into a list as CMake args.
-#	
-#	#### Params:
-#	- configDict (dict): Dictionary to obtain the parameters from.
-#	"""
-#	result = []
-#	for (key, value) in config.items():
-#		if key not in INTERNAL_LOGIC_VARS and bool(value):
-#			result.append(f"-D{key}={value}")
-#	return result
-#
+def get_cmake_vars(config: Dict[str, Any]) -> List[str]:
+	"""
+	### Converts the variables in the config dictionary into a list as CMake args.
+	
+	#### Params:
+	- config (dict): Dictionary to obtain the parameters from.
+	"""
+	result = []
+	for (key, value) in config.items():
+		if key not in variables.INTERNAL_LOGIC_VARS and bool(value):
+			result.append(f"-D{key}={value}")
+	return result
+
 #def getCMakeVarsStr(config: Dict[str, Any]) -> str:
 #	"""
 #	### Converts the variables in the config dictionary into a string as CMake args.
