@@ -4,6 +4,8 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.installer import disaster_drawer
 from xmipp3_installer.repository.config_vars import variables
 
+__TUNE_FLAG = '-mtune=native'
+
 ON = 'ON'
 OFF = 'OFF'
 CONFIG_DEFAULT_VALUES = {
@@ -14,8 +16,8 @@ CONFIG_DEFAULT_VALUES = {
 	variables.CC: None,
 	variables.CXX: None,
 	variables.CMAKE_INSTALL_PREFIX: constants.INSTALL_PATH,
-	variables.CC_FLAGS: variables.TUNE_FLAG,
-	variables.CXX_FLAGS: variables.TUNE_FLAG,
+	variables.CC_FLAGS: __TUNE_FLAG,
+	variables.CXX_FLAGS: __TUNE_FLAG,
 	variables.CUDA_COMPILER: None,
 	variables.PREFIX_PATH: disaster_drawer.get_conda_prefix_path(),
 	variables.MPI_HOME: None,
