@@ -99,6 +99,26 @@ def test_returns_expected_library_versions_from_cmake_file(__mock_open):
     library_versions == __VERSIONS
   ), get_assertion_message("library versions", __VERSIONS, library_versions)
 
+@pytest.mark.parametrize(
+  "config_dict,__mock_internal_logic_vars,expected_cmake_vars",
+  [
+    pytest.param({}, [], []),
+    pytest.param({"var1": "somevalue"}, [], ["-Dvar1=somevalue"]),
+    pytest.param({"var1": "somevalue"}, ["var1"], []),
+    pytest.param({"var1": "somevalue", "var2": "othervalue"}, ["var1"], ["-Dvar2=othervalue"])
+  ],
+  indirect=["__mock_internal_logic_vars"]
+)
+def test_returns_expected_cmake_vars(
+  config_dict,
+  __mock_internal_logic_vars,
+  expected_cmake_vars
+):
+  cmake_vars = cmake_handler.get_cmake_vars(config_dict)
+  assert (
+    cmake_vars == expected_cmake_vars
+  ), get_assertion_message("CMake variables", expected_cmake_vars, cmake_vars)
+
 @pytest.fixture
 def __mock_which(request):
   with patch("shutil.which") as mock_method:
@@ -119,3 +139,9 @@ def __mock_get_library_version_from_line():
   ) as mock_method:
     mock_method.return_value = {"test": "test"}
     yield mock_method
+
+@pytest.fixture
+def __mock_internal_logic_vars(request):
+  internal_vars = request.param if hasattr(request, "param") else ["internal-var1", "internal-var2"]
+  with patch.object(variables, "INTERNAL_LOGIC_VARS", internal_vars):
+    yield
