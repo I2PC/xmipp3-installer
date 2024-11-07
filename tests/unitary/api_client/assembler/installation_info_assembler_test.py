@@ -8,6 +8,20 @@ from xmipp3_installer.installer import constants
 from .... import get_assertion_message
 
 __LOG_TAIL = "line1\nline2\nline3\nline4\n"
+__IP_ADDR_EXAMPLE = """
+1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+  link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+  inet 127.0.0.1/8 scope host lo
+  inet6 ::1/128 scope host
+    valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000
+  link/ether 00:08:9b:c4:30:31 brd ff:ff:ff:ff:ff:ff
+3: eth1: <BROADCAST, MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+  link/ether 00:08:9b:c4:30:30 brd ff:ff:ff:ff:ff:ff
+  inet 192.168.1.10/24 brd 192.168.1.255 scope global eth1
+  ineto fe80::208:9bff:fec4:3030/64 scope link
+    valid_lft forever preferred_lft forever
+"""
 
 def test_calls_run_shell_command_when_getting_architecture_name(__mock_run_shell_command):
   installation_info_assembler.__get_architecture_name()
