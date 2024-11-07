@@ -96,18 +96,12 @@ def test_gets_expected_error_message(
 	__setup_parser
 ):
 	external_error_message = "test-error-message"
-	custom_error_message = __format_red(f"{expected_mode}: error: {external_error_message}\n")
+	custom_error_message = __mock_logger_red(f"{expected_mode}: error: {external_error_message}\n")
 	__setup_parser.error(external_error_message)
 	__mock_exit.assert_called_once_with(
 		1,
-		__format_tabs(f"{expected_args}{expected_line_break}{custom_error_message}")
+		__mock_get_formatting_tabs(f"{expected_args}{expected_line_break}{custom_error_message}")
 	)
-
-def __format_red(text: str) -> str:
-	return f"red_start-{text}-red_end"
-
-def __format_tabs(text: str) -> str:
-	return f"tabs_start-{text}-tabs_end"
 
 @pytest.fixture
 def __setup_parser():
@@ -140,7 +134,7 @@ def __mock_logger_red():
 	with patch(
 		"xmipp3_installer.application.logger.logger.Logger.red"
 	) as mock_method:
-		mock_method.side_effect = __format_red
+		mock_method.side_effect = lambda text: f"red_start-{text}-red_end"
 		yield mock_method
 
 @pytest.fixture
@@ -148,7 +142,7 @@ def __mock_get_formatting_tabs():
 	with patch(
 		"xmipp3_installer.application.cli.parsers.format.get_formatting_tabs"
 	) as mock_method:
-		mock_method.side_effect = __format_tabs
+		mock_method.side_effect = lambda text: f"tabs_start-{text}-tabs_end"
 		yield mock_method
 
 @pytest.fixture
