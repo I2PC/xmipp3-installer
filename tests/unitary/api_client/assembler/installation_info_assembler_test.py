@@ -9,19 +9,20 @@ from .... import get_assertion_message
 
 __LINES = ["line1\n", "line2\n", "line3\n", "line4\n"]
 __LOG_TAIL = ''.join(__LINES)
-__IP_ADDR_EXAMPLE = """1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
-  link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-  inet 127.0.0.1/8 scope host lo
-  inet6 ::1/128 scope host
-    valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000
-  link/ether 00:08:9b:c4:30:31 brd ff:ff:ff:ff:ff:ff
-3: eth1: <BROADCAST, MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
-  link/ether 00:08:9b:c4:30:30 brd ff:ff:ff:ff:ff:ff
-  inet 192.168.1.10/24 brd 192.168.1.255 scope global eth1
-  ineto fe80::208:9bff:fec4:3030/64 scope link
-    valid_lft forever preferred_lft forever"""
-__IP_ADDR_EXAMPLE_LINES = __IP_ADDR_EXAMPLE.split("\n")
+__IP_ADDR_EXAMPLE_LINES = [
+  "1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN",
+  "\tlink/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00",
+  "\tinet 127.0.0.1/8 scope host lo",
+  "\tinet6 ::1/128 scope host",
+  "\t\tvalid_lft forever preferred_lft forever",
+  "2: eth0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
+  "\tlink/ether 00:08:9b:c4:30:31 brd ff:ff:ff:ff:ff:ff",
+  "3: eth1: <BROADCAST, MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000",
+  "\tlink/ether 00:08:9b:c4:30:30 brd ff:ff:ff:ff:ff:ff",
+  "\tinet 192.168.1.10/24 brd 192.168.1.255 scope global eth1",
+  "\tineto fe80::208:9bff:fec4:3030/64 scope link",
+  "\t\tvalid_lft forever preferred_lft forever"
+]
 
 def test_calls_run_shell_command_when_getting_architecture_name(__mock_run_shell_command):
   installation_info_assembler.__get_architecture_name()
@@ -109,7 +110,8 @@ def test_calls_re_search_group_when_finding_mac_address_in_lines(__mock_re_match
     pytest.param(["something"], None),
     pytest.param([__IP_ADDR_EXAMPLE_LINES[5]], None),
     pytest.param(__IP_ADDR_EXAMPLE_LINES[0:2], None),
-    pytest.param(__IP_ADDR_EXAMPLE_LINES[5:7], "00:08:9b:c4:30:31")
+    pytest.param(__IP_ADDR_EXAMPLE_LINES[5:7], "00:08:9b:c4:30:31"),
+    pytest.param(__IP_ADDR_EXAMPLE_LINES, "00:08:9b:c4:30:31")
   ]
 )
 def test_returns_expected_result_when_finding_mac_address_in_lines(
