@@ -367,10 +367,9 @@ def __get_args_help_message(
 def __setup_formatter():
 	yield ModeHelpFormatter("test")
 
-@pytest.fixture
+@pytest.fixture(params=["this is the mode: default_mode"])
 def __mock_formatter_prog(request, __setup_formatter):
-	mode = request.param if hasattr(request, "param") else "this is the mode: default_mode"
-	with patch.object(__setup_formatter, "_prog", mode):
+	with patch.object(__setup_formatter, "_prog", request.param):
 		yield __setup_formatter
 
 @pytest.fixture
@@ -422,12 +421,12 @@ def __mock_get_param_first_name():
 		mock_method.side_effect = lambda arg_name: f"{arg_name}-name"
 		yield mock_method
 
-@pytest.fixture
+@pytest.fixture(params=[False])
 def __mock_args_contain_optional(request):
 	with patch(
 		"xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__args_contain_optional"
 	) as mock_method:
-		mock_method.return_value = request.param if hasattr(request, "param") else False
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture

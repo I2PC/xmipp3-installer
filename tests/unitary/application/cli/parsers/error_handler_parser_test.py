@@ -107,18 +107,17 @@ def test_gets_expected_error_message(
 def __setup_parser():
 	return ErrorHandlerArgumentParser("test")
 
-@pytest.fixture
+@pytest.fixture(params=["this are the default args"])
 def __mock_formatter_prog(request, __setup_parser):
-	args = request.param if hasattr(request, "param") else "this are the default args"
-	with patch.object(__setup_parser, "prog", args):
+	with patch.object(__setup_parser, "prog", request.param):
 		yield __setup_parser
 
-@pytest.fixture
+@pytest.fixture(params=[["arg1"]])
 def __mock_get_args(request):
 	with patch(
 		"xmipp3_installer.application.cli.parsers.error_handler_parser.ErrorHandlerArgumentParser._ErrorHandlerArgumentParser__get_args"
 	) as mock_method:
-		mock_method.return_value = request.param if hasattr(request, "param") else ["arg1"]
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture

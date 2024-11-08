@@ -274,26 +274,25 @@ def __mock_params():
 	with patch.object(params, "PARAMS", __PARAMS):
 		yield
 
-@pytest.fixture
+@pytest.fixture(params=[2])
 def __mock_tab_size(request):
-	tab_size = request.param if hasattr(request, "param") else 2
-	with patch.object(format, "TAB_SIZE", tab_size):
+	with patch.object(format, "TAB_SIZE", request.param):
 		yield
 
-@pytest.fixture
+@pytest.fixture(params=[(1, '')])
 def __mock_get_spaces(request):
 	with patch(
 		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_spaces"
 	) as mock_method:
-		mock_method.return_value = request.param if hasattr(request, "param") else (1, '')
+		mock_method.return_value = request.param
 		yield mock_method
 
-@pytest.fixture
+@pytest.fixture(params=[''])
 def __mock_multi_line_help_text(request):
 	with patch(
 		"xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__multi_line_help_text"
 	) as mock_method:
-		mock_method.return_value = request.param if hasattr(request, "param") else ''
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture
@@ -311,24 +310,20 @@ def __mock_get_formatting_tabs():
 	) as mock_method:
 		yield mock_method
 
-@pytest.fixture
+@pytest.fixture(params=[25])
 def __mock_get_terminal_column_size(request):
 	with patch("shutil.get_terminal_size") as mock_method:
-		mock_method.return_value = MockTerminalSize(
-			request.param if hasattr(request, "param") else 25
-		)
+		mock_method.return_value = MockTerminalSize(request.param)
 		yield mock_method
 
-@pytest.fixture
+@pytest.fixture(params=[5])
 def __mock_line_size_lower_limit(request):
-	size = request.param if hasattr(request, "param") else 5
-	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__LINE_SIZE_LOWER_LIMIT", size):
+	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__LINE_SIZE_LOWER_LIMIT", request.param):
 		yield
 
-@pytest.fixture
+@pytest.fixture(params=[5])
 def __mock_section_help_start(request):
-	size = request.param if hasattr(request, "param") else 5
-	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_HELP_START", size):
+	with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_HELP_START", request.param):
 		yield
 
 @pytest.fixture
