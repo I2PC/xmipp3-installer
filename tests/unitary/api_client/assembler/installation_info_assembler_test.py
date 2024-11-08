@@ -7,7 +7,8 @@ from xmipp3_installer.installer import constants
 
 from .... import get_assertion_message
 
-__LOG_TAIL = "line1\nline2\nline3\nline4\n"
+__LINES = ["line1\n", "line2\n", "line3\n", "line4\n"]
+__LOG_TAIL = ''.join(__LINES)
 __IP_ADDR_EXAMPLE = """1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
   link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
   inet 127.0.0.1/8 scope host lo
@@ -20,6 +21,7 @@ __IP_ADDR_EXAMPLE = """1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue s
   inet 192.168.1.10/24 brd 192.168.1.255 scope global eth1
   ineto fe80::208:9bff:fec4:3030/64 scope link
     valid_lft forever preferred_lft forever"""
+__IP_ADDR_EXAMPLE_LINES = __IP_ADDR_EXAMPLE.split("\n")
 
 def test_calls_run_shell_command_when_getting_architecture_name(__mock_run_shell_command):
   installation_info_assembler.__get_architecture_name()
@@ -76,62 +78,58 @@ def test_does_not_call_re_match_when_finding_mac_address_in_lines_with_no_lines(
   __mock_re_match.assert_not_called()
 
 def test_calls_re_match_when_finding_mac_address_in_lines_with_valid_lines(__mock_re_match):
-  lines = ["line1\n", "line2\n", "line3\n", "line4\n"]
   __mock_re_match.return_value = None
-  installation_info_assembler.__find_mac_address_in_lines(lines)
+  installation_info_assembler.__find_mac_address_in_lines(__LINES)
   __mock_re_match.assert_has_calls([
     call(
       r"^\d+: (enp|wlp|eth)\w+",
       line
-    ) for line in lines
+    ) for line in __LINES[:-1]
   ])
 
 def test_calls_re_match_group_when_finding_mac_address_in_lines(__mock_re_match):
-  installation_info_assembler.__find_mac_address_in_lines(["line1\n"])
+  installation_info_assembler.__find_mac_address_in_lines(__LINES[:2])
   __mock_re_match().group.assert_called_once_with(1)
 
 def test_calls_re_search_when_finding_mac_address_in_lines(__mock_re_match, __mock_re_search):
-  lines = ["line1\n", "line-to-find\n"]
   __mock_re_match.return_value = __mock_re_groups("enp")
-  installation_info_assembler.__find_mac_address_in_lines(lines)
-  __mock_re_search.assert_called_once_with(r"link/ether ([0-9a-f:]{17})", lines[1])
+  installation_info_assembler.__find_mac_address_in_lines(__LINES[:2])
+  __mock_re_search.assert_called_once_with(r"link/ether ([0-9a-f:]{17})", __LINES[1])
 
 def test_calls_re_search_group_when_finding_mac_address_in_lines(__mock_re_match, __mock_re_search):
-  lines = ["line1\n", "line-to-find\n"]
   __mock_re_match.return_value = __mock_re_groups("enp")
-  installation_info_assembler.__find_mac_address_in_lines(lines)
+  installation_info_assembler.__find_mac_address_in_lines(__LINES[:2])
   __mock_re_search().group.assert_called_once_with(1)
 
 @pytest.mark.parametrize(
-  "__mock_re_match,__mock_re_search,expected_mac_address",
+  "input_lines,expected_mac_address",
   [
-    pytest.param("", "", None),
-    pytest.param("", "something", None),
-    pytest.param("something", "", None),
-    pytest.param("something", "something", None),
-    pytest.param("eth", "something", "something"),
-    pytest.param("enp", "something", "something"),
-    pytest.param("wlp", "something", "something")
-  ],
-  indirect=["__mock_re_match", "__mock_re_search"]
+    pytest.param([], None),
+    pytest.param([""], None),
+    pytest.param(["something"], None),
+    pytest.param([__IP_ADDR_EXAMPLE_LINES[5]], None),
+    pytest.param(__IP_ADDR_EXAMPLE_LINES[0:2], None),
+    pytest.param(__IP_ADDR_EXAMPLE_LINES[5:7], "00:08:9b:c4:30:31")
+  ]
 )
 def test_returns_expected_result_when_finding_mac_address_in_lines(
-  __mock_re_match,
-  __mock_re_search,
+  input_lines,
   expected_mac_address
 ):
-  mac_address = installation_info_assembler.__find_mac_address_in_lines([""])
+  mac_address = installation_info_assembler.__find_mac_address_in_lines(input_lines)
   assert (
     mac_address == expected_mac_address
   ), get_assertion_message("MAC address", expected_mac_address, mac_address)
 
-@pytest.fixture
+#def test_calls_run_shell_command_when_getting_mac_address(__mock_run_shell_command):
+#  installation_info_assembler.__get_mac_address()
+
+@pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):
-  ret_code, output = request.param if hasattr(request, "param") else (0, "")
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
   ) as mock_method:
-    mock_method.return_value = (ret_code, output)
+    mock_method.return_value = request.param
     yield mock_method
 
 #@pytest.fixture
