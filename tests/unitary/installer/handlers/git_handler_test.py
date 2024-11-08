@@ -113,20 +113,18 @@ def test_returns_expected_value_when_checking_if_branch_is_up_to_date(
 def __return_unchanged(value):
 	return value
 
-@pytest.fixture
+@pytest.fixture(params=[(0, "default_output")])
 def __mock_run_shell_command(request):
-	return_values = request.param if hasattr(request, "param") else (0, "default_output")
 	with patch(
 		"xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
 	) as mock_method:
-		mock_method.return_value = return_values
+		mock_method.return_value = request.param
 		yield mock_method
 
-@pytest.fixture
+@pytest.fixture(params=["default_branch"])
 def __mock_get_current_branch(request):
-	branch = request.param if hasattr(request, "param") else "default_branch"
 	with patch(
 		"xmipp3_installer.installer.handlers.git_handler.get_current_branch"
 	) as mock_method:
-		mock_method.return_value = branch
+		mock_method.return_value = request.param
 		yield mock_method

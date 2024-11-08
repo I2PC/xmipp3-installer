@@ -120,11 +120,10 @@ def test_returns_expected_cmake_vars_str(
     cmake_vars == expected_cmake_vars
   ), get_assertion_message("CMake variables string", expected_cmake_vars, cmake_vars)
 
-@pytest.fixture
+@pytest.fixture(params=[__CMAKE_PATH])
 def __mock_which(request):
   with patch("shutil.which") as mock_method:
-    cmake_path = request.param if hasattr(request, "param") else __CMAKE_PATH
-    mock_method.return_value = cmake_path
+    mock_method.return_value = request.param
     yield mock_method
 
 @pytest.fixture
@@ -141,8 +140,7 @@ def __mock_get_library_version_from_line():
     mock_method.return_value = {"test": "test"}
     yield mock_method
 
-@pytest.fixture
+@pytest.fixture(params=[["internal-var1", "internal-var2"]])
 def __mock_internal_logic_vars(request):
-  internal_vars = request.param if hasattr(request, "param") else ["internal-var1", "internal-var2"]
-  with patch.object(variables, "INTERNAL_LOGIC_VARS", internal_vars):
+  with patch.object(variables, "INTERNAL_LOGIC_VARS", request.param):
     yield

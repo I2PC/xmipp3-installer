@@ -336,10 +336,9 @@ def __test_args_in_mode(mode, default_args, expected_args):
 		args == expected_args
 	), get_assertion_message(f"args for mode \"{mode}\"", expected_args, args)
 
-@pytest.fixture
+@pytest.fixture(params=[["-h"]])
 def __mock_sys_argv(request):
-	args = request.param if hasattr(request, "param") else ["-h"]
-	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, *args]):
+	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, *request.param]):
 		yield
 
 @pytest.fixture
