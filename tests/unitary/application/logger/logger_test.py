@@ -349,7 +349,7 @@ def test_calls_stream_readline_when_logging_in_streaming(__mock_stream):
 	__mock_stream.readline.side_effect = []
 	logger = Logger()
 	logger.log_in_streaming(__mock_stream)
-	__mock_stream.readline.assert_called_once()
+	__mock_stream.readline.assert_called_once_with()
 
 @pytest.mark.parametrize(
 	"error,show_in_terminal,substitute",
