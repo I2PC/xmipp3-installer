@@ -9,6 +9,7 @@ from .... import get_assertion_message
 
 __LINES = ["line1\n", "line2\n", "line3\n", "line4\n"]
 __LOG_TAIL = ''.join(__LINES)
+__ETH_MAC_ADDRESS = "00:08:9b:c4:30:31"
 __IP_ADDR_LINES = [
   "1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN",
   "\tlink/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00",
@@ -16,7 +17,7 @@ __IP_ADDR_LINES = [
   "\tinet6 ::1/128 scope host",
   "\t\tvalid_lft forever preferred_lft forever",
   "2: eth0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
-  "\tlink/ether 00:08:9b:c4:30:31 brd ff:ff:ff:ff:ff:ff",
+  f"\tlink/ether {__ETH_MAC_ADDRESS} brd ff:ff:ff:ff:ff:ff",
   "3: eth1: <BROADCAST, MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000",
   "\tlink/ether 00:08:9b:c4:30:30 brd ff:ff:ff:ff:ff:ff",
   "\tinet 192.168.1.10/24 brd 192.168.1.255 scope global eth1",
@@ -111,8 +112,8 @@ def test_calls_re_search_group_when_finding_mac_address_in_lines(__mock_re_match
     pytest.param(["something"], None),
     pytest.param([__IP_ADDR_LINES[5]], None),
     pytest.param(__IP_ADDR_LINES[0:2], None),
-    pytest.param(__IP_ADDR_LINES[5:7], "00:08:9b:c4:30:31"),
-    pytest.param(__IP_ADDR_LINES, "00:08:9b:c4:30:31")
+    pytest.param(__IP_ADDR_LINES[5:7], __ETH_MAC_ADDRESS),
+    pytest.param(__IP_ADDR_LINES, __ETH_MAC_ADDRESS)
   ]
 )
 def test_returns_expected_result_when_finding_mac_address_in_lines(
@@ -161,6 +162,52 @@ def test_returns_expected_mac_address_when_getting_mac_address(
     mac_address == expected_mac_address
   ), get_assertion_message("MAC address", expected_mac_address, mac_address)
 
+def test_calls_get_mac_address_when_getting_user_id(__mock_get_mac_address):
+  __mock_get_mac_address.return_value = None
+  installation_info_assembler.__get_user_id()
+  __mock_get_mac_address.assert_called_once_with()
+
+def test_calls_hashlib_sha256_when_getting_user_id(
+    __mock_get_mac_address,
+    __mock_hashlib_sha256
+  ):
+  installation_info_assembler.__get_user_id()
+  __mock_hashlib_sha256.assert_called_once_with()
+
+def test_calls_hashlib_sha256_update_when_getting_user_id(
+    __mock_get_mac_address,
+    __mock_hashlib_sha256
+  ):
+  installation_info_assembler.__get_user_id()
+  __mock_hashlib_sha256().update.assert_called_once_with(__mock_get_mac_address().encode())
+
+def test_calls_hashlib_sha256_hexdigest_when_getting_user_id(
+    __mock_get_mac_address,
+    __mock_hashlib_sha256
+  ):
+  installation_info_assembler.__get_user_id()
+  __mock_hashlib_sha256().hexdigest.assert_called_once_with()
+
+@pytest.mark.parametrize(
+  "__mock_get_mac_address,__mock_hashlib_sha256,expected_user_id",
+  [
+    pytest.param(None, None, None),
+    pytest.param(None, "test-id", None),
+    pytest.param(__ETH_MAC_ADDRESS, None, None),
+    pytest.param(__ETH_MAC_ADDRESS, "test-id", "test-id")
+  ],
+  indirect=["__mock_get_mac_address", "__mock_hashlib_sha256"]
+)
+def test_returns_expected_user_id(
+    __mock_get_mac_address,
+    __mock_hashlib_sha256,
+    expected_user_id
+  ):
+  user_id = installation_info_assembler.__get_user_id()
+  assert (
+    user_id == expected_user_id
+  ), get_assertion_message("user id", expected_user_id, user_id)
+
 @pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):
   with patch(
@@ -168,13 +215,6 @@ def __mock_run_shell_command(request):
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method
-
-#@pytest.fixture
-#def __mock_get_mac_address():
-#  with patch(
-#    "xmipp3_installer.api_client.assembler.installation_info_assembler.__get_mac_address"
-#  ) as mock_method:
-#    yield mock_method
 
 def __mock_re_groups(group_value):
   groups = Mock()
@@ -198,4 +238,21 @@ def __mock_find_mac_address_in_lines():
   with patch(
     "xmipp3_installer.api_client.assembler.installation_info_assembler.__find_mac_address_in_lines"
   ) as mock_method:
+    yield mock_method
+
+@pytest.fixture(params=[__ETH_MAC_ADDRESS])
+def __mock_get_mac_address(request):
+  with patch(
+    "xmipp3_installer.api_client.assembler.installation_info_assembler.__get_mac_address"
+  ) as mock_method:
+    mock_method.return_value = request.param
+    yield mock_method
+
+@pytest.fixture(params=[None])
+def __mock_hashlib_sha256(request):
+  mock_sha256 = Mock()
+  mock_sha256.update.return_value = None
+  mock_sha256.hexdigest.return_value = request.param
+  with patch("hashlib.sha256") as mock_method:
+    mock_method.return_value = mock_sha256
     yield mock_method
