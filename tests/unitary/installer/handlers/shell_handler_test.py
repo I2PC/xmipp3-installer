@@ -158,7 +158,7 @@ def test_calls_process_wait_when_running_shell_command_in_streaming(
   __mock_log_in_streaming
 ):
   shell_handler.run_shell_command_in_streaming(__COMMAND)
-  __mock_popen().wait.assert_called_once()
+  __mock_popen().wait.assert_called_once_with()
 
 def test_returns_interrupted_error_when__keyboard_interrupt_while_running_shell_command_in_streaming(
   __mock_process_wait_keyboard_interrupt,

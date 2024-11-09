@@ -291,7 +291,7 @@ def test_calls_get_mode_when_formatting_help(
 	__setup_formatter
 ):
 	__setup_formatter.format_help()
-	__mock_get_mode.assert_called_once()
+	__mock_get_mode.assert_called_once_with()
 
 def test_calls_get_mode_help_when_formatting_help(
 	__mock_get_mode,

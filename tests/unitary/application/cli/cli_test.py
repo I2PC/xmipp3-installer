@@ -25,7 +25,7 @@ def test_calls_add_default_usage_mode(
 ):
 	with pytest.raises(SystemExit):
 		cli.main()
-	__mock_add_default_usage_mode.assert_called_once()
+	__mock_add_default_usage_mode.assert_called_once_with()
 
 @pytest.mark.parametrize(
 	"__mock_sys_argv,expected_args",
@@ -49,7 +49,7 @@ def test_calls_parse_args(
 	__mock_stdout_stderr
 ):
 	cli.main()
-	__mock_parse_args.assert_called_once()
+	__mock_parse_args.assert_called_once_with()
 
 @pytest.mark.parametrize(
 	"__mock_sys_argv,expected_args",
@@ -327,7 +327,7 @@ def test_calls_move_to_root_dir(
 	__mock_stdout_stderr
 ):
 	cli.main()
-	__mock_move_to_root_dir.assert_called_once()
+	__mock_move_to_root_dir.assert_called_once_with()
 
 def __test_args_in_mode(mode, default_args, expected_args):
 	expected_args = {**default_args, "mode": mode, **expected_args}
