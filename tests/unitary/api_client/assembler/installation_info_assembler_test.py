@@ -9,7 +9,7 @@ from .... import get_assertion_message
 
 __LINES = ["line1\n", "line2\n", "line3\n", "line4\n"]
 __LOG_TAIL = ''.join(__LINES)
-__IP_ADDR_EXAMPLE_LINES = [
+__IP_ADDR_LINES = [
   "1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN",
   "\tlink/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00",
   "\tinet 127.0.0.1/8 scope host lo",
@@ -23,6 +23,7 @@ __IP_ADDR_EXAMPLE_LINES = [
   "\tineto fe80::208:9bff:fec4:3030/64 scope link",
   "\t\tvalid_lft forever preferred_lft forever"
 ]
+__IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
 
 def test_calls_run_shell_command_when_getting_architecture_name(__mock_run_shell_command):
   installation_info_assembler.__get_architecture_name()
@@ -108,10 +109,10 @@ def test_calls_re_search_group_when_finding_mac_address_in_lines(__mock_re_match
     pytest.param([], None),
     pytest.param([""], None),
     pytest.param(["something"], None),
-    pytest.param([__IP_ADDR_EXAMPLE_LINES[5]], None),
-    pytest.param(__IP_ADDR_EXAMPLE_LINES[0:2], None),
-    pytest.param(__IP_ADDR_EXAMPLE_LINES[5:7], "00:08:9b:c4:30:31"),
-    pytest.param(__IP_ADDR_EXAMPLE_LINES, "00:08:9b:c4:30:31")
+    pytest.param([__IP_ADDR_LINES[5]], None),
+    pytest.param(__IP_ADDR_LINES[0:2], None),
+    pytest.param(__IP_ADDR_LINES[5:7], "00:08:9b:c4:30:31"),
+    pytest.param(__IP_ADDR_LINES, "00:08:9b:c4:30:31")
   ]
 )
 def test_returns_expected_result_when_finding_mac_address_in_lines(
@@ -123,8 +124,42 @@ def test_returns_expected_result_when_finding_mac_address_in_lines(
     mac_address == expected_mac_address
   ), get_assertion_message("MAC address", expected_mac_address, mac_address)
 
-#def test_calls_run_shell_command_when_getting_mac_address(__mock_run_shell_command):
-#  installation_info_assembler.__get_mac_address()
+def test_calls_run_shell_command_when_getting_mac_address(__mock_run_shell_command):
+  __mock_run_shell_command.return_value = (1, "")
+  installation_info_assembler.__get_mac_address()
+  __mock_run_shell_command.assert_called_once_with("ip addr")
+
+@pytest.mark.parametrize(
+  "output",
+  [pytest.param(""), pytest.param("Test"), pytest.param("Test\n2")]
+)
+def test_calls_find_mac_address_in_lines_when_getting_mac_address(
+  output,
+  __mock_run_shell_command,
+  __mock_find_mac_address_in_lines
+):
+  __mock_run_shell_command.return_value = (0, output)
+  installation_info_assembler.__get_mac_address()
+  __mock_find_mac_address_in_lines.assert_called_once_with(output.split("\n"))
+
+@pytest.mark.parametrize(
+  "__mock_run_shell_command,expected_mac_address",
+  [
+    pytest.param((1, ""), None),
+    pytest.param((1, __IP_ADDR_TEXT), None),
+    pytest.param((0, ""), None),
+    pytest.param((0, __IP_ADDR_TEXT), "00:08:9b:c4:30:31")
+  ],
+  indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_mac_address_when_getting_mac_address(
+  __mock_run_shell_command,
+  expected_mac_address
+):
+  mac_address = installation_info_assembler.__get_mac_address()
+  assert (
+    mac_address == expected_mac_address
+  ), get_assertion_message("MAC address", expected_mac_address, mac_address)
 
 @pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):
@@ -156,4 +191,11 @@ def __mock_re_match(request):
 def __mock_re_search(request):
   with patch("re.search") as mock_method:
     mock_method.return_value = __mock_re_groups(request.param)
+    yield mock_method
+
+@pytest.fixture
+def __mock_find_mac_address_in_lines():
+  with patch(
+    "xmipp3_installer.api_client.assembler.installation_info_assembler.__find_mac_address_in_lines"
+  ) as mock_method:
     yield mock_method
