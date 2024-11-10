@@ -274,6 +274,21 @@ def test_returns_expected_installation_branch_name(
     branch_name == expected_branch_name
   ), get_assertion_message("installation branch name", expected_branch_name, branch_name)
 
+def test_calls_get_user_id_when_getting_installation_info(__mock_get_user_id):
+  __mock_get_user_id.return_value = None
+  installation_info_assembler.get_installation_info()
+  __mock_get_user_id.assert_called_once_with()
+
+def test_calls_get_library_versions_from_cmake_file_when_getting_installation_info(
+  __mock_get_user_id,
+  __mock_get_library_versions_from_cmake_file,
+  __mock_run_parallel_jobs
+):
+  installation_info_assembler.get_installation_info()
+  __mock_get_library_versions_from_cmake_file.assert_called_once_with(
+    constants.LIBRARY_VERSIONS_FILE
+  )
+
 @pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):
   with patch(
@@ -321,4 +336,27 @@ def __mock_hashlib_sha256(request):
   mock_sha256.hexdigest.return_value = request.param
   with patch("hashlib.sha256") as mock_method:
     mock_method.return_value = mock_sha256
+    yield mock_method
+
+@pytest.fixture
+def __mock_get_user_id():
+  with patch(
+    "xmipp3_installer.api_client.assembler.installation_info_assembler.__get_user_id"
+  ) as mock_method:
+    mock_method.return_value = "test-user-id"
+    yield mock_method
+
+@pytest.fixture
+def __mock_get_library_versions_from_cmake_file():
+  with patch(
+    "xmipp3_installer.installer.handlers.cmake.cmake_handler.get_library_versions_from_cmake_file"
+  ) as mock_method:
+    yield mock_method
+
+@pytest.fixture
+def __mock_run_parallel_jobs():
+  with patch(
+    "xmipp3_installer.installer.tmp.disaster_drawer.run_parallel_jobs"
+  ) as mock_method:
+    mock_method.side_effect = lambda args, _: [None for _ in args]
     yield mock_method
