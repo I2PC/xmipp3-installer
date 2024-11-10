@@ -1,7 +1,7 @@
 """### Contains the defaukt values for the config variables."""
 
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer import disaster_drawer
+from xmipp3_installer.installer.tmp import disaster_drawer
 from xmipp3_installer.repository.config_vars import variables
 
 __TUNE_FLAG = '-mtune=native'

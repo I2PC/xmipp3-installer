@@ -2,9 +2,10 @@ import hashlib
 import re
 from typing import Optional, List, Dict
 
-from xmipp3_installer.installer import constants, disaster_drawer
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.handlers import shell_handler, git_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
+from xmipp3_installer.installer.tmp import disaster_drawer, versions
 
 def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	"""
@@ -34,10 +35,6 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 		[(), (), (), (), ()]
 	)
 
-	# If branch is master or there is none, get release name
-	branch_name = XMIPP_VERSIONS[XMIPP][VERSION_KEY] if not enviroment_info[2] or enviroment_info[2] == MASTER_BRANCHNAME else enviroment_info[2]
-
-	# Introducing data into a dictionary
 	return {
 		"user": {
 			"userId": user_id
@@ -57,7 +54,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			"jpeg": library_versions.get(cmake_constants.CMAKE_JPEG)
 		},
 		"xmipp": {
-			"branch": branch_name,
+			"branch": __get_installation_branch_name(enviroment_info[2]),
 			"updated": enviroment_info[3]
 		},
 		"returnCode": ret_code,
@@ -77,7 +74,22 @@ def get_os_release_name() -> str:
 	
 	search = re.search(r'PRETTY_NAME="(.*)"\n', os_release_info)
 	return search.group(1) if search else constants.UNKNOWN_VALUE
-	
+
+def __get_installation_branch_name(branch_name: str) -> str:
+	"""
+	### Returns the branch or release name of Xmipp.
+
+	#### Params:
+	- branch_name (str): Retrieved branch name.
+
+	#### Return:
+	- (str): Release name if Xmipp is in a release branch, or the branch name otherwise.
+	"""
+	if not branch_name or branch_name == versions.MASTER_BRANCHNAME:
+		return versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]
+	else:
+		return branch_name
+
 def __get_user_id() -> Optional[str]:
 	"""
 	### Returns the unique user id for this machine.
