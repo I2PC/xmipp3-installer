@@ -25,7 +25,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	)
 	enviroment_info = disaster_drawer.run_parallel_jobs(
 		[
-			getOSReleaseName,
+			get_os_release_name,
 			__get_architecture_name,
 			git_handler.get_current_branch,
 			git_handler.is_branch_up_to_date,
@@ -64,6 +64,20 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 		"logTail": enviroment_info[4] if ret_code else None # Only needed if something went wrong
 	}
 
+def get_os_release_name() -> str:
+	"""
+	### Returns the name of the current system OS release.
+
+	#### Returns:
+	- (str): OS release name.
+	"""
+	ret_code, os_release_info = shell_handler.run_shell_command('cat /etc/os-release')
+	if ret_code:
+		return constants.UNKNOWN_VALUE
+	
+	search = re.search(r'PRETTY_NAME="(.*)"\n', os_release_info)
+	return search.group(1) if search else constants.UNKNOWN_VALUE
+	
 def __get_user_id() -> Optional[str]:
 	"""
 	### Returns the unique user id for this machine.
@@ -123,14 +137,15 @@ def __find_mac_address_in_lines(lines: List[str]) -> Optional[str]:
 	#### Returns:
 	- (str | None): MAC address if found, None otherwise.
 	"""
-	mac_regex = r"link/ether ([0-9a-f:]{17})"
-	interface_regex = r"^\d+: (enp|wlp|eth)\w+"
 	for line_index in range(len(lines) - 1):
 		line = lines[line_index]
-		match = re.match(interface_regex, line)
+		match = re.match(r"^\d+: (enp|wlp|eth)\w+", line)
 		if not match:
 			continue
 		interface_name = match.group(1)
 		if interface_name.startswith(('enp', 'wlp', 'eth')):
-			return re.search(mac_regex, lines[line_index + 1]).group(1)
+			return re.search(
+				r"link/ether ([0-9a-f:]{17})",
+				lines[line_index + 1]
+			).group(1)
 	return None
