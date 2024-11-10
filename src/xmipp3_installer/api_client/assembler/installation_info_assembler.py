@@ -2,34 +2,40 @@ import hashlib
 import re
 from typing import Optional, List, Dict
 
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer import constants, disaster_drawer
 from xmipp3_installer.installer.handlers import shell_handler, git_handler
-from xmipp3_installer.installer.handlers.cmake import cmake_constants
+from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
 
 def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	"""
-	### Creates a JSON with the necessary data for the API POST message.
+	### Creates a dictionary with the necessary data for the API POST message.
 	
 	#### Params:
 	- ret_code (int): Optional. Return code for the API request.
 	
 	#### Return:
-	- (dict | None): JSON with the required info or None if user id could not be produced.
+	- (dict | None): Dictionary with the required info or None if user id could not be produced.
 	"""
-	# Getting user id and checking if it exists
 	user_id = __get_user_id()
 	if user_id is None:
 		return
 	
-	# Obtaining variables in parallel
-	data = parseCmakeVersions(VERSION_FILE)
-	json_data = shell_handler.run_shell_command_in_streaming(
-		[getOSReleaseName, __get_architecture_name, git_handler.get_current_branch, git_handler.is_branch_up_to_date, __get_log_tail],
+	library_versions = cmake_handler.get_library_versions_from_cmake_file(
+		constants.LIBRARY_VERSIONS_FILE
+	)
+	enviroment_info = disaster_drawer.run_parallel_jobs(
+		[
+			getOSReleaseName,
+			__get_architecture_name,
+			git_handler.get_current_branch,
+			git_handler.is_branch_up_to_date,
+			__get_log_tail
+		],
 		[(), (), (), (), ()]
 	)
 
 	# If branch is master or there is none, get release name
-	branch_name = XMIPP_VERSIONS[XMIPP][VERSION_KEY] if not json_data[2] or json_data[2] == MASTER_BRANCHNAME else json_data[2]
+	branch_name = XMIPP_VERSIONS[XMIPP][VERSION_KEY] if not enviroment_info[2] or enviroment_info[2] == MASTER_BRANCHNAME else enviroment_info[2]
 
 	# Introducing data into a dictionary
 	return {
@@ -37,25 +43,25 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			"userId": user_id
 		},
 		"version": {
-			"os": json_data[0],
-			"architecture": json_data[1],
-			"cuda": data.get(cmake_constants.CMAKE_CUDA),
-			"cmake": data.get(cmake_constants.CMAKE_CMAKE),
-			"gcc": data.get(cmake_constants.CMAKE_GCC),
-			"gpp": data.get(cmake_constants.CMAKE_GPP),
-			"mpi": data.get(cmake_constants.CMAKE_MPI),
-			"python": data.get(cmake_constants.CMAKE_PYTHON),
-			"sqlite": data.get(cmake_constants.CMAKE_SQLITE),
-			"java": data.get(cmake_constants.CMAKE_JAVA),
-			"hdf5": data.get(cmake_constants.CMAKE_HDF5),
-			"jpeg": data.get(cmake_constants.CMAKE_JPEG)
+			"os": enviroment_info[0],
+			"architecture": enviroment_info[1],
+			"cuda": library_versions.get(cmake_constants.CMAKE_CUDA),
+			"cmake": library_versions.get(cmake_constants.CMAKE_CMAKE),
+			"gcc": library_versions.get(cmake_constants.CMAKE_GCC),
+			"gpp": library_versions.get(cmake_constants.CMAKE_GPP),
+			"mpi": library_versions.get(cmake_constants.CMAKE_MPI),
+			"python": library_versions.get(cmake_constants.CMAKE_PYTHON),
+			"sqlite": library_versions.get(cmake_constants.CMAKE_SQLITE),
+			"java": library_versions.get(cmake_constants.CMAKE_JAVA),
+			"hdf5": library_versions.get(cmake_constants.CMAKE_HDF5),
+			"jpeg": library_versions.get(cmake_constants.CMAKE_JPEG)
 		},
 		"xmipp": {
 			"branch": branch_name,
-			"updated": json_data[3]
+			"updated": enviroment_info[3]
 		},
 		"returnCode": ret_code,
-		"logTail": json_data[4] if ret_code else None # Only needs log tail if something went wrong
+		"logTail": enviroment_info[4] if ret_code else None # Only needed if something went wrong
 	}
 
 def __get_user_id() -> Optional[str]:
