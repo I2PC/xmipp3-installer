@@ -25,6 +25,8 @@ __IP_ADDR_LINES = [
   "\t\tvalid_lft forever preferred_lft forever"
 ]
 __IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
+__RELEASE_NAME = "Ubuntu 20.04.3 LTS"
+__RELEASE_OUPUT = f"PRETTY_NAME=\"{__RELEASE_NAME}\"\n"
 
 def test_calls_run_shell_command_when_getting_architecture_name(__mock_run_shell_command):
   installation_info_assembler.__get_architecture_name()
@@ -207,6 +209,49 @@ def test_returns_expected_user_id(
   assert (
     user_id == expected_user_id
   ), get_assertion_message("user id", expected_user_id, user_id)
+
+def test_calls_run_shell_command_when_getting_os_release_name(__mock_run_shell_command):
+  __mock_run_shell_command.return_value = (1, "")
+  installation_info_assembler.get_os_release_name()
+  __mock_run_shell_command.assert_called_once_with('cat /etc/os-release')
+
+def test_calls_re_search_when_getting_os_release_name(
+    __mock_run_shell_command,
+    __mock_re_search
+  ):
+  installation_info_assembler.get_os_release_name()
+  __mock_re_search.assert_called_once_with(
+    r'PRETTY_NAME="(.*)"\n',
+    __mock_run_shell_command()[1]
+  )
+
+def test_calls_re_search_group_when_getting_os_release_name(
+    __mock_run_shell_command,
+    __mock_re_search
+  ):
+  installation_info_assembler.get_os_release_name()
+  __mock_re_search().group.assert_called_once_with(1)
+
+@pytest.mark.parametrize(
+  "__mock_run_shell_command,expected_release_name",
+  [
+    pytest.param((1, ""), constants.UNKNOWN_VALUE),
+    pytest.param((1, "something"), constants.UNKNOWN_VALUE),
+    pytest.param((1, __RELEASE_OUPUT), constants.UNKNOWN_VALUE),
+    pytest.param((0, ""), constants.UNKNOWN_VALUE),
+    pytest.param((0, "something"), constants.UNKNOWN_VALUE),
+    pytest.param((0, __RELEASE_OUPUT), __RELEASE_NAME)
+  ],
+  indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_os_release_name(
+    __mock_run_shell_command,
+    expected_release_name
+  ):
+  release_name = installation_info_assembler.get_os_release_name()
+  assert (
+    release_name == expected_release_name
+  ), get_assertion_message("OS release name", expected_release_name, release_name)
 
 @pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):
