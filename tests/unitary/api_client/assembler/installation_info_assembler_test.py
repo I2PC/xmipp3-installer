@@ -4,6 +4,7 @@ import pytest
 
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.tmp import versions
 
 from .... import get_assertion_message
 
@@ -252,6 +253,26 @@ def test_returns_expected_os_release_name(
   assert (
     release_name == expected_release_name
   ), get_assertion_message("OS release name", expected_release_name, release_name)
+
+@pytest.mark.parametrize(
+  "received_branch_name,expected_branch_name",
+  [
+    pytest.param(None, versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]),
+    pytest.param("", versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]),
+    pytest.param(versions.MASTER_BRANCHNAME, versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]),
+    pytest.param("devel", "devel")
+  ]
+)
+def test_returns_expected_installation_branch_name(
+  received_branch_name,
+  expected_branch_name
+):
+  branch_name = installation_info_assembler.__get_installation_branch_name(
+    received_branch_name
+  )
+  assert (
+    branch_name == expected_branch_name
+  ), get_assertion_message("installation branch name", expected_branch_name, branch_name)
 
 @pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):
