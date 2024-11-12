@@ -1,4 +1,4 @@
-"""### Contains the defaukt values for the config variables."""
+"""### Contains the default values for the config variables."""
 
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import disaster_drawer
