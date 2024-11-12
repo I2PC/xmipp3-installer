@@ -3,7 +3,11 @@
 import multiprocessing
 from typing import List, Tuple, Callable, Any
 
-def run_parallel_jobs(funcs: List[Callable], func_args: List[Tuple[Any]], n_jobs: int=multiprocessing.cpu_count()) -> List:
+def run_parallel_jobs(
+  funcs: List[Callable],
+  func_args: List[Tuple[Any]],
+  n_jobs: int=multiprocessing.cpu_count()
+) -> List:
 	"""
 	### Runs the given command list in parallel.
 
