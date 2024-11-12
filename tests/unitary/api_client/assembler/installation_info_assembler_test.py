@@ -5,6 +5,8 @@ import pytest
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
+from xmipp3_installer.installer.handlers import git_handler
+from xmipp3_installer.installer.handlers.cmake import cmake_constants
 
 from .... import get_assertion_message
 
@@ -26,8 +28,78 @@ __IP_ADDR_LINES = [
   "\t\tvalid_lft forever preferred_lft forever"
 ]
 __IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
+__USER_ID = "test-user-id"
 __RELEASE_NAME = "Ubuntu 20.04.3 LTS"
 __RELEASE_OUPUT = f"PRETTY_NAME=\"{__RELEASE_NAME}\"\n"
+__LIBRARY_VERSIONS = {
+  cmake_constants.CMAKE_CUDA: "12.2",
+  cmake_constants.CMAKE_CMAKE: "3.16",
+  cmake_constants.CMAKE_GCC: "12.3",
+  cmake_constants.CMAKE_GPP: "12.3",
+  cmake_constants.CMAKE_MPI: "2.0",
+  cmake_constants.CMAKE_PYTHON: "3.8",
+  cmake_constants.CMAKE_SQLITE: "3.2",
+  cmake_constants.CMAKE_JAVA: "2.4.5",
+  cmake_constants.CMAKE_HDF5: "1.2.3",
+  cmake_constants.CMAKE_JPEG: "3.2.1"
+}
+__ENVIROMENT_INFO = [
+  __RELEASE_NAME,
+  "test-lake",
+  "devel",
+  True,
+  __LOG_TAIL
+]
+__INSTALLATION_INFO = {
+  "user": {
+    "userId": __USER_ID
+  },
+  "version": {
+    "os": __ENVIROMENT_INFO[0],
+    "architecture": __ENVIROMENT_INFO[1],
+    "cuda": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CUDA),
+    "cmake": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CMAKE),
+    "gcc": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_GCC),
+    "gpp": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_GPP),
+    "mpi": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_MPI),
+    "python": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_PYTHON),
+    "sqlite": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_SQLITE),
+    "java": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_JAVA),
+    "hdf5": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_HDF5),
+    "jpeg": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_JPEG)
+  },
+  "xmipp": {
+    "branch": __ENVIROMENT_INFO[2],
+    "updated": __ENVIROMENT_INFO[3]
+  },
+  "returnCode": 0,
+  "logTail": __ENVIROMENT_INFO[4]
+}
+__EMPTY_INSTALLATION_INFO = {
+  "user": {
+    "userId": __USER_ID
+  },
+  "version": {
+    "os": None,
+    "architecture": None,
+    "cuda": None,
+    "cmake": None,
+    "gcc": None,
+    "gpp": None,
+    "mpi": None,
+    "python": None,
+    "sqlite": None,
+    "java": None,
+    "hdf5": None,
+    "jpeg": None
+  },
+  "xmipp": {
+    "branch": versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY],
+    "updated": None
+  },
+  "returnCode": 0,
+  "logTail": None
+}
 
 def test_calls_run_shell_command_when_getting_architecture_name(__mock_run_shell_command):
   installation_info_assembler.__get_architecture_name()
@@ -289,6 +361,59 @@ def test_calls_get_library_versions_from_cmake_file_when_getting_installation_in
     constants.LIBRARY_VERSIONS_FILE
   )
 
+def test_calls_run_parallel_jobs_when_getting_installation_info(
+  __mock_get_user_id,
+  __mock_get_library_versions_from_cmake_file,
+  __mock_run_parallel_jobs
+):
+  installation_info_assembler.get_installation_info()
+  __mock_run_parallel_jobs.assert_called_once_with(
+    [
+      installation_info_assembler.get_os_release_name,
+      installation_info_assembler.__get_architecture_name,
+      git_handler.get_current_branch,
+      git_handler.is_branch_up_to_date,
+      installation_info_assembler.__get_log_tail
+    ],
+    [(), (), (), (), ()]
+  )
+
+@pytest.mark.parametrize(
+  "ret_code,"
+  "__mock_get_user_id,"
+  "__mock_get_library_versions_from_cmake_file,"
+  "__mock_run_parallel_jobs,"
+  "expected_info",
+  [
+    pytest.param(0, None, {}, [None for _ in range(5)], None),
+    pytest.param(1, None, {}, [None for _ in range(5)], None),
+    pytest.param(0, None, {"test": "something"}, ["value" for _ in range(5)], None),
+    pytest.param(1, None, {"test": "something"}, ["value" for _ in range(5)], None),
+    pytest.param(0, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
+    pytest.param(1, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
+    pytest.param(0, __USER_ID, {}, [None for _ in range(5)], __EMPTY_INSTALLATION_INFO),
+    pytest.param(1, __USER_ID, {}, [None for _ in range(5)], {**__EMPTY_INSTALLATION_INFO, "returnCode": 1}),
+    pytest.param(0, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "logTail": None}),
+    pytest.param(1, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "returnCode": 1})
+  ],
+  indirect=[
+    "__mock_get_user_id",
+    "__mock_get_library_versions_from_cmake_file",
+    "__mock_run_parallel_jobs"
+  ]
+)
+def test_returns_expected_installation_info(
+  ret_code,
+  __mock_get_user_id,
+  __mock_get_library_versions_from_cmake_file,
+  __mock_run_parallel_jobs,
+  expected_info
+):
+  installation_info = installation_info_assembler.get_installation_info(ret_code=ret_code)
+  assert (
+    installation_info == expected_info
+  ), get_assertion_message("installation information", expected_info, installation_info)
+
 @pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):
   with patch(
@@ -338,25 +463,26 @@ def __mock_hashlib_sha256(request):
     mock_method.return_value = mock_sha256
     yield mock_method
 
-@pytest.fixture
-def __mock_get_user_id():
+@pytest.fixture(params=[__USER_ID])
+def __mock_get_user_id(request):
   with patch(
     "xmipp3_installer.api_client.assembler.installation_info_assembler.__get_user_id"
   ) as mock_method:
-    mock_method.return_value = "test-user-id"
+    mock_method.return_value = request.param
     yield mock_method
 
-@pytest.fixture
-def __mock_get_library_versions_from_cmake_file():
+@pytest.fixture(params=[__LIBRARY_VERSIONS])
+def __mock_get_library_versions_from_cmake_file(request):
   with patch(
     "xmipp3_installer.installer.handlers.cmake.cmake_handler.get_library_versions_from_cmake_file"
   ) as mock_method:
+    mock_method.return_value = request.param
     yield mock_method
 
-@pytest.fixture
-def __mock_run_parallel_jobs():
+@pytest.fixture(params=[__ENVIROMENT_INFO])
+def __mock_run_parallel_jobs(request):
   with patch(
     "xmipp3_installer.installer.tmp.disaster_drawer.run_parallel_jobs"
   ) as mock_method:
-    mock_method.side_effect = lambda args, _: [None for _ in args]
+    mock_method.side_effect = [request.param]
     yield mock_method
