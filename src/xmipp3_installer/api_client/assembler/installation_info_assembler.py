@@ -24,7 +24,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	library_versions = cmake_handler.get_library_versions_from_cmake_file(
 		constants.LIBRARY_VERSIONS_FILE
 	)
-	enviroment_info = disaster_drawer.run_parallel_jobs(
+	environment_info = disaster_drawer.run_parallel_jobs(
 		[
 			get_os_release_name,
 			__get_architecture_name,
@@ -40,8 +40,8 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			"userId": user_id
 		},
 		"version": {
-			"os": enviroment_info[0],
-			"architecture": enviroment_info[1],
+			"os": environment_info[0],
+			"architecture": environment_info[1],
 			"cuda": library_versions.get(cmake_constants.CMAKE_CUDA),
 			"cmake": library_versions.get(cmake_constants.CMAKE_CMAKE),
 			"gcc": library_versions.get(cmake_constants.CMAKE_GCC),
@@ -54,11 +54,11 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			"jpeg": library_versions.get(cmake_constants.CMAKE_JPEG)
 		},
 		"xmipp": {
-			"branch": __get_installation_branch_name(enviroment_info[2]),
-			"updated": enviroment_info[3]
+			"branch": __get_installation_branch_name(environment_info[2]),
+			"updated": environment_info[3]
 		},
 		"returnCode": ret_code,
-		"logTail": enviroment_info[4] if ret_code else None # Only needed if something went wrong
+		"logTail": environment_info[4] if ret_code else None # Only needed if something went wrong
 	}
 
 def get_os_release_name() -> str:
