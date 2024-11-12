@@ -5,7 +5,8 @@ from typing import Optional, List, Dict
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.handlers import shell_handler, git_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
-from xmipp3_installer.installer.tmp import disaster_drawer, versions
+from xmipp3_installer.installer import orquestrator
+from xmipp3_installer.installer.tmp import versions
 
 def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	"""
@@ -24,7 +25,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	library_versions = cmake_handler.get_library_versions_from_cmake_file(
 		constants.LIBRARY_VERSIONS_FILE
 	)
-	environment_info = disaster_drawer.run_parallel_jobs(
+	environment_info = orquestrator.run_parallel_jobs(
 		[
 			get_os_release_name,
 			__get_architecture_name,

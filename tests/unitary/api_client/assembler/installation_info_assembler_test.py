@@ -482,7 +482,7 @@ def __mock_get_library_versions_from_cmake_file(request):
 @pytest.fixture(params=[__ENVIROMENT_INFO])
 def __mock_run_parallel_jobs(request):
   with patch(
-    "xmipp3_installer.installer.tmp.disaster_drawer.run_parallel_jobs"
+    "xmipp3_installer.installer.orquestrator.run_parallel_jobs"
   ) as mock_method:
     mock_method.side_effect = [request.param]
     yield mock_method
