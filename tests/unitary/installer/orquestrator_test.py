@@ -11,16 +11,16 @@ from ... import get_assertion_message
   "n_jobs", [pytest.param(0), pytest.param(1), pytest.param(5)]
 )
 def test_calls_pool_when_running_parallel_jobs(n_jobs, __mock_pool):
-  orquestrator.run_parallel_jobs([lambda: None], [()], n_jobs=n_jobs)
+  orquestrator.run_parallel_jobs([max], [(1, 3)], n_jobs=n_jobs)
   __mock_pool.assert_called_once_with(n_jobs)
 
 def test_calls_pool_with_all_logical_cores_by_default_when_running_parallel_jobs(__mock_pool):
-  orquestrator.run_parallel_jobs([lambda: None], [()])
+  orquestrator.run_parallel_jobs([max], [(1, 2)])
   __mock_pool.assert_called_once_with(multiprocessing.cpu_count())
 
 def test_calls_zip_when_running_parallel_jobs(__mock_pool, __mock_starmap, __mock_zip):
-  functions = [lambda: None, lambda: 1, lambda arg: arg]
-  args = [(), (), (5,)]
+  functions = [max, min, sum]
+  args = [(1, 2), (1, 2), (1, 2)]
   orquestrator.run_parallel_jobs(functions, args)
   __mock_zip.assert_called_once_with(functions, args)
 
