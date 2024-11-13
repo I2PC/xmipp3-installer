@@ -20,5 +20,18 @@ def run_parallel_jobs(
 	- (list): List containing the return of each function.
 	"""
 	with multiprocessing.Pool(n_jobs) as p:
-		results = p.starmap(lambda func, args: func(*args), zip(funcs, func_args))
+		results = p.starmap(__run_lambda, zip(funcs, func_args))
 	return results
+
+def __run_lambda(func: Callable, args: Tuple[Any]) -> Any:
+	"""
+	### Runs the given function with its args.
+	
+	#### Params:
+	- func (callable): Function to run.
+	- args (tuple(any)): Arguments for the function.
+	
+	#### Returns:
+	- (any): Return of the called function.
+	"""
+	return func(*args)
