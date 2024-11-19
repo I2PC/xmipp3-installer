@@ -1,4 +1,4 @@
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, Mock, call
 
 import pytest
 
@@ -7,7 +7,15 @@ from xmipp3_installer.repository import config
 from ... import get_assertion_message
 
 __PATH = "/path/to/config.conf"
-__FILE_LINES = ["line1\n", "line2\n", "line3\n"]
+__RAW_DATE = "19-11-2024"
+__FILE_LINES = [
+	"line1\n",
+	"line2\n",
+	f"{config.__LAST_MODIFIED_TEXT}\n",
+	f"{config.__LAST_MODIFIED_TEXT} {__RAW_DATE}\n",
+	"line4\n"
+]
+__PARSED_DATE = "19/11/2024"
 
 def test_calls_open_when_getting_file_content(__mock_path_exists, __mock_open):
 	config.__get_file_content(__PATH)
@@ -37,6 +45,62 @@ def test_returns_expected_file_content(
 		content == expected_content
 	), get_assertion_message("file content", expected_content, content)
 
+@pytest.mark.parametrize(
+	"__mock_get_file_content",
+	[
+		pytest.param([]),
+		pytest.param(__FILE_LINES[0:2])
+	],
+	indirect=["__mock_get_file_content"]
+)
+def test_does_not_call_re_search_with_empty_file_content_when_getting_config_date(
+	__mock_get_file_content,
+	__mock_re_search
+):
+	config.get_config_date(__PATH)
+	__mock_re_search.assert_not_called()
+
+def test_calls_re_search_when_getting_config_date(
+	__mock_get_file_content,
+	__mock_re_search
+):
+	__mock_re_search.return_value = None
+	search_regex = r'\d{4}-\d{2}-\d{2}'
+	config.get_config_date(__PATH)
+	__mock_re_search.assert_has_calls([
+		call(search_regex, __FILE_LINES[2]),
+		call(search_regex, __FILE_LINES[3])
+	])
+
+def test_does_not_call_strptime_with_invalid_match_when_getting_config_date(
+	__mock_get_file_content,
+	__mock_re_search,
+	__mock_strptime
+):
+	__mock_re_search.return_value = None
+	config.get_config_date(__PATH)
+	__mock_strptime.assert_not_called()
+
+@pytest.mark.parametrize(
+	"__mock_get_file_content,expected_date",
+	[
+		pytest.param([], ""),
+		pytest.param(__FILE_LINES[:2], ""),
+		pytest.param(__FILE_LINES[:3], ""),
+		pytest.param(__FILE_LINES[:4], __PARSED_DATE),
+		pytest.param(__FILE_LINES, __PARSED_DATE)
+	],
+	indirect=["__mock_get_file_content"]
+)
+def test_returns_expected_config_date(
+__mock_get_file_content,
+	expected_date
+):
+	config_date = config.get_config_date(__PATH)
+	assert (
+		config_date == expected_date
+	), get_assertion_message("last configuration modification date", expected_date, config_date)
+
 @pytest.fixture(params=[True])
 def __mock_path_exists(request):
 	with patch("os.path.exists") as mock_method:
@@ -45,6 +109,26 @@ def __mock_path_exists(request):
 
 @pytest.fixture(params=[__FILE_LINES])
 def __mock_open(request):
-  m_open = mock_open(read_data=''.join(request.param))
-  with patch("builtins.open", m_open):
-    yield m_open
+	m_open = mock_open(read_data=''.join(request.param))
+	with patch("builtins.open", m_open):
+		yield m_open
+
+@pytest.fixture(params=[__FILE_LINES])
+def __mock_get_file_content(request):
+	with patch("xmipp3_installer.repository.config.__get_file_content") as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=([""]))
+def __mock_re_search(request):
+	mock_groups = Mock()
+	mock_groups.group.side_effect = request.param
+	with patch("re.search") as mock_method:
+		mock_method.return_value = mock_groups
+		yield mock_method
+
+@pytest.fixture
+def __mock_strptime():
+	with patch("xmipp3_installer.repository.config.datetime") as mock_method:
+		mock_method.strptime.side_effect = lambda raw_date: raw_date.replace("-", "/")
+		yield mock_method
