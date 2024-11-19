@@ -7,15 +7,14 @@ from xmipp3_installer.repository import config
 from ... import get_assertion_message
 
 __PATH = "/path/to/config.conf"
-__RAW_DATE = "19-11-2024"
+__DATE = "19/11/2024"
 __FILE_LINES = [
 	"line1\n",
 	"line2\n",
 	f"{config.__LAST_MODIFIED_TEXT}\n",
-	f"{config.__LAST_MODIFIED_TEXT} {__RAW_DATE}\n",
+	f"{config.__LAST_MODIFIED_TEXT} {__DATE}\n",
 	"line4\n"
 ]
-__PARSED_DATE = "19/11/2024"
 
 def test_calls_open_when_getting_file_content(__mock_path_exists, __mock_open):
 	config.__get_file_content(__PATH)
@@ -65,21 +64,12 @@ def test_calls_re_search_when_getting_config_date(
 	__mock_re_search
 ):
 	__mock_re_search.return_value = None
-	search_regex = r'\d{4}-\d{2}-\d{2}'
+	search_regex = r'\d{2}/\d{2}/\d{4}'
 	config.get_config_date(__PATH)
 	__mock_re_search.assert_has_calls([
 		call(search_regex, __FILE_LINES[2]),
 		call(search_regex, __FILE_LINES[3])
 	])
-
-def test_does_not_call_strptime_with_invalid_match_when_getting_config_date(
-	__mock_get_file_content,
-	__mock_re_search,
-	__mock_strptime
-):
-	__mock_re_search.return_value = None
-	config.get_config_date(__PATH)
-	__mock_strptime.assert_not_called()
 
 @pytest.mark.parametrize(
 	"__mock_get_file_content,expected_date",
@@ -87,13 +77,13 @@ def test_does_not_call_strptime_with_invalid_match_when_getting_config_date(
 		pytest.param([], ""),
 		pytest.param(__FILE_LINES[:2], ""),
 		pytest.param(__FILE_LINES[:3], ""),
-		pytest.param(__FILE_LINES[:4], __PARSED_DATE),
-		pytest.param(__FILE_LINES, __PARSED_DATE)
+		pytest.param(__FILE_LINES[:4], __DATE),
+		pytest.param(__FILE_LINES, __DATE)
 	],
 	indirect=["__mock_get_file_content"]
 )
 def test_returns_expected_config_date(
-__mock_get_file_content,
+	__mock_get_file_content,
 	expected_date
 ):
 	config_date = config.get_config_date(__PATH)
@@ -125,10 +115,4 @@ def __mock_re_search(request):
 	mock_groups.group.side_effect = request.param
 	with patch("re.search") as mock_method:
 		mock_method.return_value = mock_groups
-		yield mock_method
-
-@pytest.fixture
-def __mock_strptime():
-	with patch("xmipp3_installer.repository.config.datetime") as mock_method:
-		mock_method.strptime.side_effect = lambda raw_date: raw_date.replace("-", "/")
 		yield mock_method
