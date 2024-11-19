@@ -21,9 +21,9 @@ def get_config_date(path: str) -> str:
   for line in config_lines:
     if __LAST_MODIFIED_TEXT not in line:
       continue
-    match = re.search(r'\d{4}-\d{2}-\d{2}', line)
+    match = re.search(r'\d{2}/\d{2}/\d{4}', line)
     if match:
-      return datetime.strptime(match.group(), '%Y-%m-%d').strftime('%d/%m/%Y')
+      return match.group()
   return ""
 
 def __get_file_content(path: str) -> List[str]:
