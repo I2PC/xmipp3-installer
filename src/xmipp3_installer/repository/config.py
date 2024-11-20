@@ -2,7 +2,6 @@
 
 import re
 import os
-from datetime import datetime
 from typing import List
 
 __LAST_MODIFIED_TEXT = "Config file automatically generated on"
