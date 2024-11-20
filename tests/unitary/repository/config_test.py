@@ -91,6 +91,38 @@ def test_returns_expected_config_date(
 		config_date == expected_date
 	), get_assertion_message("last configuration modification date", expected_date, config_date)
 
+@pytest.mark.parametrize(
+	"line,line_number",
+	[
+		pytest.param("aaaaaa", 0),
+		pytest.param("whatever", 1),
+		pytest.param("does-not-have-equal-separator", 5)
+	]
+)
+def test_raises_exception_when_parsing_config_line_with_invalid_format(line, line_number):
+	with pytest.raises(
+		RuntimeError,
+		match=f'Unable to parse line {line_number + 1}: {line}'
+	):
+		config.__parse_config_line(line, line_number)
+
+@pytest.mark.parametrize(
+	"line",
+	[
+		pytest.param(""),
+		pytest.param(" "),
+		pytest.param("\n"),
+		pytest.param(" \n"),
+		pytest.param("#"),
+		pytest.param("# Test comment")
+	]
+)
+def test_returns_none_when_parsing_config_line_with_no_data(line):
+	parsed_line = config.__parse_config_line(line, 0)
+	assert (
+		parsed_line is None
+	), get_assertion_message("parsed configuration file line", None, parsed_line)
+
 @pytest.fixture(params=[True])
 def __mock_path_exists(request):
 	with patch("os.path.exists") as mock_method:
