@@ -64,3 +64,19 @@ def __parse_config_line(line: str, line_number: int) -> Optional[Tuple[str, str]
     raise RuntimeError(f'Unable to parse line {line_number + 1}: {line}')
   
   return tokens[0].strip(), tokens[1].strip()
+
+def __make_config_line(key: str, value: str, default_value: str) -> str:
+  """
+	### Composes a config file line given a key-value pair to write.
+
+	#### Params:
+  - key (int): Name of the variable.
+	- value (str): Value of the variable found in the config file.
+  - default_value (str): Default value of the variable.
+	
+	#### Returns:
+	- (str): String containing the appropiately formatted key-value pair.
+	"""
+  default_value = '' if default_value is None else default_value
+  value = default_value if value is None else value
+  return key + __ASSIGNMENT_SEPARATOR + value
