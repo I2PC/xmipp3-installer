@@ -53,7 +53,7 @@ def __parse_config_line(line: str, line_number: int) -> Optional[Tuple[str, str]
 	- line (str): Line to parse.
 	
 	#### Returns:
-	- (tuple(str, str)): Tuple containing the read key-value pair.
+	- (tuple(str, str) | None): Tuple containing the read key-value pair if line contains valid data.
 	"""
   line_without_comments = line.split(__COMMENT_ESCAPE, maxsplit=2)[0].strip()
   if not line_without_comments:
