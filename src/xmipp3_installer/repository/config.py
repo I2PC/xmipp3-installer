@@ -2,8 +2,10 @@
 
 import re
 import os
-from typing import List
+from typing import List, Optional, Tuple
 
+__COMMENT_ESCAPE = '#'
+__ASSIGNMENT_SEPARATOR = '='
 __LAST_MODIFIED_TEXT = "Config file automatically generated on"
 
 def get_config_date(path: str) -> str:
@@ -42,3 +44,23 @@ def __get_file_content(path: str) -> List[str]:
     lines = config_file.readlines()
   return lines
 
+def __parse_config_line(line: str, line_number: int) -> Optional[Tuple[str, str]]:
+  """
+	### Reads the given line from the config file and returns the key-value pair as a tuple.
+
+	#### Params:
+  - line_number (int): Line number inside the config file.
+	- line (str): Line to parse.
+	
+	#### Returns:
+	- (tuple(str, str)): Tuple containing the read key-value pair.
+	"""
+  line_without_comments = line.split(__COMMENT_ESCAPE, maxsplit=2)[0].strip()
+  if not line_without_comments:
+    return None
+  
+  tokens = line_without_comments.split(__ASSIGNMENT_SEPARATOR, maxsplit=1)
+  if len(tokens) != 2:
+    raise RuntimeError(f'Unable to parse line {line_number + 1}: {line}')
+  
+  return tokens[0].strip(), tokens[1].strip()
