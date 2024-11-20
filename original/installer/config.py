@@ -21,30 +21,11 @@
 # * e-mail address 'scipion@cnb.csic.es'
 # ***************************************************************************/
 
-from typing import Dict, Tuple, Optional
+from typing import Dict
 from datetime import datetime
 from copy import copy
-from .constants import (CONFIG_VARIABLES, CONFIG_DEFAULT_VALUES, TOGGLES,
-  LOCATIONS, COMPILATION_FLAGS, ON, OFF, CONFIG_FILE)
 
-__ASSIGNMENT_SEPARATOR = '='
 __LAST_MODIFIED_TEXT = "Config file automatically generated on"
-
-def __makeConfigLine(key: str, value: str, defaultValue: str) -> str:
-  """
-	### Composes a config file line given a key-value pair to write.
-
-	#### Params:
-  - key (int): Name of the variable.
-	- value (str): Value of the variable found in the config file.
-  - defaultValue (str): Default value of the variable.
-	
-	#### Returns:
-	- (str): String containing the appropiately formatted key-value pair.
-	"""
-  defaultValue = '' if defaultValue is None else defaultValue
-  value = defaultValue if value is None else value
-  return key + __ASSIGNMENT_SEPARATOR + value
 
 def readConfig(path: str) -> Dict[str, str]:
   """
