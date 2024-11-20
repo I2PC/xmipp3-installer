@@ -21,45 +21,15 @@
 # * e-mail address 'scipion@cnb.csic.es'
 # ***************************************************************************/
 
-import os, re
 from typing import Dict, Tuple, Optional
 from datetime import datetime
 from copy import copy
-from .logger import logger, yellow
 from .constants import (CONFIG_VARIABLES, CONFIG_DEFAULT_VALUES, TOGGLES,
   LOCATIONS, COMPILATION_FLAGS, ON, OFF, CONFIG_FILE)
 
 __ASSIGNMENT_SEPARATOR = '='
-__COMMENT_ESCAPE = '#'
 __LAST_MODIFIED_TEXT = "Config file automatically generated on"
 
-def __parseConfigLine(lineNumber: int, line: str) -> Optional[Tuple[str, str]]:
-  """
-	### Reads the given line from the config file and returns the key-value pair as a tuple.
-
-	#### Params:
-  - lineNumber (int): Line nunber inside the config file.
-	- line (str): Line to parse.
-	
-	#### Returns:
-	- (tuple(str, str)): Tuple containing the read key-value pair.
-	"""
-  # Skip if comments
-  line = line.split(__COMMENT_ESCAPE, maxsplit=2)[0].strip()
-  
-  # Check if empty line
-  if not line:
-    return None
-  
-  # Try to parse the line
-  tokens = line.split(__ASSIGNMENT_SEPARATOR, maxsplit=1)
-  if len(tokens) != 2:
-    raise RuntimeError(f'Unable to parse line {lineNumber+1}: {line}')
-  
-  key = tokens[0].strip()
-  value = tokens[1].strip()
-  return key, value
-  
 def __makeConfigLine(key: str, value: str, defaultValue: str) -> str:
   """
 	### Composes a config file line given a key-value pair to write.
@@ -143,30 +113,3 @@ def writeConfig(path: str, configDict: Dict=None):
 
     lines.append(f"\n# {__LAST_MODIFIED_TEXT} {datetime.today()}\n")
     configFile.writelines(lines)
-
-def getConfigDate(path: str) -> str:
-  """
-  ### This function obtains from the config file the date of its last modification.
-
-  #### Params:
-  - path (str): Path to the config file.
-
-  #### Returns:
-  - (str): Date formatted in dd/mm/yyyy.
-  """
-  if not os.path.exists(path):
-    return ''
-  
-  # Extract line with date, and date from such line
-  dateStr = ''
-  with open(path, 'r') as configFile:
-    for line in configFile:
-        if __LAST_MODIFIED_TEXT in line:
-          match = re.search(r'\d{4}-\d{2}-\d{2}', line)
-          if match:
-            dateStr = match.group()
-  
-  if dateStr:
-    dateStr = datetime.strptime(dateStr, '%Y-%m-%d').strftime('%d/%m/%Y')
-
-  return dateStr
