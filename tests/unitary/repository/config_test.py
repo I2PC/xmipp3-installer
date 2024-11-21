@@ -226,7 +226,9 @@ def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 		pytest.param(["newkey=newvalue"], {**__DEFAULT_CONFIG_VALUES, "newkey": "newvalue"}),
 		pytest.param(
 			__CORRECT_FILE_LINES, 
-			{**__DEFAULT_CONFIG_VALUES, "key": "value", "mykey": "test-value"})
+			{**__DEFAULT_CONFIG_VALUES, "key": "value", "mykey": "test-value"}
+		),
+		pytest.param(["# Comment line"], __DEFAULT_CONFIG_VALUES)
 	]
 )
 def test_returns_expected_config_values_when_reading_config_with_invalid_lines(
