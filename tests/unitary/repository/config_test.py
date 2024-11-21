@@ -19,7 +19,7 @@ __FILE_LINES = [
 	"line4\n"
 ]
 __CORRECT_FILE_LINES = {
-	"key1=value1",
+	"key=value",
 	"mykey=test-value"
 }
 __DEFAULT_CONFIG_VALUES = {
@@ -218,7 +218,27 @@ def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 		default_values.CONFIG_DEFAULT_VALUES,
 		config_values
 	)
-	
+
+@pytest.mark.parametrize(
+	"file_lines,expected_values",
+	[
+		pytest.param(["key1=test"], {**__DEFAULT_CONFIG_VALUES, "key1": "test"}),
+		pytest.param(["newkey=newvalue"], {**__DEFAULT_CONFIG_VALUES, "newkey": "newvalue"}),
+		pytest.param(
+			__CORRECT_FILE_LINES, 
+			{**__DEFAULT_CONFIG_VALUES, "key": "value", "mykey": "test-value"})
+	]
+)
+def test_returns_expected_config_values_when_reading_config_with_invalid_lines(
+	file_lines,
+	expected_values,
+	__mock_get_file_content
+):
+	__mock_get_file_content.return_value = file_lines
+	config_values = config.read_config(__PATH)
+	assert (
+		config_values == expected_values
+	), get_assertion_message("config values", expected_values, config_values)
 
 @pytest.fixture(params=[True])
 def __mock_path_exists(request):
