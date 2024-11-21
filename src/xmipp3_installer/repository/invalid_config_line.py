@@ -1,7 +1,8 @@
 from xmipp3_installer.application.logger.logger import logger
 
 class InvalidConfigLineError(RuntimeError):
-  def generate_error_message(self, config_file, line_number, line):
+  @staticmethod
+  def generate_error_message(config_file, line_number, line):
     return '\n'.join([
       logger.yellow(f"WARNING: There was an error parsing {config_file} file: "),
       logger.red(f'Unable to parse line {line_number}: {line}'),
