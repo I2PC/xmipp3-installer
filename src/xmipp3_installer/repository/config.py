@@ -2,7 +2,7 @@
 
 import re
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 
 from xmipp3_installer.installer import constants
 from xmipp3_installer.application.logger.logger import logger
@@ -10,6 +10,25 @@ from xmipp3_installer.application.logger.logger import logger
 __COMMENT_ESCAPE = '#'
 __ASSIGNMENT_SEPARATOR = '='
 __LAST_MODIFIED_TEXT = "Config file automatically generated on"
+
+def read_config(path: str) -> Dict[str, str]:
+  """
+	### Reads the config file and returns a dictionary with all the parsed variables.
+
+	#### Params:
+	- path (str): Path to the config file.
+	
+	#### Returns:
+	- (dict): Dictionary containing all the variables found in the config file.
+	"""
+  file_lines = __get_file_content(path)
+  result = {}
+  for line_index, line in enumerate(file_lines):
+    key_value_pair = __parse_config_line(line, line_index)
+    if key_value_pair:
+      key, value = key_value_pair
+      result[key] = value
+  return result
 
 def get_config_date(path: str) -> str:
   """
