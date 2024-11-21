@@ -64,13 +64,14 @@ def __parse_config_line(line: str, line_number: int) -> Optional[Tuple[str, str]
   
   tokens = line_without_comments.split(__ASSIGNMENT_SEPARATOR, maxsplit=1)
   if len(tokens) != 2:
-    error_message = logger.red(f'Unable to parse line {line_number + 1}: {line}')
-    warning_header = logger.yellow(f"WARNING: There was an error parsing {constants.CONFIG_FILE} file: ")
-    logger(logger.yellow(''.join([
-      f"{warning_header}{error_message}\n",
-      "Contents of config file won't be read, default values will be used instead.\n",
-      "You can create a new file template from scratch running './xmipp config -o'."
-    ])))
+    logger('\n'.join([
+      logger.yellow(f"WARNING: There was an error parsing {constants.CONFIG_FILE} file: "),
+      logger.red(f'Unable to parse line {line_number + 1}: {line}'),
+      logger.yellow(
+        "Contents of config file won't be read, default values will be used instead.\n"
+        "You can create a new file template from scratch running './xmipp config -o'."
+      )
+    ]))
     return None
   
   return tokens[0].strip(), tokens[1].strip()
