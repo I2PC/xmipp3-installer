@@ -3,6 +3,7 @@ from unittest.mock import patch, mock_open, Mock, call
 import pytest
 
 from xmipp3_installer.repository import config
+from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 from xmipp3_installer.installer import constants
 
 from ... import get_assertion_message
@@ -16,6 +17,9 @@ __FILE_LINES = [
 	f"{config.__LAST_MODIFIED_TEXT} {__DATE}\n",
 	"line4\n"
 ]
+__CORRECT_FILE_LINES = {
+
+}
 
 def test_calls_open_when_getting_file_content(__mock_path_exists, __mock_open):
 	config.__get_file_content(__PATH)
@@ -100,22 +104,20 @@ def test_returns_expected_config_date(
 		pytest.param("does-not-have-equal-separator", 5)
 	]
 )
-def test_calls_logger_when_parsing_config_line_with_invalid_format(
+def test_raises_runtime_error_when_parsing_config_line_with_invalid_format(
 	line,
 	line_number,
-	__mock_logger_yellow,
-	__mock_logger_red,
-	__mock_logger
+	__mock_generate_invalid_config_line_error_message
 ):
-	config.__parse_config_line(line, line_number)
-	__mock_logger.assert_called_once_with('\n'.join([
-		__mock_logger_yellow(f"WARNING: There was an error parsing {constants.CONFIG_FILE} file: "),
-		__mock_logger_red(f'Unable to parse line {line_number + 1}: {line}'),
-		__mock_logger_yellow(
-			"Contents of config file won't be read, default values will be used instead.\n"
-			"You can create a new file template from scratch running './xmipp config -o'."
+	with pytest.raises(
+		InvalidConfigLineError,
+		match=__mock_generate_invalid_config_line_error_message(
+			constants.CONFIG_FILE,
+			line_number,
+			line
 		)
-	]))
+	):
+		config.__parse_config_line(line, line_number)
 
 @pytest.mark.parametrize(
 	"line",
@@ -125,16 +127,10 @@ def test_calls_logger_when_parsing_config_line_with_invalid_format(
 		pytest.param("\n"),
 		pytest.param(" \n"),
 		pytest.param("#"),
-		pytest.param("# Test comment"),
-		pytest.param("aaaaaa")
+		pytest.param("# Test comment")
 	]
 )
-def test_returns_none_when_parsing_config_line_with_empty_or_invalid_data(
-	line,
-	__mock_logger_yellow,
-	__mock_logger_red,
-	__mock_logger
-):
+def test_returns_none_when_parsing_config_line_with_empty_data(line):
 	parsed_line = config.__parse_config_line(line, 0)
 	assert (
 		parsed_line is None
@@ -213,24 +209,17 @@ def __mock_re_search(request):
 		yield mock_method
 
 @pytest.fixture
-def __mock_logger_yellow():
-	with patch(
-		"xmipp3_installer.application.logger.logger.Logger.yellow"
-	) as mock_method:
-		mock_method.side_effect = lambda text: f"yellow-start-{text}-yellow-end"
-		yield mock_method
-
-@pytest.fixture
-def __mock_logger_red():
-	with patch(
-		"xmipp3_installer.application.logger.logger.Logger.red"
-	) as mock_method:
-		mock_method.side_effect = lambda text: f"red-start-{text}-red-end"
-		yield mock_method
-
-@pytest.fixture
 def __mock_logger():
-  with patch(
-    "xmipp3_installer.application.logger.logger.Logger.__call__"
-  ) as mock_method:
-    yield mock_method
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.__call__"
+	) as mock_method:
+		yield mock_method
+
+@pytest.fixture
+def __mock_generate_invalid_config_line_error_message():
+	side_effect = lambda conf_file, line_number, line: f"{conf_file} - {line_number} - {line}"
+	with patch(
+		"xmipp3_installer.repository.invalid_config_line.InvalidConfigLineError.generate_error_message"
+	) as mock_method:
+		mock_method.side_effect = side_effect
+		yield mock_method
