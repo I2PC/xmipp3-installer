@@ -6,6 +6,12 @@ from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineErr
 
 from ... import get_assertion_message
 
+def test_checks_if_exception_is_instance_of_runtime_error():
+	invalid_line_error = InvalidConfigLineError()
+	assert (
+		isinstance(invalid_line_error, RuntimeError)
+	), get_assertion_message("exception class", RuntimeError, type(invalid_line_error))
+
 @pytest.mark.parametrize(
 	"config_file,line_number,line",
 	[
@@ -36,12 +42,6 @@ def test_returns_expected_message_when_generating_error_message(
 	assert (
 		error_message == expected_message
   ), get_assertion_message("exception error message", expected_message, error_message)
-
-def test_checks_if_exception_is_instance_of_runtime_error():
-	invalid_line_error = InvalidConfigLineError()
-	assert (
-		isinstance(invalid_line_error, RuntimeError)
-	), get_assertion_message("exception class", RuntimeError, type(invalid_line_error))
 
 @pytest.fixture
 def __mock_logger_yellow():
