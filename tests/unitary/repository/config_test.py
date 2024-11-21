@@ -100,14 +100,14 @@ def test_returns_expected_config_date(
 		pytest.param("does-not-have-equal-separator", 5)
 	]
 )
-def test_calls_logger_and_returns_none_when_parsing_config_line_with_invalid_format(
+def test_calls_logger_when_parsing_config_line_with_invalid_format(
 	line,
 	line_number,
 	__mock_logger_yellow,
 	__mock_logger_red,
 	__mock_logger
 ):
-	config_line = config.__parse_config_line(line, line_number)
+	config.__parse_config_line(line, line_number)
 	__mock_logger.assert_called_once_with('\n'.join([
 		__mock_logger_yellow(f"WARNING: There was an error parsing {constants.CONFIG_FILE} file: "),
 		__mock_logger_red(f'Unable to parse line {line_number + 1}: {line}'),
@@ -116,9 +116,6 @@ def test_calls_logger_and_returns_none_when_parsing_config_line_with_invalid_for
 			"You can create a new file template from scratch running './xmipp config -o'."
 		)
 	]))
-	assert (
-		config_line is None
-	), get_assertion_message("config line", None, config_line)
 
 @pytest.mark.parametrize(
 	"line",
@@ -128,14 +125,38 @@ def test_calls_logger_and_returns_none_when_parsing_config_line_with_invalid_for
 		pytest.param("\n"),
 		pytest.param(" \n"),
 		pytest.param("#"),
-		pytest.param("# Test comment")
+		pytest.param("# Test comment"),
+		pytest.param("aaaaaa")
 	]
 )
-def test_returns_none_when_parsing_config_line_with_no_data(line):
+def test_returns_none_when_parsing_config_line_with_empty_or_invalid_data(
+	line,
+	__mock_logger_yellow,
+	__mock_logger_red,
+	__mock_logger
+):
 	parsed_line = config.__parse_config_line(line, 0)
 	assert (
 		parsed_line is None
 	), get_assertion_message("parsed configuration file line", None, parsed_line)
+
+@pytest.mark.parametrize(
+	"line,expected_key,expected_value",
+	[
+		pytest.param("key=value", "key", "value"),
+		pytest.param("test-key=test-value", "test-key", "test-value"),
+		pytest.param("test-key=", "test-key", "")
+	]
+)
+def test_returns_expected_key_value_pair_when_parsing_config_line(
+	line,
+	expected_key,
+	expected_value
+):
+	key_value_pair = config.__parse_config_line(line, 0)
+	assert (
+		key_value_pair == (expected_key, expected_value)
+	), get_assertion_message("key-value pair", (expected_key, expected_value), key_value_pair)
 
 @pytest.mark.parametrize(
 	"key,value,default_value,expected_line",
