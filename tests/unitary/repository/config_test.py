@@ -123,6 +123,34 @@ def test_returns_none_when_parsing_config_line_with_no_data(line):
 		parsed_line is None
 	), get_assertion_message("parsed configuration file line", None, parsed_line)
 
+@pytest.mark.parametrize(
+	"key,value,default_value,expected_line",
+	[
+		pytest.param(None, None, None, ""),
+		pytest.param(None, "", "", ""),
+		pytest.param(None, "value", "default-value", ""),
+		pytest.param("", None, None, ""),
+		pytest.param("", "", "", ""),
+		pytest.param("", "value", "default-value", ""),
+		pytest.param("key", "value", "", "key=value"),
+		pytest.param("key", "", "", "key="),
+		pytest.param("key", "", "default-value", "key="),
+		pytest.param("key", None, "", "key="),
+		pytest.param("key", None, "default-value", f"key{config.__ASSIGNMENT_SEPARATOR}default-value"),
+		pytest.param("key", "value", "default-value", f"key{config.__ASSIGNMENT_SEPARATOR}value")
+	]
+)
+def test_returns_expected_config_line_when_making_config_line(
+	key,
+	value,
+	default_value,
+	expected_line
+):
+	config_line = config.__make_config_line(key, value, default_value)
+	assert (
+		config_line == expected_line
+	), get_assertion_message("configuration file line", expected_line, config_line)
+
 @pytest.fixture(params=[True])
 def __mock_path_exists(request):
 	with patch("os.path.exists") as mock_method:
