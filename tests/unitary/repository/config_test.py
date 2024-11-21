@@ -5,6 +5,7 @@ import pytest
 from xmipp3_installer.repository import config
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 from xmipp3_installer.installer import constants
+from xmipp3_installer.repository.config_vars import default_values
 
 from ... import get_assertion_message
 
@@ -18,7 +19,12 @@ __FILE_LINES = [
 	"line4\n"
 ]
 __CORRECT_FILE_LINES = {
-
+	"key1=value1",
+	"mykey=test-value"
+}
+__DEFAULT_CONFIG_VALUES = {
+	"key1": "default-key1-value",
+	"key2": "default-key2-value"
 }
 
 def test_calls_open_when_getting_file_content(__mock_path_exists, __mock_open):
@@ -182,6 +188,38 @@ def test_returns_expected_config_line_when_making_config_line(
 		config_line == expected_line
 	), get_assertion_message("configuration file line", expected_line, config_line)
 
+def test_calls_logger_when_reading_config_with_invalid_lines(
+	__mock_get_file_content,
+	__mock_generate_invalid_config_line_error_message,
+	__mock_logger
+):
+	lines_with_wrong_data = [*__CORRECT_FILE_LINES, "aaaaa"]
+	__mock_get_file_content.return_value = lines_with_wrong_data
+	config.read_config(__PATH)
+	__mock_logger.assert_called_once_with(str(InvalidConfigLineError(
+		__mock_generate_invalid_config_line_error_message(
+			constants.CONFIG_FILE,
+			len(lines_with_wrong_data),
+			lines_with_wrong_data[-1]
+		))
+	))
+
+def test_returns_default_config_values_when_reading_config_with_invalid_lines(
+	__mock_get_file_content,
+	__mock_generate_invalid_config_line_error_message,
+	__mock_logger
+):
+	__mock_get_file_content.return_value = [*__CORRECT_FILE_LINES, "aaaaa"]
+	config_values = config.read_config(__PATH)
+	assert (
+		config_values == default_values.CONFIG_DEFAULT_VALUES
+	), get_assertion_message(
+		"config values",
+		default_values.CONFIG_DEFAULT_VALUES,
+		config_values
+	)
+	
+
 @pytest.fixture(params=[True])
 def __mock_path_exists(request):
 	with patch("os.path.exists") as mock_method:
@@ -222,4 +260,13 @@ def __mock_generate_invalid_config_line_error_message():
 		"xmipp3_installer.repository.invalid_config_line.InvalidConfigLineError.generate_error_message"
 	) as mock_method:
 		mock_method.side_effect = side_effect
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_config_default_variables():
+	with patch.object(
+		default_values,
+		"CONFIG_DEFAULT_VALUES",
+		__DEFAULT_CONFIG_VALUES
+	) as mock_method:
 		yield mock_method
