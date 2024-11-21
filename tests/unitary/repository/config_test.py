@@ -3,6 +3,7 @@ from unittest.mock import patch, mock_open, Mock, call
 import pytest
 
 from xmipp3_installer.repository import config
+from xmipp3_installer.installer import constants
 
 from ... import get_assertion_message
 
@@ -99,12 +100,25 @@ def test_returns_expected_config_date(
 		pytest.param("does-not-have-equal-separator", 5)
 	]
 )
-def test_raises_exception_when_parsing_config_line_with_invalid_format(line, line_number):
-	with pytest.raises(
-		RuntimeError,
-		match=f'Unable to parse line {line_number + 1}: {line}'
-	):
-		config.__parse_config_line(line, line_number)
+def test_calls_logger_and_returns_none_when_parsing_config_line_with_invalid_format(
+	line,
+	line_number,
+	__mock_logger_yellow,
+	__mock_logger_red,
+	__mock_logger
+):
+	config_line = config.__parse_config_line(line, line_number)
+	__mock_logger.assert_called_once_with('\n'.join([
+		__mock_logger_yellow(f"WARNING: There was an error parsing {constants.CONFIG_FILE} file: "),
+		__mock_logger_red(f'Unable to parse line {line_number + 1}: {line}'),
+		__mock_logger_yellow(
+			"Contents of config file won't be read, default values will be used instead.\n"
+			"You can create a new file template from scratch running './xmipp config -o'."
+		)
+	]))
+	assert (
+		config_line is None
+	), get_assertion_message("config line", None, config_line)
 
 @pytest.mark.parametrize(
 	"line",
@@ -176,3 +190,26 @@ def __mock_re_search(request):
 	with patch("re.search") as mock_method:
 		mock_method.return_value = mock_groups
 		yield mock_method
+
+@pytest.fixture
+def __mock_logger_yellow():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.yellow"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"yellow-start-{text}-yellow-end"
+		yield mock_method
+
+@pytest.fixture
+def __mock_logger_red():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.red"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"red-start-{text}-red-end"
+		yield mock_method
+
+@pytest.fixture
+def __mock_logger():
+  with patch(
+    "xmipp3_installer.application.logger.logger.Logger.__call__"
+  ) as mock_method:
+    yield mock_method
