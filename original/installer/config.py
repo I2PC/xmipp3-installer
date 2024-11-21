@@ -27,34 +27,6 @@ from copy import copy
 
 __LAST_MODIFIED_TEXT = "Config file automatically generated on"
 
-def readConfig(path: str) -> Dict[str, str]:
-  """
-	### Reads the config file and returns a dictionary with all the parsed variables.
-
-	#### Params:
-	- path (str): Path to the config file.
-	
-	#### Returns:
-	- (dict): Dictionary containing all the variables found in the config file.
-	"""
-  result = dict()
-  
-  with open(path, 'r') as configFile:
-    for i, line in enumerate(configFile):
-      try:
-        keyval = __parseConfigLine(i, line)
-      except RuntimeError as rte:
-        warningStr = f"WARNING: There was an error parsing {CONFIG_FILE} file: {rte}\n"
-        warningStr += "Contents of config file won't be read, default values will be used instead.\n"
-        warningStr += "You can create a new file template from scratch running './xmipp config -o'."
-        logger(yellow(warningStr), forceConsoleOutput=True)
-        return CONFIG_DEFAULT_VALUES
-      if keyval is not None:
-        key, value = keyval
-        result[key] = value
-  
-  return result
-
 def writeConfig(path: str, configDict: Dict=None):
   """
 	### Writes a template config file with given variables, leaving the rest with default values.
