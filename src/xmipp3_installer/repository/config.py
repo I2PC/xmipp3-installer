@@ -79,4 +79,4 @@ def __make_config_line(key: str, value: str, default_value: str) -> str:
 	"""
   default_value = '' if default_value is None else default_value
   value = default_value if value is None else value
-  return key + __ASSIGNMENT_SEPARATOR + value
+  return f"{key}{__ASSIGNMENT_SEPARATOR}{value}" if key else ""
