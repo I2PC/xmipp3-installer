@@ -20,8 +20,7 @@ def test_returns_expected_message_when_generating_error_message(
 	__mock_logger_yellow,
 	__mock_logger_red
 ):
-	exception_instance = InvalidConfigLineError()
-	error_message = exception_instance.generate_error_message(
+	error_message = InvalidConfigLineError.generate_error_message(
 		config_file,
 		line_number,
 		line
