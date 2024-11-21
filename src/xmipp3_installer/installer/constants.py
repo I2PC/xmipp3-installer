@@ -16,6 +16,7 @@ INSTALL_PATH = "dist"
 #CMAKE_CACHE_PATH = os.path.join(BUILD_PATH, 'CMakeCache.txt')
 LOG_FILE = 'compilation.log'
 LIBRARY_VERSIONS_FILE = os.path.join(BUILD_PATH, 'versions.txt')
+CONFIG_FILE = 'xmipp.conf'
 
 # Others
 TAIL_LOG_NCHARS = 300
