@@ -6,6 +6,8 @@ from typing import List, Optional, Tuple, Dict
 
 from xmipp3_installer.installer import constants
 from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.repository.config_vars import default_values
+from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 
 __COMMENT_ESCAPE = '#'
 __ASSIGNMENT_SEPARATOR = '='
@@ -23,12 +25,16 @@ def read_config(path: str) -> Dict[str, str]:
 	"""
   file_lines = __get_file_content(path)
   result = {}
-  for line_index, line in enumerate(file_lines):
-    key_value_pair = __parse_config_line(line, line_index)
+  for line_number, line in enumerate(file_lines):
+    try:
+      key_value_pair = __parse_config_line(line, line_number + 1)
+    except InvalidConfigLineError as error:
+      logger(str(error))
+      return default_values.CONFIG_DEFAULT_VALUES
     if key_value_pair:
       key, value = key_value_pair
       result[key] = value
-  return result
+  return {**default_values.CONFIG_DEFAULT_VALUES, **result}
 
 def get_config_date(path: str) -> str:
   """
@@ -76,6 +82,9 @@ def __parse_config_line(line: str, line_number: int) -> Optional[Tuple[str, str]
 	
 	#### Returns:
 	- (tuple(str, str) | None): Tuple containing the read key-value pair if line contains valid data.
+
+  #### Raises:
+  - RuntimeError: Raised when a line has an invalid format and cannot be parsed.
 	"""
   line_without_comments = line.split(__COMMENT_ESCAPE, maxsplit=2)[0].strip()
   if not line_without_comments:
@@ -83,15 +92,13 @@ def __parse_config_line(line: str, line_number: int) -> Optional[Tuple[str, str]
   
   tokens = line_without_comments.split(__ASSIGNMENT_SEPARATOR, maxsplit=1)
   if len(tokens) != 2:
-    logger('\n'.join([
-      logger.yellow(f"WARNING: There was an error parsing {constants.CONFIG_FILE} file: "),
-      logger.red(f'Unable to parse line {line_number + 1}: {line}'),
-      logger.yellow(
-        "Contents of config file won't be read, default values will be used instead.\n"
-        "You can create a new file template from scratch running './xmipp config -o'."
+    raise InvalidConfigLineError(
+      InvalidConfigLineError.generate_error_message(
+        constants.CONFIG_FILE,
+        line_number,
+        line
       )
-    ]))
-    return None
+    )
   
   return tokens[0].strip(), tokens[1].strip()
 
