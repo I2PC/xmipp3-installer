@@ -28,11 +28,15 @@ __DEFAULT_CONFIG_VALUES = {
 	"key2": "default-key2-value"
 }
 
-def test_inherits_from_singleton_class(__mock_read_config_date):
+def test_inherits_from_singleton_class(
+		__mock_read_config,
+		__mock_read_config_date
+	):
 	config_file = ConfigurationFile()
 	assert isinstance(config_file, Singleton)
 
 def test_sets_config_file_path_when_constructing_configuration_file_with_provided_value(
+	__mock_read_config,
 	__mock_read_config_date
 ):
 	config_file = ConfigurationFile(__PATH)
@@ -45,6 +49,7 @@ def test_sets_config_file_path_when_constructing_configuration_file_with_provide
 	)
 
 def test_sets_config_file_path_when_constructing_configuration_file_with_default_value(
+	__mock_read_config,
 	__mock_read_config_date
 ):
 	config_file = ConfigurationFile()
@@ -57,6 +62,7 @@ def test_sets_config_file_path_when_constructing_configuration_file_with_default
 	)
 
 def test_sets_config_variables_when_constructing_configuration_file(
+	__mock_read_config,
 	__mock_read_config_date
 ):
 	config_file = ConfigurationFile()
@@ -65,13 +71,14 @@ def test_sets_config_variables_when_constructing_configuration_file(
 	), get_assertion_message("config variables", config_file.config_variables, {})
 
 def test_calls_read_config_when_constructing_configuration_file(
-	__mock_read_config_date,
-	__mock_read_config
+	__mock_read_config,
+	__mock_read_config_date
 ):
 	ConfigurationFile()
 	__mock_read_config.assert_called_once_with()
 
 def test_calls_read_config_date_when_constructing_configuration_file(
+	__mock_read_config,
 	__mock_read_config_date
 ):
 	ConfigurationFile()
@@ -200,108 +207,130 @@ def test_returns_expected_config_date(
 		config_date == expected_date
 	), get_assertion_message("last configuration modification date", expected_date, config_date)
 
-#@pytest.mark.parametrize(
-#	"line,line_number",
-#	[
-#		pytest.param("aaaaaa", 0),
-#		pytest.param("whatever", 1),
-#		pytest.param("does-not-have-equal-separator", 5)
-#	]
-#)
-#def test_raises_runtime_error_when_parsing_config_line_with_invalid_format(
-#	line,
-#	line_number,
-#	__mock_generate_invalid_config_line_error_message
-#):
-#	with pytest.raises(
-#		InvalidConfigLineError,
-#		match=__mock_generate_invalid_config_line_error_message(
-#			constants.CONFIG_FILE,
-#			line_number,
-#			line
-#		)
-#	):
-#		config.__parse_config_line(line, line_number)
-#
-#@pytest.mark.parametrize(
-#	"line",
-#	[
-#		pytest.param(""),
-#		pytest.param(" "),
-#		pytest.param("\n"),
-#		pytest.param(" \n"),
-#		pytest.param("#"),
-#		pytest.param("# Test comment")
-#	]
-#)
-#def test_returns_none_when_parsing_config_line_with_empty_data(line):
-#	parsed_line = config.__parse_config_line(line, 0)
-#	assert (
-#		parsed_line is None
-#	), get_assertion_message("parsed configuration file line", None, parsed_line)
-#
-#@pytest.mark.parametrize(
-#	"line,expected_key,expected_value",
-#	[
-#		pytest.param("key=value", "key", "value"),
-#		pytest.param("test-key=test-value", "test-key", "test-value"),
-#		pytest.param("test-key=", "test-key", "")
-#	]
-#)
-#def test_returns_expected_key_value_pair_when_parsing_config_line(
-#	line,
-#	expected_key,
-#	expected_value
-#):
-#	key_value_pair = config.__parse_config_line(line, 0)
-#	assert (
-#		key_value_pair == (expected_key, expected_value)
-#	), get_assertion_message("key-value pair", (expected_key, expected_value), key_value_pair)
-#
-#@pytest.mark.parametrize(
-#	"key,value,default_value,expected_line",
-#	[
-#		pytest.param(None, None, None, ""),
-#		pytest.param(None, "", "", ""),
-#		pytest.param(None, "value", "default-value", ""),
-#		pytest.param("", None, None, ""),
-#		pytest.param("", "", "", ""),
-#		pytest.param("", "value", "default-value", ""),
-#		pytest.param("key", "value", "", "key=value"),
-#		pytest.param("key", "", "", "key="),
-#		pytest.param("key", "", "default-value", "key="),
-#		pytest.param("key", None, "", "key="),
-#		pytest.param("key", None, "default-value", f"key{config.__ASSIGNMENT_SEPARATOR}default-value"),
-#		pytest.param("key", "value", "default-value", f"key{config.__ASSIGNMENT_SEPARATOR}value")
-#	]
-#)
-#def test_returns_expected_config_line_when_making_config_line(
-#	key,
-#	value,
-#	default_value,
-#	expected_line
-#):
-#	config_line = config.__make_config_line(key, value, default_value)
-#	assert (
-#		config_line == expected_line
-#	), get_assertion_message("configuration file line", expected_line, config_line)
-#
-#def test_calls_logger_when_reading_config_with_invalid_lines(
-#	__mock_get_file_content,
-#	__mock_generate_invalid_config_line_error_message,
-#	__mock_logger
-#):
-#	lines_with_wrong_data = [*__CORRECT_FILE_LINES, "aaaaa"]
-#	__mock_get_file_content.return_value = lines_with_wrong_data
-#	config.read_config(__PATH)
-#	__mock_logger.assert_called_once_with(str(InvalidConfigLineError(
-#		__mock_generate_invalid_config_line_error_message(
-#			constants.CONFIG_FILE,
-#			len(lines_with_wrong_data),
-#			lines_with_wrong_data[-1]
-#		))
-#	))
-#
+@pytest.mark.parametrize(
+	"line,line_number",
+	[
+		pytest.param("aaaaaa", 0),
+		pytest.param("whatever", 1),
+		pytest.param("does-not-have-equal-separator", 5)
+	]
+)
+def test_raises_runtime_error_when_parsing_config_line_with_invalid_format(
+	line,
+	line_number,
+	__mock_init,
+	__mock_generate_invalid_config_line_error_message
+):
+	with pytest.raises(
+		InvalidConfigLineError,
+		match=__mock_generate_invalid_config_line_error_message(
+			constants.CONFIG_FILE,
+			line_number,
+			line
+		)
+	):
+		config_file = ConfigurationFile()
+		config_file._ConfigurationFile__parse_config_line(line, line_number)
+
+@pytest.mark.parametrize(
+	"line",
+	[
+		pytest.param(""),
+		pytest.param(" "),
+		pytest.param("\n"),
+		pytest.param(" \n"),
+		pytest.param("#"),
+		pytest.param("# Test comment")
+	]
+)
+def test_returns_none_when_parsing_config_line_with_empty_data(
+	line,
+	__mock_init
+):
+	config_file = ConfigurationFile()
+	parsed_line = config_file._ConfigurationFile__parse_config_line(line, 0)
+	assert (
+		parsed_line is None
+	), get_assertion_message("parsed configuration file line", None, parsed_line)
+
+@pytest.mark.parametrize(
+	"line,expected_key,expected_value",
+	[
+		pytest.param("key=value", "key", "value"),
+		pytest.param("test-key=test-value", "test-key", "test-value"),
+		pytest.param("test-key=", "test-key", "")
+	]
+)
+def test_returns_expected_key_value_pair_when_parsing_config_line(
+	line,
+	expected_key,
+	expected_value,
+	__mock_init
+):
+	config_file = ConfigurationFile()
+	key_value_pair = config_file._ConfigurationFile__parse_config_line(line, 0)
+	assert (
+		key_value_pair == (expected_key, expected_value)
+	), get_assertion_message("key-value pair", (expected_key, expected_value), key_value_pair)
+
+@pytest.mark.parametrize(
+	"key,value,default_value,expected_line",
+	[
+		pytest.param(None, None, None, ""),
+		pytest.param(None, "", "", ""),
+		pytest.param(None, "value", "default-value", ""),
+		pytest.param("", None, None, ""),
+		pytest.param("", "", "", ""),
+		pytest.param("", "value", "default-value", ""),
+		pytest.param("key", "value", "", "key=value"),
+		pytest.param("key", "", "", "key="),
+		pytest.param("key", "", "default-value", "key="),
+		pytest.param("key", None, "", "key="),
+		pytest.param(
+			"key",
+			None,
+			"default-value",
+			f"key{ConfigurationFile._ConfigurationFile__ASSIGNMENT_SEPARATOR}default-value"
+		),
+		pytest.param(
+			"key",
+			"value",
+			"default-value",
+			f"key{ConfigurationFile._ConfigurationFile__ASSIGNMENT_SEPARATOR}value"
+		)
+	]
+)
+def test_returns_expected_config_line_when_making_config_line(
+	key,
+	value,
+	default_value,
+	expected_line,
+	__mock_init
+):
+	config_file = ConfigurationFile()
+	config_line = config_file._ConfigurationFile__make_config_line(key, value, default_value)
+	assert (
+		config_line == expected_line
+	), get_assertion_message("configuration file line", expected_line, config_line)
+
+def test_calls_logger_when_reading_config_with_invalid_lines(
+	__mock_init,
+	__mock_get_file_content,
+	__mock_generate_invalid_config_line_error_message,
+	__mock_logger
+):
+	lines_with_wrong_data = [*__CORRECT_FILE_LINES, "aaaaa"]
+	__mock_get_file_content.return_value = lines_with_wrong_data
+	config_file = ConfigurationFile()
+	config_file.read_config()
+	__mock_logger.assert_called_once_with(str(InvalidConfigLineError(
+		__mock_generate_invalid_config_line_error_message(
+			constants.CONFIG_FILE,
+			len(lines_with_wrong_data),
+			lines_with_wrong_data[-1]
+		))
+	))
+
 #def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 #	__mock_get_file_content,
 #	__mock_generate_invalid_config_line_error_message,
@@ -340,7 +369,7 @@ def test_returns_expected_config_date(
 #		config_values == expected_values
 #	), get_assertion_message("config values", expected_values, config_values)
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def __mock_read_config():
 	with patch(
 		"xmipp3_installer.repository.config.ConfigurationFile.read_config"
@@ -391,21 +420,21 @@ def __mock_re_search(request):
 		mock_method.return_value = mock_groups
 		yield mock_method
 
-#@pytest.fixture
-#def __mock_logger():
-#	with patch(
-#		"xmipp3_installer.application.logger.logger.Logger.__call__"
-#	) as mock_method:
-#		yield mock_method
+@pytest.fixture
+def __mock_generate_invalid_config_line_error_message():
+	side_effect = lambda conf_file, line_number, line: f"{conf_file} - {line_number} - {line}"
+	with patch(
+		"xmipp3_installer.repository.invalid_config_line.InvalidConfigLineError.generate_error_message"
+	) as mock_method:
+		mock_method.side_effect = side_effect
+		yield mock_method
 
-#@pytest.fixture
-#def __mock_generate_invalid_config_line_error_message():
-#	side_effect = lambda conf_file, line_number, line: f"{conf_file} - {line_number} - {line}"
-#	with patch(
-#		"xmipp3_installer.repository.invalid_config_line.InvalidConfigLineError.generate_error_message"
-#	) as mock_method:
-#		mock_method.side_effect = side_effect
-#		yield mock_method
+@pytest.fixture
+def __mock_logger():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.__call__"
+	) as mock_method:
+		yield mock_method
 
 #@pytest.fixture(autouse=True)
 #def __mock_config_default_variables():
