@@ -29,10 +29,10 @@ __DEFAULT_CONFIG_VALUES = {
 }
 
 def test_inherits_from_singleton_class():
-	config_file = ConfigurationFile(__PATH)
+	config_file = ConfigurationFile()
 	assert isinstance(config_file, Singleton)
 
-def test_sets_config_file_path_when_constructing_configuration_file():
+def test_sets_config_file_path_when_constructing_configuration_file_with_provided_value():
 	config_file = ConfigurationFile(__PATH)
 	assert (
 		config_file._ConfigurationFile__path == __PATH
@@ -42,23 +42,72 @@ def test_sets_config_file_path_when_constructing_configuration_file():
 		__PATH
 	)
 
+def test_sets_config_file_path_when_constructing_configuration_file_with_default_value():
+	config_file = ConfigurationFile()
+	assert (
+		config_file._ConfigurationFile__path == constants.CONFIG_FILE
+	), get_assertion_message(
+		"config file path",
+		config_file._ConfigurationFile__path,
+		constants.CONFIG_FILE
+	)
+
 def test_sets_config_variables_when_constructing_configuration_file():
-	config_file = ConfigurationFile(__PATH)
+	config_file = ConfigurationFile()
 	assert (
 		config_file.config_variables == {}
-	), get_assertion_message("config file path", config_file.config_variables, {})
+	), get_assertion_message("config variables", config_file.config_variables, {})
 
 def test_calls_read_config_when_constructing_configuration_file(
 	__mock_read_config
 ):
-	ConfigurationFile(__PATH)
+	ConfigurationFile()
 	__mock_read_config.assert_called_once_with()
 
 def test_calls_read_config_date_when_constructing_configuration_file(
 	__mock_read_config_date
 ):
-	ConfigurationFile(__PATH)
+	ConfigurationFile()
 	__mock_read_config_date.assert_called_once_with()
+
+def test_calls_read_config_date_when_getting_config_date_and_is_not_set(
+	__mock_init,
+	__mock_read_config_date
+):
+	config_file = ConfigurationFile()
+	config_file.config_date = ""
+	config_file.get_config_date()
+	__mock_read_config_date.assert_called_once_with()
+
+def test_does_not_call_read_config_date_when_getting_config_date_and_is_set(
+	__mock_init,
+	__mock_read_config_date
+):
+	config_file = ConfigurationFile()
+	config_file.config_date = "random-value"
+	config_file.get_config_date()
+	__mock_read_config_date.assert_not_called()
+
+@pytest.mark.parametrize(
+	"initial_value,expected_value",
+	[
+		pytest.param(None, __DATE),
+		pytest.param("", __DATE),
+		pytest.param("00-00-0000", "00-00-0000")
+	]
+)
+def test_returns_expected_config_date(
+	initial_value,
+	expected_value,
+	__mock_init,
+	__mock_read_config_date
+):
+	config_file = ConfigurationFile()
+	config_file.config_date = initial_value
+	config_date = config_file.get_config_date()
+	assert (
+		config_date == expected_value
+	), get_assertion_message("config date", expected_value, config_date)
 
 #def test_calls_file_readlines_when_getting_file_content(__mock_path_exists, __mock_open):
 #	config.__get_file_content(__PATH)
@@ -281,29 +330,38 @@ def __mock_read_config():
 @pytest.fixture(autouse=True)
 def __mock_read_config_date():
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__read_config_date"
+		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__read_config_date",
+		return_value=__DATE
 	) as mock_method:
 		yield mock_method
 
-@pytest.fixture(params=[True])
-def __mock_path_exists(request):
-	with patch("os.path.exists") as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
-
-@pytest.fixture(params=[__FILE_LINES])
-def __mock_open(request):
-	m_open = mock_open(read_data=''.join(request.param))
-	with patch("builtins.open", m_open):
-		yield m_open
-
-@pytest.fixture(params=[__FILE_LINES])
-def __mock_get_file_content(request):
+@pytest.fixture
+def __mock_init():
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_file_content"
+		"xmipp3_installer.repository.config.ConfigurationFile.__init__",
+		return_value=None
 	) as mock_method:
-		mock_method.return_value = request.param
 		yield mock_method
+
+#@pytest.fixture(params=[True])
+#def __mock_path_exists(request):
+#	with patch("os.path.exists") as mock_method:
+#		mock_method.return_value = request.param
+#		yield mock_method
+
+#@pytest.fixture(params=[__FILE_LINES])
+#def __mock_open(request):
+#	m_open = mock_open(read_data=''.join(request.param))
+#	with patch("builtins.open", m_open):
+#		yield m_open
+
+#@pytest.fixture(params=[__FILE_LINES])
+#def __mock_get_file_content(request):
+#	with patch(
+#		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_file_content"
+#	) as mock_method:
+#		mock_method.return_value = request.param
+#		yield mock_method
 
 #@pytest.fixture(params=([""]))
 #def __mock_re_search(request):
