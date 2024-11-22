@@ -26,21 +26,6 @@ def test_inherits_from_singleton_class():
 	logger = Logger()
 	assert isinstance(logger, Singleton)
 
-def test_returns_new_instance(__mock_singleton):
-	logger1 = Logger()
-	with patch.object(Logger, "_Logger__instance", None):
-		logger2 = Logger()
-	assert (
-		logger1 is not logger2
-	), "Received same logger instance, when should have been different."
-
-def test_returns_same_instance(__mock_singleton):
-	logger1 = Logger()
-	logger2 = Logger()
-	assert (
-		logger1 is logger2
-	), get_assertion_message("Logger instance", logger1, logger2)
-
 def test_formats_green(
 	__mock_color_green,
 	__mock_reset_format
@@ -97,8 +82,7 @@ def test_formats_bold(
 	), get_assertion_message("bold format", expected_formatted_text, formatted_text)
 
 def test_calls_open_when_starting_log_file_and_log_file_is_not_open(
-	__mock_open,
-	__mock_singleton
+	__mock_open
 ):
 	log_file_name = "test_log_file"
 	logger = Logger()
@@ -106,8 +90,7 @@ def test_calls_open_when_starting_log_file_and_log_file_is_not_open(
 	__mock_open.assert_called_once_with(log_file_name, 'w')
 
 def test_does_not_call_open_when_starting_log_file_and_log_file_is_open(
-	__mock_open,
-	__mock_singleton
+	__mock_open
 ):
 	log_file_name = "test_log_file"
 	logger = Logger()
@@ -115,7 +98,7 @@ def test_does_not_call_open_when_starting_log_file_and_log_file_is_open(
 	logger.start_log_file(log_file_name)
 	__mock_open.assert_not_called()
 
-def test_starts_log_file(__mock_open, __mock_singleton):
+def test_starts_log_file(__mock_open):
 	logger = Logger()
 	logger.start_log_file("test_log_file")
 	log_file = logger._Logger__log_file
@@ -130,7 +113,7 @@ def test_starts_log_file(__mock_open, __mock_singleton):
 		pytest.param(True)
 	],
 )
-def test_sets_allow_substitution(expected_allow_substitution, __mock_singleton):
+def test_sets_allow_substitution(expected_allow_substitution):
 	logger = Logger()
 	logger.set_allow_substitution(expected_allow_substitution)
 	allow_substitution = logger._Logger__allow_substitution
@@ -162,8 +145,7 @@ def test_calls_logger_with_expected_params_when_logging_error(
 	__mock_call,
 	__mock_color_red,
 	__mock_reset_format,
-	__mock_errors,
-	__mock_singleton
+	__mock_errors
 ):
 	error_message = "Test error message"
 	logger = Logger()
@@ -178,7 +160,7 @@ def test_calls_logger_with_expected_params_when_logging_error(
 		show_in_terminal=True
 	)
 
-def test_returns_expected_text_when_removing_non_printable_characters(__mock_singleton):
+def test_returns_expected_text_when_removing_non_printable_characters():
 	printable_text = "This text should remain"
 	logger = Logger()
 	modified_text = logger._Logger__remove_non_printable(
@@ -200,8 +182,7 @@ def test_returns_expected_text_when_removing_non_printable_characters(__mock_sin
 def test_returns_expected_n_last_lines(
 	__mock_get_terminal_column_size,
 	len_last_printed_element,
-	expected_n_last_lines,
-	__mock_singleton
+	expected_n_last_lines
 ):
 	logger = Logger()
 	with patch.object(logger, "_Logger__len_last_printed_elem", len_last_printed_element):
@@ -211,8 +192,7 @@ def test_returns_expected_n_last_lines(
 	), get_assertion_message("number of lines from last print", expected_n_last_lines, n_last_lines)
 
 def test_raises_division_by_zero_exception_if_terminal_size_is_zero(
-	__mock_get_terminal_column_size,
-	__mock_singleton
+	__mock_get_terminal_column_size
 ):
 	logger = Logger()
 	with pytest.raises(ZeroDivisionError):
@@ -230,8 +210,7 @@ def test_raises_division_by_zero_exception_if_terminal_size_is_zero(
 def test_returns_the_expected_text_when_substituting_lines(
 	__mock_get_n_last_lines,
 	__mock_up,
-	__mock_remove_line,
-	__mock_singleton
+	__mock_remove_line
 ):
 	sample_text = "This is some sample text"
 	logger = Logger()
@@ -252,8 +231,7 @@ def test_calls_print_when_calling_logger_without_file_and_with_substitution(
 	show_in_terminal,
 	substitute,
 	__mock_substitute_lines,
-	__mock_print,
-	__mock_singleton
+	__mock_print
 ):
 	logger = Logger()
 	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
@@ -274,8 +252,7 @@ def test_calls_print_when_calling_logger_without_file_and_without_substitution(
 	show_in_terminal,
 	substitute,
 	__mock_substitute_lines,
-	__mock_print,
-	__mock_singleton
+	__mock_print
 ):
 	logger = Logger()
 	logger.set_allow_substitution(False)
@@ -296,8 +273,7 @@ def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 	show_in_terminal,
 	substitute,
 	__mock_remove_non_printable,
-	__mock_print,
-	__mock_singleton
+	__mock_print
 ):
 	logger = Logger()
 	logger.set_allow_substitution(False)
@@ -318,8 +294,7 @@ def test_sets_expected_len_for_last_printed_element_when_calling_logger(
 def test_does_not_call_print_when_calling_logger_without_file(
 	show_in_terminal,
 	substitute,
-	__mock_print,
-	__mock_singleton
+	__mock_print
 ):
 	logger = Logger()
 	logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
@@ -328,8 +303,7 @@ def test_does_not_call_print_when_calling_logger_without_file(
 def test_calls_print_when_calling_logger_with_file(
 	__mock_open,
 	__mock_remove_non_printable,
-	__mock_print,
-	__mock_singleton
+	__mock_print
 ):
 	logger = Logger()
 	logger.start_log_file("dummy_file_name")
@@ -396,11 +370,6 @@ def __get_substitution_chars(up_char: str, remove_line_char: str, n_lines: int):
 	for _ in range(n_lines):
 		substitution_chars += f"{up_char}{remove_line_char}"
 	return substitution_chars
-
-@pytest.fixture
-def __mock_singleton():
-	with patch.object(Logger, "_Logger__instance", None):
-		yield
 
 @pytest.fixture
 def __mock_reset_format():
