@@ -2,6 +2,7 @@ from unittest.mock import patch, mock_open, Mock, call
 
 import pytest
 
+from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.repository.config import ConfigurationFile
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 from xmipp3_installer.installer import constants
@@ -26,6 +27,13 @@ __DEFAULT_CONFIG_VALUES = {
 	"key1": "default-key1-value",
 	"key2": "default-key2-value"
 }
+
+def test_inherits_from_singleton_class(
+	__mock_read_config,
+	__mock_read_config_date
+):
+	config_file = ConfigurationFile(__PATH)
+	assert isinstance(config_file, Singleton)
 
 def test_sets_config_file_path_when_constructing_configuration_file(
 	__mock_read_config,
