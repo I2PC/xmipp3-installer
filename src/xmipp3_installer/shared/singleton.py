@@ -1,10 +1,10 @@
-"""# Contains a generic Singleton class."""
+"""# Contains a generic singleton class."""
 
 from typing_extensions import Self
 
 class Singleton:
 	"""
-	### Generic Singleton class.
+	### Generic singleton class.
 	"""
 	__instance = None
 
