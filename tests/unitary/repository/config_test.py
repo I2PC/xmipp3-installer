@@ -110,7 +110,7 @@ def test_does_not_call_read_config_date_when_getting_config_date_and_is_set(
 		pytest.param("00-00-0000", "00-00-0000")
 	]
 )
-def test_returns_expected_config_date(
+def test_returns_expected_config_date_when_getting_config_date(
 	initial_value,
 	expected_value,
 	__mock_init,
@@ -196,7 +196,7 @@ def test_calls_re_search_when_reading_config_date(
 	],
 	indirect=["__mock_get_file_content"]
 )
-def test_returns_expected_config_date(
+def test_returns_expected_config_date_when_reading_config_date(
 	__mock_init,
 	__mock_get_file_content,
 	expected_date
