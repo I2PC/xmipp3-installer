@@ -1,7 +1,7 @@
 """### Contains the default values for the config variables."""
 
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.tmp import disaster_drawer
+from xmipp3_installer.installer.handlers import conda_handler
 from xmipp3_installer.repository.config_vars import variables
 
 __TUNE_FLAG = '-mtune=native'
@@ -19,7 +19,7 @@ CONFIG_DEFAULT_VALUES = {
 	variables.CC_FLAGS: __TUNE_FLAG,
 	variables.CXX_FLAGS: __TUNE_FLAG,
 	variables.CUDA_COMPILER: None,
-	variables.PREFIX_PATH: disaster_drawer.get_conda_prefix_path(),
+	variables.PREFIX_PATH: conda_handler.get_conda_prefix_path(),
 	variables.MPI_HOME: None,
 	variables.PYTHON_HOME: None,
 	variables.FFTW_HOME: None,
