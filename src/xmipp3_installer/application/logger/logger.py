@@ -3,6 +3,7 @@
 import math
 import shutil
 from io import BufferedReader
+
 from typing_extensions import Self
 
 from xmipp3_installer.application.logger import errors
@@ -36,7 +37,7 @@ class Logger:
 		- (self): Instance of current class.
 		"""
 		if not cls.__instance:
-			cls.__instance = super().__new__(cls, *args, **kwrgs)
+			cls.__instance = super().__new__(cls)
 		return cls.__instance
  
 	def __init__(self):
