@@ -4,8 +4,7 @@ import re
 import os
 from typing import List, Optional, Tuple
 
-from typing_extensions import Self
-
+from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.installer import constants
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.repository.config_vars import default_values, variables
@@ -15,7 +14,7 @@ __COMMENT_ESCAPE = '#'
 __ASSIGNMENT_SEPARATOR = '='
 __LAST_MODIFIED_TEXT = "Config file automatically generated on"
 
-class ConfigurationFile:
+class ConfigurationFile(Singleton):
 	"""
 	### Configuration file class for loading and storing the installation configuration.
 	"""
@@ -23,22 +22,6 @@ class ConfigurationFile:
 	__COMMENT_ESCAPE = '#'
 	__ASSIGNMENT_SEPARATOR = '='
 	__LAST_MODIFIED_TEXT = "Config file automatically generated on"
-
-	def __new__(cls, *args, **kwrgs) -> Self:
-		"""
-		### Singleton instancer.
-
-		#### Params:
-		- cls (self): Current class.
-		- *args (any): Positional params.
-		- **kwargs (any): Argument params.
-
-		#### Returns:
-		- (self): Instance of current class.
-		"""
-		if not cls.__instance:
-			cls.__instance = super().__new__(cls)
-		return cls.__instance
 
 	def __init__(self, path: str=constants.CONFIG_FILE):
 		"""
