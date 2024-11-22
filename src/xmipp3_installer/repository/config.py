@@ -18,7 +18,6 @@ class ConfigurationFile(Singleton):
 	"""
 	### Configuration file class for loading and storing the installation configuration.
 	"""
-	__instance = None
 	__COMMENT_ESCAPE = '#'
 	__ASSIGNMENT_SEPARATOR = '='
 	__LAST_MODIFIED_TEXT = "Config file automatically generated on"
