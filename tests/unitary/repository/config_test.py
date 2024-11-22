@@ -27,6 +27,28 @@ __DEFAULT_CONFIG_VALUES = {
 	"key2": "default-key2-value"
 }
 
+def test_sets_config_file_path_when_constructing_configuration_file(
+	__mock_read_config,
+	__mock_read_config_date
+):
+	config_file = ConfigurationFile(__PATH)
+	assert (
+		config_file._ConfigurationFile__path == __PATH
+	), get_assertion_message(
+		"config file path",
+		config_file._ConfigurationFile__path,
+		__PATH
+	)
+
+def test_sets_config_variables_when_constructing_configuration_file(
+	__mock_read_config,
+	__mock_read_config_date
+):
+	config_file = ConfigurationFile(__PATH)
+	assert (
+		config_file.config_variables == {}
+	), get_assertion_message("config file path", config_file.config_variables, {})
+
 def test_calls_read_config_when_constructing_configuration_file(
 	__mock_read_config,
 	__mock_read_config_date
