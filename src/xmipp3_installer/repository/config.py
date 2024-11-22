@@ -10,10 +10,6 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.repository.config_vars import default_values, variables
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 
-__COMMENT_ESCAPE = '#'
-__ASSIGNMENT_SEPARATOR = '='
-__LAST_MODIFIED_TEXT = "Config file automatically generated on"
-
 class ConfigurationFile(Singleton):
 	"""
 	### Configuration file class for loading and storing the installation configuration.
@@ -42,7 +38,7 @@ class ConfigurationFile(Singleton):
 		result = {}
 		for line_number, line in enumerate(file_lines):
 			try:
-				key_value_pair = ConfigurationFile.__parse_config_line(line, line_number + 1)
+				key_value_pair = self.__parse_config_line(line, line_number + 1)
 			except InvalidConfigLineError as error:
 				logger(str(error))
 				result = {}
@@ -86,15 +82,14 @@ class ConfigurationFile(Singleton):
 		"""
 		config_lines = self.__get_file_content()
 		for line in config_lines:
-			if __LAST_MODIFIED_TEXT not in line:
+			if self.__LAST_MODIFIED_TEXT not in line:
 				continue
 			match = re.search(r'\d{2}-\d{2}-\d{4}', line)
 			if match:
 				return match.group()
 		return ""
 
-	@staticmethod
-	def __parse_config_line(line: str, line_number: int) -> Optional[Tuple[str, str]]:
+	def __parse_config_line(self, line: str, line_number: int) -> Optional[Tuple[str, str]]:
 		"""
 		### Reads the given line from the config file and returns the key-value pair as a tuple.
 
@@ -108,11 +103,11 @@ class ConfigurationFile(Singleton):
 		#### Raises:
 		- RuntimeError: Raised when a line has an invalid format and cannot be parsed.
 		"""
-		line_without_comments = line.split(__COMMENT_ESCAPE, maxsplit=2)[0].strip()
+		line_without_comments = line.split(self.__COMMENT_ESCAPE, maxsplit=2)[0].strip()
 		if not line_without_comments:
 			return None
 		
-		tokens = line_without_comments.split(__ASSIGNMENT_SEPARATOR, maxsplit=1)
+		tokens = line_without_comments.split(self.__ASSIGNMENT_SEPARATOR, maxsplit=1)
 		if len(tokens) != 2:
 			raise InvalidConfigLineError(
 				InvalidConfigLineError.generate_error_message(
