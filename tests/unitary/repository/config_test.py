@@ -331,43 +331,46 @@ def test_calls_logger_when_reading_config_with_invalid_lines(
 		))
 	))
 
-#def test_returns_default_config_values_when_reading_config_with_invalid_lines(
-#	__mock_get_file_content,
-#	__mock_generate_invalid_config_line_error_message,
-#	__mock_logger
-#):
-#	__mock_get_file_content.return_value = [*__CORRECT_FILE_LINES, "aaaaa"]
-#	config_values = config.read_config(__PATH)
-#	assert (
-#		config_values == default_values.CONFIG_DEFAULT_VALUES
-#	), get_assertion_message(
-#		"config values",
-#		default_values.CONFIG_DEFAULT_VALUES,
-#		config_values
-#	)
-#
-#@pytest.mark.parametrize(
-#	"file_lines,expected_values",
-#	[
-#		pytest.param(["key1=test"], {**__DEFAULT_CONFIG_VALUES, "key1": "test"}),
-#		pytest.param(["newkey=newvalue"], {**__DEFAULT_CONFIG_VALUES, "newkey": "newvalue"}),
-#		pytest.param(
-#			__CORRECT_FILE_LINES, 
-#			{**__DEFAULT_CONFIG_VALUES, "key": "value", "mykey": "test-value"}
-#		),
-#		pytest.param(["# Comment line"], __DEFAULT_CONFIG_VALUES)
-#	]
-#)
-#def test_returns_expected_config_values_when_reading_config_with_invalid_lines(
-#	file_lines,
-#	expected_values,
-#	__mock_get_file_content
-#):
-#	__mock_get_file_content.return_value = file_lines
-#	config_values = config.read_config(__PATH)
-#	assert (
-#		config_values == expected_values
-#	), get_assertion_message("config values", expected_values, config_values)
+def test_returns_default_config_values_when_reading_config_with_invalid_lines(
+	__mock_init,
+	__mock_get_file_content,
+	__mock_generate_invalid_config_line_error_message,
+	__mock_logger
+):
+	__mock_get_file_content.return_value = [*__CORRECT_FILE_LINES, "aaaaa"]
+	config_file = ConfigurationFile()
+	config_file.read_config()
+	assert (
+		config_file.config_variables == default_values.CONFIG_DEFAULT_VALUES
+	), get_assertion_message(
+		"config values",
+		default_values.CONFIG_DEFAULT_VALUES,
+		config_file.config_variables
+	)
+
+@pytest.mark.parametrize(
+	"__mock_get_file_content,expected_values",
+	[
+		pytest.param(["key1=test"], {**__DEFAULT_CONFIG_VALUES, "key1": "test"}),
+		pytest.param(["newkey=newvalue"], {**__DEFAULT_CONFIG_VALUES, "newkey": "newvalue"}),
+		pytest.param(
+			__CORRECT_FILE_LINES, 
+			{**__DEFAULT_CONFIG_VALUES, "key": "value", "mykey": "test-value"}
+		),
+		pytest.param(["# Comment line"], __DEFAULT_CONFIG_VALUES)
+	],
+	indirect=["__mock_get_file_content"]
+)
+def test_returns_expected_config_values_when_reading_config_with_valid_lines(
+	__mock_get_file_content,
+	expected_values,
+	__mock_init
+):
+	config_file = ConfigurationFile()
+	config_file.read_config()
+	assert (
+		config_file.config_variables == expected_values
+	), get_assertion_message("config values", expected_values, config_file.config_variables)
 
 @pytest.fixture
 def __mock_read_config():
@@ -436,11 +439,11 @@ def __mock_logger():
 	) as mock_method:
 		yield mock_method
 
-#@pytest.fixture(autouse=True)
-#def __mock_config_default_variables():
-#	with patch.object(
-#		default_values,
-#		"CONFIG_DEFAULT_VALUES",
-#		__DEFAULT_CONFIG_VALUES
-#	) as mock_method:
-#		yield mock_method
+@pytest.fixture(autouse=True)
+def __mock_config_default_variables():
+	with patch.object(
+		default_values,
+		"CONFIG_DEFAULT_VALUES",
+		__DEFAULT_CONFIG_VALUES
+	) as mock_method:
+		yield mock_method
