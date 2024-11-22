@@ -3,6 +3,7 @@ from unittest.mock import patch, Mock, call
 
 import pytest
 
+from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.application.logger.logger import Logger
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import urls
@@ -20,6 +21,10 @@ __PORTAL_LINK_MESSAGE = f"\nMore details on the Xmipp documentation portal: {url
 __DUMMY_FILE = BytesIO()
 __STREAM_READLINE = [b'line1\n', b'line2\n', b'']
 __STREAM_READLINE_DECODED = ['line1', 'line2']
+
+def test_inherits_from_singleton_class():
+	logger = Logger()
+	assert isinstance(logger, Singleton)
 
 def test_returns_new_instance(__mock_singleton):
 	logger1 = Logger()
