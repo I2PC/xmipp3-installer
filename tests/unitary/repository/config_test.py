@@ -6,7 +6,7 @@ from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.repository.config import ConfigurationFile
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 from xmipp3_installer.installer import constants
-from xmipp3_installer.repository.config_vars import default_values
+from xmipp3_installer.repository.config_vars import default_values, variables
 
 from ... import get_assertion_message
 
@@ -26,6 +26,31 @@ __CORRECT_FILE_LINES = {
 __DEFAULT_CONFIG_VALUES = {
 	"key1": "default-key1-value",
 	"key2": "default-key2-value"
+}
+__CONFIG_VARIABLES = {
+	"section1": [
+		"variable1-section1", "variable2-section1", "variable3-section1"
+	],
+	"section2": [
+		"variable1-section2", "variable2-section2", "variable3-section2"
+	],
+	"section3": ["variable1-section3"]
+}
+__CONFIG_VALUES = {
+	"variable1-section1": "test",
+	"variable2-section1": "test2",
+	"variable3-section1": "mytest",
+	"variable1-section2": "section2-test",
+	"variable3-section2": "section2-test3",
+}
+__DEFAULT_CONFIG_VALUES = {
+	"variable1-section1": "default1-section1",
+	"variable2-section1": "default2-section1",
+	"variable3-section1": "default3-section1",
+	"variable1-section2": "default1-section2",
+	"variable2-section2": "default2-section2",
+	"variable3-section2": "default3-section2",
+	"variable1-section3": "default-section3"
 }
 
 def test_inherits_from_singleton_class(
@@ -372,6 +397,44 @@ def test_returns_expected_config_values_when_reading_config_with_valid_lines(
 		config_file.config_variables == expected_values
 	), get_assertion_message("config values", expected_values, config_file.config_variables)
 
+def test_calls_make_config_line_when_getting_toggle_lines(
+	__mock_init,
+	__mock_config_variables,
+	__mock_make_config_line
+):
+	config_file = ConfigurationFile()
+	config_file.config_variables = __CONFIG_VALUES
+	for section in __CONFIG_VARIABLES.keys():
+		config_file._ConfigurationFile__get_toggle_lines(section)
+		__mock_make_config_line.assert_has_calls([
+			call(
+				section_variable,
+				__CONFIG_VALUES.get(section_variable),
+				__DEFAULT_CONFIG_VALUES[section_variable]
+			)
+			for section_variable in __CONFIG_VARIABLES[section]
+		])
+
+def test_returns_expected_lines_when_getting_toggle_lines(
+	__mock_init,
+	__mock_config_variables,
+	__mock_make_config_line
+):
+	config_file = ConfigurationFile()
+	config_file.config_variables = __CONFIG_VALUES
+	for section in __CONFIG_VARIABLES.keys():
+		section_lines = config_file._ConfigurationFile__get_toggle_lines(section)
+		expected_lines = [
+			f"{__mock_make_config_line(
+				section_variable,
+				__CONFIG_VALUES.get(section_variable),
+				__DEFAULT_CONFIG_VALUES[section_variable]
+			)}\n" for section_variable in __CONFIG_VARIABLES[section]
+		]
+		assert (
+			section_lines == expected_lines
+		), get_assertion_message("configuration file lines", expected_lines, section_lines)
+
 @pytest.fixture
 def __mock_read_config():
 	with patch(
@@ -446,4 +509,22 @@ def __mock_config_default_variables():
 		"CONFIG_DEFAULT_VALUES",
 		__DEFAULT_CONFIG_VALUES
 	) as mock_method:
+		yield mock_method
+
+@pytest.fixture
+def __mock_config_variables():
+	with patch.object(
+		variables,
+		"CONFIG_VARIABLES",
+		__CONFIG_VARIABLES
+	) as mock_method:
+		yield mock_method
+
+@pytest.fixture
+def __mock_make_config_line():
+	side_effect = lambda key, value, default_value: f"{key}-{value}-{default_value}"
+	with patch(
+		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__make_config_line"
+	) as mock_method:
+		mock_method.side_effect = side_effect
 		yield mock_method
