@@ -66,12 +66,10 @@ class ConfigurationFile(Singleton):
 		lines.append("# We recommend not modifying this variables unless you know what you are doing.\n")
 		lines.extend(self.__get_toggle_lines(variables.COMPILATION_FLAGS, config_variables))
 		
-		# If there are extra unkown flags, add them in a different section
 		if config_variables:
 			lines.append("\n##### UNKNOWN VARIABLES #####\n")
 			lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
-			for variable in config_variables.keys():
-				lines.append(self.__make_config_line(variable, config_variables[variable], '') + '\n')
+			lines.extend(self.__get_unkown_variable_lines(config_variables))
 
 		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today()}\n")
 		with open(self.__path, 'w') as configFile:
@@ -170,6 +168,7 @@ class ConfigurationFile(Singleton):
 
 		#### Params:
 		- section_type (str): Section to extract variables from.
+		- config_variables (dict(str, any)): Dictionary containing all variables.
 
 		#### Returns:
 		- (list(str)): Config file lines created from the dictionary variables.
@@ -182,4 +181,21 @@ class ConfigurationFile(Singleton):
 				default_values.CONFIG_DEFAULT_VALUES[section_variable]
 			)}\n")
 			config_variables.pop(section_variable, None)
+		return lines
+
+	def __get_unkown_variable_lines(self, config_variables: Dict[str, Any]) -> List[str]:
+		"""
+		### Returns the lines composed by the unkown variables in the dictionary.
+
+		#### Params:
+		- config_variables (dict(str, any)): Dictionary containing all unknown variables.
+
+		#### Returns:
+		- (list(str)): Config file lines created from the dictionary variables.
+		"""
+		lines = []
+		for variable in config_variables.keys():
+			lines.append(
+				f"{self.__make_config_line(variable, config_variables[variable], '')}\n"
+			)
 		return lines
