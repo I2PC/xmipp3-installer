@@ -135,6 +135,25 @@ class ConfigurationFile(Singleton):
 		value = default_value if value is None else value
 		return f"{key}{self.__ASSIGNMENT_SEPARATOR}{value}" if key else ""
 
+	def __get_toggle_lines(self, section_type: str) -> List[str]:
+		"""
+		### Returns the lines composed by the given section's variables in the dictionary, and deletes them from it.
+
+		#### Params:
+		- section_type (str): Section to extract variables from.
+
+		#### Returns:
+		- (list(str)): Config file lines created from the dictionary variables.
+		"""
+		lines = []
+		for section_variable in variables.CONFIG_VARIABLES[section_type]:
+			lines.append(f"{self.__make_config_line(
+				section_variable,
+				self.config_variables.get(section_variable),
+				default_values.CONFIG_DEFAULT_VALUES[section_variable]
+			)}\n")
+		return lines
+
 #def writeConfig(path: str, config_dict: Dict={}):
 #  """
 #	### Writes a template config file with given variables, leaving the rest with default values.
@@ -167,63 +186,3 @@ class ConfigurationFile(Singleton):
 #  lines.append(f"\n# {__LAST_MODIFIED_TEXT} {datetime.today()}\n")
 #  with open(path, 'w') as configFile:
 #    configFile.writelines(lines)
-
-#def __get_toggle_lines(config_variables: Dict) -> List[str]:
-#  """
-#  ### Returns the lines composed by the toggle variables in the dictionary, and deletes them from it.
-#
-#  #### Params:
-#  - config_variables (dict): Dictionary containig all the config variables.
-#
-#  #### Returns:
-#  - (list(str)): Config file lines created from the dictionary variables.
-#  """
-#  lines = []
-#  for toggle in variables.CONFIG_VARIABLES[variables.TOGGLES]:
-#    lines.append(f"{__make_config_line(
-#      toggle,
-#      config_variables.get(toggle),
-#      default_values.CONFIG_DEFAULT_VALUES[toggle]
-#    )}\n")
-#    config_variables.pop(toggle, None)
-#  return lines
-#
-#def __get_path_lines(config_variables: Dict) -> List[str]:
-#  """
-#  ### Returns the lines composed by the path variables in the dictionary, and deletes them from it.
-#
-#  #### Params:
-#  - config_variables (dict): Dictionary containig all the config variables.
-#
-#  #### Returns:
-#  - (list(str)): Config file lines created from the dictionary variables.
-#  """
-#  lines = []
-#  for location in variables.CONFIG_VARIABLES[variables.LOCATIONS]:
-#    lines.append(f"{__make_config_line(
-#      location,
-#      config_variables.get(location),
-#      default_values.CONFIG_DEFAULT_VALUES[location]
-#    )}\n")
-#    config_variables.pop(location, None)
-#  return lines
-#
-#def __get_flag_lines(config_variables: Dict) -> List[str]:
-#  """
-#  ### Returns the lines composed by the compilation flag variables in the dictionary, and deletes them from it.
-#
-#  #### Params:
-#  - config_variables (dict): Dictionary containig all the config variables.
-#
-#  #### Returns:
-#  - (list(str)): Config file lines created from the dictionary variables.
-#  """
-#  lines = []
-#  for flag in variables.CONFIG_VARIABLES[variables.COMPILATION_FLAGS]:
-#    lines.append(f"{__make_config_line(
-#      flag,
-#      config_variables.get(flag),
-#      default_values.CONFIG_DEFAULT_VALUES[flag]
-#    )}\n")
-#    config_variables.pop(flag, None)
-#  return lines
