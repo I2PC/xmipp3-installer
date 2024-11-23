@@ -456,6 +456,43 @@ def test_returns_expected_lines_when_getting_toggle_lines(
 			section_lines == expected_lines
 		), get_assertion_message("configuration file lines", expected_lines, section_lines)
 
+def test_calls_make_config_line_when_getting_unkown_variable_lines(
+	__mock_init,
+	__mock_make_config_line
+):
+	config_file = ConfigurationFile()
+	config_file._ConfigurationFile__get_unkown_variable_lines(
+		__CONFIG_VALUES.copy()
+	)
+	__mock_make_config_line.assert_has_calls([
+		call(
+			unknown_variable,
+			__CONFIG_VALUES[unknown_variable],
+			""
+		)
+		for unknown_variable in __CONFIG_VALUES
+	])
+
+def test_returns_expected_lines_when_getting_unkown_variable_lines(
+	__mock_init,
+	__mock_make_config_line
+):
+	config_file = ConfigurationFile()
+	lines = config_file._ConfigurationFile__get_unkown_variable_lines(
+		__CONFIG_VALUES.copy()
+	)
+	expected_lines = [
+		f"{__mock_make_config_line(
+			unknown_variable,
+			__CONFIG_VALUES[unknown_variable],
+			""
+		)}\n"
+		for unknown_variable in __CONFIG_VALUES
+	]
+	assert (
+		lines == expected_lines
+	), get_assertion_message("unknown variable lines", expected_lines, lines)
+
 @pytest.fixture
 def __mock_read_config():
 	with patch(
