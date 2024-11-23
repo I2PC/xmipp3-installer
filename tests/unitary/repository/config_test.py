@@ -403,9 +403,11 @@ def test_calls_make_config_line_when_getting_toggle_lines(
 	__mock_make_config_line
 ):
 	config_file = ConfigurationFile()
-	config_file.config_variables = __CONFIG_VALUES
 	for section in __CONFIG_VARIABLES.keys():
-		config_file._ConfigurationFile__get_toggle_lines(section)
+		config_file._ConfigurationFile__get_toggle_lines(
+			section,
+			__CONFIG_VALUES.copy()
+		)
 		__mock_make_config_line.assert_has_calls([
 			call(
 				section_variable,
@@ -415,15 +417,34 @@ def test_calls_make_config_line_when_getting_toggle_lines(
 			for section_variable in __CONFIG_VARIABLES[section]
 		])
 
+def test_removes_keys_from_dictionary_when_getting_toggle_lines(
+	__mock_init,
+	__mock_config_variables,
+	__mock_make_config_line
+):
+	config_file = ConfigurationFile()
+	config_values = __CONFIG_VALUES.copy()
+	for section in __CONFIG_VARIABLES.keys():
+		config_file._ConfigurationFile__get_toggle_lines(
+			section,
+			config_values
+		)
+		for section_variable in __CONFIG_VARIABLES[section]:
+			assert (
+				config_values.get(section_variable) is None
+			), f"Item {section_variable} not deleted from dictionary {config_values}"
+
 def test_returns_expected_lines_when_getting_toggle_lines(
 	__mock_init,
 	__mock_config_variables,
 	__mock_make_config_line
 ):
 	config_file = ConfigurationFile()
-	config_file.config_variables = __CONFIG_VALUES
 	for section in __CONFIG_VARIABLES.keys():
-		section_lines = config_file._ConfigurationFile__get_toggle_lines(section)
+		section_lines = config_file._ConfigurationFile__get_toggle_lines(
+			section,
+			__CONFIG_VALUES.copy()
+		)
 		expected_lines = [
 			f"{__mock_make_config_line(
 				section_variable,

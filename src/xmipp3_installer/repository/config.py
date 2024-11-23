@@ -2,7 +2,7 @@
 
 import re
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 
 from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.installer import constants
@@ -47,6 +47,35 @@ class ConfigurationFile(Singleton):
 				key, value = key_value_pair
 				result[key] = value
 		self.config_variables = {**default_values.CONFIG_DEFAULT_VALUES, **result}
+
+	def writeConfig(self):
+		"""
+		### Writes a template config file with stored variables, leaving the rest with default values.
+		"""
+		config_variables = self.config_variables.copy()
+		lines = ["##### TOGGLE SECTION #####\n"]
+		lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
+		lines.extend(self.__get_toggle_lines(variables.TOGGLES, config_variables))
+
+		lines.append("\n##### PACKAGE HOME SECTION #####\n")
+		lines.append("# Use this variables to use custom installation paths for the required packages.\n")
+		lines.append("# If left empty, CMake will search for those packages within your system.\n")
+		lines.extend(self.__get_toggle_lines(variables.LOCATIONS, config_variables))
+		
+		lines.append("\n##### COMPILATION FLAGS #####\n")
+		lines.append("# We recommend not modifying this variables unless you know what you are doing.\n")
+		lines.extend(self.__get_toggle_lines(variables.COMPILATION_FLAGS, config_variables))
+		
+		# If there are extra unkown flags, add them in a different section
+		if config_variables:
+			lines.append("\n##### UNKNOWN VARIABLES #####\n")
+			lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
+			for variable in config_variables.keys():
+				lines.append(self.__make_config_line(variable, config_variables[variable], '') + '\n')
+
+		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today()}\n")
+		with open(self.__path, 'w') as configFile:
+			configFile.writelines(lines)
 
 	def get_config_date(self) -> str:
 		"""
@@ -135,7 +164,7 @@ class ConfigurationFile(Singleton):
 		value = default_value if value is None else value
 		return f"{key}{self.__ASSIGNMENT_SEPARATOR}{value}" if key else ""
 
-	def __get_toggle_lines(self, section_type: str) -> List[str]:
+	def __get_toggle_lines(self, section_type: str, config_variables: Dict[str, Any]) -> List[str]:
 		"""
 		### Returns the lines composed by the given section's variables in the dictionary, and deletes them from it.
 
@@ -149,40 +178,8 @@ class ConfigurationFile(Singleton):
 		for section_variable in variables.CONFIG_VARIABLES[section_type]:
 			lines.append(f"{self.__make_config_line(
 				section_variable,
-				self.config_variables.get(section_variable),
+				config_variables.get(section_variable),
 				default_values.CONFIG_DEFAULT_VALUES[section_variable]
 			)}\n")
+			config_variables.pop(section_variable, None)
 		return lines
-
-#def writeConfig(path: str, config_dict: Dict={}):
-#  """
-#	### Writes a template config file with given variables, leaving the rest with default values.
-#
-#	#### Params:
-#	- path (str): Path to the config file.
-#  - configDict (dict): Optional. Dictionary containig already existing variables.
-#	"""
-#  config_variables = config_dict.copy() if config_dict else {}
-#  lines = ["##### TOGGLE SECTION #####\n"]
-#  lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
-#  lines.extend(__get_toggle_lines(config_variables))
-#
-#  lines.append("\n##### PACKAGE HOME SECTION #####\n")
-#  lines.append("# Use this variables to use custom installation paths for the required packages.\n")
-#  lines.append("# If left empty, CMake will search for those packages within your system.\n")
-#  lines.extend(__get_path_lines(config_variables))
-#  
-#  lines.append("\n##### COMPILATION FLAGS #####\n")
-#  lines.append("# We recommend not modifying this variables unless you know what you are doing.\n")
-#  lines.extend(__get_flag_lines(config_variables))
-#  
-#  # If there are extra unkown flags, add them in a different section
-#  if config_variables:
-#    lines.append("\n##### UNKNOWN VARIABLES #####\n")
-#    lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
-#    for variable in config_variables.keys():
-#      lines.append(__makeConfigLine(variable, config_variables[variable], '') + '\n')
-#
-#  lines.append(f"\n# {__LAST_MODIFIED_TEXT} {datetime.today()}\n")
-#  with open(path, 'w') as configFile:
-#    configFile.writelines(lines)
