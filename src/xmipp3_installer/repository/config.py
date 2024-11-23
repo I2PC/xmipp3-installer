@@ -2,6 +2,7 @@
 
 import re
 import os
+from datetime import datetime
 from typing import List, Optional, Tuple, Dict, Any
 
 from xmipp3_installer.shared.singleton import Singleton
@@ -71,7 +72,7 @@ class ConfigurationFile(Singleton):
 			lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
 			lines.extend(self.__get_unkown_variable_lines(config_variables))
 
-		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today()}\n")
+		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today().strftime('%d-%m-%Y')}\n")
 		with open(self.__path, 'w') as configFile:
 			configFile.writelines(lines)
 
