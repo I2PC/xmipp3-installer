@@ -49,7 +49,7 @@ class ConfigurationFile(Singleton):
 				result[key] = value
 		self.config_variables = {**default_values.CONFIG_DEFAULT_VALUES, **result}
 
-	def writeConfig(self):
+	def write_config(self):
 		"""
 		### Writes a template config file with stored variables, leaving the rest with default values.
 		"""
