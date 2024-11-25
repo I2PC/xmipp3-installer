@@ -568,6 +568,41 @@ def test_calls_strftime_when_writing_config(
 	config_file.write_config()
 	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y')
 
+def test_does_not_call_get_unkown_variable_lines_when_writing_config_with_no_unkown_variables(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_config_toggles,
+	__mock_config_locations,
+	__mock_config_flags,
+	__mock_get_toggle_lines,
+	__mock_get_unkown_variable_lines,
+	__mock_datetime_strftime,
+	__mock_open
+):
+	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
+	config_file = ConfigurationFile()
+	config_file.values = __CONFIG_VALUES.copy()
+	config_file.write_config()
+	__mock_get_unkown_variable_lines.assert_not_called()
+
+def test_calls_get_unkown_variable_lines_when_writing_config_with_no_unkown_variables(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_config_toggles,
+	__mock_config_locations,
+	__mock_config_flags,
+	__mock_get_toggle_lines,
+	__mock_get_unkown_variable_lines,
+	__mock_datetime_strftime,
+	__mock_open
+):
+	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
+	config_file = ConfigurationFile()
+	extra_values = {"extra-var": "extra-var-value"}
+	config_file.values = {**__CONFIG_VALUES, **extra_values}.copy()
+	config_file.write_config()
+	__mock_get_unkown_variable_lines.assert_called_once_with(extra_values)
+
 def test_calls_file_writelines_when_writing_config(
 	__mock_read_config,
 	__mock_read_config_date,
@@ -601,8 +636,8 @@ def __mimick_get_toggle_lines(section: str, variables: Dict):
 	lines = []
 	variables_copy = variables.copy()
 	for variable in variables_copy.keys():
-		lines.append(f"{variable}-{__CONFIG_VALUES.get(variable)}-{__DEFAULT_CONFIG_VALUES[variable]}")
 		if variable in __CONFIG_VARIABLES[section]:
+			lines.append(f"{variable}-{__CONFIG_VALUES.get(variable)}-{__DEFAULT_CONFIG_VALUES[variable]}")
 			variables.pop(variable, None)
 	return lines
 
@@ -741,3 +776,12 @@ def __mock_datetime_strftime():
 		mock_today.strftime.return_value = __DATE
 		mock_lib.today.return_value = mock_today
 		yield mock_lib
+
+@pytest.fixture
+def __mock_get_unkown_variable_lines():
+	side_effect = lambda values: [f"{key}-{value}" for key, value in values.items()]
+	with patch(
+		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_unkown_variable_lines"
+	) as mock_method:
+		mock_method.side_effect = side_effect
+		yield mock_method
