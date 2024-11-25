@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Dict
-from unittest.mock import patch, mock_open, Mock, call, MagicMock
+from unittest.mock import patch, mock_open, Mock, call
 
 import pytest
 
@@ -603,20 +603,29 @@ def test_calls_get_unkown_variable_lines_when_writing_config_with_no_unkown_vari
 	config_file.write_config()
 	__mock_get_unkown_variable_lines.assert_called_once_with(extra_values)
 
+@pytest.mark.parametrize(
+	"config_values",
+	[
+		pytest.param(__CONFIG_VALUES),
+		pytest.param({**__CONFIG_VALUES, "extra": "extra-value"})
+	]
+)
 def test_calls_file_writelines_when_writing_config(
+	config_values,
 	__mock_read_config,
 	__mock_read_config_date,
 	__mock_config_toggles,
 	__mock_config_locations,
 	__mock_config_flags,
 	__mock_get_toggle_lines,
+	__mock_get_unkown_variable_lines,
 	__mock_datetime_strftime,
 	__mock_open
 ):
 	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
-	config_reference_values = __CONFIG_VALUES.copy()
+	config_reference_values = config_values.copy()
 	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
+	config_file.values = config_values.copy()
 	config_file.write_config()
 	__mock_open().writelines.assert_called_with([
 		"##### TOGGLE SECTION #####\n",
@@ -629,6 +638,7 @@ def test_calls_file_writelines_when_writing_config(
 		"\n##### COMPILATION FLAGS #####\n",
 		"# We recommend not modifying this variables unless you know what you are doing.\n",
 		*__mock_get_toggle_lines(__mock_config_flags, config_reference_values),
+		*__add_unknown_variable_lines(config_reference_values, __mock_get_unkown_variable_lines),
 		f"\n# {ConfigurationFile._ConfigurationFile__LAST_MODIFIED_TEXT} {__mock_datetime_strftime.today().strftime()}\n"
 	])
 
@@ -639,6 +649,14 @@ def __mimick_get_toggle_lines(section: str, variables: Dict):
 		if variable in __CONFIG_VARIABLES[section]:
 			lines.append(f"{variable}-{__CONFIG_VALUES.get(variable)}-{__DEFAULT_CONFIG_VALUES[variable]}")
 			variables.pop(variable, None)
+	return lines
+
+def __add_unknown_variable_lines(unknown_variables: Dict, get_unkown_variable_lines):
+	lines = []
+	if unknown_variables:
+		lines.append("\n##### UNKNOWN VARIABLES #####\n")
+		lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
+		lines.extend(get_unkown_variable_lines(unknown_variables))
 	return lines
 
 @pytest.fixture
