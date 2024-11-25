@@ -27,9 +27,9 @@ class ConfigurationFile(Singleton):
 		- path (str): Optional. Path to the configuration file.
 		"""
 		self.__path = path
-		self.config_variables = {}
+		self.values = {}
 		self.read_config()
-		self.config_date = self.__read_config_date()
+		self.last_modified = self.__read_config_date()
 
 	def read_config(self):
 		"""
@@ -47,34 +47,34 @@ class ConfigurationFile(Singleton):
 			if key_value_pair:
 				key, value = key_value_pair
 				result[key] = value
-		self.config_variables = {**default_values.CONFIG_DEFAULT_VALUES, **result}
+		self.values = {**default_values.CONFIG_DEFAULT_VALUES, **result}
 
 	def write_config(self):
 		"""
 		### Writes a template config file with stored variables, leaving the rest with default values.
 		"""
-		config_variables = self.config_variables.copy()
+		values = self.values.copy()
 		lines = ["##### TOGGLE SECTION #####\n"]
 		lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
-		lines.extend(self.__get_toggle_lines(variables.TOGGLES, config_variables))
+		lines.extend(self.__get_toggle_lines(variables.TOGGLES, values))
 
 		lines.append("\n##### PACKAGE HOME SECTION #####\n")
 		lines.append("# Use this variables to use custom installation paths for the required packages.\n")
 		lines.append("# If left empty, CMake will search for those packages within your system.\n")
-		lines.extend(self.__get_toggle_lines(variables.LOCATIONS, config_variables))
+		lines.extend(self.__get_toggle_lines(variables.LOCATIONS, values))
 		
 		lines.append("\n##### COMPILATION FLAGS #####\n")
 		lines.append("# We recommend not modifying this variables unless you know what you are doing.\n")
-		lines.extend(self.__get_toggle_lines(variables.COMPILATION_FLAGS, config_variables))
+		lines.extend(self.__get_toggle_lines(variables.COMPILATION_FLAGS, values))
 		
-		if config_variables:
+		if values:
 			lines.append("\n##### UNKNOWN VARIABLES #####\n")
 			lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
-			lines.extend(self.__get_unkown_variable_lines(config_variables))
+			lines.extend(self.__get_unkown_variable_lines(values))
 
 		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today().strftime('%d-%m-%Y')}\n")
-		with open(self.__path, 'w') as configFile:
-			configFile.writelines(lines)
+		with open(self.__path, 'w') as config_file:
+			config_file.writelines(lines)
 
 	def get_config_date(self) -> str:
 		"""
@@ -83,9 +83,9 @@ class ConfigurationFile(Singleton):
 		#### Returns:
 		- (str): Date in dd-mm-yyyy format.
 		"""
-		if not self.config_date:
-			self.config_date = self.__read_config_date()
-		return self.config_date
+		if not self.last_modified:
+			self.last_modified = self.__read_config_date()
+		return self.last_modified
 		
 	def __get_file_content(self) -> List[str]:
 		"""
