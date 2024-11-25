@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Dict
-from unittest.mock import patch, mock_open, Mock, call
+from unittest.mock import patch, mock_open, Mock, call, MagicMock
 
 import pytest
 
@@ -565,16 +565,56 @@ def test_calls_strftime_when_writing_config(
 	__mock_open
 ):
 	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
 	config_file.write_config()
 	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y')
 
+#def test_calls_file_writelines_when_writing_config(
+#	__mock_read_config,
+#	__mock_read_config_date,
+#	__mock_config_toggles,
+#	__mock_config_locations,
+#	__mock_config_flags,
+#	__mock_get_toggle_lines,
+#	__mock_config_variables,
+#	__mock_config_default_values,
+#	__mock_make_config_line,
+#	__mock_datetime_strftime,
+#	__mock_open
+#):
+#	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
+#	config_file = ConfigurationFile()
+#	config_file.values = __CONFIG_VALUES.copy()
+#	config_file.write_config()
+#	__mock_open().writelines.assert_called_with([
+#		"##### TOGGLE SECTION #####\n",
+#		f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n",
+#		*[
+#			f"{__mock_make_config_line(variable, __CONFIG_VALUES.get(variable), __DEFAULT_CONFIG_VALUES[variable])}\n"
+#			for variable in __CONFIG_VARIABLES[__mock_config_toggles]
+#		],
+#		"\n##### PACKAGE HOME SECTION #####\n",
+#		"# Use this variables to use custom installation paths for the required packages.\n",
+#		"# If left empty, CMake will search for those packages within your system.\n",
+#		*[
+#			f"{__mock_make_config_line(variable, __CONFIG_VALUES.get(variable), __DEFAULT_CONFIG_VALUES[variable])}\n"
+#			for variable in __CONFIG_VARIABLES[__mock_config_locations] if variable in __CONFIG_VALUES
+#		],
+#		"\n##### COMPILATION FLAGS #####\n",
+#		"# We recommend not modifying this variables unless you know what you are doing.\n",
+#		*[
+#			f"{__mock_make_config_line(variable, __CONFIG_VALUES.get(variable), __DEFAULT_CONFIG_VALUES[variable])}\n"
+#			for variable in __CONFIG_VARIABLES[__mock_config_flags] if variable in __CONFIG_VALUES
+#		]
+#	])
+
 def __mimick_get_toggle_lines(section: str, variables: Dict):
+	lines = []
 	variables_copy = variables.copy()
 	for variable in variables_copy.keys():
+		lines.append(f"{variable}-{__CONFIG_VALUES.get(variable)}-{__DEFAULT_CONFIG_VALUES[variable]}")
 		if variable in __CONFIG_VARIABLES[section]:
 			variables.pop(variable, None)
-	return [f"Lines for section {section}"]
+	return lines
 
 @pytest.fixture
 def __mock_read_config():
@@ -644,7 +684,7 @@ def __mock_logger():
 		yield mock_method
 
 @pytest.fixture(autouse=True)
-def __mock_config_default_variables():
+def __mock_config_default_values():
 	with patch.object(
 		default_values,
 		"CONFIG_DEFAULT_VALUES",
