@@ -1,3 +1,4 @@
+from typing import Dict
 from unittest.mock import patch, mock_open, Mock, call
 
 import pytest
@@ -23,18 +24,17 @@ __CORRECT_FILE_LINES = {
 	"key=value",
 	"mykey=test-value"
 }
-__DEFAULT_CONFIG_VALUES = {
-	"key1": "default-key1-value",
-	"key2": "default-key2-value"
-}
+__TOGGLES_SECTION = "section1"
+__LOCATIONS_SECTION = "section2"
+__COMPILATION_FLAGS_SECTION = "section3"
 __CONFIG_VARIABLES = {
-	"section1": [
+	__TOGGLES_SECTION: [
 		"variable1-section1", "variable2-section1", "variable3-section1"
 	],
-	"section2": [
+	__LOCATIONS_SECTION: [
 		"variable1-section2", "variable2-section2", "variable3-section2"
 	],
-	"section3": ["variable1-section3"]
+	__COMPILATION_FLAGS_SECTION: ["variable1-section3"]
 }
 __CONFIG_VALUES = {
 	"variable1-section1": "test",
@@ -92,8 +92,8 @@ def test_sets_config_variables_when_constructing_configuration_file(
 ):
 	config_file = ConfigurationFile()
 	assert (
-		config_file.config_variables == {}
-	), get_assertion_message("config variables", config_file.config_variables, {})
+		config_file.values == {}
+	), get_assertion_message("config variables", config_file.values, {})
 
 def test_calls_read_config_when_constructing_configuration_file(
 	__mock_read_config,
@@ -114,7 +114,7 @@ def test_calls_read_config_date_when_getting_config_date_and_is_not_set(
 	__mock_read_config_date
 ):
 	config_file = ConfigurationFile()
-	config_file.config_date = ""
+	config_file.last_modified = ""
 	config_file.get_config_date()
 	__mock_read_config_date.assert_called_once_with()
 
@@ -123,7 +123,7 @@ def test_does_not_call_read_config_date_when_getting_config_date_and_is_set(
 	__mock_read_config_date
 ):
 	config_file = ConfigurationFile()
-	config_file.config_date = "random-value"
+	config_file.last_modified = "random-value"
 	config_file.get_config_date()
 	__mock_read_config_date.assert_not_called()
 
@@ -142,7 +142,7 @@ def test_returns_expected_config_date_when_getting_config_date(
 	__mock_read_config_date
 ):
 	config_file = ConfigurationFile()
-	config_file.config_date = initial_value
+	config_file.last_modified = initial_value
 	config_date = config_file.get_config_date()
 	assert (
 		config_date == expected_value
@@ -366,11 +366,11 @@ def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 	config_file = ConfigurationFile()
 	config_file.read_config()
 	assert (
-		config_file.config_variables == default_values.CONFIG_DEFAULT_VALUES
+		config_file.values == default_values.CONFIG_DEFAULT_VALUES
 	), get_assertion_message(
 		"config values",
 		default_values.CONFIG_DEFAULT_VALUES,
-		config_file.config_variables
+		config_file.values
 	)
 
 @pytest.mark.parametrize(
@@ -394,8 +394,8 @@ def test_returns_expected_config_values_when_reading_config_with_valid_lines(
 	config_file = ConfigurationFile()
 	config_file.read_config()
 	assert (
-		config_file.config_variables == expected_values
-	), get_assertion_message("config values", expected_values, config_file.config_variables)
+		config_file.values == expected_values
+	), get_assertion_message("config values", expected_values, config_file.values)
 
 def test_calls_make_config_line_when_getting_toggle_lines(
 	__mock_init,
@@ -493,6 +493,51 @@ def test_returns_expected_lines_when_getting_unkown_variable_lines(
 		lines == expected_lines
 	), get_assertion_message("unknown variable lines", expected_lines, lines)
 
+def test_calls_get_toggle_lines_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_config_toggles,
+	__mock_config_locations,
+	__mock_config_flags,
+	__mock_config_variables,
+	__mock_config_default_variables,
+	__mock_get_toggle_lines,
+	__mock_open
+):
+	call_params = []
+	def __record_input_params_in_mock(section: str, variables: Dict):
+		call_params.append((section, variables.copy()))
+		return __mimick_get_toggle_lines(section, variables)
+	__mock_get_toggle_lines.side_effect = __record_input_params_in_mock
+	values_after_toggles = {
+		k:v for k,v in __CONFIG_VALUES.items() if k not in __CONFIG_VARIABLES[__TOGGLES_SECTION]
+	}
+	values_after_locations = {
+		k:v for k,v in values_after_toggles.items() if k not in __CONFIG_VARIABLES[__LOCATIONS_SECTION]
+	}
+	expected_call_params = [
+		(__mock_config_toggles, __CONFIG_VALUES),
+		(__mock_config_locations, values_after_toggles),
+		(__mock_config_flags, values_after_locations)
+	]
+	config_file = ConfigurationFile()
+	config_file.values = __CONFIG_VALUES.copy()
+	config_file.write_config()
+	assert (
+		call_params == expected_call_params
+	), get_assertion_message(
+		"call params for function __get_toggle_lines",
+		expected_call_params,
+		call_params
+	)
+
+def __mimick_get_toggle_lines(section: str, variables: Dict):
+	variables_copy = variables.copy()
+	for variable in variables_copy.keys():
+		if variable in __CONFIG_VARIABLES[section]:
+			variables.pop(variable, None)
+	return [f"Lines for section {section}"]
+
 @pytest.fixture
 def __mock_read_config():
 	with patch(
@@ -575,8 +620,8 @@ def __mock_config_variables():
 		variables,
 		"CONFIG_VARIABLES",
 		__CONFIG_VARIABLES
-	) as mock_method:
-		yield mock_method
+	) as mock_object:
+		yield mock_object
 
 @pytest.fixture
 def __mock_make_config_line():
@@ -586,3 +631,32 @@ def __mock_make_config_line():
 	) as mock_method:
 		mock_method.side_effect = side_effect
 		yield mock_method
+
+@pytest.fixture
+def __mock_get_toggle_lines():
+	with patch(
+		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_toggle_lines"
+	) as mock_method:
+		mock_method.side_effect = __mimick_get_toggle_lines
+		yield mock_method
+
+@pytest.fixture
+def __mock_config_toggles():
+	with patch.object(
+		variables, "TOGGLES", __TOGGLES_SECTION
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture
+def __mock_config_locations():
+	with patch.object(
+		variables, "LOCATIONS", __LOCATIONS_SECTION
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture
+def __mock_config_flags():
+	with patch.object(
+		variables, "COMPILATION_FLAGS", __COMPILATION_FLAGS_SECTION
+	) as mock_object:
+		yield mock_object
