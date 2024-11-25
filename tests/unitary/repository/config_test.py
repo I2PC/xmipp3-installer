@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 from unittest.mock import patch, mock_open, Mock, call
 
@@ -12,7 +13,8 @@ from xmipp3_installer.repository.config_vars import default_values, variables
 from ... import get_assertion_message
 
 __PATH = "/path/to/config.conf"
-__DATE = "19-11-2024"
+__DATE = "25-11-2024"
+__DATE_TIME = datetime(2024, 11, 25, 1, 26, 46, 292469)
 __FILE_LINES = [
 	"line1\n",
 	"line2\n",
@@ -499,8 +501,6 @@ def test_calls_get_toggle_lines_when_writing_config(
 	__mock_config_toggles,
 	__mock_config_locations,
 	__mock_config_flags,
-	__mock_config_variables,
-	__mock_config_default_variables,
 	__mock_get_toggle_lines,
 	__mock_open
 ):
@@ -530,6 +530,44 @@ def test_calls_get_toggle_lines_when_writing_config(
 		expected_call_params,
 		call_params
 	)
+
+def test_calls_open_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_open
+):
+	config_file = ConfigurationFile()
+	config_file.values = __CONFIG_VALUES.copy()
+	config_file.write_config()
+	__mock_open.assert_called_once_with(
+		config_file._ConfigurationFile__path,
+		'w'
+	)
+
+def test_calls_today_strftime_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_datetime_today,
+	__mock_open
+):
+	config_file = ConfigurationFile()
+	config_file.values = __CONFIG_VALUES.copy()
+	config_file.write_config()
+	__mock_datetime_today.today.assert_called_once_with()
+
+def test_calls_strftime_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_datetime_strftime,
+	__mock_open
+):
+	config_file = ConfigurationFile()
+	config_file.values = __CONFIG_VALUES.copy()
+	config_file.write_config()
+	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y')
 
 def __mimick_get_toggle_lines(section: str, variables: Dict):
 	variables_copy = variables.copy()
@@ -637,7 +675,6 @@ def __mock_get_toggle_lines():
 	with patch(
 		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_toggle_lines"
 	) as mock_method:
-		mock_method.side_effect = __mimick_get_toggle_lines
 		yield mock_method
 
 @pytest.fixture
@@ -660,3 +697,17 @@ def __mock_config_flags():
 		variables, "COMPILATION_FLAGS", __COMPILATION_FLAGS_SECTION
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture
+def __mock_datetime_today():
+	with patch("xmipp3_installer.repository.config.datetime") as mock_lib:
+		mock_lib.today.return_value = __DATE_TIME
+		yield mock_lib
+
+@pytest.fixture
+def __mock_datetime_strftime():
+	with patch("xmipp3_installer.repository.config.datetime") as mock_lib:
+		mock_today = Mock()
+		mock_today.strftime.return_value = __DATE
+		mock_lib.today.return_value = mock_today
+		yield mock_lib
