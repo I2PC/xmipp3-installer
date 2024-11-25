@@ -72,7 +72,7 @@ class ConfigurationFile(Singleton):
 			lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
 			lines.extend(self.__get_unkown_variable_lines(values))
 
-		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today().strftime('%d-%m-%Y')}\n")
+		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today().strftime('%d-%m-%Y %H:%M.%S')}\n")
 		with open(self.__path, 'w') as config_file:
 			config_file.writelines(lines)
 
@@ -112,7 +112,7 @@ class ConfigurationFile(Singleton):
 		for line in config_lines:
 			if self.__LAST_MODIFIED_TEXT not in line:
 				continue
-			match = re.search(r'\d{2}-\d{2}-\d{4}', line)
+			match = re.search(r'\d{2}-\d{2}-\d{4} \d{2}:\d{2}.\d{2}', line)
 			if match:
 				return match.group()
 		return ""
