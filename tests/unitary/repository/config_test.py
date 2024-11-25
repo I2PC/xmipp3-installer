@@ -13,7 +13,7 @@ from xmipp3_installer.repository.config_vars import default_values, variables
 from ... import get_assertion_message
 
 __PATH = "/path/to/config.conf"
-__DATE = "25-11-2024"
+__DATE = "25-11-2024 01:26.46"
 __DATE_TIME = datetime(2024, 11, 25, 1, 26, 46, 292469)
 __FILE_LINES = [
 	"line1\n",
@@ -205,7 +205,7 @@ def test_calls_re_search_when_reading_config_date(
 ):
 	__mock_re_search.return_value = None
 	config_file = ConfigurationFile()
-	search_regex = r'\d{2}-\d{2}-\d{4}'
+	search_regex = r'\d{2}-\d{2}-\d{4} \d{2}:\d{2}.\d{2}'
 	config_file._ConfigurationFile__read_config_date()
 	__mock_re_search.assert_has_calls([
 		call(search_regex, __FILE_LINES[2]),
@@ -566,7 +566,7 @@ def test_calls_strftime_when_writing_config(
 ):
 	config_file = ConfigurationFile()
 	config_file.write_config()
-	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y')
+	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y %H:%M.%S')
 
 def test_does_not_call_get_unkown_variable_lines_when_writing_config_with_no_unkown_variables(
 	__mock_read_config,
