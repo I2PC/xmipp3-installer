@@ -176,11 +176,14 @@ class ConfigurationFile(Singleton):
 		"""
 		lines = []
 		for section_variable in variables.CONFIG_VARIABLES[section_type]:
-			lines.append(f"{self.__make_config_line(
-				section_variable,
-				config_variables.get(section_variable),
-				default_values.CONFIG_DEFAULT_VALUES[section_variable]
-			)}\n")
+			lines.append(''.join([
+				self.__make_config_line(
+					section_variable,
+					config_variables.get(section_variable),
+					default_values.CONFIG_DEFAULT_VALUES[section_variable]
+				),
+				"\n"
+			]))
 			config_variables.pop(section_variable, None)
 		return lines
 

@@ -448,11 +448,15 @@ def test_returns_expected_lines_when_getting_toggle_lines(
 			__CONFIG_VALUES.copy()
 		)
 		expected_lines = [
-			f"{__mock_make_config_line(
-				section_variable,
-				__CONFIG_VALUES.get(section_variable),
-				__DEFAULT_CONFIG_VALUES[section_variable]
-			)}\n" for section_variable in __CONFIG_VARIABLES[section]
+			''.join([
+				__mock_make_config_line(
+					section_variable,
+					__CONFIG_VALUES.get(section_variable),
+					__DEFAULT_CONFIG_VALUES[section_variable]
+				),
+				"\n"
+			])
+			for section_variable in __CONFIG_VARIABLES[section]
 		]
 		assert (
 			section_lines == expected_lines
@@ -484,11 +488,14 @@ def test_returns_expected_lines_when_getting_unkown_variable_lines(
 		__CONFIG_VALUES.copy()
 	)
 	expected_lines = [
-		f"{__mock_make_config_line(
-			unknown_variable,
-			__CONFIG_VALUES[unknown_variable],
-			""
-		)}\n"
+		''.join([
+			__mock_make_config_line(
+				unknown_variable,
+				__CONFIG_VALUES[unknown_variable],
+				""
+			),
+			"\n"
+		])
 		for unknown_variable in __CONFIG_VALUES
 	]
 	assert (
