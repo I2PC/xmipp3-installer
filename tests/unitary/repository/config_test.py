@@ -502,6 +502,23 @@ def test_returns_expected_lines_when_getting_unkown_variable_lines(
 		lines == expected_lines
 	), get_assertion_message("unknown variable lines", expected_lines, lines)
 
+def test_uses_default_values_when_writing_config_with_overwrite(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_open
+):
+	config_file = ConfigurationFile()
+	config_file.values = __CONFIG_VALUES.copy()
+	config_file.write_config(overwrite=True)
+	assert (
+		config_file.values == default_values.CONFIG_DEFAULT_VALUES
+	), get_assertion_message(
+		"class attribute values",
+		default_values.CONFIG_DEFAULT_VALUES,
+		config_file.values
+	)
+
 def test_calls_get_toggle_lines_when_writing_config(
 	__mock_read_config,
 	__mock_read_config_date,
