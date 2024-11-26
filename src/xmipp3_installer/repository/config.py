@@ -59,6 +59,7 @@ class ConfigurationFile(Singleton):
 		if overwrite:
 			self.values = default_values.CONFIG_DEFAULT_VALUES
 		values = self.values.copy()
+		self.last_modified = datetime.today().strftime('%d-%m-%Y %H:%M.%S')
 		
 		lines = ["##### TOGGLE SECTION #####\n"]
 		lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
@@ -78,7 +79,7 @@ class ConfigurationFile(Singleton):
 			lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
 			lines.extend(self.__get_unkown_variable_lines(values))
 
-		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {datetime.today().strftime('%d-%m-%Y %H:%M.%S')}\n")
+		lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {self.last_modified}\n")
 		with open(self.__path, 'w') as config_file:
 			config_file.writelines(lines)
 
