@@ -5,7 +5,7 @@ from unittest.mock import patch, mock_open, Mock, call
 import pytest
 
 from xmipp3_installer.shared.singleton import Singleton
-from xmipp3_installer.repository.config import ConfigurationFile
+from xmipp3_installer.repository.config import ConfigurationFileHandler
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 from xmipp3_installer.installer import constants
 from xmipp3_installer.repository.config_vars import default_values, variables
@@ -18,8 +18,8 @@ __DATE_TIME = datetime(2024, 11, 25, 1, 26, 46, 292469)
 __FILE_LINES = [
 	"line1\n",
 	"line2\n",
-	f"{ConfigurationFile._ConfigurationFile__LAST_MODIFIED_TEXT}\n",
-	f"{ConfigurationFile._ConfigurationFile__LAST_MODIFIED_TEXT} {__DATE}\n",
+	f"{ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT}\n",
+	f"{ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT} {__DATE}\n",
 	"line4\n"
 ]
 __CORRECT_FILE_LINES = {
@@ -59,19 +59,19 @@ def test_inherits_from_singleton_class(
 		__mock_read_config,
 		__mock_read_config_date
 	):
-	config_file = ConfigurationFile()
-	assert isinstance(config_file, Singleton)
+	config_handler = ConfigurationFileHandler()
+	assert isinstance(config_handler, Singleton)
 
 def test_sets_config_file_path_when_constructing_configuration_file_with_provided_value(
 	__mock_read_config,
 	__mock_read_config_date
 ):
-	config_file = ConfigurationFile(__PATH)
+	config_handler = ConfigurationFileHandler(__PATH)
 	assert (
-		config_file._ConfigurationFile__path == __PATH
+		config_handler._ConfigurationFileHandler__path == __PATH
 	), get_assertion_message(
 		"config file path",
-		config_file._ConfigurationFile__path,
+		config_handler._ConfigurationFileHandler__path,
 		__PATH
 	)
 
@@ -79,12 +79,12 @@ def test_sets_config_file_path_when_constructing_configuration_file_with_default
 	__mock_read_config,
 	__mock_read_config_date
 ):
-	config_file = ConfigurationFile()
+	config_handler = ConfigurationFileHandler()
 	assert (
-		config_file._ConfigurationFile__path == constants.CONFIG_FILE
+		config_handler._ConfigurationFileHandler__path == constants.CONFIG_FILE
 	), get_assertion_message(
 		"config file path",
-		config_file._ConfigurationFile__path,
+		config_handler._ConfigurationFileHandler__path,
 		constants.CONFIG_FILE
 	)
 
@@ -92,41 +92,41 @@ def test_sets_config_variables_when_constructing_configuration_file(
 	__mock_read_config,
 	__mock_read_config_date
 ):
-	config_file = ConfigurationFile()
+	config_handler = ConfigurationFileHandler()
 	assert (
-		config_file.values == {}
-	), get_assertion_message("config variables", config_file.values, {})
+		config_handler.values == {}
+	), get_assertion_message("config variables", config_handler.values, {})
 
 def test_calls_read_config_when_constructing_configuration_file(
 	__mock_read_config,
 	__mock_read_config_date
 ):
-	ConfigurationFile()
+	ConfigurationFileHandler()
 	__mock_read_config.assert_called_once_with()
 
 def test_calls_read_config_date_when_constructing_configuration_file(
 	__mock_read_config,
 	__mock_read_config_date
 ):
-	ConfigurationFile()
+	ConfigurationFileHandler()
 	__mock_read_config_date.assert_called_once_with()
 
 def test_calls_read_config_date_when_getting_config_date_and_is_not_set(
 	__mock_init,
 	__mock_read_config_date
 ):
-	config_file = ConfigurationFile()
-	config_file.last_modified = ""
-	config_file.get_config_date()
+	config_handler = ConfigurationFileHandler()
+	config_handler.last_modified = ""
+	config_handler.get_config_date()
 	__mock_read_config_date.assert_called_once_with()
 
 def test_does_not_call_read_config_date_when_getting_config_date_and_is_set(
 	__mock_init,
 	__mock_read_config_date
 ):
-	config_file = ConfigurationFile()
-	config_file.last_modified = "random-value"
-	config_file.get_config_date()
+	config_handler = ConfigurationFileHandler()
+	config_handler.last_modified = "random-value"
+	config_handler.get_config_date()
 	__mock_read_config_date.assert_not_called()
 
 @pytest.mark.parametrize(
@@ -143,9 +143,9 @@ def test_returns_expected_config_date_when_getting_config_date(
 	__mock_init,
 	__mock_read_config_date
 ):
-	config_file = ConfigurationFile()
-	config_file.last_modified = initial_value
-	config_date = config_file.get_config_date()
+	config_handler = ConfigurationFileHandler()
+	config_handler.last_modified = initial_value
+	config_date = config_handler.get_config_date()
 	assert (
 		config_date == expected_value
 	), get_assertion_message("config date", expected_value, config_date)
@@ -155,8 +155,8 @@ def test_calls_file_readlines_when_getting_file_content(
 	__mock_path_exists,
 	__mock_open
 ):
-	config_file = ConfigurationFile()
-	config_file._ConfigurationFile__get_file_content()
+	config_handler = ConfigurationFileHandler()
+	config_handler._ConfigurationFileHandler__get_file_content()
 	__mock_open().readlines.assert_called_once_with()
 
 @pytest.mark.parametrize(
@@ -175,8 +175,8 @@ def test_returns_expected_file_content(
 	__mock_open,
 	expected_content
 ):
-	config_file = ConfigurationFile()
-	content = config_file._ConfigurationFile__get_file_content()
+	config_handler = ConfigurationFileHandler()
+	content = config_handler._ConfigurationFileHandler__get_file_content()
 	assert (
 		content == expected_content
 	), get_assertion_message("file content", expected_content, content)
@@ -194,8 +194,8 @@ def test_does_not_call_re_search_with_empty_file_content_when_reading_config_dat
 	__mock_get_file_content,
 	__mock_re_search
 ):
-	config_file = ConfigurationFile()
-	config_file._ConfigurationFile__read_config_date()
+	config_handler = ConfigurationFileHandler()
+	config_handler._ConfigurationFileHandler__read_config_date()
 	__mock_re_search.assert_not_called()
 
 def test_calls_re_search_when_reading_config_date(
@@ -204,9 +204,9 @@ def test_calls_re_search_when_reading_config_date(
 	__mock_re_search
 ):
 	__mock_re_search.return_value = None
-	config_file = ConfigurationFile()
+	config_handler = ConfigurationFileHandler()
 	search_regex = r'\d{2}-\d{2}-\d{4} \d{2}:\d{2}.\d{2}'
-	config_file._ConfigurationFile__read_config_date()
+	config_handler._ConfigurationFileHandler__read_config_date()
 	__mock_re_search.assert_has_calls([
 		call(search_regex, __FILE_LINES[2]),
 		call(search_regex, __FILE_LINES[3])
@@ -228,8 +228,8 @@ def test_returns_expected_config_date_when_reading_config_date(
 	__mock_get_file_content,
 	expected_date
 ):
-	config_file = ConfigurationFile()
-	config_date = config_file._ConfigurationFile__read_config_date()
+	config_handler = ConfigurationFileHandler()
+	config_date = config_handler._ConfigurationFileHandler__read_config_date()
 	assert (
 		config_date == expected_date
 	), get_assertion_message("last configuration modification date", expected_date, config_date)
@@ -256,8 +256,8 @@ def test_raises_runtime_error_when_parsing_config_line_with_invalid_format(
 			line
 		)
 	):
-		config_file = ConfigurationFile()
-		config_file._ConfigurationFile__parse_config_line(line, line_number)
+		config_handler = ConfigurationFileHandler()
+		config_handler._ConfigurationFileHandler__parse_config_line(line, line_number)
 
 @pytest.mark.parametrize(
 	"line",
@@ -274,8 +274,8 @@ def test_returns_none_when_parsing_config_line_with_empty_data(
 	line,
 	__mock_init
 ):
-	config_file = ConfigurationFile()
-	parsed_line = config_file._ConfigurationFile__parse_config_line(line, 0)
+	config_handler = ConfigurationFileHandler()
+	parsed_line = config_handler._ConfigurationFileHandler__parse_config_line(line, 0)
 	assert (
 		parsed_line is None
 	), get_assertion_message("parsed configuration file line", None, parsed_line)
@@ -294,8 +294,8 @@ def test_returns_expected_key_value_pair_when_parsing_config_line(
 	expected_value,
 	__mock_init
 ):
-	config_file = ConfigurationFile()
-	key_value_pair = config_file._ConfigurationFile__parse_config_line(line, 0)
+	config_handler = ConfigurationFileHandler()
+	key_value_pair = config_handler._ConfigurationFileHandler__parse_config_line(line, 0)
 	assert (
 		key_value_pair == (expected_key, expected_value)
 	), get_assertion_message("key-value pair", (expected_key, expected_value), key_value_pair)
@@ -317,13 +317,13 @@ def test_returns_expected_key_value_pair_when_parsing_config_line(
 			"key",
 			None,
 			"default-value",
-			f"key{ConfigurationFile._ConfigurationFile__ASSIGNMENT_SEPARATOR}default-value"
+			f"key{ConfigurationFileHandler._ConfigurationFileHandler__ASSIGNMENT_SEPARATOR}default-value"
 		),
 		pytest.param(
 			"key",
 			"value",
 			"default-value",
-			f"key{ConfigurationFile._ConfigurationFile__ASSIGNMENT_SEPARATOR}value"
+			f"key{ConfigurationFileHandler._ConfigurationFileHandler__ASSIGNMENT_SEPARATOR}value"
 		)
 	]
 )
@@ -334,8 +334,8 @@ def test_returns_expected_config_line_when_making_config_line(
 	expected_line,
 	__mock_init
 ):
-	config_file = ConfigurationFile()
-	config_line = config_file._ConfigurationFile__make_config_line(key, value, default_value)
+	config_handler = ConfigurationFileHandler()
+	config_line = config_handler._ConfigurationFileHandler__make_config_line(key, value, default_value)
 	assert (
 		config_line == expected_line
 	), get_assertion_message("configuration file line", expected_line, config_line)
@@ -348,8 +348,8 @@ def test_calls_logger_when_reading_config_with_invalid_lines(
 ):
 	lines_with_wrong_data = [*__CORRECT_FILE_LINES, "aaaaa"]
 	__mock_get_file_content.return_value = lines_with_wrong_data
-	config_file = ConfigurationFile()
-	config_file.read_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.read_config()
 	__mock_logger.assert_called_once_with(str(InvalidConfigLineError(
 		__mock_generate_invalid_config_line_error_message(
 			constants.CONFIG_FILE,
@@ -365,14 +365,14 @@ def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 	__mock_logger
 ):
 	__mock_get_file_content.return_value = [*__CORRECT_FILE_LINES, "aaaaa"]
-	config_file = ConfigurationFile()
-	config_file.read_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.read_config()
 	assert (
-		config_file.values == default_values.CONFIG_DEFAULT_VALUES
+		config_handler.values == default_values.CONFIG_DEFAULT_VALUES
 	), get_assertion_message(
 		"config values",
 		default_values.CONFIG_DEFAULT_VALUES,
-		config_file.values
+		config_handler.values
 	)
 
 @pytest.mark.parametrize(
@@ -393,20 +393,20 @@ def test_returns_expected_config_values_when_reading_config_with_valid_lines(
 	expected_values,
 	__mock_init
 ):
-	config_file = ConfigurationFile()
-	config_file.read_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.read_config()
 	assert (
-		config_file.values == expected_values
-	), get_assertion_message("config values", expected_values, config_file.values)
+		config_handler.values == expected_values
+	), get_assertion_message("config values", expected_values, config_handler.values)
 
 def test_calls_make_config_line_when_getting_toggle_lines(
 	__mock_init,
 	__mock_config_variables,
 	__mock_make_config_line
 ):
-	config_file = ConfigurationFile()
+	config_handler = ConfigurationFileHandler()
 	for section in __CONFIG_VARIABLES.keys():
-		config_file._ConfigurationFile__get_toggle_lines(
+		config_handler._ConfigurationFileHandler__get_toggle_lines(
 			section,
 			__CONFIG_VALUES.copy()
 		)
@@ -424,10 +424,10 @@ def test_removes_keys_from_dictionary_when_getting_toggle_lines(
 	__mock_config_variables,
 	__mock_make_config_line
 ):
-	config_file = ConfigurationFile()
+	config_handler = ConfigurationFileHandler()
 	config_values = __CONFIG_VALUES.copy()
 	for section in __CONFIG_VARIABLES.keys():
-		config_file._ConfigurationFile__get_toggle_lines(
+		config_handler._ConfigurationFileHandler__get_toggle_lines(
 			section,
 			config_values
 		)
@@ -441,9 +441,9 @@ def test_returns_expected_lines_when_getting_toggle_lines(
 	__mock_config_variables,
 	__mock_make_config_line
 ):
-	config_file = ConfigurationFile()
+	config_handler = ConfigurationFileHandler()
 	for section in __CONFIG_VARIABLES.keys():
-		section_lines = config_file._ConfigurationFile__get_toggle_lines(
+		section_lines = config_handler._ConfigurationFileHandler__get_toggle_lines(
 			section,
 			__CONFIG_VALUES.copy()
 		)
@@ -466,8 +466,8 @@ def test_calls_make_config_line_when_getting_unkown_variable_lines(
 	__mock_init,
 	__mock_make_config_line
 ):
-	config_file = ConfigurationFile()
-	config_file._ConfigurationFile__get_unkown_variable_lines(
+	config_handler = ConfigurationFileHandler()
+	config_handler._ConfigurationFileHandler__get_unkown_variable_lines(
 		__CONFIG_VALUES.copy()
 	)
 	__mock_make_config_line.assert_has_calls([
@@ -483,8 +483,8 @@ def test_returns_expected_lines_when_getting_unkown_variable_lines(
 	__mock_init,
 	__mock_make_config_line
 ):
-	config_file = ConfigurationFile()
-	lines = config_file._ConfigurationFile__get_unkown_variable_lines(
+	config_handler = ConfigurationFileHandler()
+	lines = config_handler._ConfigurationFileHandler__get_unkown_variable_lines(
 		__CONFIG_VALUES.copy()
 	)
 	expected_lines = [
@@ -508,15 +508,15 @@ def test_uses_default_values_when_writing_config_with_overwrite(
 	__mock_get_toggle_lines,
 	__mock_open
 ):
-	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
-	config_file.write_config(overwrite=True)
+	config_handler = ConfigurationFileHandler()
+	config_handler.values = __CONFIG_VALUES.copy()
+	config_handler.write_config(overwrite=True)
 	assert (
-		config_file.values == default_values.CONFIG_DEFAULT_VALUES
+		config_handler.values == default_values.CONFIG_DEFAULT_VALUES
 	), get_assertion_message(
 		"class attribute values",
 		default_values.CONFIG_DEFAULT_VALUES,
-		config_file.values
+		config_handler.values
 	)
 
 def test_calls_today_strftime_when_writing_config(
@@ -526,9 +526,9 @@ def test_calls_today_strftime_when_writing_config(
 	__mock_datetime_today,
 	__mock_open
 ):
-	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
-	config_file.write_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.values = __CONFIG_VALUES.copy()
+	config_handler.write_config()
 	__mock_datetime_today.today.assert_called_once_with()
 
 def test_calls_strftime_when_writing_config(
@@ -538,8 +538,8 @@ def test_calls_strftime_when_writing_config(
 	__mock_datetime_strftime,
 	__mock_open
 ):
-	config_file = ConfigurationFile()
-	config_file.write_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.write_config()
 	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y %H:%M.%S')
 
 def test_saves_last_modified_when_writing_config(
@@ -549,13 +549,13 @@ def test_saves_last_modified_when_writing_config(
 	__mock_datetime_strftime,
 	__mock_open
 ):
-	config_file = ConfigurationFile()
-	config_file.last_modified = None
-	config_file.write_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.last_modified = None
+	config_handler.write_config()
 	expected_date = __mock_datetime_strftime.today().strftime()
 	assert (
-		config_file.last_modified == expected_date
-	), get_assertion_message("last modified date", expected_date, config_file.last_modified)
+		config_handler.last_modified == expected_date
+	), get_assertion_message("last modified date", expected_date, config_handler.last_modified)
 
 def test_calls_get_toggle_lines_when_writing_config(
 	__mock_read_config,
@@ -582,9 +582,9 @@ def test_calls_get_toggle_lines_when_writing_config(
 		(__mock_config_locations, values_after_toggles),
 		(__mock_config_flags, values_after_locations)
 	]
-	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
-	config_file.write_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.values = __CONFIG_VALUES.copy()
+	config_handler.write_config()
 	assert (
 		call_params == expected_call_params
 	), get_assertion_message(
@@ -599,11 +599,11 @@ def test_calls_open_when_writing_config(
 	__mock_get_toggle_lines,
 	__mock_open
 ):
-	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
-	config_file.write_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.values = __CONFIG_VALUES.copy()
+	config_handler.write_config()
 	__mock_open.assert_called_once_with(
-		config_file._ConfigurationFile__path,
+		config_handler._ConfigurationFileHandler__path,
 		'w'
 	)
 
@@ -619,9 +619,9 @@ def test_does_not_call_get_unkown_variable_lines_when_writing_config_with_no_unk
 	__mock_open
 ):
 	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
-	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
-	config_file.write_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.values = __CONFIG_VALUES.copy()
+	config_handler.write_config()
 	__mock_get_unkown_variable_lines.assert_not_called()
 
 def test_calls_get_unkown_variable_lines_when_writing_config_with_no_unkown_variables(
@@ -636,10 +636,10 @@ def test_calls_get_unkown_variable_lines_when_writing_config_with_no_unkown_vari
 	__mock_open
 ):
 	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
-	config_file = ConfigurationFile()
+	config_handler = ConfigurationFileHandler()
 	extra_values = {"extra-var": "extra-var-value"}
-	config_file.values = {**__CONFIG_VALUES, **extra_values}.copy()
-	config_file.write_config()
+	config_handler.values = {**__CONFIG_VALUES, **extra_values}.copy()
+	config_handler.write_config()
 	__mock_get_unkown_variable_lines.assert_called_once_with(extra_values)
 
 @pytest.mark.parametrize(
@@ -663,9 +663,9 @@ def test_calls_file_writelines_when_writing_config(
 ):
 	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
 	config_reference_values = config_values.copy()
-	config_file = ConfigurationFile()
-	config_file.values = config_values.copy()
-	config_file.write_config()
+	config_handler = ConfigurationFileHandler()
+	config_handler.values = config_values.copy()
+	config_handler.write_config()
 	__mock_open().writelines.assert_called_with([
 		"##### TOGGLE SECTION #####\n",
 		f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n",
@@ -678,7 +678,7 @@ def test_calls_file_writelines_when_writing_config(
 		"# We recommend not modifying this variables unless you know what you are doing.\n",
 		*__mock_get_toggle_lines(__mock_config_flags, config_reference_values),
 		*__add_unknown_variable_lines(config_reference_values, __mock_get_unkown_variable_lines),
-		f"\n# {ConfigurationFile._ConfigurationFile__LAST_MODIFIED_TEXT} {__mock_datetime_strftime.today().strftime()}\n"
+		f"\n# {ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT} {__mock_datetime_strftime.today().strftime()}\n"
 	])
 
 def __mimick_get_toggle_lines(section: str, variables: Dict):
@@ -701,14 +701,14 @@ def __add_unknown_variable_lines(unknown_variables: Dict, get_unkown_variable_li
 @pytest.fixture
 def __mock_read_config():
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile.read_config"
+		"xmipp3_installer.repository.config.ConfigurationFileHandler.read_config"
 	) as mock_method:
 		yield mock_method
 
 @pytest.fixture
 def __mock_read_config_date():
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__read_config_date",
+		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__read_config_date",
 		return_value=__DATE
 	) as mock_method:
 		yield mock_method
@@ -716,7 +716,7 @@ def __mock_read_config_date():
 @pytest.fixture
 def __mock_init():
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile.__init__",
+		"xmipp3_installer.repository.config.ConfigurationFileHandler.__init__",
 		return_value=None
 	) as mock_method:
 		yield mock_method
@@ -736,7 +736,7 @@ def __mock_open(request):
 @pytest.fixture(params=[__FILE_LINES])
 def __mock_get_file_content(request):
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_file_content"
+		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_file_content"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
@@ -787,7 +787,7 @@ def __mock_config_variables():
 def __mock_make_config_line():
 	side_effect = lambda key, value, default_value: f"{key}-{value}-{default_value}"
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__make_config_line"
+		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__make_config_line"
 	) as mock_method:
 		mock_method.side_effect = side_effect
 		yield mock_method
@@ -795,7 +795,7 @@ def __mock_make_config_line():
 @pytest.fixture
 def __mock_get_toggle_lines():
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_toggle_lines"
+		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_toggle_lines"
 	) as mock_method:
 		yield mock_method
 
@@ -838,7 +838,7 @@ def __mock_datetime_strftime():
 def __mock_get_unkown_variable_lines():
 	side_effect = lambda values: [f"{key}-{value}" for key, value in values.items()]
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFile._ConfigurationFile__get_unkown_variable_lines"
+		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_unkown_variable_lines"
 	) as mock_method:
 		mock_method.side_effect = side_effect
 		yield mock_method

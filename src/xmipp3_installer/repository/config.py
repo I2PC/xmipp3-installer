@@ -11,7 +11,7 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.repository.config_vars import default_values, variables
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 
-class ConfigurationFile(Singleton):
+class ConfigurationFileHandler(Singleton):
 	"""
 	### Configuration file class for loading and storing the installation configuration.
 	"""
