@@ -68,11 +68,7 @@ def __mock_config_file():
 		delete_on_close=False,
 		dir=os.path.dirname(os.path.abspath(__file__))
 	) as temp_file:
-		try:
-			yield temp_file
-		finally:
-			if os.path.exists(temp_file.name):
-				os.remove(temp_file.name)
+		yield temp_file
 
 @pytest.fixture
 def __mock_datetime_strftime():
