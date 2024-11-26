@@ -56,7 +56,7 @@ class ConfigurationFile(Singleton):
 		#### Params:
 		- overwrite (bool): Optional. If True, default values are written, overwriting the existing file.
 		"""
-		values = self.values.copy() if not overwrite else default_values.CONFIG_DEFAULT_VALUES
+		values = self.values.copy() if not overwrite else default_values.CONFIG_DEFAULT_VALUES.copy()
 		lines = ["##### TOGGLE SECTION #####\n"]
 		lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
 		lines.extend(self.__get_toggle_lines(variables.TOGGLES, values))
