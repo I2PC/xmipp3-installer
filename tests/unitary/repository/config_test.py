@@ -519,6 +519,44 @@ def test_uses_default_values_when_writing_config_with_overwrite(
 		config_file.values
 	)
 
+def test_calls_today_strftime_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_datetime_today,
+	__mock_open
+):
+	config_file = ConfigurationFile()
+	config_file.values = __CONFIG_VALUES.copy()
+	config_file.write_config()
+	__mock_datetime_today.today.assert_called_once_with()
+
+def test_calls_strftime_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_datetime_strftime,
+	__mock_open
+):
+	config_file = ConfigurationFile()
+	config_file.write_config()
+	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y %H:%M.%S')
+
+def test_saves_last_modified_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_datetime_strftime,
+	__mock_open
+):
+	config_file = ConfigurationFile()
+	config_file.last_modified = None
+	config_file.write_config()
+	expected_date = __mock_datetime_strftime.today().strftime()
+	assert (
+		config_file.last_modified == expected_date
+	), get_assertion_message("last modified date", expected_date, config_file.last_modified)
+
 def test_calls_get_toggle_lines_when_writing_config(
 	__mock_read_config,
 	__mock_read_config_date,
@@ -568,29 +606,6 @@ def test_calls_open_when_writing_config(
 		config_file._ConfigurationFile__path,
 		'w'
 	)
-
-def test_calls_today_strftime_when_writing_config(
-	__mock_read_config,
-	__mock_read_config_date,
-	__mock_get_toggle_lines,
-	__mock_datetime_today,
-	__mock_open
-):
-	config_file = ConfigurationFile()
-	config_file.values = __CONFIG_VALUES.copy()
-	config_file.write_config()
-	__mock_datetime_today.today.assert_called_once_with()
-
-def test_calls_strftime_when_writing_config(
-	__mock_read_config,
-	__mock_read_config_date,
-	__mock_get_toggle_lines,
-	__mock_datetime_strftime,
-	__mock_open
-):
-	config_file = ConfigurationFile()
-	config_file.write_config()
-	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y %H:%M.%S')
 
 def test_does_not_call_get_unkown_variable_lines_when_writing_config_with_no_unkown_variables(
 	__mock_read_config,
