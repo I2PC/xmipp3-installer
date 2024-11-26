@@ -49,11 +49,14 @@ class ConfigurationFile(Singleton):
 				result[key] = value
 		self.values = {**default_values.CONFIG_DEFAULT_VALUES, **result}
 
-	def write_config(self):
+	def write_config(self, overwrite: bool=False):
 		"""
 		### Writes a template config file with stored variables, leaving the rest with default values.
+
+		#### Params:
+		- overwrite (bool): Optional. If True, default values are written, overwriting the existing file.
 		"""
-		values = self.values.copy()
+		values = self.values.copy() if not overwrite else default_values.CONFIG_DEFAULT_VALUES
 		lines = ["##### TOGGLE SECTION #####\n"]
 		lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
 		lines.extend(self.__get_toggle_lines(variables.TOGGLES, values))
