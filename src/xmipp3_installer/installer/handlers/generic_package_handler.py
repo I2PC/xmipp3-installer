@@ -1,3 +1,5 @@
+"""# Contains functions that can interact with packages with a generic interface."""
+
 from typing import Optional
 
 from xmipp3_installer.installer.handlers import shell_handler
