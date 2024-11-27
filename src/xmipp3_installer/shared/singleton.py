@@ -1,4 +1,4 @@
-"""# Contains a generic singleton class."""
+"""### Contains a generic singleton class."""
 
 from typing_extensions import Self
 

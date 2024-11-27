@@ -1,3 +1,5 @@
+"""### Contains a custom exception for lines in the configuration file with invalid format."""
+
 from xmipp3_installer.application.logger.logger import logger
 
 class InvalidConfigLineError(RuntimeError):

@@ -1,4 +1,4 @@
-"""# Contains functions that can interact with packages with a generic interface."""
+"""### Contains functions that can interact with packages via shell with a generic interface."""
 
 from typing import Optional
 

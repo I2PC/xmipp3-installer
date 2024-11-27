@@ -1,3 +1,5 @@
+"""### Contains an API client that registers the installation attempts."""
+
 import http.client
 import json
 import ssl
