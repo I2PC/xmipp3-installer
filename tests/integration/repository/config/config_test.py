@@ -37,9 +37,7 @@ def test_writes_unkown_variables_to_config_when_unkown_variables_are_added_to_va
 		config_handler._ConfigurationFileHandler__get_file_content()
 	).split("\n")
 	expected_file_content = [
-		*file_content.TOGGLE_SECTION_LINES,
-		*file_content.PACKAGE_HOME_SECTION_LINES,
-		*file_content.COMPILATION_FLAGS_SECTION_LINES,
+		*file_content.MANDATORY_SECTIONS_LINES,
 		*file_content.UNKNOWN_VARIABLES_HEADER,
 		"UNKNOWN=myvalue",
 		"",
