@@ -1,6 +1,3 @@
-"""### To be defined where to place this"""
-
-import os
 from typing import Optional
 
 from xmipp3_installer.installer.handlers import shell_handler
