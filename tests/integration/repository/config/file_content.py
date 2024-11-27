@@ -3,8 +3,8 @@ from xmipp3_installer.repository.config import ConfigurationFileHandler
 
 DATE = "25-11-2024 01:26.46"
 
-DEFAULT_FILE_LINES = [
-	"##### TOGGLE SECTION #####",
+TOGGLE_SECTION_LINES = [
+  "##### TOGGLE SECTION #####",
 	f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}",
 	"SEND_INSTALLATION_STATISTICS=ON",
 	"XMIPP_USE_CUDA=ON",
@@ -13,8 +13,11 @@ DEFAULT_FILE_LINES = [
 	"XMIPP_LINK_TO_SCIPION=ON",
 	"BUILD_TESTING=ON",
 	"CMAKE_SKIP_RPATH=ON",
-	"",
-	"##### PACKAGE HOME SECTION #####",
+	""
+]
+
+PACKAGE_HOME_SECTION_LINES = [
+  "##### PACKAGE HOME SECTION #####",
 	"# Use this variables to use custom installation paths for the required packages.",
 	"# If left empty, CMake will search for those packages within your system.",
 	"CMAKE=",
@@ -31,12 +34,30 @@ DEFAULT_FILE_LINES = [
 	"JPEG_ROOT=",
 	"SQLite_ROOT=",
 	"CMAKE_CUDA_HOST_COMPILER=",
-	"",
-	"##### COMPILATION FLAGS #####",
+	""
+]
+
+COMPILATION_FLAGS_SECTION_LINES = [
+  "##### COMPILATION FLAGS #####",
 	"# We recommend not modifying this variables unless you know what you are doing.",
 	"CMAKE_C_FLAGS=-mtune=native",
 	"CMAKE_CXX_FLAGS=-mtune=native",
-	"",
-	f"# {ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT} {DATE}",
 	""
+]
+
+UNKNOWN_VARIABLES_HEADER = [
+  "##### UNKNOWN VARIABLES #####",
+  "# This variables were not expected, but are kept here in case they might be needed."
+]
+
+LAST_MODIFIED_LINES = [
+  f"# {ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT} {DATE}",
+	""
+]
+
+DEFAULT_FILE_LINES = [
+	*TOGGLE_SECTION_LINES,
+	*PACKAGE_HOME_SECTION_LINES,
+	*COMPILATION_FLAGS_SECTION_LINES,
+	*LAST_MODIFIED_LINES
 ]
