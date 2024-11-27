@@ -81,11 +81,14 @@ def test_writes_modified_variables_to_config_when_some_variable_values_are_chang
 @pytest.fixture
 def __mock_config_file():
 	with tempfile.NamedTemporaryFile(
-		delete=True,
-		delete_on_close=False,
+		delete=False,
 		dir=os.path.dirname(os.path.abspath(__file__))
 	) as temp_file:
-		yield temp_file
+		try:
+			yield temp_file
+		finally:
+			temp_file.close()
+			os.remove(temp_file.name)
 
 @pytest.fixture
 def __mock_datetime_strftime():
