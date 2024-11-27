@@ -1,3 +1,5 @@
+"""### Functions that interact with Conda via shell."""
+
 import os
 from typing import Optional
 

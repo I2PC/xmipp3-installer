@@ -1,3 +1,5 @@
+"""### Contains functions to assemble the data dictionary required by the API client."""
+
 import hashlib
 import re
 from typing import Optional, List, Dict

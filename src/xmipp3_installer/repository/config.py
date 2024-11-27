@@ -1,4 +1,4 @@
-"""# Contains the configuration file singleton that interact with the configuration file."""
+"""### Contains the configuration file singleton that interact with the configuration file."""
 
 import re
 import os

@@ -1,3 +1,5 @@
+"""### Contains all needed CMake constants."""
+
 from xmipp3_installer.repository.config_vars import variables
 
 DEFAULT_CMAKE = 'cmake'
