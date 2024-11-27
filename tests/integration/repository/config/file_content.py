@@ -4,7 +4,7 @@ from xmipp3_installer.repository.config import ConfigurationFileHandler
 DATE = "25-11-2024 01:26.46"
 DATE_2 = "27-11-2024 15:35.00"
 
-TOGGLE_SECTION_LINES = [
+__TOGGLE_SECTION_LINES = [
   "##### TOGGLE SECTION #####",
 	f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}",
 	"SEND_INSTALLATION_STATISTICS=ON",
@@ -17,7 +17,7 @@ TOGGLE_SECTION_LINES = [
 	""
 ]
 
-PACKAGE_HOME_SECTION_LINES = [
+__PACKAGE_HOME_SECTION_LINES = [
   "##### PACKAGE HOME SECTION #####",
 	"# Use this variables to use custom installation paths for the required packages.",
 	"# If left empty, CMake will search for those packages within your system.",
@@ -38,7 +38,7 @@ PACKAGE_HOME_SECTION_LINES = [
 	""
 ]
 
-COMPILATION_FLAGS_SECTION_LINES = [
+__COMPILATION_FLAGS_SECTION_LINES = [
   "##### COMPILATION FLAGS #####",
 	"# We recommend not modifying this variables unless you know what you are doing.",
 	"CMAKE_C_FLAGS=-mtune=native",
@@ -52,9 +52,9 @@ UNKNOWN_VARIABLES_HEADER = [
 ]
 
 MANDATORY_SECTIONS_LINES = [
-  *TOGGLE_SECTION_LINES,
-  *PACKAGE_HOME_SECTION_LINES,
-  *COMPILATION_FLAGS_SECTION_LINES
+  *__TOGGLE_SECTION_LINES,
+  *__PACKAGE_HOME_SECTION_LINES,
+  *__COMPILATION_FLAGS_SECTION_LINES
 ]
 
 LAST_MODIFIED_LINES = [
