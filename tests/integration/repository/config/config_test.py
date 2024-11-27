@@ -78,6 +78,34 @@ def test_writes_modified_variables_to_config_when_some_variable_values_are_chang
 		config_file_content
 	)
 
+def test_returns_class_stored_last_modification_date_over_file_stored_one(
+	__mock_config_file,
+	__mock_datetime_strftime
+):
+	config_handler = ConfigurationFileHandler(__mock_config_file.name)
+	config_handler.write_config()
+	config_handler.last_modified = file_content.DATE_2
+	stored_date = config_handler.get_config_date()
+	assert (
+		stored_date == file_content.DATE_2
+	), get_assertion_message("last modified date", file_content.DATE_2, stored_date)
+
+def test_returns_file_stored_last_modification_date_when_there_is_no_value_stored(
+	__mock_config_file,
+	__mock_datetime_strftime
+):
+	config_handler = ConfigurationFileHandler(__mock_config_file.name)
+	config_handler.write_config()
+	config_handler.last_modified = None
+	stored_date = config_handler.get_config_date()
+	assert (
+		stored_date == __mock_datetime_strftime.today().strftime()
+	), get_assertion_message(
+		"last modified date",
+		__mock_datetime_strftime.today().strftime(),
+		stored_date
+	)
+
 @pytest.fixture
 def __mock_config_file():
 	with tempfile.NamedTemporaryFile(

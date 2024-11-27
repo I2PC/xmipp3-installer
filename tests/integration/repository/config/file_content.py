@@ -2,6 +2,7 @@ from xmipp3_installer.repository.config_vars import default_values
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 
 DATE = "25-11-2024 01:26.46"
+DATE_2 = "27-11-2024 15:35.00"
 
 TOGGLE_SECTION_LINES = [
   "##### TOGGLE SECTION #####",
