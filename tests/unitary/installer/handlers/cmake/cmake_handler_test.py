@@ -67,6 +67,8 @@ def test_returns_expected_cmake_path(
   [
     pytest.param("", {}),
     pytest.param("\n", {}),
+    pytest.param("a=a=a", {}),
+    pytest.param("==", {}),
     pytest.param("TEST=1", {"TEST": "1"}),
     pytest.param("TEST=1\n", {"TEST": "1"}),
     pytest.param("TEST=", {"TEST": None}),
