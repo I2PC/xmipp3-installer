@@ -58,9 +58,6 @@ def __get_library_version_from_line(version_line: str) -> Dict[str, Any]:
 	- (dict(str, any)): Dictionary where the key is the name and the value is the version.
 	"""
 	library_with_version = {}
-	if version_line is None:
-		return library_with_version
-	
 	name_and_version = version_line.replace("\n", "").split('=')
 	if len(name_and_version) == 2:
 		version = name_and_version[1] if name_and_version[1] else None
