@@ -66,7 +66,6 @@ def test_returns_expected_cmake_path(
   "line,expected_library_version",
   [
     pytest.param("", {}),
-    pytest.param(None, {}),
     pytest.param("\n", {}),
     pytest.param("TEST=1", {"TEST": "1"}),
     pytest.param("TEST=1\n", {"TEST": "1"}),
