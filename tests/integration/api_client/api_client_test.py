@@ -14,7 +14,7 @@ from xmipp3_installer.api_client.assembler import installation_info_assembler
 from . import shell_command_outputs, file_contents
 from ... import get_assertion_message
 
-def test_calls_api_when_sending_installation_attempt(
+def test_records_api_call_when_sending_installation_attempt(
 	__mock_mac_address,
 	__mock_library_versions_file,
 	__mock_run_parallel_jobs,
@@ -77,35 +77,32 @@ def __mock_get_architecture_name(fake_process):
 	)
 	yield fake_process
 
-@pytest.fixture(params=[True])
-def __mock_get_current_branch(fake_process, request):
-	is_master = request.param
-	branch = shell_command_outputs.get_current_branch(is_master)
+@pytest.fixture
+def __mock_get_current_branch(fake_process):
 	fake_process.register_subprocess(
 		shlex.split("git rev-parse --abbrev-ref HEAD"),
-		stdout=branch,
+		stdout="master",
 		occurrences=2
 	)
 	yield fake_process
 
-@pytest.fixture(params=[(True, shell_command_outputs.MASTER_BRANCH)])
-def __mock_is_branch_up_to_date(fake_process, request):
-	up_to_date, branch = request.param
-	local_commit, remote_commit = shell_command_outputs.get_latest_commits(up_to_date)
+@pytest.fixture
+def __mock_is_branch_up_to_date(fake_process):
+	commit = "d46d18c25cb689eee68e412e4d3854cab6d3d065"
 	fake_process.register_subprocess(shlex.split("git fetch"))
 	fake_process.register_subprocess(
-		shlex.split(f"git rev-parse {branch}"),
-		stdout=local_commit
+		shlex.split(f"git rev-parse master"),
+		stdout=commit
 	)
 	fake_process.register_subprocess(
-		shlex.split(f"git rev-parse origin/{branch}"),
-		stdout=remote_commit
+		shlex.split(f"git rev-parse origin/master"),
+		stdout=commit
 	)
 	yield fake_process
 
-@pytest.fixture(params=[True])
-def __mock_log_tail(fake_process, request):
-	log_file_content = file_contents.LOG_TAIL_SUCCES if request.param else file_contents.LOG_TAIL_ERROR
+@pytest.fixture
+def __mock_log_tail(fake_process):
+	log_file_content = file_contents.LOG_TAIL
 	fake_process.register_subprocess(
 		shlex.split(f"tail -n {constants.TAIL_LOG_NCHARS} {constants.LOG_FILE}"),
 		stdout=log_file_content

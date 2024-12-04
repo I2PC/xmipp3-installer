@@ -10,32 +10,7 @@ SQLite3=3.45.3
 Java=21.0.5
 """
 
-LOG_TAIL_ERROR = """[ 45%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/resolution_localfilter.cpp.o
-[ 45%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/resolution_monogenic_signal.cpp.o
-[ 45%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/resolution_pdb_bfactor.cpp.o
-[ 45%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/shift_corr_estimator.cpp.o
-[ 45%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/single_extrema_finder.cpp.o
-[ 45%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/subtomo_subtraction.cpp.o
-[ 46%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/subtract_projection.cpp.o
-[ 46%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/symmetrize.cpp.o
-/home/runner/work/xmipp/xmipp/src/xmipp/libraries/reconstruction/subtract_projection.cpp: In member function ‘void ProgSubtractProjection::writeParticle(MDRow&, FileName, Image<double>&, double, double, double, double, double, double, double)’:
-/home/runner/work/xmipp/xmipp/src/xmipp/libraries/reconstruction/subtract_projection.cpp:161:25: error: ‘MDL_SUBTRACTION_B’ was not declared in this scope; did you mean ‘MDL_SUBTRACTION_R2’?
-  161 |         rowOut.setValue(MDL_SUBTRACTION_B, b);
-      |                         ^~~~~~~~~~~~~~~~~
-      |                         MDL_SUBTRACTION_R2
-[ 46%] Building CXX object src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/threshold.cpp.o
-gmake[2]: *** [src/xmipp/CMakeFiles/Xmipp.dir/build.make:3394: src/xmipp/CMakeFiles/Xmipp.dir/libraries/reconstruction/subtract_projection.cpp.o] Error 1
-gmake[2]: *** Waiting for unfinished jobs....
-gmake[1]: *** [CMakeFiles/Makefile2:1794: src/xmipp/CMakeFiles/Xmipp.dir/all] Error 2
-gmake: *** [Makefile:166: all] Error 2
-
-
-Error 5: Error compiling with CMake.
-Check the inside file 'compilation.log'. 
-More details on the Xmipp documentation portal: https://i2pc.github.io/docs/
-Error: Process completed with exit code 1."""
-
-LOG_TAIL_SUCCES = """-- Installing: /home/runner/work/xmipp/xmipp/dist/resources/histogram.png
+LOG_TAIL = """-- Installing: /home/runner/work/xmipp/xmipp/dist/resources/histogram.png
 -- Installing: /home/runner/work/xmipp/xmipp/dist/resources/delete.gif
 -- Installing: /home/runner/work/xmipp/xmipp/dist/resources/create_selection.png
 -- Installing: /home/runner/work/xmipp/xmipp/dist/resources/export_wiz.gif

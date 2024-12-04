@@ -13,11 +13,6 @@ IP_ADDR = """1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNO
 \tineto fe80::208:9bff:fec4:3030/64 scope link
 \t\tvalid_lft forever preferred_lft forever"""
 
-MASTER_BRANCH = "master"
-__DEVEL_BRANCH = "devel"
-def get_current_branch(is_master: bool) -> str:
-  return MASTER_BRANCH if is_master else __DEVEL_BRANCH
-
 OS_RELEASE = """NAME=\"Red Hat Enterprise Linux\"
 VERSION=\"8.10 (Ootpa)\"
 ID=\"rhel\"
@@ -37,8 +32,3 @@ REDHAT_SUPPORT_PRODUCT=\"Red Hat Enterprise Linux\"
 REDHAT_SUPPORT_PRODUCT_VERSION=\"8.10\""""
 
 PMU_NAME = "skylake"
-
-LATEST_COMMIT_1 = ""
-LATEST_COMMIT_2 = ""
-def get_latest_commits(up_to_date: bool) -> Tuple[str, str]:
-  return (LATEST_COMMIT_1, LATEST_COMMIT_1) if up_to_date else (LATEST_COMMIT_1, LATEST_COMMIT_2)
