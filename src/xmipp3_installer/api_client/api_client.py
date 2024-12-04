@@ -25,5 +25,5 @@ def send_installation_attempt(installation_info: Dict):
 			url,
 			context=ssl._create_unverified_context() # Unverified context because url does not have an ssl certificate
 		)
-		conn.request("POST", path, params, headers)
+		conn.request("POST", path, body=params, headers=headers)
 		conn.close()
