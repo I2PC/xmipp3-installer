@@ -39,6 +39,24 @@ def test_calls_connection_request_when_sending_installation_attempt(
     headers={"Content-type": "application/json"}
   )
 
+def test_calls_connection_getresponse_when_sending_installation_attempt(
+  __mock_httpsconnection
+):
+  api_client.send_installation_attempt({})
+  __mock_httpsconnection().getresponse.assert_called_once_with()
+
+def test_calls_logger_when_sending_installation_attempt_and_receives_timeout(
+  __mock_httpsconnection,
+  __mock_timeout,
+  __mock_logger,
+  __mock_logger_yellow
+):
+  api_client.send_installation_attempt({})
+  __mock_logger.assert_called_once_with(
+     __mock_logger_yellow("There was a timeout while sending installation data."),
+     show_in_terminal=False
+  )
+
 def test_calls_connection_close_when_sending_installation_attempt(
   __mock_httpsconnection
 ):
@@ -54,3 +72,24 @@ def __mock_httpsconnection(__mock_api_url):
 def __mock_api_url():
   with patch.object(urls, "API_URL", __API_URL):
     yield
+
+@pytest.fixture
+def __mock_timeout():
+  with patch("http.client.HTTPSConnection") as mock_method:
+    mock_method.side_effect = TimeoutError()
+    yield mock_method
+
+@pytest.fixture
+def __mock_logger():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.__call__"
+	) as mock_method:
+		yield mock_method
+
+@pytest.fixture
+def __mock_logger_yellow():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.yellow"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"format-start-{text}-format-end"
+		yield mock_method
