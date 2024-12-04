@@ -1,15 +1,18 @@
+import http.client
 import os
 import shlex
+import ssl
 import tempfile
 from unittest.mock import patch
 
 import pytest
 
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.api_client import api_client
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 
 from . import shell_command_outputs, file_contents
+from ... import get_assertion_message
 
 def test_calls_api_when_sending_installation_attempt(
 	__mock_mac_address,
@@ -22,11 +25,14 @@ def test_calls_api_when_sending_installation_attempt(
 	__mock_log_tail,
 	__mock_server
 ):
-	test = installation_info_assembler.get_installation_info()
-	assert test
-	#api_client.send_installation_attempt(
-	#  installation_info_assembler.get_installation_info()
-	#)
+	api_client.send_installation_attempt(
+		installation_info_assembler.get_installation_info()
+	)
+	n_requests = len(__mock_server.requests)
+	assert (n_requests == 1), get_assertion_message("number of API calls", 1, n_requests)
+	assert (
+		__mock_server.requests[0].method == "POST"
+	), get_assertion_message("request method", "POST", __mock_server.requests[0].method)
 
 @pytest.fixture
 def __mock_mac_address(fake_process):
@@ -118,6 +124,22 @@ def __mock_run_parallel_jobs():
 		yield mock_method
 
 @pytest.fixture
-def __mock_server(httpserver):
-	httpserver.serve_content(content=None, code=200, store_request_data=True)
-	yield httpserver
+def __mock_server(httpsserver, __add_ssl_context):
+	httpsserver.serve_content(content=None, code=200, store_request_data=True)
+	with patch.object(urls, "API_URL", f"{httpsserver.url}/attempts"):
+		yield httpsserver
+
+@pytest.fixture
+def __add_ssl_context():
+	def add_ssl_param(parsed_url, timeout_seconds):
+		return http.client.HTTPSConnection(
+			parsed_url.hostname,
+			parsed_url.port,
+			timeout=timeout_seconds,
+			context=ssl._create_unverified_context()
+		)
+	with patch(
+		"xmipp3_installer.api_client.api_client.__get_https_connection"
+	) as mock_connection:
+		mock_connection.side_effect = add_ssl_param
+		yield mock_connection
