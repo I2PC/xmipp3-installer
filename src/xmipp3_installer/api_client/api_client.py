@@ -17,7 +17,6 @@ def send_installation_attempt(installation_info: Dict):
 	if installation_info is not None:
 		params = json.dumps(installation_info)
 		headers = {"Content-type": "application/json"}
-
 		parsed_url = urlparse(urls.API_URL)
 		conn = http.client.HTTPConnection(parsed_url.hostname, parsed_url.port)
 		conn.request("POST", parsed_url.path, body=params, headers=headers)
