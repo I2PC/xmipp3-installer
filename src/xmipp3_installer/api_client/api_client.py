@@ -6,6 +6,7 @@ from typing import Dict
 from urllib.parse import urlparse, ParseResult
 
 from xmipp3_installer.installer import urls
+from xmipp3_installer.application.logger.logger import logger
 
 def send_installation_attempt(installation_info: Dict):
 	"""
@@ -19,13 +20,16 @@ def send_installation_attempt(installation_info: Dict):
 	params = json.dumps(installation_info)
 	headers = {"Content-type": "application/json"}
 	parsed_url = urlparse(urls.API_URL)
-	conn = __get_https_connection(parsed_url, 2)
 	try:
+		conn = __get_https_connection(parsed_url, 2)
 		conn.request("POST", parsed_url.path, body=params, headers=headers)
 		conn.getresponse()
+		conn.close()
 	except TimeoutError:
-		pass
-	conn.close()
+		logger(
+			logger.yellow("There was a timeout while sending installation data."),
+			show_in_terminal=False
+		)
 
 def __get_https_connection(parsed_url: ParseResult, timeout_seconds: int) -> http.client.HTTPSConnection:
 	"""
