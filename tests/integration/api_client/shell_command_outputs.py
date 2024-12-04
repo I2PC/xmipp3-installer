@@ -1,5 +1,3 @@
-from typing import Tuple
-
 IP_ADDR = """1: Lo: <LOOPBACK, UP, LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
 \tlink/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
 \tinet 127.0.0.1/8 scope host lo
