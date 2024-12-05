@@ -19,7 +19,7 @@ def test_records_api_call_when_sending_installation_attempt(
 	__mock_library_versions_file,
 	__mock_run_parallel_jobs,
 	__mock_get_release_name,
-	__mock_get_architecture_name,
+	__mock_get_cpu_flags,
 	__mock_get_current_branch,
 	__mock_is_branch_up_to_date,
 	__mock_log_tail,
@@ -70,10 +70,10 @@ def __mock_get_release_name(fake_process):
 	yield fake_process
 
 @pytest.fixture
-def __mock_get_architecture_name(fake_process):
+def __mock_get_cpu_flags(fake_process):
 	fake_process.register_subprocess(
-		shlex.split("cat /sys/devices/cpu/caps/pmu_name"),
-		stdout=shell_command_outputs.PMU_NAME
+		'lscpu | grep \"Flags:\"',
+		stdout=shell_command_outputs.LSCPU_FLAGS
 	)
 	yield fake_process
 
