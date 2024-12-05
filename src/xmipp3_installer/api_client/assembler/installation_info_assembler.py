@@ -2,6 +2,7 @@
 
 import hashlib
 import re
+import os
 from typing import Optional, List, Dict
 
 from xmipp3_installer.installer import constants
@@ -33,6 +34,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			__get_cpu_flags,
 			git_handler.get_current_branch,
 			git_handler.is_branch_up_to_date,
+			__is_installed_by_scipion,
 			__get_log_tail
 		],
 		[(), (), (), (), ()]
@@ -58,10 +60,11 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 		},
 		"xmipp": {
 			"branch": __get_installation_branch_name(environment_info[2]),
-			"updated": environment_info[3]
+			"updated": environment_info[3],
+			"installedByScipion": environment_info[4]
 		},
 		"returnCode": ret_code,
-		"logTail": environment_info[4] if ret_code else None # Only needed if something went wrong
+		"logTail": environment_info[5] if ret_code else None # Only needed if something went wrong
 	}
 
 def get_os_release_name() -> str:
@@ -166,3 +169,12 @@ def __find_mac_address_in_lines(lines: List[str]) -> Optional[str]:
 				lines[line_index + 1]
 			).group(1)
 	return None
+
+def __is_installed_by_scipion() -> bool:
+	"""
+	### Checks if the current xmipp installation is being carried out from Scipion.
+
+	#### Returns:
+	- (bool): True if the installation is executed by Scipion, False otherwise.
+	"""
+	return bool(os.getenv("SCIPION_SOFTWARE"))
