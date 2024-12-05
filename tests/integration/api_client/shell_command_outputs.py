@@ -29,7 +29,7 @@ REDHAT_BUGZILLA_PRODUCT_VERSION=8.10
 REDHAT_SUPPORT_PRODUCT=\"Red Hat Enterprise Linux\"
 REDHAT_SUPPORT_PRODUCT_VERSION=\"8.10\""""
 
-LSCPU = (
+LSCPU_FLAGS = (
   "Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov "
   "pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm "
   "constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni "
