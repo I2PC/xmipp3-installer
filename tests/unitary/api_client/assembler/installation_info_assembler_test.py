@@ -48,6 +48,7 @@ __ENVIROMENT_INFO = [
   ["flag1", "flag2"],
   "devel",
   True,
+  False,
   __LOG_TAIL
 ]
 __INSTALLATION_INFO = {
@@ -70,10 +71,11 @@ __INSTALLATION_INFO = {
   },
   "xmipp": {
     "branch": __ENVIROMENT_INFO[2],
-    "updated": __ENVIROMENT_INFO[3]
+    "updated": __ENVIROMENT_INFO[3],
+    "installedByScipion": __ENVIROMENT_INFO[4]
   },
   "returnCode": 0,
-  "logTail": __ENVIROMENT_INFO[4]
+  "logTail": __ENVIROMENT_INFO[5]
 }
 __EMPTY_INSTALLATION_INFO = {
   "user": {
@@ -95,7 +97,8 @@ __EMPTY_INSTALLATION_INFO = {
   },
   "xmipp": {
     "branch": versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY],
-    "updated": None
+    "updated": None,
+    "installedByScipion": None
   },
   "returnCode": 0,
   "logTail": None
@@ -122,6 +125,28 @@ def test_returns_expected_cpu_flags(
   assert (
     architecture_name == expected_cpu_flags
   ), get_assertion_message("architecture name", expected_cpu_flags, architecture_name)
+
+def test_calls_os_getenv_when_checking_if_is_installed_by_scipion(__mock_os_getenv):
+  installation_info_assembler.__is_installed_by_scipion()
+  __mock_os_getenv.assert_called_once_with("SCIPION_SOFTWARE")
+
+@pytest.mark.parametrize(
+  "__mock_os_getenv,expected_is_installed",
+  [
+    pytest.param(None, False),
+    pytest.param("", False),
+    pytest.param("/path/to/scipion", True)
+  ],
+  indirect=["__mock_os_getenv"]
+)
+def test_returns_expected_is_installed_by_scipion(
+  __mock_os_getenv,
+  expected_is_installed
+):
+  is_installed = installation_info_assembler.__is_installed_by_scipion()
+  assert (
+    is_installed == expected_is_installed
+  ), get_assertion_message("\"is installed by Scipion\" value", expected_is_installed, is_installed)
 
 def test_calls_run_shell_command_when_getting_log_tail(__mock_run_shell_command):
   installation_info_assembler.__get_log_tail()
@@ -372,6 +397,7 @@ def test_calls_run_parallel_jobs_when_getting_installation_info(
       installation_info_assembler.__get_cpu_flags,
       git_handler.get_current_branch,
       git_handler.is_branch_up_to_date,
+      installation_info_assembler.__is_installed_by_scipion,
       installation_info_assembler.__get_log_tail
     ],
     [(), (), (), (), ()]
@@ -384,14 +410,14 @@ def test_calls_run_parallel_jobs_when_getting_installation_info(
   "__mock_run_parallel_jobs,"
   "expected_info",
   [
-    pytest.param(0, None, {}, [None for _ in range(5)], None),
-    pytest.param(1, None, {}, [None for _ in range(5)], None),
-    pytest.param(0, None, {"test": "something"}, ["value" for _ in range(5)], None),
-    pytest.param(1, None, {"test": "something"}, ["value" for _ in range(5)], None),
-    pytest.param(0, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
-    pytest.param(1, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
-    pytest.param(0, __USER_ID, {}, [None for _ in range(5)], __EMPTY_INSTALLATION_INFO),
-    pytest.param(1, __USER_ID, {}, [None for _ in range(5)], {**__EMPTY_INSTALLATION_INFO, "returnCode": 1}),
+    pytest.param(0, None, {}, [None for _ in range(6)], None),
+    pytest.param(1, None, {}, [None for _ in range(6)], None),
+    pytest.param(0, None, {"test": "something"}, ["value" for _ in range(6)], None),
+    pytest.param(1, None, {"test": "something"}, ["value" for _ in range(6)], None),
+    pytest.param(0, None, __LIBRARY_VERSIONS, ["value" for _ in range(6)], None),
+    pytest.param(1, None, __LIBRARY_VERSIONS, ["value" for _ in range(6)], None),
+    pytest.param(0, __USER_ID, {}, [None for _ in range(6)], __EMPTY_INSTALLATION_INFO),
+    pytest.param(1, __USER_ID, {}, [None for _ in range(6)], {**__EMPTY_INSTALLATION_INFO, "returnCode": 1}),
     pytest.param(0, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "logTail": None}),
     pytest.param(1, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "returnCode": 1})
   ],
@@ -484,4 +510,10 @@ def __mock_run_parallel_jobs(request):
     "xmipp3_installer.installer.orquestrator.run_parallel_jobs"
   ) as mock_method:
     mock_method.side_effect = [request.param]
+    yield mock_method
+
+@pytest.fixture(params=[None])
+def __mock_os_getenv(request):
+  with patch("os.getenv") as mock_method:
+    mock_method.return_value = request.param
     yield mock_method
