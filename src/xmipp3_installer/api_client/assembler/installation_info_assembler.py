@@ -30,7 +30,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	environment_info = orquestrator.run_parallel_jobs(
 		[
 			get_os_release_name,
-			__get_architecture_name,
+			__get_cpu_flags,
 			git_handler.get_current_branch,
 			git_handler.is_branch_up_to_date,
 			__get_log_tail
@@ -44,7 +44,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 		},
 		"version": {
 			"os": environment_info[0],
-			"architecture": environment_info[1],
+			"cpuFlags": environment_info[1],
 			"cuda": library_versions.get(cmake_constants.CMAKE_CUDA),
 			"cmake": library_versions.get(cmake_constants.CMAKE_CMAKE),
 			"gcc": library_versions.get(cmake_constants.CMAKE_GCC),
@@ -108,17 +108,19 @@ def __get_user_id() -> Optional[str]:
 	sha256.update(mac_address.encode())
 	return sha256.hexdigest()
 
-def __get_architecture_name() -> str:
+def __get_cpu_flags() -> List[str]:
 	"""
-	### Returns the name of the system's architecture name.
+	### This function obtains the list of compilation flags supported by the CPU.
 
 	#### Returns:
-	- (str): Architecture name.
+	- (list(str)): List of flags supported by the CPU.  
 	"""
-	ret_code, architecture = shell_handler.run_shell_command(
-		'cat /sys/devices/cpu/caps/pmu_name'
-	)
-	return constants.UNKNOWN_VALUE if ret_code != 0 or not architecture else architecture
+	flags_header = "Flags:"
+	ret_code, flags_line = shell_handler.run_shell_command(f'lscpu | grep \"{flags_header}\"')
+	if ret_code:
+		return []
+	flags_line = flags_line.replace(flags_header, "").strip()
+	return [flag for flag in flags_line.split(" ") if flag]
 
 def __get_log_tail() -> Optional[str]:
 	"""
