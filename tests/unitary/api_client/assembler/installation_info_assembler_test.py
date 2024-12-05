@@ -45,7 +45,7 @@ __LIBRARY_VERSIONS = {
 }
 __ENVIROMENT_INFO = [
   __RELEASE_NAME,
-  "test-lake",
+  ["flag1", "flag2"],
   "devel",
   True,
   __LOG_TAIL
@@ -56,7 +56,7 @@ __INSTALLATION_INFO = {
   },
   "version": {
     "os": __ENVIROMENT_INFO[0],
-    "architecture": __ENVIROMENT_INFO[1],
+    "cpuFlags": __ENVIROMENT_INFO[1],
     "cuda": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CUDA),
     "cmake": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CMAKE),
     "gcc": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_GCC),
@@ -81,7 +81,7 @@ __EMPTY_INSTALLATION_INFO = {
   },
   "version": {
     "os": None,
-    "architecture": None,
+    "cpuFlags": None,
     "cuda": None,
     "cmake": None,
     "gcc": None,
@@ -101,28 +101,27 @@ __EMPTY_INSTALLATION_INFO = {
   "logTail": None
 }
 
-def test_calls_run_shell_command_when_getting_architecture_name(__mock_run_shell_command):
-  installation_info_assembler.__get_architecture_name()
-  __mock_run_shell_command.assert_called_once_with('cat /sys/devices/cpu/caps/pmu_name')
+def test_calls_run_shell_command_when_getting_cpu_flags(__mock_run_shell_command):
+  installation_info_assembler.__get_cpu_flags()
+  __mock_run_shell_command.assert_called_once_with('lscpu | grep "Flags:"')
 
 @pytest.mark.parametrize(
-  "__mock_run_shell_command,expected_architecture_name",
+  "__mock_run_shell_command,expected_cpu_flags",
   [
-    pytest.param((1, "test-arch"), constants.UNKNOWN_VALUE),
-    pytest.param((0, None), constants.UNKNOWN_VALUE),
-    pytest.param((0, ""), constants.UNKNOWN_VALUE),
-    pytest.param((0, "test-arch"), "test-arch")
+    pytest.param((0, ""), []),
+    pytest.param((1, "flag1 flag2"), []),
+    pytest.param((0, "flag1 flag2"), ["flag1", "flag2"])
   ],
   indirect=["__mock_run_shell_command"]
 )
-def test_returns_expected_architecture_name(
+def test_returns_expected_cpu_flags(
   __mock_run_shell_command,
-  expected_architecture_name
+  expected_cpu_flags
 ):
-  architecture_name = installation_info_assembler.__get_architecture_name()
+  architecture_name = installation_info_assembler.__get_cpu_flags()
   assert (
-    architecture_name == expected_architecture_name
-  ), get_assertion_message("architecture name", expected_architecture_name, architecture_name)
+    architecture_name == expected_cpu_flags
+  ), get_assertion_message("architecture name", expected_cpu_flags, architecture_name)
 
 def test_calls_run_shell_command_when_getting_log_tail(__mock_run_shell_command):
   installation_info_assembler.__get_log_tail()
@@ -370,7 +369,7 @@ def test_calls_run_parallel_jobs_when_getting_installation_info(
   __mock_run_parallel_jobs.assert_called_once_with(
     [
       installation_info_assembler.get_os_release_name,
-      installation_info_assembler.__get_architecture_name,
+      installation_info_assembler.__get_cpu_flags,
       git_handler.get_current_branch,
       git_handler.is_branch_up_to_date,
       installation_info_assembler.__get_log_tail
