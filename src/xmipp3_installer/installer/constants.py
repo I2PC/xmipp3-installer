@@ -20,4 +20,3 @@ CONFIG_FILE = 'xmipp.conf'
 
 # Others
 TAIL_LOG_NCHARS = 300
-UNKNOWN_VALUE = 'Unknown'
