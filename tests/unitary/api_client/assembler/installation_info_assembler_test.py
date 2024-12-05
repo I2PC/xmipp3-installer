@@ -307,11 +307,11 @@ def test_calls_re_search_group_when_getting_os_release_name(
 @pytest.mark.parametrize(
   "__mock_run_shell_command,expected_release_name",
   [
-    pytest.param((1, ""), constants.UNKNOWN_VALUE),
-    pytest.param((1, "something"), constants.UNKNOWN_VALUE),
-    pytest.param((1, __RELEASE_OUPUT), constants.UNKNOWN_VALUE),
-    pytest.param((0, ""), constants.UNKNOWN_VALUE),
-    pytest.param((0, "something"), constants.UNKNOWN_VALUE),
+    pytest.param((1, ""), None),
+    pytest.param((1, "something"), None),
+    pytest.param((1, __RELEASE_OUPUT), None),
+    pytest.param((0, ""), None),
+    pytest.param((0, "something"), None),
     pytest.param((0, __RELEASE_OUPUT), __RELEASE_NAME)
   ],
   indirect=["__mock_run_shell_command"]

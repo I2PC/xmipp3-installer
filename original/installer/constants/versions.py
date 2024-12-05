@@ -56,6 +56,3 @@ XMIPP_VERSIONS = {
 	}																	
 }																		
 #####################################
-
-# Other variables
-UNKNOWN_VALUE = 'Unknown'
