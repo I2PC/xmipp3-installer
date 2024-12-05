@@ -20,16 +20,20 @@ def send_installation_attempt(installation_info: Dict):
 	params = json.dumps(installation_info)
 	headers = {"Content-type": "application/json"}
 	parsed_url = urlparse(urls.API_URL)
+	conn = None
 	try:
 		conn = __get_https_connection(parsed_url, 2)
 		conn.request("POST", parsed_url.path, body=params, headers=headers)
 		conn.getresponse()
-		conn.close()
 	except TimeoutError:
 		logger(
 			logger.yellow("There was a timeout while sending installation data."),
 			show_in_terminal=False
 		)
+	finally:
+		if conn is not None:
+			conn.close()
+
 
 def __get_https_connection(parsed_url: ParseResult, timeout_seconds: int) -> http.client.HTTPSConnection:
 	"""
