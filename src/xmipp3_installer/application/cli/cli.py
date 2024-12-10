@@ -46,7 +46,7 @@ def __add_params(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 	#### Returns:
 	- (ArgumentParser): Argument parser with inserted params.
 	"""
-	subparsers = parser.add_subparsers(dest="mode")
+	subparsers = parser.add_subparsers(dest=modes.MODE)
 	default_jobs = __get_default_job_number()
 
 	add_model_subparser = subparsers.add_parser(modes.MODE_ADD_MODEL, formatter_class=ModeHelpFormatter)

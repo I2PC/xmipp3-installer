@@ -7,6 +7,8 @@ from xmipp3_installer.application.cli.arguments.params import (
   PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE, PARAMS, SHORT_VERSION, LONG_VERSION
 )
 
+MODE = "mode"
+
 # Mode list (alphabetical order)
 MODE_ADD_MODEL = 'addModel'
 MODE_ALL = 'all'
