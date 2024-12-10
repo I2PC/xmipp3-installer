@@ -9,11 +9,17 @@ from xmipp3_installer.repository.config import ConfigurationFileHandler
 
 __DATE = "10-12-2024 17:26.33"
 
+@pytest.mark.parametrize(
+	"__setup_config_evironment",
+	[
+		pytest.param((False, "default.conf")),
+		pytest.param((True, "default.conf"))
+	],
+	indirect=["__setup_config_evironment"]
+)
 def test_writes_expected_config_file(
-		__setup_config_evironment
+	__setup_config_evironment
 ):
-	if os.path.exists(constants.CONFIG_FILE):
-		os.remove(constants.CONFIG_FILE)
 	subprocess.run(["xmipp3_installer", "config"])
 	__change_config_file_date()
 	assert (
