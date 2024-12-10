@@ -36,7 +36,7 @@ def test_returns_expected_message_when_generating_error_message(
     __mock_logger_red(f'Unable to parse line {line_number}: {line}'),
     __mock_logger_yellow(
       "Contents of config file won't be read, default values will be used instead.\n"
-      "You can create a new file template from scratch running './xmipp config -o'."
+      f"You can create a new file template from scratch deleting file {config_file} and trying again."
     )
     ])
 	assert (

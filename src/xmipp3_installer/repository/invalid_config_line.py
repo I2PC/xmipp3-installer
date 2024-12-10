@@ -10,6 +10,6 @@ class InvalidConfigLineError(RuntimeError):
       logger.red(f'Unable to parse line {line_number}: {line}'),
       logger.yellow(
         "Contents of config file won't be read, default values will be used instead.\n"
-        "You can create a new file template from scratch running './xmipp config -o'."
+        f"You can create a new file template from scratch deleting file {config_file} and trying again."
       )
     ])
