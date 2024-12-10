@@ -13,6 +13,7 @@ from xmipp3_installer.application.cli.parsers.error_handler_parser import ErrorH
 from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
 from xmipp3_installer.application.cli.parsers.mode_help_formatter import ModeHelpFormatter
 from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer import installer_service
 
 def main():
 	"""### Main entry point function that starts the execution."""
@@ -21,8 +22,7 @@ def main():
 	__add_default_usage_mode()
 	args = vars(parser.parse_args())
 	__validate_args(args, parser)
-	# Run selected mode
-	return args
+	installer_service.run_installer(args)
 
 def __generate_parser() -> argparse.ArgumentParser:
 	"""
