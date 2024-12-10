@@ -46,7 +46,8 @@ def test_calls_parse_args(
 	__mock_sys_argv,
 	__mock_add_default_usage_mode,
 	__mock_parse_args,
-	__mock_stdout_stderr
+	__mock_stdout_stderr,
+	__mock_run_installer
 ):
 	cli.main()
 	__mock_parse_args.assert_called_once_with()
@@ -274,7 +275,8 @@ def test_calls_validate_args(
 	__mock_add_default_usage_mode,
 	__mock_parse_args,
 	__mock_validate_args,
-	__mock_stdout_stderr
+	__mock_stdout_stderr,
+	__mock_run_installer
 ):
 	cli.main()
 	__mock_validate_args.assert_called_once()
