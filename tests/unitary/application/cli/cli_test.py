@@ -69,7 +69,6 @@ def test_returns_expected_mode_add_model(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	__test_args_in_mode("addModel", {"update": False}, expected_args)
@@ -97,7 +96,6 @@ def test_returns_expected_mode_all_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_get_default_job_number,
 	__mock_stdout_stderr
 ):
@@ -106,7 +104,6 @@ def test_returns_expected_mode_all_args(
 def test_returns_expected_mode_clean_all_args(
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "cleanAll"]):
@@ -114,7 +111,6 @@ def test_returns_expected_mode_clean_all_args(
 
 def test_returns_expected_mode_clean_bin_args(
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "cleanBin"]):
@@ -142,7 +138,6 @@ def test_returns_expected_mode_compile_and_install_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_get_default_job_number,
 	__mock_stdout_stderr
 ):
@@ -160,7 +155,6 @@ def test_returns_expected_mode_config_build_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	__test_args_in_mode("configBuild", {"keep_output": False}, expected_args)
@@ -178,7 +172,6 @@ def test_returns_expected_mode_config_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	__test_args_in_mode("config", {"overwrite": False}, expected_args)
@@ -197,7 +190,6 @@ def test_returns_expected_mode_get_models_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr,
 	__mock_get_project_root_subpath
 ):
@@ -222,14 +214,12 @@ def test_returns_expected_mode_get_sources_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	__test_args_in_mode("getSources", {"branch": None, "keep_output": False}, expected_args)
 
 def test_returns_expected_mode_git_args(
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "git", "clone", "test_url"]):
@@ -247,7 +237,6 @@ def test_returns_expected_mode_test_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	__test_args_in_mode("test", {"show": False}, expected_args)
@@ -264,7 +253,6 @@ def test_returns_expected_mode_version_args(
 	expected_args,
 	__mock_sys_argv,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	__test_args_in_mode("version", {"short": False}, expected_args)
@@ -274,7 +262,6 @@ def test_calls_validate_args(
 	__mock_add_default_usage_mode,
 	__mock_parse_args,
 	__mock_validate_args,
-	__mock_move_to_root_dir,
 	__mock_stdout_stderr
 ):
 	cli.main()
@@ -318,17 +305,6 @@ def test_does_not_deactivate_output_substitution_on_args_validation(
 	cli.__validate_args(args, cli.__generate_parser())
 	__mock_logger_set_allow_substitution.assert_not_called()
 
-def test_calls_move_to_root_dir(
-	__mock_sys_argv,
-	__mock_add_default_usage_mode,
-	__mock_parse_args,
-	__mock_validate_args,
-	__mock_move_to_root_dir,
-	__mock_stdout_stderr
-):
-	cli.main()
-	__mock_move_to_root_dir.assert_called_once_with()
-
 def __test_args_in_mode(mode, default_args, expected_args):
 	expected_args = {**default_args, "mode": mode, **expected_args}
 	args = cli.main()
@@ -359,13 +335,6 @@ def __mock_parse_args():
 def __mock_validate_args():
 	with patch(
 		"xmipp3_installer.application.cli.cli.__validate_args"
-	) as mock_method:
-		yield mock_method
-
-@pytest.fixture
-def __mock_move_to_root_dir():
-	with patch(
-		"xmipp3_installer.application.cli.cli.__move_to_root_dir"
 	) as mock_method:
 		yield mock_method
 

@@ -21,7 +21,6 @@ def main():
 	__add_default_usage_mode()
 	args = vars(parser.parse_args())
 	__validate_args(args, parser)
-	__move_to_root_dir()
 	# Run selected mode
 	return args
 
@@ -268,9 +267,3 @@ def __validate_args(args: Dict[str, Any], parser: argparse.ArgumentParser):
 	
 	if args.get('keep_output', False):
 		logger.set_allow_substitution(False)
-
-def __move_to_root_dir():
-	"""
-	### Changes the current working directory to the project's root directory.
-	"""
-	os.chdir(__get_project_root_dir())
