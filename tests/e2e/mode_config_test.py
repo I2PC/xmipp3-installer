@@ -32,7 +32,7 @@ def test_writes_expected_config_file(
 			expected_file,
 			shallow=False
 		)
-	), f"Expected: {__get_file_content_lines(expected_file)}\nReceived: {constants.CONFIG_FILE}"
+	), f"Expected: {__get_file_content_lines(expected_file)}\nReceived: {__get_file_content_lines(constants.CONFIG_FILE)}"
 
 def __get_test_config_file(file_name, input):
 	return os.path.join(
