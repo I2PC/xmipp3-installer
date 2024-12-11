@@ -32,7 +32,7 @@ def test_writes_expected_config_file(
 			expected_file,
 			shallow=False
 		)
-	), f"Expected: {__get_file_content_lines(expected_file)}\nReceived: {__get_file_content_lines(constants.CONFIG_FILE)}"
+	), f"Expected:\n{__get_file_content(expected_file)}\n\nReceived:\n{__get_file_content(constants.CONFIG_FILE)}"
 
 def __get_test_config_file(file_name, input):
 	return os.path.join(
@@ -61,9 +61,9 @@ def __change_config_file_date():
 		content = content.replace(old_date, __DATE)
 		config_file.write(content)
 
-def __get_file_content_lines(file_name):
+def __get_file_content(file_name):
 	with open(file_name, "r") as config_file:
-		return config_file.readlines()
+		return ''.join(config_file.readlines())
 
 @pytest.fixture(params=[(False, "default.conf")])
 def __setup_config_evironment(request):
