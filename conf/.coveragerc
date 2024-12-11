@@ -6,4 +6,6 @@ data_file = .coverage
 skip_empty = true
 fail_under = 100
 show_missing = true
-omit = tests/__init__.py
+omit = 
+  tests/__init__.py
+  src/xmipp3_installer/__main__.py
