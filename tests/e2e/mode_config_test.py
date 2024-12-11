@@ -8,6 +8,8 @@ import pytest
 from xmipp3_installer.installer import constants
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 
+from .. import get_file_content, normalize_line_endings
+
 __DATE = "10-12-2024 17:26.33"
 
 @pytest.mark.parametrize(
@@ -26,14 +28,14 @@ def test_writes_expected_config_file(
 	subprocess.run(["xmipp3_installer", "config"])
 	__change_config_file_date()
 	expected_file = __get_test_config_file(__setup_config_evironment, False)
-	__normalize_line_endings(expected_file)
+	normalize_line_endings(expected_file)
 	assert (
 		filecmp.cmp(
 			constants.CONFIG_FILE,
 			expected_file,
 			shallow=False
 		)
-	), f"Expected:\n{__get_file_content(expected_file)}\n\nReceived:\n{__get_file_content(constants.CONFIG_FILE)}"
+	), f"Expected:\n{get_file_content(expected_file)}\n\nReceived:\n{get_file_content(constants.CONFIG_FILE)}"
 
 def __get_test_config_file(file_name, input):
 	return os.path.join(
@@ -61,16 +63,6 @@ def __change_config_file_date():
 	with open(constants.CONFIG_FILE, 'w') as config_file:
 		content = content.replace(old_date, __DATE)
 		config_file.write(content)
-
-def __get_file_content(file_name):
-	with open(file_name, "r") as config_file:
-		return config_file.read()
-
-def __normalize_line_endings(file_path):
-	content = __get_file_content(file_path)
-	content = content.replace('\r\n', '\n')
-	with open(file_path, 'w') as file:
-		file.write(content)
 
 @pytest.fixture(params=[(False, "default.conf")])
 def __setup_config_evironment(request):
