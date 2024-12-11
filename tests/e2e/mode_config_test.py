@@ -28,15 +28,16 @@ def test_writes_expected_config_file(
 	assert (
 		filecmp.cmp(
 			constants.CONFIG_FILE,
-			__get_test_config_file(__setup_config_evironment),
+			__get_test_config_file(__setup_config_evironment, False),
 			shallow=False
 		)
 	)
 
-def __get_test_config_file(file_name):
+def __get_test_config_file(file_name, input):
 	return os.path.join(
 		os.path.dirname(os.path.abspath(__file__)),
 		"conf_files",
+		"input" if input else "output",
 		file_name
 	)
 
@@ -46,7 +47,7 @@ def __delete_config_file(file_name):
 
 def __copy_file_from_reference(file_name):
 	shutil.copyfile(
-		__get_test_config_file(file_name),
+		__get_test_config_file(file_name, True),
 		constants.CONFIG_FILE
 	)
 
