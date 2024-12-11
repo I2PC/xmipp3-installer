@@ -26,7 +26,6 @@ def test_writes_expected_config_file(
 	subprocess.run(["xmipp3_installer", "config"])
 	__change_config_file_date()
 	expected_file = __get_test_config_file(__setup_config_evironment, False)
-	#__normalize_line_endings(constants.CONFIG_FILE)
 	__normalize_line_endings(expected_file)
 	assert (
 		filecmp.cmp(
