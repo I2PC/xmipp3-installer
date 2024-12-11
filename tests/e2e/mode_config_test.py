@@ -26,6 +26,8 @@ def test_writes_expected_config_file(
 	subprocess.run(["xmipp3_installer", "config"])
 	__change_config_file_date()
 	expected_file = __get_test_config_file(__setup_config_evironment, False)
+	normalize_line_endings(constants.CONFIG_FILE)
+	normalize_line_endings(expected_file)
 	assert (
 		filecmp.cmp(
 			constants.CONFIG_FILE,
@@ -63,7 +65,13 @@ def __change_config_file_date():
 
 def __get_file_content(file_name):
 	with open(file_name, "r") as config_file:
-		return ''.join(config_file.readlines())
+		return config_file.read()
+
+def normalize_line_endings(file_path):
+    content = __get_file_content(file_path)
+    content = content.replace('\r\n', '\n')
+    with open(file_path, 'w') as file:
+        file.write(content)
 
 @pytest.fixture(params=[(False, "default.conf")])
 def __setup_config_evironment(request):
