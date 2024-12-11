@@ -14,7 +14,9 @@ __DATE = "10-12-2024 17:26.33"
 	"__setup_config_evironment",
 	[
 		pytest.param((False, "default.conf")),
-		pytest.param((True, "default.conf"))
+		pytest.param((True, "default.conf")),
+		pytest.param((True, "modified.conf")),
+		pytest.param((True, "unknown.conf"))
 	],
 	indirect=["__setup_config_evironment"]
 )
@@ -26,7 +28,7 @@ def test_writes_expected_config_file(
 	assert (
 		filecmp.cmp(
 			constants.CONFIG_FILE,
-			__get_test_config_file("default.conf"),
+			__get_test_config_file(__setup_config_evironment),
 			shallow=False
 		)
 	)
@@ -65,6 +67,6 @@ def __setup_config_evironment(request):
 			__delete_config_file(constants.CONFIG_FILE)
 		else:
 			__copy_file_from_reference(copy_name)
-		yield
+		yield copy_name
 	finally:
 		__delete_config_file(constants.CONFIG_FILE)
