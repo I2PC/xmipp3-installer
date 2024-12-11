@@ -1,5 +1,6 @@
 import filecmp
 import os
+import shutil
 import subprocess
 
 import pytest
@@ -41,6 +42,12 @@ def __delete_config_file(file_name):
 	if os.path.exists(file_name):
 		os.remove(file_name)
 
+def __copy_file_from_reference(file_name):
+	shutil.copyfile(
+		__get_test_config_file(file_name),
+		constants.CONFIG_FILE
+	)
+
 def __change_config_file_date():
 	file_hanlder = ConfigurationFileHandler()
 	old_date = file_hanlder.get_config_date()
@@ -56,6 +63,8 @@ def __setup_config_evironment(request):
 	try:
 		if not exists:
 			__delete_config_file(constants.CONFIG_FILE)
+		else:
+			__copy_file_from_reference(copy_name)
 		yield
 	finally:
 		__delete_config_file(constants.CONFIG_FILE)
