@@ -210,6 +210,8 @@ def test_gets_expected_line_size(
 		pytest.param("", 5, "", ""),
 		pytest.param("test", 5, "", "test"),
 		pytest.param("test", 5, "  ", "test"),
+		pytest.param("a b test", 5, "", "a b\ntest"),
+		pytest.param("a b test", 5, "  ", "a b\n  test"),
 		pytest.param("test", 8, "  ", "test"),
 		pytest.param("test test", 5, "", "test\ntest"),
 		pytest.param("test", 2, "", "test"),
