@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, Tuple
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
@@ -11,17 +11,18 @@ class ModeExecutor(ABC):
   def __init__(self, args: Dict):
     super().__init__()
     self.args = args
-    self._set_logger_config()
-    self.__configure_logging()
+    self._set_executor_config()
+    self.__configure_logger()
   
-  def _set_logger_config(self):
+  def _set_executor_config(self):
     """
-    ### Sets the specific logger params for this mode.
+    ### Sets the specific executor params for this mode.
     """
     self.logs_to_file = False
     self.prints_with_substitution = False
+    self.prints_banner_on_exit = False
   
-  def __configure_logging(self):
+  def __configure_logger(self):
     """
     ### Configures the logger according to the specified config.
     """
@@ -31,4 +32,4 @@ class ModeExecutor(ABC):
       logger.set_allow_substitution(True)
   
   @abstractmethod
-  def run(self) -> int: ...
+  def run(self) -> Tuple[int, str]: ...
