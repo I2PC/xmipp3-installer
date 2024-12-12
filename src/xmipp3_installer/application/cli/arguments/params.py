@@ -54,11 +54,11 @@ PARAMS = {
 	},
 	PARAM_LOGIN: {
 		SHORT_VERSION: "login",
-		DESCRIPTION: "Login (usr@server) for Nolan machine to upload the model with. Must have write permisions to such machine."
+		DESCRIPTION: "Login (usr@server) for remote host to upload the model with. Must have write permisions to such machine."
 	},
 	PARAM_MODEL_PATH: {
 		SHORT_VERSION: "modelPath",
-		DESCRIPTION: "Path to the model to upload to Nolan."
+		DESCRIPTION: "Path to the model to upload to remote host."
 	},
 	PARAM_UPDATE: {
 		LONG_VERSION: "--update",

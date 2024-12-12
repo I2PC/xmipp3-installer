@@ -20,8 +20,8 @@ Must have write permisions to such machine.
     ---------------------------------------------
     # Options #
 
-    login                                          Login (usr@server) for Nolan machine to upload the model with. Must have write permisions to such machine.
-    modelPath                                      Path to the model to upload to Nolan.
+    login                                          Login (usr@server) for remote host machine to upload the model with. Must have write permisions to such machine.
+    modelPath                                      Path to the model to upload to remote host.
     --update                                       Flag to update an existing model
 
 Example: ./xmipp addModel myuser@127.0.0.1 /home/myuser/mymodel
@@ -45,12 +45,12 @@ Must have write permisions to such machine.
     # Options #
 
     login                                          Login (usr@server) for
-                                                   Nolan machine to upload
+                                                   remote host machine to upload
                                                    the model with. Must have
                                                    write permisions to such
                                                    machine.
     modelPath                                      Path to the model to
-                                                   upload to Nolan.
+                                                   upload to remote host.
     --update                                       Flag to update an
                                                    existing model
 
