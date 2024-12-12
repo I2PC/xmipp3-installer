@@ -13,21 +13,30 @@ from .. import get_file_content, normalize_line_endings
 __DATE = "10-12-2024 17:26.33"
 
 @pytest.mark.parametrize(
-	"__setup_config_evironment",
+	"__setup_config_evironment,expected_file,overwrite",
 	[
-		pytest.param((False, "default.conf")),
-		pytest.param((True, "default.conf")),
-		pytest.param((True, "modified.conf")),
-		pytest.param((True, "unknown.conf"))
+		pytest.param((False, "default.conf"), "default.conf", False),
+		pytest.param((True, "default.conf"), "default.conf", False),
+		pytest.param((True, "modified.conf"), "modified.conf", False),
+		pytest.param((True, "unknown.conf"), "unknown.conf", False),
+		pytest.param((False, "default.conf"), "default.conf", True),
+		pytest.param((True, "default.conf"), "default.conf", True),
+		pytest.param((True, "modified.conf"), "default.conf", True),
+		pytest.param((True, "unknown.conf"), "default.conf", True)
 	],
 	indirect=["__setup_config_evironment"]
 )
 def test_writes_expected_config_file(
-	__setup_config_evironment
+	__setup_config_evironment,
+	expected_file,
+	overwrite
 ):
-	subprocess.run(["xmipp3_installer", "config"])
+	command_words = ["xmipp3_installer", "config"]
+	if overwrite:
+		command_words.append("-o")
+	subprocess.run(command_words)
 	__change_config_file_date()
-	expected_file = __get_test_config_file(__setup_config_evironment, False)
+	expected_file = __get_test_config_file(expected_file, False)
 	normalize_line_endings(expected_file)
 	assert (
 		filecmp.cmp(
