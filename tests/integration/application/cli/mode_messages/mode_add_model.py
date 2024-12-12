@@ -20,7 +20,7 @@ Must have write permisions to such machine.
     ---------------------------------------------
     # Options #
 
-    login                                          Login (usr@server) for remote host machine to upload the model with. Must have write permisions to such machine.
+    login                                          Login (usr@server) for remote host to upload the model with. Must have write permisions to such machine.
     modelPath                                      Path to the model to upload to remote host.
     --update                                       Flag to update an existing model
 
@@ -45,8 +45,8 @@ Must have write permisions to such machine.
     # Options #
 
     login                                          Login (usr@server) for
-                                                   remote host machine to upload
-                                                   the model with. Must have
+                                                   remote host to upload the
+                                                   model with. Must have
                                                    write permisions to such
                                                    machine.
     modelPath                                      Path to the model to
