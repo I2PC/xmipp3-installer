@@ -18,11 +18,6 @@ pytest-subprocess = "^1.5.2"
 pytest-localserver = "^0.9.0"
 ruff = "^0.6"
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["*_test.py"]
-addopts = "--capture=no"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
