@@ -1,0 +1,11 @@
+[run]
+branch=True
+data_file = ./conf/coverage/.integration-coverage
+
+[report]
+skip_empty = true
+fail_under = 100
+show_missing = true
+omit = 
+  tests/__init__.py
+  src/**
