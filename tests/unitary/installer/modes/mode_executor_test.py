@@ -13,7 +13,11 @@ def test_is_instance_of_abstract_class(__dummy_test_mode_executor):
   executor.run() # To cover dummy implementation execution
   assert (
     isinstance(executor, ABC)
-  ), get_assertion_message("class", ABC.__name__, type(executor).__name__)
+  ), get_assertion_message(
+    "parent class",
+    ABC.__name__,
+    executor.__class__.__bases__[0].__name__
+  )
 
 def test_raises_exception_when_run_method_not_implemented(
   __no_implementation_child
