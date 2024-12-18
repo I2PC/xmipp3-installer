@@ -6,9 +6,9 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}")" && pwd )"
 ROOT_DIR="$CURRENT_DIR/.."
 
 RCFOLDER=$CURRENT_DIR/../conf/coverage
-RCFILE_UNITARY=$RCFOLDER/.coveragerc.unitary
-RCFILE_INTEGRATION=$RCFOLDER/.coveragerc.integration
-RCFILE_E2E=$RCFOLDER/.coveragerc.e2e
+RCFILE_UNITARY=$RCFOLDER/.unitary-coveragerc
+RCFILE_INTEGRATION=$RCFOLDER/.integration-coveragerc
+RCFILE_E2E=$RCFOLDER/.e2e-coveragerc
 
 CONFIGFOLDER=$CURRENT_DIR/../conf/pytest
 CONFIGFILE_UNITARY=$CONFIGFOLDER/unitary.ini

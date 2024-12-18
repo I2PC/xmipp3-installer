@@ -1,6 +1,6 @@
 [run]
 branch=True
-data_file = ./conf/coverage/.e2e-coverage
+data_file = ./conf/coverage/.coverage.e2e
 
 [report]
 skip_empty = true
