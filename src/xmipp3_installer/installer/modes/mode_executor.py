@@ -32,4 +32,5 @@ class ModeExecutor(ABC):
       logger.set_allow_substitution(True)
   
   @abstractmethod
-  def run(self) -> Tuple[int, str]: ...
+  def run(self) -> Tuple[int, str]:
+    """Run method to be implemented by inheriting classes."""
