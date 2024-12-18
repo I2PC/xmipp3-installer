@@ -1,6 +1,6 @@
 [run]
 branch=True
-data_file = ./conf/coverage/.integration-coverage
+data_file = ./conf/coverage/.coverage.integration
 
 [report]
 skip_empty = true

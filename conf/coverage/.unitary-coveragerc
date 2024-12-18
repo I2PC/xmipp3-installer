@@ -1,6 +1,6 @@
 [run]
 branch=True
-data_file = ./conf/coverage/.unitary-coverage
+data_file = ./conf/coverage/.coverage.unitary
 
 [report]
 skip_empty = true

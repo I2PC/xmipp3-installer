@@ -10,9 +10,9 @@ $CURRENT_DIR = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $ROOT_DIR = Join-Path $CURRENT_DIR ".."
 
 $RCFOLDER = Join-Path $CURRENT_DIR "../conf/coverage"
-$RCFILE_UNITARY = Join-Path $RCFOLDER ".coveragerc.unitary"
-$RCFILE_INTEGRATION = Join-Path $RCFOLDER ".coveragerc.integration"
-$RCFILE_E2E = Join-Path $RCFOLDER ".coveragerc.e2e"
+$RCFILE_UNITARY = Join-Path $RCFOLDER ".unitary-coveragerc"
+$RCFILE_INTEGRATION = Join-Path $RCFOLDER ".integration-coveragerc"
+$RCFILE_E2E = Join-Path $RCFOLDER ".e2e-coveragerc"
 
 $CONFIGFOLDER = Join-Path $CURRENT_DIR "../conf/pytest"
 $CONFIGFILE_UNITARY = Join-Path $CONFIGFOLDER "unitary.ini"
