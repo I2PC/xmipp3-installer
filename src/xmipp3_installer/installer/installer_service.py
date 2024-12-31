@@ -12,4 +12,4 @@ def run_installer(args: Dict):
   if ret_code:
     logger.log_error(output, ret_code=ret_code)
   # Else print done?
-  sys.exit(mode_executor.run())
+  sys.exit(ret_code)
