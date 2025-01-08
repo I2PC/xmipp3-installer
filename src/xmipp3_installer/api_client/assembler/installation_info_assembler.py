@@ -74,13 +74,13 @@ def get_os_release_name() -> str:
 	#### Returns:
 	- (str): OS release name.
 	"""
-	unkown_os = "Unknown OS"
+	unknown_os = "Unknown OS"
 	ret_code, os_release_info = shell_handler.run_shell_command('cat /etc/os-release')
 	if ret_code:
-		return unkown_os
+		return unknown_os
 	
 	search = re.search(r'PRETTY_NAME="(.*)"\n', os_release_info)
-	return search.group(1) if search else unkown_os
+	return search.group(1) if search else unknown_os
 
 def __get_installation_branch_name(branch_name: str) -> str:
 	"""
