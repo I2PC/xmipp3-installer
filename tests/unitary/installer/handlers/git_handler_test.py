@@ -10,6 +10,8 @@ __CWD = "/path/to/dummy"
 __COMMIT1 = "4156gc81921is"
 __COMMIT2 = "792cq86301pqw"
 __SHORT_COMMIT = "5c3a24f"
+__TAG_NAME = "tags/v3.24.06-Oceanus"
+__RAW_COMMIT_NAME = f"{__SHORT_COMMIT} tags/v3.24.06-Oceanus"
 
 def test_calls_run_shell_command_when_getting_current_branch(
 	__mock_run_shell_command
@@ -133,6 +135,29 @@ def test_returns_expected_current_commit(__mock_run_shell_command, expected_comm
 	assert (
 		current_commit == expected_commit
 	), get_assertion_message("current commit hash", expected_commit, current_commit)
+
+def test_calls_run_shell_command_when_getting_commit_branch(__mock_run_shell_command):
+	git_handler.get_commit_branch(__COMMIT1)
+	__mock_run_shell_command.assert_called_once_with(
+		f"git name-rev {__COMMIT1}",
+		cwd="./"
+	)
+
+@pytest.mark.parametrize(
+	"__mock_run_shell_command,expected_commit_branch",
+	[
+		pytest.param((1, ""), ""),
+		pytest.param((1, __RAW_COMMIT_NAME), ""),
+		pytest.param((0, ""), ""),
+		pytest.param((0, __RAW_COMMIT_NAME), __TAG_NAME)
+	],
+	indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_commit_branch(__mock_run_shell_command, expected_commit_branch):
+	commit_branch = git_handler.get_commit_branch(__SHORT_COMMIT)
+	assert (
+		commit_branch == expected_commit_branch
+	), get_assertion_message("commit branch", expected_commit_branch, commit_branch)
 
 def __return_unchanged(value):
 	return value
