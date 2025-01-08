@@ -67,7 +67,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 		"logTail": environment_info[5] if ret_code else None # Only needed if something went wrong
 	}
 
-def get_os_release_name() -> str:
+def get_os_release_name() -> Optional[str]:
 	"""
 	### Returns the name of the current system OS release.
 
