@@ -9,6 +9,7 @@ from .... import get_assertion_message
 __CWD = "/path/to/dummy"
 __COMMIT1 = "4156gc81921is"
 __COMMIT2 = "792cq86301pqw"
+__SHORT_COMMIT = "5c3a24f"
 
 def test_calls_run_shell_command_when_getting_current_branch(
 	__mock_run_shell_command
@@ -109,6 +110,29 @@ def test_returns_expected_value_when_checking_if_branch_is_up_to_date(
 		assert (
 			is_up_to_date == expected_is_up_to_date
 		), get_assertion_message("is branch up to date result", expected_is_up_to_date, is_up_to_date)
+
+def test_calls_run_shell_command_when_getting_current_commit(__mock_run_shell_command):
+	git_handler.get_current_commit()
+	__mock_run_shell_command.assert_called_once_with(
+		"git rev-parse --short HEAD",
+		cwd="./"
+	)
+
+@pytest.mark.parametrize(
+	"__mock_run_shell_command,expected_commit",
+	[
+		pytest.param((1, ""), ""),
+		pytest.param((1, __SHORT_COMMIT), ""),
+		pytest.param((0, ""), ""),
+		pytest.param((0, __SHORT_COMMIT), __SHORT_COMMIT)
+	],
+	indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_current_commit(__mock_run_shell_command, expected_commit):
+	current_commit = git_handler.get_current_commit()
+	assert (
+		current_commit == expected_commit
+	), get_assertion_message("current commit hash", expected_commit, current_commit)
 
 def __return_unchanged(value):
 	return value
