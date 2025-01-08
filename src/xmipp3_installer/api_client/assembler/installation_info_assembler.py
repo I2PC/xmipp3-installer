@@ -67,19 +67,20 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 		"logTail": environment_info[5] if ret_code else None # Only needed if something went wrong
 	}
 
-def get_os_release_name() -> Optional[str]:
+def get_os_release_name() -> str:
 	"""
 	### Returns the name of the current system OS release.
 
 	#### Returns:
 	- (str): OS release name.
 	"""
+	unkown_os = "Unknown OS"
 	ret_code, os_release_info = shell_handler.run_shell_command('cat /etc/os-release')
 	if ret_code:
-		return None
+		return unkown_os
 	
 	search = re.search(r'PRETTY_NAME="(.*)"\n', os_release_info)
-	return search.group(1) if search else None
+	return search.group(1) if search else unkown_os
 
 def __get_installation_branch_name(branch_name: str) -> str:
 	"""
