@@ -4,12 +4,13 @@ import os
 
 # Repository names
 #XMIPP = 'xmipp'
-#XMIPP_CORE = 'xmippCore'
-#XMIPP_VIZ = 'xmippViz'
-#XMIPP_PLUGIN = 'scipion-em-xmipp'
+XMIPP_CORE = 'xmippCore'
+XMIPP_VIZ = 'xmippViz'
+XMIPP_PLUGIN = 'scipion-em-xmipp'
+XMIPP_SOURCES = [XMIPP_CORE, XMIPP_VIZ, XMIPP_PLUGIN]
 
 # Paths
-#SOURCES_PATH = "src"
+SOURCES_PATH = "src"
 BUILD_PATH = "build"
 INSTALL_PATH = "dist"
 #BUILD_TYPE = "Release"
