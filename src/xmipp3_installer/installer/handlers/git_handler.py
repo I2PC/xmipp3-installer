@@ -68,3 +68,19 @@ def get_current_commit(dir: str="./") -> str:
 	if ret_code or not output:
 		return ''
 	return output
+
+def get_commit_branch(commit: str, dir: str="./") -> str:
+	"""
+	### Returns the name of the commit branch. It can be a branch name or a release name.
+
+	#### Params:
+	- commit (str): Commit hash.
+	- dir (str): Optional. Directory to repository.
+
+	#### Returns:
+	- (str): Name of the commit branch or release.
+	"""
+	ret_code, output = shell_handler.run_shell_command(f"git name-rev {commit}", cwd=dir)
+	if ret_code or not output:
+		return ''
+	return output.replace(commit, "").replace(" ", "")
