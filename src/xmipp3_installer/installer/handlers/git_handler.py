@@ -53,3 +53,18 @@ def is_branch_up_to_date(dir: str='./') -> bool:
 		return False
 	
 	return latest_local_commit == latest_remote_commit
+
+def get_current_commit(dir: str="./") -> str:
+	"""
+	### Rreturns the current commit short hash of a given repository:
+
+	#### Params:
+	- dir (str): Optional. Directory of repository.
+
+	#### Returns:
+	- (str): Current commit short hash, or empty string if it is not a repo or there were errors.
+	"""
+	ret_code, output = shell_handler.run_shell_command("git rev-parse --short HEAD", cwd=dir)
+	if ret_code or not output:
+		return ''
+	return output
