@@ -10,6 +10,7 @@ from xmipp3_installer.installer.handlers.cmake import cmake_constants
 
 from .... import get_assertion_message
 
+__UNKNOWN_OS = "Unknown OS"
 __LINES = ["line1\n", "line2\n", "line3\n", "line4\n"]
 __LOG_TAIL = ''.join(__LINES)
 __ETH_MAC_ADDRESS = "00:08:9b:c4:30:31"
@@ -29,7 +30,7 @@ __IP_ADDR_LINES = [
 ]
 __IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
 __USER_ID = "test-user-id"
-__RELEASE_NAME = "Ubuntu 20.04.3 LTS"
+__RELEASE_NAME = "Ubuntu 24.04.1 LTS"
 __RELEASE_OUPUT = f"PRETTY_NAME=\"{__RELEASE_NAME}\"\n"
 __LIBRARY_VERSIONS = {
   cmake_constants.CMAKE_CUDA: "12.2",
@@ -332,11 +333,11 @@ def test_calls_re_search_group_when_getting_os_release_name(
 @pytest.mark.parametrize(
   "__mock_run_shell_command,expected_release_name",
   [
-    pytest.param((1, ""), None),
-    pytest.param((1, "something"), None),
-    pytest.param((1, __RELEASE_OUPUT), None),
-    pytest.param((0, ""), None),
-    pytest.param((0, "something"), None),
+    pytest.param((1, ""), __UNKNOWN_OS),
+    pytest.param((1, "something"), __UNKNOWN_OS),
+    pytest.param((1, __RELEASE_OUPUT), __UNKNOWN_OS),
+    pytest.param((0, ""), __UNKNOWN_OS),
+    pytest.param((0, "something"), __UNKNOWN_OS),
     pytest.param((0, __RELEASE_OUPUT), __RELEASE_NAME)
   ],
   indirect=["__mock_run_shell_command"]
