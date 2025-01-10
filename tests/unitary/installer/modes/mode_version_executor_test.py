@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch, call
 
 import pytest
@@ -7,6 +8,7 @@ from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.installer import constants
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.repository import config
 
 from .... import get_assertion_message
@@ -15,6 +17,12 @@ __LEFT_TEXT_LEN = 5
 __DATE = "dd/mm/yyyy"
 __FIXED_DATES_SECTION_PART = f"""Release date: {versions.RELEASE_DATE}
 Compilation date: """
+__SOURCE = "xmipp-dependency"
+__SOURCE_PATH = os.path.join(constants.SOURCES_PATH, __SOURCE)
+__COMMIT = "5c3a24f"
+__SOURCE_LEFT_TEXT = f"{__SOURCE} branch: "
+__TAG_NAME = "tags/v3.24.06-Oceanus"
+__BRANCH_NAME = "devel"
 
 def test_implements_interface_mode_executor():
 	version_executor = ModeVersionExecutor({})
@@ -47,37 +55,37 @@ def test_sets_overwrite_value_to_introduced_value_in_args(expected_short):
 	), get_assertion_message("short value", expected_short, version_executor.short)
 
 @pytest.mark.parametrize(
-  "__mock_exists",
+  "__mock_exists_multiple",
   [
     pytest.param([False, False]),
     pytest.param([False, True]),
     pytest.param([True, False]),
     pytest.param([True, True])
   ],
-  indirect=["__mock_exists"]
+  indirect=["__mock_exists_multiple"]
 )
-def test_sets_file_exists_values_as_expected_when_initializing(__mock_exists):
+def test_sets_file_exists_values_as_expected_when_initializing(__mock_exists_multiple):
 	version_executor = ModeVersionExecutor({})
 	file_exist_values = (version_executor.config_exists, version_executor.version_file_exists)
 	expected_values = (
-		__mock_exists(constants.CONFIG_FILE),
-		__mock_exists(constants.LIBRARY_VERSIONS_FILE)
+		__mock_exists_multiple(constants.CONFIG_FILE),
+		__mock_exists_multiple(constants.LIBRARY_VERSIONS_FILE)
 	)
 	assert (
 		file_exist_values == expected_values
 	), get_assertion_message("file exists values", expected_values, file_exist_values)
 
 @pytest.mark.parametrize(
-  "__mock_exists,expected_is_configured",
+  "__mock_exists_multiple,expected_is_configured",
   [
     pytest.param([False, False], False),
     pytest.param([False, True], False),
     pytest.param([True, False], False),
     pytest.param([True, True], True)
   ],
-  indirect=["__mock_exists"]
+  indirect=["__mock_exists_multiple"]
 )
-def test_sets_is_configured_values_as_expected_when_initializing(__mock_exists, expected_is_configured):
+def test_sets_is_configured_values_as_expected_when_initializing(__mock_exists_multiple, expected_is_configured):
 	version_executor = ModeVersionExecutor({})
 	assert (
 		version_executor.is_configured == expected_is_configured
@@ -162,7 +170,6 @@ def test_returns_expected_dates_section(
 	__mock_add_padding_spaces,
 	__mock_configuration_file_handler
 ):
-	__mock_add_padding_spaces.side_effect = lambda text: text
 	version_executor = ModeVersionExecutor({})
 	version_executor.config_exists = config_file_exists
 	dates_section = version_executor._ModeVersionExecutor__get_dates_section()
@@ -171,8 +178,94 @@ def test_returns_expected_dates_section(
 		dates_section == expected_dates_section
 	), get_assertion_message("dates section", expected_dates_section, dates_section)
 
+def test_calls_add_padding_spaces_when_getting_source_info(
+	__mock_add_padding_spaces,
+	__mock_exists
+):
+	__mock_exists.return_value = False
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+	__mock_add_padding_spaces.assert_called_once_with(__SOURCE_LEFT_TEXT)
+
+def test_calls_get_current_commit_when_getting_source_info(
+	__mock_add_padding_spaces,
+	__mock_exists,
+	__mock_get_current_commit,
+	__mock_get_commit_branch,
+	__mock_get_current_branch,
+	__mock_is_tag
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+	__mock_get_current_commit.assert_called_once_with(dir=__SOURCE_PATH)
+
+def test_calls_get_commit_branch_when_getting_source_info(
+	__mock_add_padding_spaces,
+	__mock_exists,
+	__mock_get_current_commit,
+	__mock_get_commit_branch,
+	__mock_get_current_branch,
+	__mock_is_tag
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+	__mock_get_commit_branch.assert_called_once_with(
+		__mock_get_current_commit.return_value,
+		dir=__SOURCE_PATH
+	)
+
+def test_calls_get_current_branch_when_getting_source_info(
+	__mock_add_padding_spaces,
+	__mock_exists,
+	__mock_get_current_commit,
+	__mock_get_commit_branch,
+	__mock_get_current_branch,
+	__mock_is_tag
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+	__mock_get_current_branch.assert_called_once_with(dir=__SOURCE_PATH)
+
+def test_calls_is_tag_when_getting_source_info(
+	__mock_add_padding_spaces,
+	__mock_exists,
+	__mock_get_current_commit,
+	__mock_get_commit_branch,
+	__mock_get_current_branch,
+	__mock_is_tag
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+	__mock_is_tag.assert_called_once_with(dir=__SOURCE_PATH)
+
+@pytest.mark.parametrize(
+	"__mock_exists,__mock_is_tag,expected_info_right",
+	[
+		pytest.param(False, False, logger.yellow("Not found")),
+		pytest.param(False, True, logger.yellow("Not found")),
+		pytest.param(True, False, f"{__BRANCH_NAME} ({__COMMIT})"),
+		pytest.param(True, True, f"{__TAG_NAME} ({__COMMIT})"),
+	],
+	indirect=["__mock_exists", "__mock_is_tag"]
+)
+def test_returns_expected_source_info(
+	expected_info_right,
+	__mock_add_padding_spaces,
+	__mock_exists,
+	__mock_get_current_commit,
+	__mock_get_commit_branch,
+	__mock_get_current_branch,
+	__mock_is_tag
+):
+	version_executor = ModeVersionExecutor({})
+	source_info = version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+	expected_info = f"{__SOURCE_LEFT_TEXT}{expected_info_right}"
+	assert (
+		source_info == expected_info
+	), get_assertion_message("source info", expected_info, source_info)
+
 @pytest.fixture(params=[[True, True]])
-def __mock_exists(request):
+def __mock_exists_multiple(request, __mock_exists):
 	def __side_effect(path):
 		config_file_exists = request.param[0]
 		lib_file_exists = request.param[1]
@@ -182,8 +275,13 @@ def __mock_exists(request):
 			return lib_file_exists
 		else:
 			return False
+	__mock_exists.side_effect = __side_effect
+	yield __mock_exists
+
+@pytest.fixture(params=[True])
+def __mock_exists(request):
 	with patch("os.path.exists") as mock_method:
-		mock_method.side_effect = __side_effect
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture
@@ -207,7 +305,7 @@ def __mock_add_padding_spaces():
 	with patch(
 		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__add_padding_spaces"
 	) as mock_method:
-		mock_method.side_effect = lambda text: f"padded-{text}-padded"
+		mock_method.side_effect = lambda text: text
 		yield mock_method
 
 @pytest.fixture
@@ -216,3 +314,35 @@ def __mock_configuration_file_handler():
 		instance = mock_object.return_value
 		instance.get_config_date.return_value = __DATE
 		yield mock_object
+
+@pytest.fixture
+def __mock_get_current_commit():
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.get_current_commit"
+	) as mock_method:
+		mock_method.return_value = __COMMIT
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_commit_branch(__mock_is_tag):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.get_commit_branch"
+	) as mock_method:
+		mock_method.return_value = __TAG_NAME if __mock_is_tag.return_value else __BRANCH_NAME
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_current_branch(__mock_is_tag):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.get_current_branch"
+	) as mock_method:
+		mock_method.return_value = "HEAD" if __mock_is_tag.return_value else __BRANCH_NAME
+		yield mock_method
+
+@pytest.fixture(params=[False])
+def __mock_is_tag(request):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.is_tag"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
