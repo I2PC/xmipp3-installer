@@ -264,6 +264,23 @@ def test_returns_expected_source_info(
 		source_info == expected_info
 	), get_assertion_message("source info", expected_info, source_info)
 
+def test_calls_get_source_info_when_getting_sources_info(__mock_get_source_info):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_sources_info()
+	__mock_get_source_info.assert_has_calls([
+		call(source) for source in constants.XMIPP_SOURCES
+	])
+
+def test_returns_expected_sources_info(__mock_get_source_info):
+	version_executor = ModeVersionExecutor({})
+	sources_info = version_executor._ModeVersionExecutor__get_sources_info()
+	expected_sources_info = '\n'.join([
+		__mock_get_source_info(source) for source in constants.XMIPP_SOURCES
+	])
+	assert (
+		sources_info == expected_sources_info
+	), get_assertion_message("sources info", expected_sources_info, sources_info)
+
 @pytest.fixture(params=[[True, True]])
 def __mock_exists_multiple(request, __mock_exists):
 	def __side_effect(path):
@@ -345,4 +362,12 @@ def __mock_is_tag(request):
 		"xmipp3_installer.installer.handlers.git_handler.is_tag"
 	) as mock_method:
 		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_source_info():
+	with patch(
+		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_source_info"
+	) as mock_method:
+		mock_method.side_effect = lambda source: f"{source} info"
 		yield mock_method
