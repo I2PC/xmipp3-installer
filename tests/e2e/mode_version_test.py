@@ -3,10 +3,11 @@ import subprocess
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.tmp import versions
+from xmipp3_installer.installer.handlers import git_handler
 
 from .. import get_assertion_message
 
-__TITLE = f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} (installer-logic)"
+__TITLE = f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({git_handler.get_current_branch()})"
 __SOURCE_NOT_FOUND_MESSAGE = logger.yellow("Not found")
 __FULL_INFO_BEFORE_CONFIG = f"""{logger.bold(__TITLE)}
 
