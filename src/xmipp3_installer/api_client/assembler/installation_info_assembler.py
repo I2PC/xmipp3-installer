@@ -1,6 +1,7 @@
 """### Contains functions to assemble the data dictionary required by the API client."""
 
 import hashlib
+import platform
 import re
 import os
 from typing import Optional, List, Dict
@@ -30,7 +31,6 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	)
 	environment_info = orquestrator.run_parallel_jobs(
 		[
-			get_os_release_name,
 			__get_cpu_flags,
 			git_handler.get_current_branch,
 			git_handler.is_branch_up_to_date,
@@ -45,8 +45,8 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			"userId": user_id
 		},
 		"version": {
-			"os": environment_info[0],
-			"cpuFlags": environment_info[1],
+			"os": get_os_release_name(),
+			"cpuFlags": environment_info[0],
 			"cuda": library_versions.get(cmake_constants.CMAKE_CUDA),
 			"cmake": library_versions.get(cmake_constants.CMAKE_CMAKE),
 			"gcc": library_versions.get(cmake_constants.CMAKE_GCC),
@@ -59,12 +59,12 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			"jpeg": library_versions.get(cmake_constants.CMAKE_JPEG)
 		},
 		"xmipp": {
-			"branch": __get_installation_branch_name(environment_info[2]),
-			"updated": environment_info[3],
-			"installedByScipion": environment_info[4]
+			"branch": __get_installation_branch_name(environment_info[1]),
+			"updated": environment_info[2],
+			"installedByScipion": environment_info[3]
 		},
 		"returnCode": ret_code,
-		"logTail": environment_info[5] if ret_code else None # Only needed if something went wrong
+		"logTail": environment_info[4] if ret_code else None # Only needed if something went wrong
 	}
 
 def get_os_release_name() -> str:
@@ -74,13 +74,7 @@ def get_os_release_name() -> str:
 	#### Returns:
 	- (str): OS release name.
 	"""
-	unknown_os = "Unknown OS"
-	ret_code, os_release_info = shell_handler.run_shell_command('cat /etc/os-release')
-	if ret_code:
-		return unknown_os
-	
-	search = re.search(r'PRETTY_NAME="(.*)"\n', os_release_info)
-	return search.group(1) if search else unknown_os
+	return f"{platform.system()} {platform.release()}"
 
 def __get_installation_branch_name(branch_name: str) -> str:
 	"""
