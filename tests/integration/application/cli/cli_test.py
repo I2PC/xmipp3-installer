@@ -77,7 +77,6 @@ def __mock_stdout_stderr():
 	new_stdout, new_stderr = StringIO(), StringIO()
 	with patch('sys.stdout', new=new_stdout), patch('sys.stderr', new=new_stderr):
 		yield new_stdout, new_stderr
-		from xmipp3_installer.application.logger.logger import logger
 
 @pytest.fixture
 def __mock_tab_size(request):
