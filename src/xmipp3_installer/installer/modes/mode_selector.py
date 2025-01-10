@@ -1,5 +1,5 @@
 from xmipp3_installer.application.cli.arguments import modes
-from xmipp3_installer.installer.modes import mode_config_executor
+from xmipp3_installer.installer.modes import mode_config_executor, mode_version_executor
 
 MODE_EXECUTORS = {
   modes.MODE_ADD_MODEL: NotImplemented,
@@ -13,5 +13,5 @@ MODE_EXECUTORS = {
   modes.MODE_GET_SOURCES: NotImplemented,
   modes.MODE_GIT: NotImplemented,
   modes.MODE_TEST: NotImplemented,
-  modes.MODE_VERSION: NotImplemented
+  modes.MODE_VERSION: mode_version_executor.ModeVersionExecutor
 }
