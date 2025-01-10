@@ -78,12 +78,12 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		source_path = os.path.join(constants.SOURCES_PATH, source)
 		source_left_text = self.__add_padding_spaces(f"{source} branch: ")
 		if not os.path.exists(source_path):
-			return f"{source_left_text}{logger.yellow('Not found')}\n"
+			return f"{source_left_text}{logger.yellow('Not found')}"
 		current_commit = git_handler.get_current_commit(dir=source_path)
 		commit_branch = git_handler.get_commit_branch(current_commit, dir=source_path)
 		current_branch = git_handler.get_current_branch(dir=source_path)
 		display_name = commit_branch if git_handler.is_tag(dir=source_path) else current_branch
-		return f"{source_left_text}{display_name} ({current_commit})\n"
+		return f"{source_left_text}{display_name} ({current_commit})"
 
 	@staticmethod
 	def __are_all_sources_present() -> bool:
