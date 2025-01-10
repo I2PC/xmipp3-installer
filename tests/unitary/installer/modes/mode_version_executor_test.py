@@ -23,6 +23,7 @@ __COMMIT = "5c3a24f"
 __SOURCE_LEFT_TEXT = f"{__SOURCE} branch: "
 __TAG_NAME = "tags/v3.24.06-Oceanus"
 __BRANCH_NAME = "devel"
+__RELEASE_NAME = "Ubuntu 24.04.1 LTS"
 
 def test_implements_interface_mode_executor():
 	version_executor = ModeVersionExecutor({})
@@ -304,6 +305,165 @@ def test_returns_expected_value_when_checking_if_all_sources_are_present(
 		result == expected_result
 	), get_assertion_message("are all sources present value", expected_result, result)
 
+def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = True
+	version_executor.run()
+	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERNAME_KEY])
+
+@pytest.mark.parametrize(
+	"__mock_is_tag,expected_title_version_type",
+	[
+		pytest.param(False, __BRANCH_NAME),
+		pytest.param(True, 'release')
+	],
+	indirect=["__mock_is_tag"]
+)
+def test_calls_logger_when_running_executor_in_long_format(
+	expected_title_version_type,
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_logger.assert_has_calls([
+		call(logger.bold(
+			f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})\n"
+		)),
+		call(__mock_get_dates_section.return_value),
+		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name.return_value}"),
+		call(__mock_get_sources_info.return_value)
+	])
+
+def test_calls_is_tag_when_running_executor_in_long_format(
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_is_tag.assert_called_once_with()
+
+def test_calls_get_current_branch_when_running_executor_in_long_format_and_is_not_tag(
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_get_current_branch.assert_called_once_with()
+
+def test_does_not_call_get_current_branch_when_running_executor_in_long_format_and_is_tag(
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	__mock_is_tag.return_value = True
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_get_current_branch.assert_not_called()
+
+def test_calls_get_dates_section_when_running_executor_in_long_format(
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_get_dates_section.assert_called_once_with()
+
+def test_calls_add_padding_spaces_when_running_executor_in_long_format(
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_add_padding_spaces.assert_called_once_with("System version: ")
+
+def test_calls_get_os_release_name_when_running_executor_in_long_format(
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_get_os_release_name.assert_called_once_with()
+
+def test_calls_get_sources_info_when_running_executor_in_long_format(
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = False
+	version_executor.run()
+	__mock_get_sources_info.assert_called_once_with()
+
+@pytest.mark.parametrize(
+	"short_format",
+	[
+		pytest.param(False),
+		pytest.param(True)
+	]
+)
+def test_returns_success_and_no_message_when_running_executor(
+	short_format,
+	__mock_logger,
+	__mock_is_tag,
+	__mock_get_current_branch,
+	__mock_get_dates_section,
+	__mock_add_padding_spaces,
+	__mock_get_os_release_name,
+	__mock_get_sources_info
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor.short = short_format
+	result = version_executor.run()
+	assert (
+		result == (0, "")
+	), get_assertion_message("executor run result", (0, ""), result)
+	
 @pytest.fixture(params=[[True, True]])
 def __mock_exists_init(request, __mock_exists):
 	def __side_effect(path):
@@ -412,4 +572,35 @@ def __mock_get_source_info():
 		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_source_info"
 	) as mock_method:
 		mock_method.side_effect = lambda source: f"{source} info"
+		yield mock_method
+
+@pytest.fixture
+def __mock_logger():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.__call__"
+	) as mock_method:
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_dates_section():
+	with patch(
+		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_dates_section"
+	) as mock_method:
+		mock_method.return_value = "Release date: dd/mm/yyyy\nLast compilation: -"
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_os_release_name():
+	with patch(
+		"xmipp3_installer.api_client.assembler.installation_info_assembler.get_os_release_name"
+	) as mock_method:
+		mock_method.return_value = __RELEASE_NAME
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_sources_info():
+	with patch(
+		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_sources_info"
+	) as mock_method:
+		mock_method.return_value = "Source1: info\nSource2: info\n"
 		yield mock_method
