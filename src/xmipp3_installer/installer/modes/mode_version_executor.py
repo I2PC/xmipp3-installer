@@ -33,7 +33,8 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			version_type = 'release' if git_handler.is_tag() else git_handler.get_current_branch()
 			logger(logger.bold(f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({version_type})\n"))
 			logger(self.__get_dates_section())
-			logger(installation_info_assembler.get_os_release_name())
+			system_version_left_text = self.__add_padding_spaces("System version: ")
+			logger(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
 			logger(self.__get_sources_info())
 		return 0, ""
 
