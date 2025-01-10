@@ -23,7 +23,7 @@ __COMMIT = "5c3a24f"
 __SOURCE_LEFT_TEXT = f"{__SOURCE} branch: "
 __TAG_NAME = "tags/v3.24.06-Oceanus"
 __BRANCH_NAME = "devel"
-__RELEASE_NAME = "Ubuntu 24.04.1 LTS"
+__RELEASE_NAME = "Ubuntu 24.04"
 
 def test_implements_interface_mode_executor():
 	version_executor = ModeVersionExecutor({})
@@ -332,10 +332,9 @@ def test_calls_logger_when_running_executor_in_long_format(
 	version_executor = ModeVersionExecutor({})
 	version_executor.short = False
 	version_executor.run()
+	expected_title = f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})"
 	__mock_logger.assert_has_calls([
-		call(logger.bold(
-			f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})\n"
-		)),
+		call(f"{logger.bold(expected_title)}\n"),
 		call(__mock_get_dates_section.return_value),
 		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name.return_value}"),
 		call(__mock_get_sources_info.return_value)
