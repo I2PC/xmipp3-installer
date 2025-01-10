@@ -18,11 +18,11 @@ def test_records_api_call_when_sending_installation_attempt(
 	__mock_mac_address,
 	__mock_library_versions_file,
 	__mock_run_parallel_jobs,
-	__mock_get_release_name,
 	__mock_get_cpu_flags,
 	__mock_get_current_branch,
 	__mock_is_branch_up_to_date,
 	__mock_log_tail,
+	__mock_get_os_release_name,
 	__mock_server
 ):
 	api_client.send_installation_attempt(
@@ -60,14 +60,6 @@ def __mock_library_versions_file(__mock_file):
 		with open(__mock_file.name, "w") as versions_file:
 			versions_file.write(file_contents.CMAKE_LIB_VERSIONS)
 		yield
-
-@pytest.fixture
-def __mock_get_release_name(fake_process):
-	fake_process.register_subprocess(
-		shlex.split("cat /etc/os-release"),
-		stdout=shell_command_outputs.OS_RELEASE
-	)
-	yield fake_process
 
 @pytest.fixture
 def __mock_get_cpu_flags(fake_process):
@@ -140,3 +132,11 @@ def __add_ssl_context():
 	) as mock_connection:
 		mock_connection.side_effect = add_ssl_param
 		yield mock_connection
+
+@pytest.fixture
+def __mock_get_os_release_name():
+  with patch(
+    "xmipp3_installer.api_client.assembler.installation_info_assembler.get_os_release_name"
+  ) as mock_method:
+    mock_method.return_value = "Ubuntu 24.04"
+    yield mock_method

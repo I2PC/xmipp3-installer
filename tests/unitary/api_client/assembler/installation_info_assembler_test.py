@@ -10,7 +10,6 @@ from xmipp3_installer.installer.handlers.cmake import cmake_constants
 
 from .... import get_assertion_message
 
-__UNKNOWN_OS = "Unknown OS"
 __LINES = ["line1\n", "line2\n", "line3\n", "line4\n"]
 __LOG_TAIL = ''.join(__LINES)
 __ETH_MAC_ADDRESS = "00:08:9b:c4:30:31"
@@ -30,8 +29,9 @@ __IP_ADDR_LINES = [
 ]
 __IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
 __USER_ID = "test-user-id"
-__RELEASE_NAME = "Ubuntu 24.04.1 LTS"
-__RELEASE_OUPUT = f"PRETTY_NAME=\"{__RELEASE_NAME}\"\n"
+__PLATFORM_SYSTEM = "Ubuntu"
+__PLATFORM_RELEASE = "24.04"
+__RELEASE_NAME = f"{__PLATFORM_SYSTEM} {__PLATFORM_RELEASE}"
 __LIBRARY_VERSIONS = {
   cmake_constants.CMAKE_CUDA: "12.2",
   cmake_constants.CMAKE_CMAKE: "3.16",
@@ -45,7 +45,6 @@ __LIBRARY_VERSIONS = {
   cmake_constants.CMAKE_JPEG: "3.2.1"
 }
 __ENVIROMENT_INFO = [
-  __RELEASE_NAME,
   ["flag1", "flag2"],
   "devel",
   True,
@@ -57,8 +56,8 @@ __INSTALLATION_INFO = {
     "userId": __USER_ID
   },
   "version": {
-    "os": __ENVIROMENT_INFO[0],
-    "cpuFlags": __ENVIROMENT_INFO[1],
+    "os": __RELEASE_NAME,
+    "cpuFlags": __ENVIROMENT_INFO[0],
     "cuda": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CUDA),
     "cmake": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CMAKE),
     "gcc": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_GCC),
@@ -71,19 +70,19 @@ __INSTALLATION_INFO = {
     "jpeg": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_JPEG)
   },
   "xmipp": {
-    "branch": __ENVIROMENT_INFO[2],
-    "updated": __ENVIROMENT_INFO[3],
-    "installedByScipion": __ENVIROMENT_INFO[4]
+    "branch": __ENVIROMENT_INFO[1],
+    "updated": __ENVIROMENT_INFO[2],
+    "installedByScipion": __ENVIROMENT_INFO[3]
   },
   "returnCode": 0,
-  "logTail": __ENVIROMENT_INFO[5]
+  "logTail": __ENVIROMENT_INFO[4]
 }
 __EMPTY_INSTALLATION_INFO = {
   "user": {
     "userId": __USER_ID
   },
   "version": {
-    "os": None,
+    "os": __RELEASE_NAME,
     "cpuFlags": None,
     "cuda": None,
     "cmake": None,
@@ -308,48 +307,22 @@ def test_returns_expected_user_id(
     user_id == expected_user_id
   ), get_assertion_message("user id", expected_user_id, user_id)
 
-def test_calls_run_shell_command_when_getting_os_release_name(__mock_run_shell_command):
-  __mock_run_shell_command.return_value = (1, "")
+def test_calls_platform_system_when_getting_os_release_name(__mock_platform_system):
   installation_info_assembler.get_os_release_name()
-  __mock_run_shell_command.assert_called_once_with('cat /etc/os-release')
+  __mock_platform_system.assert_called_once_with()
 
-def test_calls_re_search_when_getting_os_release_name(
-    __mock_run_shell_command,
-    __mock_re_search
-  ):
+def test_calls_platform_release_when_getting_os_release_name(__mock_platform_release):
   installation_info_assembler.get_os_release_name()
-  __mock_re_search.assert_called_once_with(
-    r'PRETTY_NAME="(.*)"\n',
-    __mock_run_shell_command()[1]
-  )
+  __mock_platform_release.assert_called_once_with()
 
-def test_calls_re_search_group_when_getting_os_release_name(
-    __mock_run_shell_command,
-    __mock_re_search
-  ):
-  installation_info_assembler.get_os_release_name()
-  __mock_re_search().group.assert_called_once_with(1)
-
-@pytest.mark.parametrize(
-  "__mock_run_shell_command,expected_release_name",
-  [
-    pytest.param((1, ""), __UNKNOWN_OS),
-    pytest.param((1, "something"), __UNKNOWN_OS),
-    pytest.param((1, __RELEASE_OUPUT), __UNKNOWN_OS),
-    pytest.param((0, ""), __UNKNOWN_OS),
-    pytest.param((0, "something"), __UNKNOWN_OS),
-    pytest.param((0, __RELEASE_OUPUT), __RELEASE_NAME)
-  ],
-  indirect=["__mock_run_shell_command"]
-)
 def test_returns_expected_os_release_name(
-    __mock_run_shell_command,
-    expected_release_name
+    __mock_platform_system,
+    __mock_platform_release
   ):
   release_name = installation_info_assembler.get_os_release_name()
   assert (
-    release_name == expected_release_name
-  ), get_assertion_message("OS release name", expected_release_name, release_name)
+    release_name == __RELEASE_NAME
+  ), get_assertion_message("OS release name", __RELEASE_NAME, release_name)
 
 @pytest.mark.parametrize(
   "received_branch_name,expected_branch_name",
@@ -386,6 +359,15 @@ def test_calls_get_library_versions_from_cmake_file_when_getting_installation_in
     constants.LIBRARY_VERSIONS_FILE
   )
 
+def test_calls_get_os_release_name_when_getting_installation_info(
+  __mock_get_user_id,
+  __mock_get_library_versions_from_cmake_file,
+  __mock_run_parallel_jobs,
+  __mock_get_os_release_name
+):
+  installation_info_assembler.get_installation_info()
+  __mock_get_os_release_name.assert_called_once_with()
+
 def test_calls_run_parallel_jobs_when_getting_installation_info(
   __mock_get_user_id,
   __mock_get_library_versions_from_cmake_file,
@@ -394,7 +376,6 @@ def test_calls_run_parallel_jobs_when_getting_installation_info(
   installation_info_assembler.get_installation_info()
   __mock_run_parallel_jobs.assert_called_once_with(
     [
-      installation_info_assembler.get_os_release_name,
       installation_info_assembler.__get_cpu_flags,
       git_handler.get_current_branch,
       git_handler.is_branch_up_to_date,
@@ -411,14 +392,14 @@ def test_calls_run_parallel_jobs_when_getting_installation_info(
   "__mock_run_parallel_jobs,"
   "expected_info",
   [
-    pytest.param(0, None, {}, [None for _ in range(6)], None),
-    pytest.param(1, None, {}, [None for _ in range(6)], None),
-    pytest.param(0, None, {"test": "something"}, ["value" for _ in range(6)], None),
-    pytest.param(1, None, {"test": "something"}, ["value" for _ in range(6)], None),
-    pytest.param(0, None, __LIBRARY_VERSIONS, ["value" for _ in range(6)], None),
-    pytest.param(1, None, __LIBRARY_VERSIONS, ["value" for _ in range(6)], None),
-    pytest.param(0, __USER_ID, {}, [None for _ in range(6)], __EMPTY_INSTALLATION_INFO),
-    pytest.param(1, __USER_ID, {}, [None for _ in range(6)], {**__EMPTY_INSTALLATION_INFO, "returnCode": 1}),
+    pytest.param(0, None, {}, [None for _ in range(5)], None),
+    pytest.param(1, None, {}, [None for _ in range(5)], None),
+    pytest.param(0, None, {"test": "something"}, ["value" for _ in range(5)], None),
+    pytest.param(1, None, {"test": "something"}, ["value" for _ in range(5)], None),
+    pytest.param(0, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
+    pytest.param(1, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
+    pytest.param(0, __USER_ID, {}, [None for _ in range(5)], __EMPTY_INSTALLATION_INFO),
+    pytest.param(1, __USER_ID, {}, [None for _ in range(5)], {**__EMPTY_INSTALLATION_INFO, "returnCode": 1}),
     pytest.param(0, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "logTail": None}),
     pytest.param(1, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "returnCode": 1})
   ],
@@ -433,7 +414,8 @@ def test_returns_expected_installation_info(
   __mock_get_user_id,
   __mock_get_library_versions_from_cmake_file,
   __mock_run_parallel_jobs,
-  expected_info
+  expected_info,
+  __mock_get_os_release_name
 ):
   installation_info = installation_info_assembler.get_installation_info(ret_code=ret_code)
   assert (
@@ -517,4 +499,24 @@ def __mock_run_parallel_jobs(request):
 def __mock_os_getenv(request):
   with patch("os.getenv") as mock_method:
     mock_method.return_value = request.param
+    yield mock_method
+
+@pytest.fixture
+def __mock_platform_system():
+  with patch("platform.system") as mock_method:
+    mock_method.return_value = __PLATFORM_SYSTEM
+    yield mock_method
+
+@pytest.fixture
+def __mock_platform_release():
+  with patch("platform.release") as mock_method:
+    mock_method.return_value = __PLATFORM_RELEASE
+    yield mock_method
+
+@pytest.fixture
+def __mock_get_os_release_name():
+  with patch(
+    "xmipp3_installer.api_client.assembler.installation_info_assembler.get_os_release_name"
+  ) as mock_method:
+    mock_method.return_value = __RELEASE_NAME
     yield mock_method
