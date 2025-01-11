@@ -29,9 +29,13 @@ __IP_ADDR_LINES = [
 ]
 __IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
 __USER_ID = "test-user-id"
-__PLATFORM_SYSTEM = "Ubuntu"
-__PLATFORM_RELEASE = "24.04"
-__RELEASE_NAME = f"{__PLATFORM_SYSTEM} {__PLATFORM_RELEASE}"
+__PLATFORM_SYSTEM_WINDOWS = "Windows"
+__PLATFORM_RELEASE_WINDOWS = "10"
+__RELEASE_NAME_WINDOWS = f"{__PLATFORM_SYSTEM_WINDOWS} {__PLATFORM_RELEASE_WINDOWS}"
+__PLATFORM_SYSTEM_LINUX = "Linux"
+__DISTRO_NAME = "Ubuntu"
+__DISTRO_VERSION = "24.04"
+__RELEASE_NAME_LINUX = f"{__DISTRO_NAME} {__DISTRO_VERSION}"
 __LIBRARY_VERSIONS = {
   cmake_constants.CMAKE_CUDA: "12.2",
   cmake_constants.CMAKE_CMAKE: "3.16",
@@ -56,7 +60,7 @@ __INSTALLATION_INFO = {
     "userId": __USER_ID
   },
   "version": {
-    "os": __RELEASE_NAME,
+    "os": __RELEASE_NAME_LINUX,
     "cpuFlags": __ENVIROMENT_INFO[0],
     "cuda": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CUDA),
     "cmake": __LIBRARY_VERSIONS.get(cmake_constants.CMAKE_CMAKE),
@@ -82,7 +86,7 @@ __EMPTY_INSTALLATION_INFO = {
     "userId": __USER_ID
   },
   "version": {
-    "os": __RELEASE_NAME,
+    "os": __RELEASE_NAME_LINUX,
     "cpuFlags": None,
     "cuda": None,
     "cmake": None,
@@ -311,18 +315,47 @@ def test_calls_platform_system_when_getting_os_release_name(__mock_platform_syst
   installation_info_assembler.get_os_release_name()
   __mock_platform_system.assert_called_once_with()
 
-def test_calls_platform_release_when_getting_os_release_name(__mock_platform_release):
+@pytest.mark.parametrize(
+  "__mock_os_is_linux",
+  [
+    pytest.param(True),
+    pytest.param(False)
+  ],
+  indirect=["__mock_os_is_linux"]
+)
+def test_calls_or_not_platform_release_according_to_os_when_getting_os_release_name(
+  __mock_os_is_linux,
+  __mock_platform_system,
+  __mock_platform_release,
+  __mock_distro_name,
+  __mock_distro_version
+):
   installation_info_assembler.get_os_release_name()
-  __mock_platform_release.assert_called_once_with()
+  if __mock_os_is_linux:
+    __mock_platform_release.assert_not_called()
+  else:
+    __mock_platform_release.assert_called_once_with()
 
+@pytest.mark.parametrize(
+  "__mock_os_is_linux",
+  [
+    pytest.param(True),
+    pytest.param(False)
+  ],
+  indirect=["__mock_os_is_linux"]
+)
 def test_returns_expected_os_release_name(
-    __mock_platform_system,
-    __mock_platform_release
-  ):
+  __mock_os_is_linux,
+  __mock_platform_system,
+  __mock_platform_release,
+  __mock_distro_name,
+  __mock_distro_version
+):
   release_name = installation_info_assembler.get_os_release_name()
+  expected_release_name = __RELEASE_NAME_LINUX if __mock_os_is_linux else __RELEASE_NAME_WINDOWS
   assert (
-    release_name == __RELEASE_NAME
-  ), get_assertion_message("OS release name", __RELEASE_NAME, release_name)
+    release_name == expected_release_name
+  ), get_assertion_message("OS release name", expected_release_name, release_name)
 
 @pytest.mark.parametrize(
   "received_branch_name,expected_branch_name",
@@ -501,16 +534,32 @@ def __mock_os_getenv(request):
     mock_method.return_value = request.param
     yield mock_method
 
-@pytest.fixture
-def __mock_platform_system():
+@pytest.fixture(params=[True])
+def __mock_os_is_linux(request):
+  return request.param
+
+@pytest.fixture()
+def __mock_platform_system(__mock_os_is_linux):
   with patch("platform.system") as mock_method:
-    mock_method.return_value = __PLATFORM_SYSTEM
+    mock_method.return_value = __PLATFORM_SYSTEM_LINUX if __mock_os_is_linux else __PLATFORM_SYSTEM_WINDOWS
     yield mock_method
 
 @pytest.fixture
 def __mock_platform_release():
   with patch("platform.release") as mock_method:
-    mock_method.return_value = __PLATFORM_RELEASE
+    mock_method.return_value = __PLATFORM_RELEASE_WINDOWS
+    yield mock_method
+
+@pytest.fixture
+def __mock_distro_name():
+  with patch("distro.name") as mock_method:
+    mock_method.return_value = __DISTRO_NAME
+    yield mock_method
+
+@pytest.fixture
+def __mock_distro_version():
+  with patch("distro.version") as mock_method:
+    mock_method.return_value = __DISTRO_VERSION
     yield mock_method
 
 @pytest.fixture
@@ -518,5 +567,5 @@ def __mock_get_os_release_name():
   with patch(
     "xmipp3_installer.api_client.assembler.installation_info_assembler.get_os_release_name"
   ) as mock_method:
-    mock_method.return_value = __RELEASE_NAME
+    mock_method.return_value = __RELEASE_NAME_LINUX
     yield mock_method
