@@ -17,6 +17,8 @@ System version:          {installation_info_assembler.get_os_release_name()}
 xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}
 xmippViz branch:         {__SOURCE_NOT_FOUND_MESSAGE}
 scipion-em-xmipp branch: {__SOURCE_NOT_FOUND_MESSAGE}
+
+
 """
 
 def test_returns_short_version():
