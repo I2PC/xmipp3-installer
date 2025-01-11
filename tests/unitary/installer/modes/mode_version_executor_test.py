@@ -35,6 +35,10 @@ __LIBRARIES_WITH_VERSIONS = {
 	'SQLite3': '3.45.1',
 	'Java': '17.0.13'
 }
+__LIBRARIES_WITH_VERSION_SECTION = '\n'.join([
+	f"{library}: {version}"
+	for library, version in __LIBRARIES_WITH_VERSIONS.items()
+])
 
 def test_implements_interface_mode_executor():
 	version_executor = ModeVersionExecutor({})
@@ -338,7 +342,8 @@ def test_calls_logger_when_running_executor_in_long_format(
 	__mock_get_dates_section,
 	__mock_add_padding_spaces,
 	__mock_get_os_release_name,
-	__mock_get_sources_info
+	__mock_get_sources_info,
+	__mock_get_library_versions_section
 ):
 	version_executor = ModeVersionExecutor({})
 	version_executor.short = False
@@ -349,7 +354,7 @@ def test_calls_logger_when_running_executor_in_long_format(
 		call(__mock_get_dates_section.return_value),
 		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name.return_value}"),
 		call(__mock_get_sources_info.return_value),
-		call(f"\n")
+		call(f"\n{__mock_get_library_versions_section.return_value}")
 	])
 
 def test_calls_is_tag_when_running_executor_in_long_format(
@@ -519,10 +524,7 @@ def test_returns_expected_library_versions_section(
 		__mock_exists_library_versions.side_effect = lambda _: False
 		expected_versions_section = ""
 	else:
-		expected_versions_section = '\n'.join([
-			f"{library}: {version}"
-				for library, version in __mock_get_library_versions_from_cmake_file.return_value.items()
-		])
+		expected_versions_section = __LIBRARIES_WITH_VERSION_SECTION
 	version_executor = ModeVersionExecutor({})
 	versions_section = version_executor._ModeVersionExecutor__get_library_versions_section()
 	assert (
@@ -688,4 +690,12 @@ def __mock_get_library_versions_from_cmake_file():
 		"xmipp3_installer.installer.handlers.cmake.cmake_handler.get_library_versions_from_cmake_file"
 	) as mock_method:
 		mock_method.return_value = __LIBRARIES_WITH_VERSIONS
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_library_versions_section():
+	with patch(
+		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_library_versions_section"
+	) as mock_method:
+		mock_method.return_value = __LIBRARIES_WITH_VERSION_SECTION
 		yield mock_method
