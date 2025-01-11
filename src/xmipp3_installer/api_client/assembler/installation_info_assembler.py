@@ -6,6 +6,8 @@ import re
 import os
 from typing import Optional, List, Dict
 
+import distro
+
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.handlers import shell_handler, git_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
@@ -74,7 +76,10 @@ def get_os_release_name() -> str:
 	#### Returns:
 	- (str): OS release name.
 	"""
-	return f"{platform.system()} {platform.release()}"
+	platform_system = platform.system()
+	if platform_system == "Linux":
+		return f"{distro.name()} {distro.version()}"
+	return f"{platform_system} {platform.release()}"
 
 def __get_installation_branch_name(branch_name: str) -> str:
 	"""
