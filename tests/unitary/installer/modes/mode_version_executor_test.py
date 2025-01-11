@@ -24,6 +24,17 @@ __SOURCE_LEFT_TEXT = f"{__SOURCE} branch: "
 __TAG_NAME = "tags/v3.24.06-Oceanus"
 __BRANCH_NAME = "devel"
 __RELEASE_NAME = "Ubuntu 24.04"
+__LIBRARIES_WITH_VERSIONS = {
+	"CMake": '3.31.3',
+	"CC": 'GNU-13.3.0',
+	'CXX': 'GNU-13-3-0',
+	'Python3': '3.12.8',
+	'MPI': '3.1',
+	'HDF5': '1.10.10',
+	'JPEG': '80',
+	'SQLite3': '3.45.1',
+	'Java': '17.0.13'
+}
 
 def test_implements_interface_mode_executor():
 	version_executor = ModeVersionExecutor({})
@@ -337,7 +348,8 @@ def test_calls_logger_when_running_executor_in_long_format(
 		call(f"{logger.bold(expected_title)}\n"),
 		call(__mock_get_dates_section.return_value),
 		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name.return_value}"),
-		call(__mock_get_sources_info.return_value)
+		call(__mock_get_sources_info.return_value),
+		call(f"\n")
 	])
 
 def test_calls_is_tag_when_running_executor_in_long_format(
@@ -462,7 +474,61 @@ def test_returns_success_and_no_message_when_running_executor(
 	assert (
 		result == (0, "")
 	), get_assertion_message("executor run result", (0, ""), result)
-	
+
+def test_calls_os_path_exists_when_getting_library_versions_section(
+	__mock_exists
+):
+	__mock_exists.return_value = False
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_library_versions_section()
+	__mock_exists.assert_called_with(constants.LIBRARY_VERSIONS_FILE)
+
+def test_calls_get_library_versions_from_cmake_file_when_getting_library_versions_section(
+	__mock_exists_library_versions,
+	__mock_get_library_versions_from_cmake_file
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_library_versions_section()
+	__mock_get_library_versions_from_cmake_file.assert_called_with(constants.LIBRARY_VERSIONS_FILE)
+
+def test_calls_add_padding_spaces_when_getting_library_versions_section(
+	__mock_exists_library_versions,
+	__mock_get_library_versions_from_cmake_file,
+	__mock_add_padding_spaces
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_library_versions_section()
+	__mock_add_padding_spaces.assert_has_calls([
+		call(f"{library}: ") for library in __LIBRARIES_WITH_VERSIONS.keys()
+	])
+
+@pytest.mark.parametrize(
+	"exists_file",
+	[
+		pytest.param(False),
+		pytest.param(True)
+	]
+)
+def test_returns_expected_library_versions_section(
+	exists_file,
+	__mock_exists_library_versions,
+	__mock_get_library_versions_from_cmake_file,
+	__mock_add_padding_spaces
+):
+	if not exists_file:
+		__mock_exists_library_versions.side_effect = lambda _: False
+		expected_versions_section = ""
+	else:
+		expected_versions_section = '\n'.join([
+			f"{library}: {version}"
+				for library, version in __mock_get_library_versions_from_cmake_file.return_value.items()
+		])
+	version_executor = ModeVersionExecutor({})
+	versions_section = version_executor._ModeVersionExecutor__get_library_versions_section()
+	assert (
+		versions_section == expected_versions_section
+	), get_assertion_message("library versions section", expected_versions_section, versions_section)
+
 @pytest.fixture(params=[[True, True]])
 def __mock_exists_init(request, __mock_exists):
 	def __side_effect(path):
@@ -490,6 +556,18 @@ def __mock_exists_sources(request, __mock_exists):
 			return viz_exists
 		elif path == os.path.join(constants.SOURCES_PATH, constants.XMIPP_PLUGIN):
 			return plugin_exists
+		else:
+			return False
+	_ = __side_effect("non-existent") # To cover system case
+	__mock_exists.side_effect = __side_effect
+	yield __mock_exists
+
+@pytest.fixture(params=[True])
+def __mock_exists_library_versions(request, __mock_exists):
+	def __side_effect(path):
+		library_version_file_exists = request.param
+		if path == constants.LIBRARY_VERSIONS_FILE:
+			return library_version_file_exists
 		else:
 			return False
 	_ = __side_effect("non-existent") # To cover system case
@@ -602,4 +680,12 @@ def __mock_get_sources_info():
 		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_sources_info"
 	) as mock_method:
 		mock_method.return_value = "Source1: info\nSource2: info\n"
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_library_versions_from_cmake_file():
+	with patch(
+		"xmipp3_installer.installer.handlers.cmake.cmake_handler.get_library_versions_from_cmake_file"
+	) as mock_method:
+		mock_method.return_value = __LIBRARIES_WITH_VERSIONS
 		yield mock_method
