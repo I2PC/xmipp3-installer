@@ -327,12 +327,22 @@ def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
 	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERNAME_KEY])
 
 @pytest.mark.parametrize(
-	"__mock_is_tag,expected_title_version_type",
+	"__mock_are_all_sources_present,__mock_exists_library_versions,__mock_is_tag,expected_title_version_type",
 	[
-		pytest.param(False, __BRANCH_NAME),
-		pytest.param(True, 'release')
+		pytest.param(False, False, False, __BRANCH_NAME),
+		pytest.param(False, False, True, 'release'),
+		pytest.param(False, True, False, __BRANCH_NAME),
+		pytest.param(False, True, True, 'release'),
+		pytest.param(True, False, False, __BRANCH_NAME),
+		pytest.param(True, False, True, 'release'),
+		pytest.param(True, True, False, __BRANCH_NAME),
+		pytest.param(True, True, True, 'release')
 	],
-	indirect=["__mock_is_tag"]
+	indirect=[
+		"__mock_are_all_sources_present",
+		"__mock_exists_library_versions",
+		"__mock_is_tag"
+	]
 )
 def test_calls_logger_when_running_executor_in_long_format(
 	expected_title_version_type,
@@ -343,19 +353,29 @@ def test_calls_logger_when_running_executor_in_long_format(
 	__mock_add_padding_spaces,
 	__mock_get_os_release_name,
 	__mock_get_sources_info,
-	__mock_get_library_versions_section
+	__mock_exists_library_versions,
+	__mock_get_library_versions_section,
+	__mock_are_all_sources_present,
+	__mock_get_configuration_warning_message
 ):
 	version_executor = ModeVersionExecutor({})
 	version_executor.short = False
 	version_executor.run()
 	expected_title = f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})"
-	__mock_logger.assert_has_calls([
+	expected_calls = [
 		call(f"{logger.bold(expected_title)}\n"),
 		call(__mock_get_dates_section.return_value),
 		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name.return_value}"),
-		call(__mock_get_sources_info.return_value),
-		call(f"\n{__mock_get_library_versions_section.return_value}")
-	])
+		call(f"{__mock_get_sources_info.return_value}\n"),
+	]
+	if __mock_exists_library_versions(constants.LIBRARY_VERSIONS_FILE):
+		expected_calls.append(call(__mock_get_library_versions_section.return_value))
+	if not __mock_exists_library_versions(constants.LIBRARY_VERSIONS_FILE) or not __mock_are_all_sources_present():
+		expected_calls.append(call(__mock_get_configuration_warning_message.return_value))
+	__mock_logger.assert_has_calls(expected_calls)
+	assert (
+		__mock_logger.call_count == len(expected_calls)
+	), get_assertion_message("number of logger calls", len(expected_calls), __mock_logger.call_count)
 
 def test_calls_is_tag_when_running_executor_in_long_format(
 	__mock_logger,
@@ -531,6 +551,29 @@ def test_returns_expected_library_versions_section(
 		versions_section == expected_versions_section
 	), get_assertion_message("library versions section", expected_versions_section, versions_section)
 
+def test_calls_logger_yellow_when_getting_configuration_warning_message(
+	__mock_logger_yellow
+):
+	version_executor = ModeVersionExecutor({})
+	version_executor._ModeVersionExecutor__get_configuration_warning_message()
+	__mock_logger_yellow.assert_has_calls([
+		call("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
+		call("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")
+	])
+
+def test_returns_expected_configuration_warning_message(
+	__mock_logger_yellow
+):
+	version_executor = ModeVersionExecutor({})
+	warning_message = version_executor._ModeVersionExecutor__get_configuration_warning_message()
+	expected_warning_message = '\n'.join([
+		__mock_logger_yellow("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
+		__mock_logger_yellow("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")
+	])
+	assert (
+		warning_message == expected_warning_message
+	), get_assertion_message("configuration warning message", expected_warning_message, warning_message)
+
 @pytest.fixture(params=[[True, True]])
 def __mock_exists_init(request, __mock_exists):
 	def __side_effect(path):
@@ -698,4 +741,28 @@ def __mock_get_library_versions_section():
 		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_library_versions_section"
 	) as mock_method:
 		mock_method.return_value = __LIBRARIES_WITH_VERSION_SECTION
+		yield mock_method
+
+@pytest.fixture
+def __mock_logger_yellow():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.yellow"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
+		yield mock_method
+
+@pytest.fixture(params=[False])
+def __mock_are_all_sources_present(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__are_all_sources_present"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_configuration_warning_message():
+	with patch(
+		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_configuration_warning_message"
+	) as mock_method:
+		mock_method.return_value = "Warning message"
 		yield mock_method
