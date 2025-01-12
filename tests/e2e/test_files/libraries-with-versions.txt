@@ -1,0 +1,9 @@
+CMake=3.31.3
+CC=GNU-13.3.0
+CXX=GNU-13-3-0
+Python3=3.12.8
+MPI=3.1
+HDF5=1.10.10
+JPEG=80
+SQLite3=3.45.1
+Java=17.0.13
