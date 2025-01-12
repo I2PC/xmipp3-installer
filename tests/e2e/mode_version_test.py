@@ -18,7 +18,8 @@ xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}
 xmippViz branch:         {__SOURCE_NOT_FOUND_MESSAGE}
 scipion-em-xmipp branch: {__SOURCE_NOT_FOUND_MESSAGE}
 
-
+{logger.yellow("This project has not yet been configured, so some detectable dependencies have not been properly detected.")}
+{logger.yellow("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")}
 """
 
 def test_returns_short_version():
