@@ -366,12 +366,12 @@ def test_calls_logger_when_running_executor_in_long_format(
 		call(f"{logger.bold(expected_title)}\n"),
 		call(__mock_get_dates_section.return_value),
 		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name.return_value}"),
-		call(f"{__mock_get_sources_info.return_value}\n"),
+		call(__mock_get_sources_info.return_value),
 	]
 	if __mock_exists_library_versions(constants.LIBRARY_VERSIONS_FILE):
-		expected_calls.append(call(__mock_get_library_versions_section.return_value))
+		expected_calls.append(call(f"\n{__mock_get_library_versions_section.return_value}"))
 	if not __mock_exists_library_versions(constants.LIBRARY_VERSIONS_FILE) or not __mock_are_all_sources_present():
-		expected_calls.append(call(__mock_get_configuration_warning_message.return_value))
+		expected_calls.append(call(f"\n{__mock_get_configuration_warning_message.return_value}"))
 	__mock_logger.assert_has_calls(expected_calls)
 	assert (
 		__mock_logger.call_count == len(expected_calls)
