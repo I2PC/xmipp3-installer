@@ -37,8 +37,12 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			logger(self.__get_dates_section())
 			system_version_left_text = self.__add_padding_spaces("System version: ")
 			logger(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
-			logger(self.__get_sources_info())
-			logger(f"\n{self.__get_library_versions_section()}")
+			logger(f"{self.__get_sources_info()}\n")
+			library_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
+			if library_file_exists:
+				logger(self.__get_library_versions_section())
+			if not ModeVersionExecutor.__are_all_sources_present() or not library_file_exists:
+				logger(self.__get_configuration_warning_message())
 		return 0, ""
 
 	def __get_dates_section(self) -> str:
@@ -89,19 +93,6 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		display_name = commit_branch if git_handler.is_tag(dir=source_path) else current_branch
 		return f"{source_left_text}{display_name} ({current_commit})"
 
-	@staticmethod
-	def __are_all_sources_present() -> bool:
-		"""
-		### Check if all required source packages are present.
-
-		#### Returns:
-		- (bool): True if all source packages are present, False otherwise.
-		"""
-		for source_package in constants.XMIPP_SOURCES:
-			if not os.path.exists(os.path.join(constants.SOURCES_PATH, source_package)):
-				return False
-		return True
-
 	def __add_padding_spaces(self, left_text: str) -> str:
 		"""
 		### Adds right padding as spaces to the given text until it reaches the desired length.
@@ -133,3 +124,28 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			library_left_text = self.__add_padding_spaces(f"{library}: ")
 			version_lines.append(f"{library_left_text}{version}")
 		return '\n'.join(version_lines)
+
+	@staticmethod
+	def __are_all_sources_present() -> bool:
+		"""
+		### Check if all required source packages are present.
+
+		#### Returns:
+		- (bool): True if all source packages are present, False otherwise.
+		"""
+		for source_package in constants.XMIPP_SOURCES:
+			if not os.path.exists(os.path.join(constants.SOURCES_PATH, source_package)):
+				return False
+		return True
+
+	def __get_configuration_warning_message(self) -> str:
+		"""
+		### Returns a message indicating configuration is not complete.
+
+		#### Returns:
+		- (str): 
+		"""
+		return '\n'.join([
+			logger.yellow("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
+			logger.yellow("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")
+		])
