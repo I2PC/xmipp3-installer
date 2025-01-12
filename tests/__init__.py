@@ -1,4 +1,8 @@
+import os
+import shutil
 from typing import Any
+
+from xmipp3_installer.installer import constants
 
 def get_assertion_message(item: str, expected: Any, received: Any) -> str:
 	"""
@@ -45,3 +49,16 @@ def normalize_line_endings(file_path: str):
 	content = content.replace('\r\n', '\n')
 	with open(file_path, 'w') as file:
 		file.write(content)
+
+def copy_file_from_reference(source_file: str, dest_file: str):
+	"""
+	### Copies the input reference file into the destination file.
+
+	#### Params:
+	- source_file (str): Input reference file.
+	- dest_file (str): Destination file.
+	"""
+	file_directory = os.path.dirname(dest_file)
+	if file_directory:
+		os.makedirs(file_directory, exist_ok=True)
+	shutil.copyfile(source_file, dest_file)

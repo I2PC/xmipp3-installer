@@ -8,7 +8,7 @@ import pytest
 from xmipp3_installer.installer import constants
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 
-from .. import get_file_content, normalize_line_endings
+from .. import get_file_content, normalize_line_endings, copy_file_from_reference
 
 __DATE = "10-12-2024 17:26.33"
 
@@ -59,12 +59,6 @@ def __delete_config_file(file_name):
 	if os.path.exists(file_name):
 		os.remove(file_name)
 
-def __copy_file_from_reference(file_name):
-	shutil.copyfile(
-		__get_test_config_file(file_name, True),
-		constants.CONFIG_FILE
-	)
-
 def __change_config_file_date():
 	file_hanlder = ConfigurationFileHandler()
 	old_date = file_hanlder.get_config_date()
@@ -81,7 +75,10 @@ def __setup_config_evironment(request):
 		if not exists:
 			__delete_config_file(constants.CONFIG_FILE)
 		else:
-			__copy_file_from_reference(copy_name)
+			copy_file_from_reference(
+				__get_test_config_file(copy_name, True),
+				constants.CONFIG_FILE
+			)
 		yield copy_name
 	finally:
 		__delete_config_file(constants.CONFIG_FILE)
