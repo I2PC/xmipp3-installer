@@ -22,7 +22,9 @@ def test_returns_short_version():
 	"__setup_config_evironment,expected_output_function",
 	[
 		pytest.param((False, False), mode_version.get_full_info_before_config),
-		pytest.param((True, False), mode_version.get_full_info_after_config_without_sources)
+		pytest.param((False, True), mode_version.get_full_info_before_config_with_sources),
+		pytest.param((True, False), mode_version.get_full_info_after_config_without_sources),
+		pytest.param((True, True), mode_version.get_full_info_after_config_with_sources)
 	],
 	indirect=["__setup_config_evironment"]
 )
@@ -51,8 +53,9 @@ def __delete_library_versions_file():
 
 def __delete_sources():
 	for source in constants.XMIPP_SOURCES:
-		if os.path.exists(source):
-			shutil.rmtree(source)
+		source_path = os.path.join(constants.SOURCES_PATH, source)
+		if os.path.exists(source_path):
+			shutil.rmtree(source_path)
 
 def __copy_file_from_reference():
 	file_directory = os.path.dirname(constants.LIBRARY_VERSIONS_FILE)
@@ -65,7 +68,9 @@ def __copy_file_from_reference():
 
 def __make_source_directories():
 	for source in constants.XMIPP_SOURCES:
-		os.makedirs(source)
+		source_path = os.path.join(constants.SOURCES_PATH, source)
+		if not os.path.exists(source_path):
+			os.makedirs(source_path)
 
 @pytest.fixture(params=[False, False])
 def __setup_config_evironment(request):

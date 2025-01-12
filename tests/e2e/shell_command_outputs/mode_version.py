@@ -53,6 +53,15 @@ def get_full_info_before_config():
     ""
   ])
 
+def get_full_info_before_config_with_sources():
+  return '\n'.join([
+    __COMMON_SECTION,
+    get_sources_found_section(),
+    "",
+    __WARNING_MESSAGE,
+    ""
+  ])
+
 def get_full_info_after_config_without_sources():
   return '\n'.join([
     __COMMON_SECTION,
