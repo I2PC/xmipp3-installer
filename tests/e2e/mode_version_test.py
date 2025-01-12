@@ -54,28 +54,23 @@ def test_returns_short_version():
 		result.stdout == expected_version
 	), get_assertion_message("short version", expected_version, result.stdout)
 
-def test_returns_full_version_before_config():
-	command_words = ["xmipp3_installer", "version"]
-	result = subprocess.run(command_words, capture_output=True, text=True)
-	assert (
-		result.stdout == __FULL_INFO_BEFORE_CONFIG
-	), get_assertion_message("full version", __FULL_INFO_BEFORE_CONFIG, result.stdout)
-
 @pytest.mark.parametrize(
-	"__setup_config_evironment",
+	"__setup_config_evironment,expected_output",
 	[
-		pytest.param(True)
+		pytest.param(False, __FULL_INFO_BEFORE_CONFIG),
+		pytest.param(True, __FULL_INFO_AFTER_CONFIG_NO_SOURCES)
 	],
 	indirect=["__setup_config_evironment"]
 )
-def test_returns_full_version_after_config_with_no_sources(
-	__setup_config_evironment
+def test_returns_full_version_with_no_sources(
+	__setup_config_evironment,
+	expected_output
 ):
 	command_words = ["xmipp3_installer", "version"]
 	result = subprocess.run(command_words, capture_output=True, text=True)
 	assert (
-		result.stdout == __FULL_INFO_AFTER_CONFIG_NO_SOURCES
-	), get_assertion_message("full version", __FULL_INFO_AFTER_CONFIG_NO_SOURCES, result.stdout)
+		result.stdout == expected_output
+	), get_assertion_message("full version", expected_output, result.stdout)
 
 def __get_test_library_versions_file():
 	return os.path.join(
