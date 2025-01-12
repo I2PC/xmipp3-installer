@@ -37,12 +37,12 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			logger(self.__get_dates_section())
 			system_version_left_text = self.__add_padding_spaces("System version: ")
 			logger(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
-			logger(f"{self.__get_sources_info()}\n")
+			logger(self.__get_sources_info())
 			library_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
 			if library_file_exists:
-				logger(self.__get_library_versions_section())
+				logger(f"\n{self.__get_library_versions_section()}")
 			if not ModeVersionExecutor.__are_all_sources_present() or not library_file_exists:
-				logger(self.__get_configuration_warning_message())
+				logger(f"\n{self.__get_configuration_warning_message()}")
 		return 0, ""
 
 	def __get_dates_section(self) -> str:
