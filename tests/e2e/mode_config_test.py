@@ -49,6 +49,7 @@ def test_writes_expected_config_file(
 def __get_test_config_file(file_name, input):
 	return os.path.join(
 		os.path.dirname(os.path.abspath(__file__)),
+		"test_files",
 		"conf_files",
 		"input" if input else "output",
 		file_name
