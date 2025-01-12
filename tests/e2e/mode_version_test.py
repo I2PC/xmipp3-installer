@@ -1,5 +1,4 @@
 import os
-import shutil
 import subprocess
 
 import pytest
@@ -8,7 +7,9 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
 
 from .shell_command_outputs import mode_version
-from .. import get_assertion_message, copy_file_from_reference
+from .. import (
+	get_assertion_message, copy_file_from_reference, delete_paths
+)
 
 def test_returns_short_version():
 	command_words = ["xmipp3_installer", "version", "--short"]
@@ -47,15 +48,13 @@ def __get_test_library_versions_file():
 	)
 
 def __delete_library_versions_file():
-	file_directory = os.path.dirname(constants.LIBRARY_VERSIONS_FILE)
-	if os.path.exists(file_directory):
-		shutil.rmtree(file_directory)
+	delete_paths([os.path.dirname(constants.LIBRARY_VERSIONS_FILE)])
 
 def __delete_sources():
-	for source in constants.XMIPP_SOURCES:
-		source_path = os.path.join(constants.SOURCES_PATH, source)
-		if os.path.exists(source_path):
-			shutil.rmtree(source_path)
+	delete_paths([
+		os.path.join(constants.SOURCES_PATH, source)
+		for source in constants.XMIPP_SOURCES
+	])
 
 def __make_source_directories():
 	for source in constants.XMIPP_SOURCES:
