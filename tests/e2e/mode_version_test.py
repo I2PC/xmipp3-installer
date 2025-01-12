@@ -8,7 +8,7 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
 
 from .shell_command_outputs import mode_version
-from .. import get_assertion_message
+from .. import get_assertion_message, copy_file_from_reference
 
 def test_returns_short_version():
 	command_words = ["xmipp3_installer", "version", "--short"]
@@ -57,20 +57,10 @@ def __delete_sources():
 		if os.path.exists(source_path):
 			shutil.rmtree(source_path)
 
-def __copy_file_from_reference():
-	file_directory = os.path.dirname(constants.LIBRARY_VERSIONS_FILE)
-	if not os.path.exists(file_directory):
-		os.makedirs(file_directory)
-	shutil.copyfile(
-		__get_test_library_versions_file(),
-		constants.LIBRARY_VERSIONS_FILE
-	)
-
 def __make_source_directories():
 	for source in constants.XMIPP_SOURCES:
 		source_path = os.path.join(constants.SOURCES_PATH, source)
-		if not os.path.exists(source_path):
-			os.makedirs(source_path)
+		os.makedirs(source_path, exist_ok=True)
 
 @pytest.fixture(params=[False, False])
 def __setup_config_evironment(request):
@@ -79,7 +69,10 @@ def __setup_config_evironment(request):
 		if not lib_file_exist:
 			__delete_library_versions_file()
 		else:
-			__copy_file_from_reference()
+			copy_file_from_reference(
+				__get_test_library_versions_file(),
+				constants.LIBRARY_VERSIONS_FILE
+			)
 		if not sources_exist:
 			__delete_sources()
 		else:
