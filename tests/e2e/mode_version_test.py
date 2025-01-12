@@ -19,19 +19,20 @@ def test_returns_short_version():
 	), get_assertion_message("short version", expected_version, result.stdout)
 
 @pytest.mark.parametrize(
-	"__setup_config_evironment,expected_output",
+	"__setup_config_evironment,expected_output_function",
 	[
-		pytest.param(False, mode_version.FULL_INFO_BEFORE_CONFIG),
-		pytest.param(True, mode_version.FULL_INFO_AFTER_CONFIG_NO_SOURCES)
+		pytest.param((False, False), mode_version.get_full_info_before_config),
+		pytest.param((True, False), mode_version.get_full_info_after_config_without_sources)
 	],
 	indirect=["__setup_config_evironment"]
 )
 def test_returns_full_version_with_no_sources(
 	__setup_config_evironment,
-	expected_output
+	expected_output_function
 ):
 	command_words = ["xmipp3_installer", "version"]
 	result = subprocess.run(command_words, capture_output=True, text=True)
+	expected_output = expected_output_function()
 	assert (
 		result.stdout == expected_output
 	), get_assertion_message("full version", expected_output, result.stdout)
@@ -48,6 +49,11 @@ def __delete_library_versions_file():
 	if os.path.exists(file_directory):
 		shutil.rmtree(file_directory)
 
+def __delete_sources():
+	for source in constants.XMIPP_SOURCES:
+		if os.path.exists(source):
+			shutil.rmtree(source)
+
 def __copy_file_from_reference():
 	file_directory = os.path.dirname(constants.LIBRARY_VERSIONS_FILE)
 	if not os.path.exists(file_directory):
@@ -57,13 +63,23 @@ def __copy_file_from_reference():
 		constants.LIBRARY_VERSIONS_FILE
 	)
 
-@pytest.fixture(params=[False])
+def __make_source_directories():
+	for source in constants.XMIPP_SOURCES:
+		os.makedirs(source)
+
+@pytest.fixture(params=[False, False])
 def __setup_config_evironment(request):
+	lib_file_exist, sources_exist = request.param
 	try:
-		if not request.param:
+		if not lib_file_exist:
 			__delete_library_versions_file()
 		else:
 			__copy_file_from_reference()
-		yield request.param
+		if not sources_exist:
+			__delete_sources()
+		else:
+			__make_source_directories()
+		yield lib_file_exist, sources_exist
 	finally:
 		__delete_library_versions_file()
+		__delete_sources()
