@@ -4,7 +4,7 @@ from xmipp3_installer.installer.handlers import shell_handler
 
 def get_current_branch(dir: str='./') -> str:
 	"""
-	### This function returns the current branch of the repository of the given directory or empty string if it is not a repository or a recognizable tag.
+	### Returns the current branch of the repository of the given directory or empty string if it is not a repository or a recognizable tag.
 	
 	#### Params:
 	- dir (str): Optional. Directory of the repository to get current branch from. Default is current directory.
@@ -18,7 +18,7 @@ def get_current_branch(dir: str='./') -> str:
 
 def is_tag(dir: str='./') -> bool:
 	"""
-	### This function returns True if the current Xmipp repository is in a tag.
+	### Returns True if the current Xmipp repository is in a tag.
 
 	#### Params:
 	- dir (str): Optional. Directory of the repository where the check will happen. Default is current directory.
@@ -31,7 +31,7 @@ def is_tag(dir: str='./') -> bool:
 
 def is_branch_up_to_date(dir: str='./') -> bool:
 	"""
-	### This function returns True if the current branch is up to date, or False otherwise or if some error happened.
+	### Returns True if the current branch is up to date, or False otherwise or if some error happened.
 	
 	#### Params:
 	- dir (str): Optional. Directory of the repository to get current branch from. Default is current directory.
