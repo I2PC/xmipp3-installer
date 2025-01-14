@@ -12,6 +12,8 @@ from .... import get_assertion_message
 
 __PERMISSION_ERROR_MESSAGE = "Cannot open that file."
 __CONFIG_VALUES = {"key1": "value1", "key2": "value2"}
+__FILE_FROM_SCRATCH_MESSAGE = "Generating config file from scratch with default values..."
+__READ_FILE_MESSAGE = "Reading config file..."
 
 def test_implements_interface_mode_executor():
 	config_executor = ModeConfigExecutor({})
@@ -76,15 +78,6 @@ def test_calls_get_section_message_when_running_executor(
 	config_executor.run()
 	__mock_get_section_message.assert_called_once_with("Managing config file")
 
-def test_calls_get_working_message_when_running_executor(
-	__mock_logger,
-	__mock_configuration_file_handler,
-	__mock_get_working_message
-):
-	config_executor = ModeConfigExecutor({})
-	config_executor.run()
-	__mock_get_working_message.assert_called_once_with()
-
 def test_calls_get_done_message_when_running_executor(
 	__mock_logger,
 	__mock_configuration_file_handler,
@@ -94,19 +87,31 @@ def test_calls_get_done_message_when_running_executor(
 	config_executor.run()
 	__mock_get_done_message.assert_called_once_with()
 
+@pytest.mark.parametrize(
+	"__mock_exists,mode_overwrite,expected_message",
+	[
+		pytest.param(False, False, __FILE_FROM_SCRATCH_MESSAGE),
+		pytest.param(False, True, __FILE_FROM_SCRATCH_MESSAGE),
+		pytest.param(True, False, __READ_FILE_MESSAGE),
+		pytest.param(True, True, __FILE_FROM_SCRATCH_MESSAGE)
+	],
+	indirect=["__mock_exists"]
+)
 def test_calls_logger_when_running_executor(
+	__mock_exists,
+	mode_overwrite,
+	expected_message,
 	__mock_logger,
 	__mock_configuration_file_handler,
 	__mock_get_section_message,
-	__mock_get_working_message,
 	__mock_get_done_message
 ):
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor({'overwrite': mode_overwrite})
 	config_executor.run()
 	expected_calls = [
 		call(__mock_get_section_message("Managing config file")),
-		call(__mock_get_working_message()),
-		call(__mock_get_done_message(), substitute=True)
+		call(expected_message),
+		call(__mock_get_done_message())
 	]
 	__mock_logger.assert_has_calls(expected_calls)
 	assert (
@@ -203,17 +208,15 @@ def __mock_get_section_message():
 		yield mock_method
 
 @pytest.fixture
-def __mock_get_working_message():
-	with patch(
-		"xmipp3_installer.application.logger.predefined_messages.get_working_message"
-	) as mock_method:
-		mock_method.return_value = "working message"
-		yield mock_method
-
-@pytest.fixture
 def __mock_get_done_message():
 	with patch(
 		"xmipp3_installer.application.logger.predefined_messages.get_done_message"
 	) as mock_method:
 		mock_method.return_value = "done message"
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_exists(request):
+	with patch("os.path.exists") as mock_method:
+		mock_method.return_value = request.param
 		yield mock_method
