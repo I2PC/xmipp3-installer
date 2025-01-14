@@ -119,14 +119,16 @@ def test_calls_logger_when_running_executor(
 	), get_assertion_message("call count", expected_calls, __mock_logger.call_count)
 
 def test_calls_configuration_file_handler_when_running_executor(
-	__mock_configuration_file_handler
+	__mock_configuration_file_handler,
+	__mock_logger
 ):
 	config_executor = ModeConfigExecutor({})
 	config_executor.run()
 	__mock_configuration_file_handler.assert_called_once_with()
 
 def test_calls_configuration_file_handler_write_config_when_running_executor(
-	__mock_configuration_file_handler
+	__mock_configuration_file_handler,
+	__mock_logger
 ):
 	config_executor = ModeConfigExecutor({})
 	config_executor.run()
@@ -144,7 +146,8 @@ def test_calls_configuration_file_handler_write_config_when_running_executor(
 )
 def test_stores_expected_config_values_when_running_executor(
 	__mock_configuration_file_handler,
-	expected_config_values
+	expected_config_values,
+	__mock_logger
 ):
 	config_executor = ModeConfigExecutor({})
 	config_executor.run()
@@ -166,7 +169,8 @@ def test_stores_expected_config_values_when_running_executor(
 )
 def test_returns_expected_values_when_running_executor(
 	__mock_configuration_file_handler,
-	expected_values
+	expected_values,
+	__mock_logger
 ):
 	config_executor = ModeConfigExecutor({})
 	values = config_executor.run()
