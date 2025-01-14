@@ -38,29 +38,39 @@ def test_sets_executor_default_config_without_override(__dummy_test_mode_executo
     (
       executor.logs_to_file,
       executor.prints_with_substitution,
-      executor.prints_banner_on_exit
-    ) == (False, False, False)
+      executor.prints_banner_on_exit,
+      executor.sends_installation_info
+    ) == (False, False, False, False)
   ), get_assertion_message(
     "default executor configuration",
-    (False, False, False),
+    (False, False, False, False),
     (
       executor.logs_to_file,
       executor.prints_with_substitution,
-      executor.prints_banner_on_exit
+      executor.prints_banner_on_exit,
+      executor.sends_installation_info
     )
   )
 
 @pytest.mark.parametrize(
   "__configured_mode_executor,expected_configuration",
   [
-    pytest.param((False, False, False), (False, False, False)),
-    pytest.param((False, False, True), (False, False, True)),
-    pytest.param((False, True, False), (False, True, False)),
-    pytest.param((False, True, True), (False, True, True)),
-    pytest.param((True, False, False), (True, False, False)),
-    pytest.param((True, False, True), (True, False, True)),
-    pytest.param((True, True, False), (True, True, False)),
-    pytest.param((True, True, True), (True, True, True))
+    pytest.param((False, False, False, False), (False, False, False, False)),
+    pytest.param((False, False, False, True), (False, False, False, True)),
+    pytest.param((False, False, True, False), (False, False, True, False)),
+    pytest.param((False, False, True, True), (False, False, True, True)),
+    pytest.param((False, True, False, False), (False, True, False, False)),
+    pytest.param((False, True, False, True), (False, True, False, True)),
+    pytest.param((False, True, True, False), (False, True, True, False)),
+    pytest.param((False, True, True, True), (False, True, True, True)),
+    pytest.param((True, False, False, False), (True, False, False, False)),
+    pytest.param((True, False, False, True), (True, False, False, True)),
+    pytest.param((True, False, True, False), (True, False, True, False)),
+    pytest.param((True, False, True, True), (True, False, True, True)),
+    pytest.param((True, True, False, False), (True, True, False, False)),
+    pytest.param((True, True, False, True), (True, True, False, True)),
+    pytest.param((True, True, True, False), (True, True, True, False)),
+    pytest.param((True, True, True, True), (True, True, True, True))
   ],
   indirect=["__configured_mode_executor"]
 )
@@ -74,7 +84,8 @@ def test_sets_expected_executor_config_with_override(
     (
       executor.logs_to_file,
       executor.prints_with_substitution,
-      executor.prints_banner_on_exit
+      executor.prints_banner_on_exit,
+      executor.sends_installation_info
     ) == expected_configuration
   ), get_assertion_message(
     "default executor configuration",
@@ -82,7 +93,8 @@ def test_sets_expected_executor_config_with_override(
     (
       executor.logs_to_file,
       executor.prints_with_substitution,
-      executor.prints_banner_on_exit
+      executor.prints_banner_on_exit,
+      executor.sends_installation_info
     )
   )
 
@@ -96,7 +108,7 @@ def test_does_not_call_logger_start_log_file_with_default_configuration(
 @pytest.mark.parametrize(
   "__configured_mode_executor",
   [
-    pytest.param((True, False, False))
+    pytest.param((True, False, False, False))
   ],
   indirect=["__configured_mode_executor"]
 )
@@ -117,7 +129,7 @@ def test_does_not_call_logger_set_allow_substitution_with_default_configuration(
 @pytest.mark.parametrize(
   "__configured_mode_executor",
   [
-    pytest.param((False, True, False))
+    pytest.param((False, True, False, False))
   ],
   indirect=["__configured_mode_executor"]
 )
@@ -141,14 +153,15 @@ def __dummy_test_mode_executor():
       return (0, "")
   return TestExecutor
 
-@pytest.fixture(params=[(False, False, False)])
+@pytest.fixture(params=[(False, False, False, False)])
 def __configured_mode_executor(__dummy_test_mode_executor, request):
-  logs_to_file, substitute, prints_banner = request.param
+  logs_to_file, substitute, prints_banner, sends_info = request.param
   class ConfiguredModeExecutor(__dummy_test_mode_executor):
     def _set_executor_config(self):
       self.logs_to_file = logs_to_file
       self.prints_with_substitution = substitute
       self.prints_banner_on_exit = prints_banner
+      self.sends_installation_info = sends_info
   return ConfiguredModeExecutor
 
 @pytest.fixture

@@ -21,6 +21,7 @@ class ModeExecutor(ABC):
     self.logs_to_file = False
     self.prints_with_substitution = False
     self.prints_banner_on_exit = False
+    self.sends_installation_info = False
   
   def __configure_logger(self):
     """
