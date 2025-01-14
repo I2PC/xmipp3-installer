@@ -36,7 +36,7 @@ def test_writes_expected_config_file(
 	command_words = ["xmipp3_installer", "config"]
 	if overwrite:
 		command_words.append("-o")
-	subprocess.run(command_words)
+	subprocess.run(command_words, stdout=subprocess.PIPE)
 	__change_config_file_date()
 	expected_file = __get_test_config_file(expected_file, False)
 	normalize_line_endings(expected_file)
