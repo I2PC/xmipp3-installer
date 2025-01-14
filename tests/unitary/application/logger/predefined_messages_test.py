@@ -117,6 +117,7 @@ def test_returns_expected_success_message(
   inner_message = f"Xmipp {expected_release_name} has been successfully installed, enjoy it!"
   line_len = len(f' {inner_message} ')
   expected_success_message = '\n'.join([
+    "",
     f"*{'*' * line_len}*",
     f"*{' ' * line_len}*",
     f"* {__mock_logger_green(inner_message)} *",

@@ -62,4 +62,4 @@ def get_success_message() -> str:
 	margin_line = f"*{' ' * (total_len - 2)}*"
 	box_border = '*' * total_len
 
-	return '\n'.join([box_border, margin_line, release_message, margin_line, box_border])
+	return '\n'.join(["", box_border, margin_line, release_message, margin_line, box_border])
