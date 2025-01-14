@@ -108,6 +108,7 @@ def test_exits_with_run_return_code(
 def __mock_executor(ret_code, message):
   executor = MagicMock()
   executor.run.return_value = (ret_code, message)
+  executor.prints_banner_on_exit = False
   return executor
 
 @pytest.fixture(params=[(0, 0)])
