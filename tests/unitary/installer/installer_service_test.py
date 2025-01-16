@@ -14,6 +14,10 @@ __MODE_ALL_MESSAGE = "mode all"
 __INSTALLATION_INFO = {
 	'user': 'some-user-id'
 }
+__CONFIG_VALUES = {
+	'key1': 'value1',
+	'key2': 'value2'
+}
 
 def test_stores_args_when_initializing(__mock_mode_executors):
 	args = {'mode': __MODE_NAME}
@@ -44,18 +48,37 @@ def test_stores_expected_mode_executor_when_initializing(mode, __mock_mode_execu
 		installation_manager.mode_executor == expected_mode
 	), get_assertion_message("stored mode executor", expected_mode, installation_manager.mode_executor)
 
-def test_initializes_and_stores_config_file_handler_when_initializing(
+def test_initializes_config_file_handler_when_initializing(
+	__mock_mode_executors,
+	__mock_configuration_file_handler
+):
+	installer_service.InstallationManager({})
+	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE)
+
+def test_stores_config_file_handler_when_initializing(
 	__mock_mode_executors,
 	__mock_configuration_file_handler
 ):
 	installation_manager = installer_service.InstallationManager({})
-	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE)
 	assert (
 		installation_manager.config_handler == __mock_configuration_file_handler()
 	), get_assertion_message(
 		"stored config handler",
 		__mock_configuration_file_handler(),
 		installation_manager.config_handler
+	)
+
+def test_stores_config_file_values_when_initializing(
+	__mock_mode_executors,
+	__mock_configuration_file_handler
+):
+	installation_manager = installer_service.InstallationManager({})
+	assert (
+		installation_manager.config_values == __mock_configuration_file_handler().values
+	), get_assertion_message(
+		"stored config values",
+		__mock_configuration_file_handler().values,
+		installation_manager.config_values
 	)
 
 @pytest.mark.parametrize(
@@ -261,4 +284,5 @@ def __mock_configuration_file_handler():
 	with patch(
 		"xmipp3_installer.repository.config.ConfigurationFileHandler"
 	) as mock_class:
+		mock_class.return_value.values = __CONFIG_VALUES
 		yield mock_class
