@@ -15,6 +15,35 @@ __INSTALLATION_INFO = {
 	'user': 'some-user-id'
 }
 
+def test_stores_args_when_initializing(__mock_mode_executors):
+	args = {'mode': __MODE_NAME}
+	installation_manager = installer_service.InstallationManager(args)
+	assert (
+		installation_manager.args == args
+	), get_assertion_message("stored arguments", args, installation_manager.args)
+
+@pytest.mark.parametrize(
+	"expected_mode",
+	[pytest.param('all'), pytest.param(__MODE_NAME)]
+)
+def test_stores_expected_mode_when_initializing(expected_mode, __mock_mode_executors):
+	installation_manager = installer_service.InstallationManager({'mode': expected_mode})
+	assert (
+		installation_manager.mode == expected_mode
+	), get_assertion_message("stored mode", expected_mode, installation_manager.mode)
+
+@pytest.mark.parametrize(
+	"mode",
+	[pytest.param('all'), pytest.param(__MODE_NAME)]
+)
+def test_stores_expected_mode_executor_when_initializing(mode, __mock_mode_executors):
+	args = {'mode': mode}
+	installation_manager = installer_service.InstallationManager(args)
+	expected_mode = __mock_mode_executors[mode](args)
+	assert (
+		installation_manager.mode_executor == expected_mode
+	), get_assertion_message("stored mode executor", expected_mode, installation_manager.mode_executor)
+
 @pytest.mark.parametrize(
 	"args,expected_executor_key",
 	[
@@ -212,3 +241,10 @@ def __mock_get_installation_info():
 	) as mock_method:
 		mock_method.return_value = __INSTALLATION_INFO
 		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_configuration_file_handler():
+	with patch(
+		"xmipp3_installer.repository.config.ConfigurationFileHandler"
+	) as mock_class:
+		yield mock_class
