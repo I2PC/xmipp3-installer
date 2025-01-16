@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
-from xmipp3_installer.installer import installer_service_two
+from xmipp3_installer.installer import installer_service
 from xmipp3_installer.installer.modes import mode_selector
 
 from ... import get_assertion_message
@@ -28,7 +28,7 @@ def test_calls_expected_executor_run_when_running_installer(
 	expected_executor_key,
 	__mock_mode_executors
 ):
-	installation_manager = installer_service_two.InstallationManager(args)
+	installation_manager = installer_service.InstallationManager(args)
 	installation_manager.run_installer()
 	expected_executor = __mock_mode_executors[expected_executor_key](args)
 	expected_executor.run.assert_called_once_with()
@@ -46,7 +46,7 @@ def test_does_not_call_other_executor_run_when_running_installer(
 	other_executor_key,
 	__mock_mode_executors
 ):
-	installation_manager = installer_service_two.InstallationManager(args)
+	installation_manager = installer_service.InstallationManager(args)
 	installation_manager.run_installer()
 	expected_executor = __mock_mode_executors[other_executor_key](args)
 	expected_executor.run.assert_not_called()
@@ -56,7 +56,7 @@ def test_calls_logger_log_error_when_running_installer_with_non_zero_ret_code(
 	__mock_mode_executors,
 	__mock_logger_log_error
 ):
-	installation_manager = installer_service_two.InstallationManager({})
+	installation_manager = installer_service.InstallationManager({})
 	installation_manager.run_installer()
 	executor = __mock_mode_executors[modes.MODE_ALL]({})
 	ret_code, output = executor.run()
@@ -70,7 +70,7 @@ def test_calls_get_success_message_when_running_executor_with_zero_exit_code_dep
 	__mock_logger
 ):
 	__mock_mode_executors['all'](None).prints_banner_on_exit = prints_message
-	installation_manager = installer_service_two.InstallationManager({})
+	installation_manager = installer_service.InstallationManager({})
 	installation_manager.run_installer()
 	if prints_message:
 		__mock_get_success_message.assert_called_once_with()
@@ -97,7 +97,7 @@ def test_calls_get_installation_info_when_running_executor_deppending_on_attribu
 	all_executor = __mock_mode_executors['all'](None)
 	all_executor.sends_installation_info = sends_installation_info
 	all_executor.run.return_value = (ret_code, "")
-	installation_manager = installer_service_two.InstallationManager({})
+	installation_manager = installer_service.InstallationManager({})
 	installation_manager.run_installer()
 	if sends_installation_info:
 		__mock_get_installation_info.assert_called_once_with(ret_code=ret_code)
@@ -113,7 +113,7 @@ def test_calls_send_installation_attempt_when_running_executor_deppending_on_att
 	__mock_send_installation_info
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
-	installation_manager = installer_service_two.InstallationManager({})
+	installation_manager = installer_service.InstallationManager({})
 	installation_manager.run_installer()
 	if sends_info:
 		__mock_send_installation_info.assert_called_once_with(__mock_get_installation_info())
@@ -130,7 +130,7 @@ def test_calls_logger_when_running_executor_deppending_on_attribute(
 	__mock_send_installation_info
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
-	installation_manager = installer_service_two.InstallationManager({})
+	installation_manager = installer_service.InstallationManager({})
 	installation_manager.run_installer()
 	if sends_info:
 		__mock_logger.assert_called_once_with("Sending anonymous installation info...")
@@ -153,7 +153,7 @@ def test_returns_run_return_code(
 ):
 	executor = __mock_mode_executors[modes.MODE_ALL]({})
 	expected_ret_code, _ = executor.run.return_value
-	installation_manager = installer_service_two.InstallationManager({})
+	installation_manager = installer_service.InstallationManager({})
 	ret_code = installation_manager.run_installer()
 	assert (
 		ret_code == expected_ret_code

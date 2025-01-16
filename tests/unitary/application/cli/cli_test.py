@@ -1,11 +1,12 @@
 import os
 import sys
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import pytest
 
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
+from xmipp3_installer.installer import installer_service
 
 from .... import get_assertion_message
 
@@ -357,11 +358,12 @@ def test_exits_with_expected_ret_code_on_main(
 	__mock_stdout_stderr,
 	__mock_run_installer
 ):
+	expected_ret_code = __mock_run_installer().run_installer()
 	with pytest.raises(SystemExit) as pytest_exit:
 		cli.main()
 	assert (
-		pytest_exit.value.code == __mock_run_installer()
-	), get_assertion_message("exit code", __mock_run_installer(), pytest_exit.value.code)
+		pytest_exit.value.code == expected_ret_code
+	), get_assertion_message("exit code", expected_ret_code, pytest_exit.value.code)
 
 def __test_args_in_mode(
 	mode,
@@ -430,9 +432,13 @@ def __mock_logger_set_allow_substitution():
 
 @pytest.fixture(params=[0])
 def __mock_run_installer(request):
-	with patch("xmipp3_installer.installer.installer_service.run_installer") as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
+	mock_installation_manager = Mock()
+	mock_installation_manager.run_installer.return_value = request.param
+	with patch(
+		"xmipp3_installer.installer.installer_service.InstallationManager"
+	) as mock_class:
+		mock_class.return_value = mock_installation_manager
+		yield mock_class
 
 @pytest.fixture
 def __mock_sys_exit():
