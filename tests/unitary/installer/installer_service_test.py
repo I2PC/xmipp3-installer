@@ -5,6 +5,7 @@ import pytest
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import installer_service, constants
 from xmipp3_installer.installer.modes import mode_selector
+from xmipp3_installer.repository.config_vars import variables
 
 from ... import get_assertion_message
 
@@ -14,6 +15,7 @@ __MODE_ALL_MESSAGE = "mode all"
 __INSTALLATION_INFO = {
 	'user': 'some-user-id'
 }
+__SEND_INSTALLATION_INFO_KEY = "send-info"
 __CONFIG_VALUES = {
 	'key1': 'value1',
 	'key2': 'value2'
@@ -144,18 +146,23 @@ def test_calls_get_success_message_when_running_executor_with_zero_exit_code_dep
 		__mock_get_success_message.assert_not_called()
 
 @pytest.mark.parametrize(
-	"ret_code,sends_installation_info",
+	"ret_code,sends_installation_info,config_sends_installation_info",
 	[
-		pytest.param(0, False),
-		pytest.param(0, True),
-		pytest.param(1, False),
-		pytest.param(1, True)
+		pytest.param(0, False, False),
+		pytest.param(0, False, True),
+		pytest.param(0, True, False),
+		pytest.param(0, True, True),
+		pytest.param(1, False, False),
+		pytest.param(1, False, True),
+		pytest.param(1, True, False),
+		pytest.param(1, True, True)
 	]
 )
-def test_calls_get_installation_info_when_running_executor_deppending_on_attribute(
+def test_calls_get_installation_info_when_running_executor_deppending_on_attributes(
 	__mock_mode_executors,
 	ret_code,
 	sends_installation_info,
+	config_sends_installation_info,
 	__mock_logger_log_error,
 	__mock_logger,
 	__mock_get_installation_info
@@ -164,15 +171,25 @@ def test_calls_get_installation_info_when_running_executor_deppending_on_attribu
 	all_executor.sends_installation_info = sends_installation_info
 	all_executor.run.return_value = (ret_code, "")
 	installation_manager = installer_service.InstallationManager({})
+	installation_manager.config_values = {__SEND_INSTALLATION_INFO_KEY: config_sends_installation_info}
 	installation_manager.run_installer()
-	if sends_installation_info:
+	if sends_installation_info and config_sends_installation_info:
 		__mock_get_installation_info.assert_called_once_with(ret_code=ret_code)
 	else:
 		__mock_get_installation_info.assert_not_called()
 
-@pytest.mark.parametrize("sends_info", [pytest.param(False), pytest.param(True)])
+@pytest.mark.parametrize(
+	"sends_info,config_sends_info",
+	[
+		pytest.param(False, False),
+		pytest.param(False, True),
+		pytest.param(True, False),
+		pytest.param(True, True)
+	]
+)
 def test_calls_send_installation_attempt_when_running_executor_deppending_on_attribute(
 	sends_info,
+	config_sends_info,
 	__mock_mode_executors,
 	__mock_logger,
 	__mock_get_installation_info,
@@ -180,15 +197,25 @@ def test_calls_send_installation_attempt_when_running_executor_deppending_on_att
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installation_manager = installer_service.InstallationManager({})
+	installation_manager.config_values = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
 	installation_manager.run_installer()
-	if sends_info:
+	if sends_info and config_sends_info:
 		__mock_send_installation_info.assert_called_once_with(__mock_get_installation_info())
 	else:
 		__mock_send_installation_info.assert_not_called()
 
-@pytest.mark.parametrize("sends_info", [pytest.param(False), pytest.param(True)])
+@pytest.mark.parametrize(
+	"sends_info,config_sends_info",
+	[
+		pytest.param(False, False),
+		pytest.param(False, True),
+		pytest.param(True, False),
+		pytest.param(True, True)
+	]
+)
 def test_calls_logger_when_running_executor_deppending_on_attribute(
 	sends_info,
+	config_sends_info,
 	__mock_mode_executors,
 	__mock_logger_log_error,
 	__mock_logger,
@@ -197,8 +224,9 @@ def test_calls_logger_when_running_executor_deppending_on_attribute(
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installation_manager = installer_service.InstallationManager({})
+	installation_manager.config_values = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
 	installation_manager.run_installer()
-	if sends_info:
+	if sends_info and config_sends_info:
 		__mock_logger.assert_called_once_with("Sending anonymous installation info...")
 	else:
 		__mock_logger.assert_not_called()
@@ -286,3 +314,12 @@ def __mock_configuration_file_handler():
 	) as mock_class:
 		mock_class.return_value.values = __CONFIG_VALUES
 		yield mock_class
+
+@pytest.fixture(autouse=True)
+def __mock_variable_send_installation_info():
+	with patch.object(
+		variables,
+		"SEND_INSTALLATION_STATISTICS",
+		__SEND_INSTALLATION_INFO_KEY
+	):
+		yield __SEND_INSTALLATION_INFO_KEY

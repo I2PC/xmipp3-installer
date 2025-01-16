@@ -9,10 +9,17 @@ from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.application.logger import predefined_messages
 from xmipp3_installer.installer.modes import mode_selector
 from xmipp3_installer.repository import config
+from xmipp3_installer.repository.config_vars import variables
 
 
 class InstallationManager:
   def __init__(self, args: Dict):
+    """
+		### Constructor.
+		
+		#### Params:
+		- args (dict): Dictionary containing all parsed command-line arguments.
+		"""
     self.args = args
     self.mode = args.get(modes.MODE, modes.MODE_ALL)
     self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](args)
@@ -29,7 +36,10 @@ class InstallationManager:
     ret_code, output = self.mode_executor.run()
     if ret_code:
       logger.log_error(output, ret_code=ret_code)
-    if self.mode_executor.sends_installation_info:
+    if (
+      self.mode_executor.sends_installation_info and 
+      self.config_values.get(variables.SEND_INSTALLATION_STATISTICS, False)
+    ):
       logger("Sending anonymous installation info...")
       api_client.send_installation_attempt(
         installation_info_assembler.get_installation_info(ret_code=ret_code)
