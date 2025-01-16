@@ -22,7 +22,8 @@ def main():
 	__add_default_usage_mode()
 	args = vars(parser.parse_args())
 	__validate_args(args, parser)
-	ret_code = installer_service.run_installer(args)
+	installation_manager = installer_service.InstallationManager(args)
+	ret_code = installation_manager.run_installer()
 	sys.exit(ret_code)
 
 def __generate_parser() -> argparse.ArgumentParser:
