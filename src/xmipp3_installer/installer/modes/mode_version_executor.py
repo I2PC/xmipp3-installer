@@ -15,6 +15,12 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 	__LEFT_TEXT_LEN = 25
 
 	def __init__(self, args: Dict):
+		"""
+		### Constructor.
+		
+		#### Params:
+		- args (dict): Dictionary containing all parsed command-line arguments.
+		"""
 		super().__init__(args)
 		self.short = args.get(params.PARAM_SHORT, False)
 		self.config_exists = os.path.exists(constants.CONFIG_FILE)

@@ -9,6 +9,12 @@ class ModeExecutor(ABC):
   ### Base executor interface for installer modes.
   """
   def __init__(self, args: Dict):
+    """
+		### Constructor.
+		
+		#### Params:
+		- args (dict): Dictionary containing all parsed command-line arguments.
+		"""
     super().__init__()
     self.args = args
     self._set_executor_config()

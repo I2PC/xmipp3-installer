@@ -11,6 +11,12 @@ from xmipp3_installer.repository import config
 
 class ModeConfigExecutor(mode_executor.ModeExecutor):
 	def __init__(self, args: Dict):
+		"""
+		### Constructor.
+		
+		#### Params:
+		- args (dict): Dictionary containing all parsed command-line arguments.
+		"""
 		super().__init__(args)
 		self.overwrite = args.get(params.PARAM_OVERWRITE, False)
 		self.config_values = {}
