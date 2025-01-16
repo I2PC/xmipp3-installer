@@ -8,7 +8,7 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.application.logger import predefined_messages
 from xmipp3_installer.installer.modes import mode_selector
-from xmipp3_installer.repository.config import ConfigurationFileHandler
+from xmipp3_installer.repository import config
 
 
 class InstallationManager:
@@ -16,7 +16,7 @@ class InstallationManager:
     self.args = args
     self.mode = args.get(modes.MODE, modes.MODE_ALL)
     self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](args)
-    #self.config_handler = ConfigurationFileHandler(path=constants.CONFIG_FILE)
+    self.config_handler = config.ConfigurationFileHandler(path=constants.CONFIG_FILE)
 
   def run_installer(self):
     """

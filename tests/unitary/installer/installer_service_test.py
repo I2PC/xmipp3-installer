@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
-from xmipp3_installer.installer import installer_service
+from xmipp3_installer.installer import installer_service, constants
 from xmipp3_installer.installer.modes import mode_selector
 
 from ... import get_assertion_message
@@ -43,6 +43,20 @@ def test_stores_expected_mode_executor_when_initializing(mode, __mock_mode_execu
 	assert (
 		installation_manager.mode_executor == expected_mode
 	), get_assertion_message("stored mode executor", expected_mode, installation_manager.mode_executor)
+
+def test_initializes_and_stores_config_file_handler_when_initializing(
+	__mock_mode_executors,
+	__mock_configuration_file_handler
+):
+	installation_manager = installer_service.InstallationManager({})
+	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE)
+	assert (
+		installation_manager.config_handler == __mock_configuration_file_handler()
+	), get_assertion_message(
+		"stored config handler",
+		__mock_configuration_file_handler(),
+		installation_manager.config_handler
+	)
 
 @pytest.mark.parametrize(
 	"args,expected_executor_key",
