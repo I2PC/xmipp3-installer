@@ -1,4 +1,3 @@
-import sys
 from typing import Dict
 
 from xmipp3_installer.api_client import api_client
@@ -23,4 +22,4 @@ def run_installer(args: Dict):
     )
   if not ret_code and mode_executor.prints_banner_on_exit:
     logger(predefined_messages.get_success_message())
-  sys.exit(ret_code)
+  return ret_code
