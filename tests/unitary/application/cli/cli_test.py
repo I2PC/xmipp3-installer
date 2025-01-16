@@ -21,10 +21,11 @@ __DEFAULT_COMPILATION_ARGS = {
 def test_calls_add_default_usage_mode(
 	__mock_sys_argv,
 	__mock_add_default_usage_mode,
-	__mock_stdout_stderr
+	__mock_stdout_stderr,
+	__mock_run_installer,
+	__mock_sys_exit
 ):
-	with pytest.raises(SystemExit):
-		cli.main()
+	cli.main()
 	__mock_add_default_usage_mode.assert_called_once_with()
 
 @pytest.mark.parametrize(
@@ -47,7 +48,8 @@ def test_calls_parse_args(
 	__mock_add_default_usage_mode,
 	__mock_parse_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	cli.main()
 	__mock_parse_args.assert_called_once_with()
@@ -71,7 +73,8 @@ def test_returns_expected_mode_add_model(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("addModel", {"update": False}, expected_args, __mock_run_installer)
 
@@ -100,7 +103,8 @@ def test_returns_expected_mode_all_args(
 	__mock_validate_args,
 	__mock_get_default_job_number,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("all", __DEFAULT_COMPILATION_ARGS, expected_args, __mock_run_installer)
 
@@ -108,7 +112,8 @@ def test_returns_expected_mode_clean_all_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "cleanAll"]):
 		__test_args_in_mode("cleanAll", {}, {}, __mock_run_installer)
@@ -116,7 +121,8 @@ def test_returns_expected_mode_clean_all_args(
 def test_returns_expected_mode_clean_bin_args(
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "cleanBin"]):
 		__test_args_in_mode("cleanBin", {}, {}, __mock_run_installer)
@@ -145,7 +151,8 @@ def test_returns_expected_mode_compile_and_install_args(
 	__mock_validate_args,
 	__mock_get_default_job_number,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("compileAndInstall", __DEFAULT_COMPILATION_ARGS, expected_args, __mock_run_installer)
 
@@ -162,7 +169,8 @@ def test_returns_expected_mode_config_build_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("configBuild", {"keep_output": False}, expected_args, __mock_run_installer)
 
@@ -180,7 +188,8 @@ def test_returns_expected_mode_config_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("config", {"overwrite": False}, expected_args, __mock_run_installer)
 
@@ -200,7 +209,8 @@ def test_returns_expected_mode_get_models_args(
 	__mock_validate_args,
 	__mock_stdout_stderr,
 	__mock_get_project_root_subpath,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("getModels", {"directory": os.path.join(__DUMMY_PATH, "default")}, expected_args, __mock_run_installer)
 
@@ -224,14 +234,16 @@ def test_returns_expected_mode_get_sources_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("getSources", {"branch": None, "keep_output": False}, expected_args, __mock_run_installer)
 
 def test_returns_expected_mode_git_args(
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, "git", "clone", "test_url"]):
 		__test_args_in_mode("git", {}, {"command": ["clone", "test_url"]}, __mock_run_installer)
@@ -249,7 +261,8 @@ def test_returns_expected_mode_test_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("test", {"show": False}, expected_args, __mock_run_installer)
 
@@ -266,7 +279,8 @@ def test_returns_expected_mode_version_args(
 	__mock_sys_argv,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	__test_args_in_mode("version", {"short": False}, expected_args, __mock_run_installer)
 
@@ -276,7 +290,8 @@ def test_calls_validate_args(
 	__mock_parse_args,
 	__mock_validate_args,
 	__mock_stdout_stderr,
-	__mock_run_installer
+	__mock_run_installer,
+	__mock_sys_exit
 ):
 	cli.main()
 	__mock_validate_args.assert_called_once()
@@ -293,7 +308,11 @@ def test_calls_validate_args(
 		pytest.param({"branch": "my branch"}, True),
 	],
 )
-def test_returns_expected_arg_validation(args, exit_with_error, __mock_stdout_stderr):
+def test_returns_expected_arg_validation(
+	args,
+	exit_with_error,
+	__mock_stdout_stderr
+):
 	parser = cli.__generate_parser()
 	if exit_with_error:
 		with pytest.raises(SystemExit):
@@ -301,7 +320,9 @@ def test_returns_expected_arg_validation(args, exit_with_error, __mock_stdout_st
 	else:
 		cli.__validate_args(args, parser)
 
-def test_deactivates_output_substitution_on_args_validation(__mock_logger_set_allow_substitution):
+def test_deactivates_output_substitution_on_args_validation(
+	__mock_logger_set_allow_substitution
+):
 	cli.__validate_args({"keep_output": True}, cli.__generate_parser())
 	__mock_logger_set_allow_substitution.assert_called_once_with(False)
 
@@ -319,15 +340,43 @@ def test_does_not_deactivate_output_substitution_on_args_validation(
 	cli.__validate_args(args, cli.__generate_parser())
 	__mock_logger_set_allow_substitution.assert_not_called()
 
-def __test_args_in_mode(mode, default_args, expected_args, __mock_run_installer):
+@pytest.mark.parametrize(
+	"__mock_run_installer",
+	[
+		pytest.param(0),
+		pytest.param(1),
+		pytest.param(20)
+	],
+	indirect=["__mock_run_installer"]
+)
+def test_exits_with_expected_ret_code_on_main(
+	__mock_sys_argv,
+	__mock_add_default_usage_mode,
+	__mock_parse_args,
+	__mock_validate_args,
+	__mock_stdout_stderr,
+	__mock_run_installer
+):
+	with pytest.raises(SystemExit) as pytest_exit:
+		cli.main()
+	assert (
+		pytest_exit.value.code == __mock_run_installer()
+	), get_assertion_message("exit code", __mock_run_installer(), pytest_exit.value.code)
+
+def __test_args_in_mode(
+	mode,
+	default_args,
+	expected_args,
+	__mock_run_installer
+):
 	expected_args = {**default_args, "mode": mode, **expected_args}
 	cli.main()
 	__mock_run_installer.assert_called_once_with(expected_args)
 
 @pytest.fixture(params=[["-h"]])
 def __mock_sys_argv(request):
-	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, *request.param]):
-		yield
+	with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, *request.param]) as mock_object:
+		yield mock_object
 
 @pytest.fixture
 def __mock_add_default_usage_mode():
@@ -379,7 +428,13 @@ def __mock_logger_set_allow_substitution():
 	) as mock_method:
 		yield mock_method
 
-@pytest.fixture
-def __mock_run_installer():
+@pytest.fixture(params=[0])
+def __mock_run_installer(request):
 	with patch("xmipp3_installer.installer.installer_service.run_installer") as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture
+def __mock_sys_exit():
+	with patch("sys.exit") as mock_method:
 		yield mock_method

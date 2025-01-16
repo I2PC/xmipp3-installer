@@ -26,8 +26,7 @@ __INSTALLATION_INFO = {
 def test_calls_expected_executor_run_when_running_installer(
 	args,
 	expected_executor_key,
-	__mock_mode_executors,
-	__mock_sys_exit
+	__mock_mode_executors
 ):
 	installer_service.run_installer(args)
 	expected_executor = __mock_mode_executors[expected_executor_key](args)
@@ -44,8 +43,7 @@ def test_calls_expected_executor_run_when_running_installer(
 def test_does_not_call_other_executor_run_when_running_installer(
 	args,
 	other_executor_key,
-	__mock_mode_executors,
-	__mock_sys_exit
+	__mock_mode_executors
 ):
 	installer_service.run_installer(args)
 	expected_executor = __mock_mode_executors[other_executor_key](args)
@@ -54,8 +52,7 @@ def test_does_not_call_other_executor_run_when_running_installer(
 @pytest.mark.parametrize("__mock_mode_executors", [pytest.param((0, 1))], indirect=["__mock_mode_executors"])
 def test_calls_logger_log_error_when_running_installer_with_non_zero_ret_code(
 	__mock_mode_executors,
-	__mock_logger_log_error,
-	__mock_sys_exit
+	__mock_logger_log_error
 ):
 	installer_service.run_installer({})
 	executor = __mock_mode_executors[modes.MODE_ALL]({})
@@ -67,8 +64,7 @@ def test_calls_get_success_message_when_running_executor_with_zero_exit_code_dep
 	prints_message,
 	__mock_mode_executors,
 	__mock_get_success_message,
-	__mock_logger,
-	__mock_sys_exit
+	__mock_logger
 ):
 	__mock_mode_executors['all'](None).prints_banner_on_exit = prints_message
 	installer_service.run_installer({})
@@ -92,8 +88,7 @@ def test_calls_get_installation_info_when_running_executor_deppending_on_attribu
 	sends_installation_info,
 	__mock_logger_log_error,
 	__mock_logger,
-	__mock_get_installation_info,
-	__mock_sys_exit
+	__mock_get_installation_info
 ):
 	all_executor = __mock_mode_executors['all'](None)
 	all_executor.sends_installation_info = sends_installation_info
@@ -110,8 +105,7 @@ def test_calls_send_installation_attempt_when_running_executor_deppending_on_att
 	__mock_mode_executors,
 	__mock_logger,
 	__mock_get_installation_info,
-	__mock_send_installation_info,
-	__mock_sys_exit
+	__mock_send_installation_info
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installer_service.run_installer({})
@@ -127,8 +121,7 @@ def test_calls_logger_when_running_executor_deppending_on_attribute(
 	__mock_logger_log_error,
 	__mock_logger,
 	__mock_get_installation_info,
-	__mock_send_installation_info,
-	__mock_sys_exit
+	__mock_send_installation_info
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installer_service.run_installer({})
@@ -145,19 +138,18 @@ def test_calls_logger_when_running_executor_deppending_on_attribute(
 	],
 	indirect=["__mock_mode_executors"]
 )
-def test_exits_with_run_return_code(
+def test_returns_run_return_code(
 	__mock_mode_executors,
 	__mock_logger_log_error,
 	__mock_get_success_message,
 	__mock_logger
 ):
 	executor = __mock_mode_executors[modes.MODE_ALL]({})
-	ret_code, _ = executor.run.return_value
-	with pytest.raises(SystemExit) as pytest_exit:
-		installer_service.run_installer({})
+	expected_ret_code, _ = executor.run.return_value
+	ret_code = installer_service.run_installer({})
 	assert (
-		ret_code == pytest_exit.value.code
-	), get_assertion_message("return code", ret_code, pytest_exit.value.code)
+		ret_code == expected_ret_code
+	), get_assertion_message("return code", expected_ret_code, ret_code)
 
 def __mock_executor(ret_code, message):
 	executor = MagicMock()
@@ -181,11 +173,6 @@ def __mock_logger_log_error():
 	with patch(
 		'xmipp3_installer.application.logger.logger.Logger.log_error'
 	) as mock_method:
-		yield mock_method
-
-@pytest.fixture
-def __mock_sys_exit():
-	with patch("sys.exit") as mock_method:
 		yield mock_method
 
 @pytest.fixture
