@@ -22,7 +22,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		- args (dict): Dictionary containing all parsed command-line arguments.
 		"""
 		super().__init__(args)
-		self.short = args.get(params.PARAM_SHORT, False)
+		self.short = args.pop(params.PARAM_SHORT, False)
 		self.config_exists = os.path.exists(constants.CONFIG_FILE)
 		self.version_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
 		self.is_configured = self.config_exists and self.version_file_exists

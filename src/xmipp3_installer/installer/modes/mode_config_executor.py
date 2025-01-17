@@ -18,7 +18,7 @@ class ModeConfigExecutor(mode_executor.ModeExecutor):
 		- args (dict): Dictionary containing all parsed command-line arguments.
 		"""
 		super().__init__(args)
-		self.overwrite = args.get(params.PARAM_OVERWRITE, False)
+		self.overwrite = args.pop(params.PARAM_OVERWRITE, False)
 		self.config_values = {}
 	
 	def run(self) -> Tuple[int, str]:
