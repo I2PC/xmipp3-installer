@@ -11,6 +11,7 @@ from xmipp3_installer.installer import urls
 from .... import get_assertion_message, MockTerminalSize
 
 __SAMPLE_TEXT = "this is some sample text"
+__ERROR_MESSAGE = "Test error message"
 __ERROR_CODES = {
 	1: ['Error 1 first', 'error 1 second'],
 	2: ['Error 2 first', ''],
@@ -122,21 +123,32 @@ def test_sets_allow_substitution(expected_allow_substitution):
 	), get_assertion_message("allow substitution value", expected_allow_substitution, allow_substitution)
 
 @pytest.mark.parametrize(
-	"ret_code,add_link,add_link_message,first_expected_message,second_expected_message",
+	"error_message,ret_code,add_link,add_link_message,first_expected_message,second_expected_message",
 	[
-		pytest.param(1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param(1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param(2, False, '',  __ERROR_CODES[2][0], ''),
-		pytest.param(2, True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[2][0], ''),
-		pytest.param(3, False, '', '', ''),
-		pytest.param(3, True, __PORTAL_LINK_MESSAGE, '', ''),
-		pytest.param(4, False, '', '', f"\n{__ERROR_CODES[4][1]} "),
-		pytest.param(4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} "),
-		pytest.param('no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param('no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} ")
+		pytest.param("", 1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param(__ERROR_MESSAGE, 1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param("", 1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param(__ERROR_MESSAGE, 1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param("", 2, False, '',  __ERROR_CODES[2][0], ''),
+		pytest.param(__ERROR_MESSAGE, 2, False, '',  __ERROR_CODES[2][0], ''),
+		pytest.param("", 2, True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[2][0], ''),
+		pytest.param(__ERROR_MESSAGE, 2, True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[2][0], ''),
+		pytest.param("", 3, False, '', '', ''),
+		pytest.param(__ERROR_MESSAGE, 3, False, '', '', ''),
+		pytest.param("", 3, True, __PORTAL_LINK_MESSAGE, '', ''),
+		pytest.param(__ERROR_MESSAGE, 3, True, __PORTAL_LINK_MESSAGE, '', ''),
+		pytest.param("", 4, False, '', '', f"\n{__ERROR_CODES[4][1]} "),
+		pytest.param(__ERROR_MESSAGE, 4, False, '', '', f"\n{__ERROR_CODES[4][1]} "),
+		pytest.param("", 4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} "),
+		pytest.param(__ERROR_MESSAGE, 4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} "),
+		pytest.param("", 'no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param(__ERROR_MESSAGE, 'no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param("", 'no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param(__ERROR_MESSAGE, 'no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} ")
 	],
 )
 def test_calls_logger_with_expected_params_when_logging_error(
+	error_message,
 	ret_code,
 	add_link,
 	add_link_message,
@@ -147,12 +159,11 @@ def test_calls_logger_with_expected_params_when_logging_error(
 	__mock_reset_format,
 	__mock_errors
 ):
-	error_message = "Test error message"
 	logger = Logger()
 	logger.log_error(error_message, ret_code=ret_code, add_portal_link=add_link)
 	__mock_call.assert_called_once_with(
 		logger.red(''.join([
-			f"{error_message}\n\n",
+			f"{error_message}\n\n" if error_message else '',
 			f"Error {ret_code}: {first_expected_message}",
 			second_expected_message,
 			add_link_message

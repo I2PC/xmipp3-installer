@@ -140,7 +140,7 @@ class Logger(Singleton):
 		- add_portal_link (bool): If True, a message linking the documentation portal is shown.
 		"""
 		error = errors.ERROR_CODES.get(ret_code, errors.ERROR_CODES[errors.UNKOW_ERROR])
-		error_str = error_msg + '\n\n'
+		error_str = error_msg + '\n\n' if error_msg else ''
 		error_str += f'Error {ret_code}: {error[0]}'
 		error_str += f"\n{error[1]} " if error[1] else ''
 		if add_portal_link:
