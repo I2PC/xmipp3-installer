@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
+from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import installer_service, constants
 from xmipp3_installer.installer.modes import mode_selector
 from xmipp3_installer.repository.config_vars import variables
@@ -246,12 +247,32 @@ def test_returns_run_return_code(
 	__mock_logger
 ):
 	executor = __mock_mode_executors[modes.MODE_ALL]({})
-	expected_ret_code, _ = executor.run.return_value
+	expected_ret_code, _ = executor.run()
 	installation_manager = installer_service.InstallationManager({})
 	ret_code = installation_manager.run_installer()
 	assert (
 		ret_code == expected_ret_code
 	), get_assertion_message("return code", expected_ret_code, ret_code)
+
+def test_calls_logger_error_when_running_installer_and_user_interrupts_execution(
+	__mock_mode_executors_interrupted,
+	__mock_logger_log_error
+):
+	installation_manager = installer_service.InstallationManager({})
+	installation_manager.run_installer()
+	__mock_logger_log_error.assert_called_once_with(
+		"", ret_code=errors.INTERRUPTED_ERROR, add_portal_link=False
+	)
+
+def test_returns_interrupted_error_when_running_installer_and_user_interrupts_execution(
+	__mock_mode_executors_interrupted,
+	__mock_logger_log_error
+):
+	installation_manager = installer_service.InstallationManager({})
+	ret_code = installation_manager.run_installer()
+	assert (
+		ret_code == errors.INTERRUPTED_ERROR
+	), get_assertion_message("return code", errors.INTERRUPTED_ERROR, ret_code)
 
 def __mock_executor(ret_code, message):
 	executor = MagicMock()
@@ -323,3 +344,11 @@ def __mock_variable_send_installation_info():
 		__SEND_INSTALLATION_INFO_KEY
 	):
 		yield __SEND_INSTALLATION_INFO_KEY
+
+@pytest.fixture
+def __mock_mode_executors_interrupted(
+	__mock_mode_executors
+):
+	__mock_mode_executors[modes.MODE_ALL]({}).run.side_effect = KeyboardInterrupt
+	__mock_mode_executors[__MODE_NAME]({}).run.side_effect = KeyboardInterrupt
+	yield __mock_mode_executors
