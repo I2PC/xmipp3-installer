@@ -26,10 +26,10 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error.
 		"""
-		if self.model_path is None or not os.path.isdir(self.model_path):
+		if not os.path.isdir(self.model_path):
 			logger('\n'.join([
-				logger.red("<modelsPath> is not a directory. Please, check the path."),
+				logger.red(f"{self.model_path} is not a directory. Please, check the path."),
 				logger.red("The name of the model will be the name of that folder.")
 			]))
-			return errors.IO_ERROR, "<modelsPath> is not a directory"
+			return errors.IO_ERROR, f"{self.model_path} is not a directory"
 		return 0, ""
