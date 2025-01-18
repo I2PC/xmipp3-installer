@@ -3,6 +3,7 @@ from typing import Dict
 from xmipp3_installer.api_client import api_client
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.application.cli.arguments import modes
+from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
@@ -33,7 +34,11 @@ class InstallationManager:
     #### Returns:
     - (int): Return code.
     """
-    ret_code, output = self.mode_executor.run()
+    try:
+      ret_code, output = self.mode_executor.run()
+    except KeyboardInterrupt:
+      logger.log_error("", ret_code=errors.INTERRUPTED_ERROR, add_portal_link=False)
+      return errors.INTERRUPTED_ERROR
     if ret_code:
       logger.log_error(output, ret_code=ret_code)
     if (
