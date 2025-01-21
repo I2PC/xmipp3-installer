@@ -120,16 +120,28 @@ def test_does_not_call_other_executor_run_when_running_installer(
 	expected_executor = __mock_mode_executors[other_executor_key](args)
 	expected_executor.run.assert_not_called()
 
-@pytest.mark.parametrize("__mock_mode_executors", [pytest.param((0, 1))], indirect=["__mock_mode_executors"])
+@pytest.mark.parametrize(
+	"__mock_mode_executors,expected_add_portal_link",
+	[
+		pytest.param((0, 1), True),
+		pytest.param((0, errors.INTERRUPTED_ERROR), False),
+	],
+	indirect=["__mock_mode_executors"]
+)
 def test_calls_logger_log_error_when_running_installer_with_non_zero_ret_code(
 	__mock_mode_executors,
+	expected_add_portal_link,
 	__mock_logger_log_error
 ):
 	installation_manager = installer_service.InstallationManager({})
 	installation_manager.run_installer()
 	executor = __mock_mode_executors[modes.MODE_ALL]({})
 	ret_code, output = executor.run()
-	__mock_logger_log_error.assert_called_once_with(output, ret_code=ret_code)
+	__mock_logger_log_error.assert_called_once_with(
+		output,
+		ret_code=ret_code,
+		add_portal_link=expected_add_portal_link
+	)
 
 @pytest.mark.parametrize("prints_message", [pytest.param(False), pytest.param(True)])
 def test_calls_get_success_message_when_running_executor_with_zero_exit_code_deppending_on_attribute(
