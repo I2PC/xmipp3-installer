@@ -270,6 +270,90 @@ def test_returns_expected_upload_output_status(
 		return_values == expected_results
 	), get_assertion_message("return values", expected_results, return_values)
 
+def test_calls_logger_if_model_path_is_not_dir_when_running_executor(
+	__mock_os_path_isdir,
+	__mock_logger,
+	__mock_logger_red
+):
+	__mock_os_path_isdir.return_value = False
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor.run()
+	error_message = __mock_logger_red(f"{__MODEL_PATH} is not a directory. Please, check the path.")
+	error_message += "\n"
+	error_message += __mock_logger_red("The name of the model will be the name of that folder.")
+	__mock_logger.assert_called_once_with(error_message)
+
+def test_calls_logger_if_sync_program_path_does_not_exist_when_running_executor(
+	__mock_os_path_exists,
+	__mock_logger,
+	__mock_logger_red,
+	__mock_sync_program_path
+):
+	__mock_os_path_exists.return_value = False
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor.run()
+	error_message = __mock_logger_red(f"{__mock_sync_program_path} does not exist.")
+	error_message += "\n"
+	error_message += __mock_logger_red("Xmipp needs to be compiled successfully before running this command!")
+	__mock_logger.assert_called_once_with(error_message)
+
+@pytest.mark.parametrize(
+	"__mock_os_path_isdir,__mock_os_path_exists,__mock_generate_compressed_file,"
+	"__mock_get_confirmation,__mock_upload_model,expected_return_values",
+	[
+		pytest.param(
+			False, False, (1, "compression error"), False, (1, "upload error"), (errors.IO_ERROR, ""),
+		),
+		pytest.param(
+			False, True, (0, ""), True, (0, ""), (errors.IO_ERROR, ""),
+		),
+		pytest.param(
+			True, False, (1, "compression error"), False, (1, "upload error"), (errors.IO_ERROR, ""),
+		),
+		pytest.param(
+			True, False, (0, ""), True, (0, ""), (errors.IO_ERROR, ""),
+		),
+		pytest.param(
+			True, True, (1, "compression error"), False, (1, "upload error"), (1, "compression error"),
+		),
+		pytest.param(
+			True, True, (1, "compression error"), (0, ""), True, (1, "compression error"),
+		),
+		pytest.param(
+			True, True, (0, ""), False, (1, "upload error"), (errors.INTERRUPTED_ERROR, ""),
+		),
+		pytest.param(
+			True, True, (0, ""), False, (0, ""), (errors.INTERRUPTED_ERROR, ""),
+		),
+		pytest.param(
+			True, True, (0, ""), True, (1, "upload error"), (1, "upload error"),
+		),
+		pytest.param(
+			True, True, (0, ""), True, (0, "upload ok"), (0, "upload ok"),
+		)
+	],
+	indirect=[
+		"__mock_os_path_isdir",
+		"__mock_os_path_exists",
+		"__mock_generate_compressed_file",
+		"__mock_get_confirmation",
+		"__mock_upload_model"
+	]
+)
+def test_returns_expected_values_when_running_executor(
+	__mock_os_path_isdir,
+	__mock_os_path_exists,
+	__mock_generate_compressed_file,
+	__mock_get_confirmation,
+	__mock_upload_model,
+	expected_return_values
+):
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	return_values = executor.run()
+	assert (
+		return_values == expected_return_values
+	), get_assertion_message("return values", expected_return_values, return_values)
+
 def __raise_tarfile_exception(is_read_error):
 	if is_read_error:
 		raise __READ_ERROR
@@ -309,6 +393,14 @@ def __mock_logger_green():
 		"xmipp3_installer.application.logger.logger.Logger.green"
 	) as mock_method:
 		mock_method.side_effect = lambda text: f"green-{text}-green"
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_logger_red():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.red"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"red-{text}-red"
 		yield mock_method
 
 @pytest.fixture(params=[(False, False)])
@@ -355,3 +447,39 @@ def __mock_sync_program_path():
 		"./dist/bin/xmipp_sync_data"
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture(autouse=True, params=[True])
+def __mock_os_path_isdir(request):
+	with patch("os.path.isdir") as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_os_path_exists(request):
+	with patch("os.path.exists") as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_generate_compressed_file(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__generate_compressed_file"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_get_confirmation(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__get_confirmation"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_upload_model(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__upload_model"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
