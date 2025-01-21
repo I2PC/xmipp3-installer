@@ -18,6 +18,7 @@ INSTALL_PATH = "dist"
 LOG_FILE = 'compilation.log'
 LIBRARY_VERSIONS_FILE = os.path.join(BUILD_PATH, 'versions.txt')
 CONFIG_FILE = 'xmipp.conf'
+SCIPION_SOFTWARE_EM = "scipionfiles/downloads/scipion/software/em"
 
 # Others
 TAIL_LOG_NCHARS = 300
