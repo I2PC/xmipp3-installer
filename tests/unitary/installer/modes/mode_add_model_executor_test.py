@@ -1,5 +1,5 @@
 import tarfile
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
 import pytest
 
@@ -177,6 +177,99 @@ def test_returns_expected_confirmation_result(
 		confirmation == expected_confirmation
 	), get_assertion_message("confirmation value", expected_confirmation, confirmation)
 
+def test_calls_os_abspath_when_uploading_model(
+	__mock_os_path_abspath,
+	__mock_run_shell_command
+):
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor._ModeAddModelExecutor__upload_model()
+	__mock_os_path_abspath.assert_called_once_with(__TAR_PATH)
+
+@pytest.mark.parametrize(
+	"update,expected_update_str",
+	[pytest.param(False, ""), pytest.param(True, "--update")]
+)
+def test_calls_run_shell_command_when_uploading_model(
+	update,
+	expected_update_str,
+	__mock_run_shell_command,
+	__mock_os_path_abspath,
+	__mock_sync_program_path
+):
+	executor = ModeAddModelExecutor({**__ARGS, 'update': update})
+	executor._ModeAddModelExecutor__upload_model()
+	args = ', '.join([
+		__LOGIN,
+		__mock_os_path_abspath(__TAR_PATH),
+		constants.SCIPION_SOFTWARE_EM,
+		expected_update_str
+	])
+	__mock_run_shell_command.assert_called_once_with(
+		f"{__mock_sync_program_path} upload {args}"
+	)
+
+def test_calls_os_remove_when_upload_is_ok_when_uploading_model(
+	__mock_run_shell_command,
+	__mock_os_remove
+):
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor._ModeAddModelExecutor__upload_model()
+	__mock_os_remove.assert_called_once_with(__TAR_PATH)
+
+def test_does_not_call_os_remove_when_upload_is_not_ok(
+	__mock_run_shell_command,
+	__mock_os_remove
+):
+	__mock_run_shell_command.return_value = (1, "")
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor._ModeAddModelExecutor__upload_model()
+	__mock_os_remove.assert_not_called()
+
+@pytest.mark.parametrize(
+	"__mock_run_shell_command",
+	[
+		pytest.param((0, "")),
+		pytest.param((0, "whatever")),
+		pytest.param((1, "")),
+		pytest.param((1, "whatever"))
+	],
+	indirect=["__mock_run_shell_command"]
+)
+def test_calls_logger_deppending_on_upload_status(
+	__mock_logger,
+	__mock_logger_green,
+	__mock_run_shell_command
+):
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor._ModeAddModelExecutor__upload_model()
+	calls = [call(f"Trying to upload the model using {__LOGIN} as login")]
+	if __mock_run_shell_command.return_value[0] == 0:
+		calls.append(call(__mock_logger_green(f"{__MODEL_NAME} model successfully uploaded! Removing the local .tgz")))
+	__mock_logger.assert_has_calls(calls)
+	assert (
+		__mock_logger.call_count == len(calls)
+	), get_assertion_message("call count", len(calls), __mock_logger.call_count)
+
+@pytest.mark.parametrize(
+	"__mock_run_shell_command,expected_results",
+	[
+		pytest.param((0, ""), (0, "")),
+		pytest.param((0, "whatever"), (0, "")),
+		pytest.param((1, ""), (1, "")),
+		pytest.param((1, "whatever"), (1, "whatever"))
+	],
+	indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_upload_output_status(
+	__mock_run_shell_command,
+	expected_results
+):
+	executor = ModeAddModelExecutor(__ARGS.copy())
+	return_values = executor._ModeAddModelExecutor__upload_model()
+	assert (
+		return_values == expected_results
+	), get_assertion_message("return values", expected_results, return_values)
+
 def __raise_tarfile_exception(is_read_error):
 	if is_read_error:
 		raise __READ_ERROR
@@ -210,6 +303,14 @@ def __mock_logger_yellow():
 		mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
 		yield mock_method
 
+@pytest.fixture(autouse=True)
+def __mock_logger_green():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.green"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"green-{text}-green"
+		yield mock_method
+
 @pytest.fixture(params=[(False, False)])
 def __mock_tarfile_open(request):
 	raises_exception = request.param[0]
@@ -226,3 +327,31 @@ def __mock_input(request):
 	with patch("builtins.input") as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_os_path_abspath():
+	with patch("os.path.abspath") as mock_method:
+		mock_method.side_effect = lambda path: f"abs-{path}-abs"
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_run_shell_command(request):
+  with patch(
+    "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
+  ) as mock_method:
+    mock_method.return_value = request.param
+    yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_os_remove():
+	with patch("os.remove") as mock_method:
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_sync_program_path():
+	with patch.object(
+		ModeAddModelExecutor,
+		"_ModeAddModelExecutor__SYNC_PROGRAM_PATH",
+		"./dist/bin/xmipp_sync_data"
+	) as mock_object:
+		yield mock_object
