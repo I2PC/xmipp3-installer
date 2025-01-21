@@ -40,7 +40,7 @@ class InstallationManager:
       logger.log_error("", ret_code=errors.INTERRUPTED_ERROR, add_portal_link=False)
       return errors.INTERRUPTED_ERROR
     if ret_code:
-      logger.log_error(output, ret_code=ret_code)
+      logger.log_error(output, ret_code=ret_code, add_portal_link=ret_code != errors.INTERRUPTED_ERROR)
     if (
       self.mode_executor.sends_installation_info and 
       self.config_values.get(variables.SEND_INSTALLATION_STATISTICS, False)
