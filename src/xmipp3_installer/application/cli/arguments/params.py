@@ -12,11 +12,11 @@ PARAM_SHORT = 'short'
 PARAM_JOBS = 'jobs'
 PARAM_BRANCH = 'branch'
 PARAM_MODELS_DIRECTORY = 'models-directory'
-PARAM_TEST_NAME = 'test-name'
+PARAM_TEST_NAME = 'testName'
 PARAM_SHOW_TESTS = 'show-tests'
 PARAM_GIT_COMMAND = 'git-command'
 PARAM_LOGIN = 'login'
-PARAM_MODEL_PATH = 'model-path'
+PARAM_MODEL_PATH = 'modelPath'
 PARAM_UPDATE = 'update'
 PARAM_OVERWRITE = 'overwrite'
 PARAM_KEEP_OUTPUT = "keep-output"
@@ -41,7 +41,7 @@ PARAMS = {
 		DESCRIPTION: f"Directory where models will be saved. Default is \"{DEFAULT_BUILD_DIR}\"."
 	},
 	PARAM_TEST_NAME: {
-		SHORT_VERSION: "testName",
+		SHORT_VERSION: PARAM_TEST_NAME,
 		DESCRIPTION: "Run certain test. If combined with --show, greps the test name from the test list."
 	},
 	PARAM_SHOW_TESTS: {
@@ -57,7 +57,7 @@ PARAMS = {
 		DESCRIPTION: "Login (usr@server) for remote host to upload the model with. Must have write permisions to such machine."
 	},
 	PARAM_MODEL_PATH: {
-		SHORT_VERSION: "modelPath",
+		SHORT_VERSION: PARAM_MODEL_PATH,
 		DESCRIPTION: "Path to the model to upload to remote host."
 	},
 	PARAM_UPDATE: {
