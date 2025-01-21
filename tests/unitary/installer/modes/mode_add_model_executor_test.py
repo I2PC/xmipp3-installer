@@ -22,6 +22,7 @@ __ARGS = {
 }
 __READ_ERROR = tarfile.ReadError("could not read")
 __COMPRESSION_ERROR = tarfile.CompressionError("could not compress")
+__RETURN_VALUES_STR = "return values"
 
 def test_implements_interface_mode_executor():
 	executor = ModeAddModelExecutor(__ARGS.copy())
@@ -139,7 +140,7 @@ def test_returns_expected_outputs_when_generating_compressed_file(
 	return_values = executor._ModeAddModelExecutor__generate_compressed_file()
 	assert (
 		return_values == expected_return_values
-	), get_assertion_message("return values", expected_return_values, return_values)
+	), get_assertion_message(__RETURN_VALUES_STR, expected_return_values, return_values)
 
 def test_calls_logger_when_getting_confirmation(
 	__mock_logger,
@@ -268,7 +269,7 @@ def test_returns_expected_upload_output_status(
 	return_values = executor._ModeAddModelExecutor__upload_model()
 	assert (
 		return_values == expected_results
-	), get_assertion_message("return values", expected_results, return_values)
+	), get_assertion_message(__RETURN_VALUES_STR, expected_results, return_values)
 
 def test_calls_logger_if_model_path_is_not_dir_when_running_executor(
 	__mock_os_path_isdir,
@@ -352,7 +353,7 @@ def test_returns_expected_values_when_running_executor(
 	return_values = executor.run()
 	assert (
 		return_values == expected_return_values
-	), get_assertion_message("return values", expected_return_values, return_values)
+	), get_assertion_message(__RETURN_VALUES_STR, expected_return_values, return_values)
 
 def __raise_tarfile_exception(is_read_error):
 	if is_read_error:
