@@ -20,17 +20,17 @@ def test_returns_short_version():
 	), get_assertion_message("short version", expected_version, result.stdout)
 
 @pytest.mark.parametrize(
-	"__setup_config_evironment,expected_output_function",
+	"__setup_evironment,expected_output_function",
 	[
 		pytest.param((False, False), mode_version.get_full_info_before_config),
 		pytest.param((False, True), mode_version.get_full_info_before_config_with_sources),
 		pytest.param((True, False), mode_version.get_full_info_after_config_without_sources),
 		pytest.param((True, True), mode_version.get_full_info_after_config_with_sources)
 	],
-	indirect=["__setup_config_evironment"]
+	indirect=["__setup_evironment"]
 )
-def test_returns_full_version_with_no_sources(
-	__setup_config_evironment,
+def test_returns_full_version(
+	__setup_evironment,
 	expected_output_function
 ):
 	command_words = ["xmipp3_installer", "version"]
@@ -62,7 +62,7 @@ def __make_source_directories():
 		os.makedirs(source_path, exist_ok=True)
 
 @pytest.fixture(params=[False, False])
-def __setup_config_evironment(request):
+def __setup_evironment(request):
 	lib_file_exist, sources_exist = request.param
 	try:
 		if not lib_file_exist:
