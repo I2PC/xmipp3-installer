@@ -9,9 +9,10 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import shell_handler
 
-class ModeAddModelExecutor(mode_executor.ModeExecutor):
-	__SYNC_PROGRAM_PATH = os.path.join(".", "dist", "bin", "xmipp_sync_data")
+_SYNC_PROGRAM_PATH = os.path.join(".", "dist", "bin")
+_SYNC_PROGRAM_NAME = "xmipp_sync_data"
 
+class ModeAddModelExecutor(mode_executor.ModeExecutor):
 	def __init__(self, args: Dict):
 		"""
 		### Constructor.
@@ -42,9 +43,10 @@ class ModeAddModelExecutor(mode_executor.ModeExecutor):
 			]))
 			return errors.IO_ERROR, ""
 		
-		if not os.path.exists(self.__SYNC_PROGRAM_PATH):
+		syn_program_full_path = os.path.join(_SYNC_PROGRAM_PATH, _SYNC_PROGRAM_NAME)
+		if not os.path.exists(syn_program_full_path):
 			logger('\n'.join([
-				logger.red(f"{self.__SYNC_PROGRAM_PATH} does not exist."),
+				logger.red(f"{syn_program_full_path} does not exist."),
 				logger.red("Xmipp needs to be compiled successfully before running this command!")
 			]))
 			return errors.IO_ERROR, ""
@@ -97,7 +99,10 @@ class ModeAddModelExecutor(mode_executor.ModeExecutor):
 		update = '--update' if self.update else ''
 		args = f"{self.login}, {os.path.abspath(self.tar_file_path)}, {constants.SCIPION_SOFTWARE_EM}, {update}"	
 		logger(f"Trying to upload the model using {self.login} as login")
-		ret_code, output = shell_handler.run_shell_command(f"{self.__SYNC_PROGRAM_PATH} upload {args}")
+		ret_code, output = shell_handler.run_shell_command(
+			f"{_SYNC_PROGRAM_NAME} upload {args}",
+			cwd=_SYNC_PROGRAM_PATH
+		)
 		if not ret_code:
 			output = ""
 			logger(logger.green(f"{self.model_name} model successfully uploaded! Removing the local .tgz"))
