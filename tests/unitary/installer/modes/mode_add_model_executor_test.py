@@ -5,6 +5,7 @@ import pytest
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.modes import mode_add_model_executor
 from xmipp3_installer.installer.modes.mode_add_model_executor import ModeAddModelExecutor
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 
@@ -206,7 +207,8 @@ def test_calls_run_shell_command_when_uploading_model(
 		expected_update_str
 	])
 	__mock_run_shell_command.assert_called_once_with(
-		f"{__mock_sync_program_path} upload {args}"
+		f"{mode_add_model_executor._SYNC_PROGRAM_NAME} upload {args}",
+		cwd=__mock_sync_program_path
 	)
 
 def test_calls_os_remove_when_upload_is_ok_when_uploading_model(
@@ -288,12 +290,14 @@ def test_calls_logger_if_sync_program_path_does_not_exist_when_running_executor(
 	__mock_os_path_exists,
 	__mock_logger,
 	__mock_logger_red,
+	__mock_os_path_join,
 	__mock_sync_program_path
 ):
 	__mock_os_path_exists.return_value = False
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	executor.run()
-	error_message = __mock_logger_red(f"{__mock_sync_program_path} does not exist.")
+	expected_full_path = __mock_os_path_join(__mock_sync_program_path, mode_add_model_executor._SYNC_PROGRAM_NAME)
+	error_message = __mock_logger_red(f"{expected_full_path} does not exist.")
 	error_message += "\n"
 	error_message += __mock_logger_red("Xmipp needs to be compiled successfully before running this command!")
 	__mock_logger.assert_called_once_with(error_message)
@@ -441,11 +445,11 @@ def __mock_os_remove():
 		yield mock_method
 
 @pytest.fixture(autouse=True)
-def __mock_sync_program_path():
+def __mock_sync_program_path(__mock_os_path_join):
 	with patch.object(
-		ModeAddModelExecutor,
-		"_ModeAddModelExecutor__SYNC_PROGRAM_PATH",
-		"./dist/bin/xmipp_sync_data"
+		mode_add_model_executor,
+		"_SYNC_PROGRAM_PATH",
+		"./dist/bin"
 	) as mock_object:
 		yield mock_object
 
