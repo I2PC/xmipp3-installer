@@ -46,7 +46,7 @@ jobs:
         run: |
           chmod +x $SCRIPT_PATH
           poetry run $SCRIPT_PATH unitary
-
+      
       - name: Run integration tests
         env:
           SCRIPT_PATH: ./scripts/run-tests.sh
