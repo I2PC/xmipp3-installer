@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "UPLOAD FAKE INVOKED SUCCESSFULLY"

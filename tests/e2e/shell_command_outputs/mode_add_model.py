@@ -7,7 +7,7 @@ from xmipp3_installer.installer.modes import mode_add_model_executor
 LOGIN = "test@test.com"
 MODEL_NAME = "fake-model"
 NON_EXISTING_MODEL_PATH = "./does-not-exist"
-SYNC_PROGRAM_NAME = f"{mode_add_model_executor._SYNC_PROGRAM_NAME}.py"
+SYNC_PROGRAM_NAME = f"{mode_add_model_executor._SYNC_PROGRAM_NAME}.sh"
 
 __IO_ERROR = logger.red("""Error 7: Input/output error.
 This error can be caused by the installer not being able to read/write/create/delete a file. Check your permissions on this directory. 
