@@ -196,7 +196,8 @@ def test_calls_run_shell_command_when_uploading_model(
 	expected_update_str,
 	__mock_run_shell_command,
 	__mock_os_path_abspath,
-	__mock_sync_program_path
+	__mock_sync_program_path,
+	__mock_os_path_join
 ):
 	executor = ModeAddModelExecutor({**__ARGS, 'update': update})
 	executor._ModeAddModelExecutor__upload_model()
@@ -206,8 +207,9 @@ def test_calls_run_shell_command_when_uploading_model(
 		constants.SCIPION_SOFTWARE_EM,
 		expected_update_str
 	])
+	expected_relative_call_path = __mock_os_path_join(".", mode_add_model_executor._SYNC_PROGRAM_NAME)
 	__mock_run_shell_command.assert_called_once_with(
-		f"{mode_add_model_executor._SYNC_PROGRAM_NAME} upload {args}",
+		f"{expected_relative_call_path} upload {args}",
 		cwd=__mock_sync_program_path
 	)
 
