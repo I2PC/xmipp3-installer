@@ -1,4 +1,5 @@
 import os
+import stat
 import sys
 from io import StringIO
 from unittest.mock import patch
@@ -63,9 +64,8 @@ def __get_executable_file(name):
 	)
 
 def __add_execution_permission(file_path):
-	execution_permission_mask = 0o111
 	current_mode = os.stat(file_path).st_mode
-	new_mode = current_mode | execution_permission_mask
+	new_mode = current_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
 	os.chmod(file_path, new_mode)
 
 @pytest.fixture(params=[False])
