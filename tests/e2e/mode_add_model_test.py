@@ -62,21 +62,29 @@ def __get_executable_file(name):
 		name
 	)
 
+def __add_execution_permission(file_path):
+	execution_permission_mask = 0o111
+	current_mode = os.stat(file_path).st_mode
+	new_mode = current_mode | execution_permission_mask
+	os.chmod(file_path, new_mode)
+
 @pytest.fixture(params=[False])
 def __setup_evironment(request, __mock_sync_program_name):
 	is_compiled = request.param
 	sync_program_root = __get_sync_program_root()
+	dest_executable_file = os.path.join(
+		mode_add_model_executor._SYNC_PROGRAM_PATH,
+		mode_add_model_executor._SYNC_PROGRAM_NAME
+	)
 	try:
 		if not is_compiled:
 			delete_paths([sync_program_root])
 		else:
 			copy_file_from_reference(
 				__get_executable_file(__mock_sync_program_name),
-				os.path.join(
-					mode_add_model_executor._SYNC_PROGRAM_PATH,
-					mode_add_model_executor._SYNC_PROGRAM_NAME
-				)
+				dest_executable_file
 			)
+			__add_execution_permission(dest_executable_file)
 		yield is_compiled
 	finally:
 		delete_paths([sync_program_root])
