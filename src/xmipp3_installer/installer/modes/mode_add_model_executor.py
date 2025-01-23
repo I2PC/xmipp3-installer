@@ -101,8 +101,9 @@ class ModeAddModelExecutor(mode_executor.ModeExecutor):
 		logger(f"Trying to upload the model using {self.login} as login")
 		logger(logger.yellow(shell_handler.run_shell_command("pwd", cwd=_SYNC_PROGRAM_PATH)))
 		logger(logger.yellow(shell_handler.run_shell_command("ls", cwd=_SYNC_PROGRAM_PATH)))
+		relative_path = os.path.join(".", _SYNC_PROGRAM_NAME)
 		ret_code, output = shell_handler.run_shell_command(
-			f"{_SYNC_PROGRAM_NAME} upload {args}",
+			f"{relative_path} upload {args}",
 			cwd=_SYNC_PROGRAM_PATH
 		)
 		if not ret_code:
