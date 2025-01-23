@@ -102,7 +102,7 @@ class ModeAddModelExecutor(mode_executor.ModeExecutor):
 		#logger(logger.yellow(shell_handler.run_shell_command("ls -l", cwd=_SYNC_PROGRAM_PATH)))
 		#logger(logger.yellow(os.stat(os.path.join(_SYNC_PROGRAM_PATH, _SYNC_PROGRAM_NAME)).st_mode))
 		ret_code, output = shell_handler.run_shell_command(
-			f"{_SYNC_PROGRAM_NAME} upload {args}",
+			f"{os.path.abspath(_SYNC_PROGRAM_NAME)} upload {args}",
 			cwd=_SYNC_PROGRAM_PATH
 		)
 		if not ret_code:
