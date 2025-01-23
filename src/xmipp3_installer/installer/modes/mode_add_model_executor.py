@@ -100,6 +100,7 @@ class ModeAddModelExecutor(mode_executor.ModeExecutor):
 		args = f"{self.login}, {os.path.abspath(self.tar_file_path)}, {constants.SCIPION_SOFTWARE_EM}, {update}"	
 		logger(f"Trying to upload the model using {self.login} as login")
 		logger(logger.yellow(shell_handler.run_shell_command("ls -l", cwd=_SYNC_PROGRAM_PATH)))
+		logger(logger.yellow(os.stat(os.path.join(_SYNC_PROGRAM_PATH, _SYNC_PROGRAM_NAME)).st_mode))
 		relative_path = os.path.join(".", _SYNC_PROGRAM_NAME)
 		ret_code, output = shell_handler.run_shell_command(
 			f"{relative_path} upload {args}",
