@@ -40,6 +40,13 @@ jobs:
       - name: Use CLI as Python module
         run: poetry run python -m ${{ vars.MODULE_NAME }} -h
       
+      - name: Run unitary tests
+        env:
+          SCRIPT_PATH: ./scripts/run-tests.sh
+        run: |
+          chmod +x $SCRIPT_PATH
+          poetry run $SCRIPT_PATH unitary
+
       - name: Run integration tests
         env:
           SCRIPT_PATH: ./scripts/run-tests.sh
