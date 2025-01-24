@@ -38,15 +38,18 @@ def test_writes_expected_config_file(
 		command_words.append("-o")
 	subprocess.run(command_words, stdout=subprocess.PIPE)
 	__change_config_file_date()
-	expected_file = __get_test_config_file(expected_file, False)
-	normalize_line_endings(expected_file)
+	copy_file_from_reference(
+		__get_test_config_file(expected_file, False),
+		__setup_config_evironment
+	)
+	normalize_line_endings(__setup_config_evironment)
 	assert (
 		filecmp.cmp(
 			constants.CONFIG_FILE,
-			expected_file,
+			__setup_config_evironment,
 			shallow=False
 		)
-	), f"Expected:\n{get_file_content(expected_file)}\n\nReceived:\n{get_file_content(constants.CONFIG_FILE)}"
+	), f"Expected:\n{get_file_content(__setup_config_evironment)}\n\nReceived:\n{get_file_content(constants.CONFIG_FILE)}"
 
 def __get_test_config_file(file_name, input):
 	return get_test_file(
@@ -71,7 +74,7 @@ def __setup_config_evironment(request):
 	exists, copy_name = request.param
 	try:
 		if not exists:
-			delete_paths([constants.CONFIG_FILE])
+			delete_paths([constants.CONFIG_FILE, copy_name])
 		else:
 			copy_file_from_reference(
 				__get_test_config_file(copy_name, True),
@@ -79,4 +82,4 @@ def __setup_config_evironment(request):
 			)
 		yield copy_name
 	finally:
-		delete_paths([constants.CONFIG_FILE])
+		delete_paths([constants.CONFIG_FILE, copy_name])
