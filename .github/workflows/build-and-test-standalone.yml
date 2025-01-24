@@ -64,6 +64,11 @@ jobs:
           chmod +x $SCRIPT_PATH
           poetry run $SCRIPT_PATH e2e
       
+      - name: Generate coverage files
+        run: |
+          python -m coverage combine ./conf/coverage
+          python -m coverage xml
+      
       - name: SonarQube Scan
         if: matrix.python-version == '3.12'
         uses: SonarSource/sonarqube-scan-action@v4
