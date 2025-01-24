@@ -66,7 +66,7 @@ jobs:
       
       - name: Generate coverage files
         run: |
-          poetry run python -m coverage combine ./conf/coverage
+          poetry run python -m coverage combine -i ./conf/coverage
           poetry run python -m coverage xml
       
       - name: SonarQube Scan
