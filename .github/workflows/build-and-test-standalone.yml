@@ -62,6 +62,7 @@ jobs:
           poetry run $SCRIPT_PATH e2e
       
       - name: SonarQube Scan
+        if: matrix.python-version == '3.12'
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
