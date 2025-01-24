@@ -1,4 +1,5 @@
 import os
+import stat
 import sys
 from io import StringIO
 from unittest.mock import patch
@@ -11,7 +12,7 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes import mode_add_model_executor
 
 from .shell_command_outputs import mode_add_model
-from .. import copy_file_from_reference, delete_paths, get_assertion_message
+from .. import copy_file_from_reference, delete_paths, get_assertion_message, get_test_file
 
 __SYNC_PROGRAM_ROOT = "dist"
 __MODEL_PATH = f"./tests/e2e/test_files/{mode_add_model.MODEL_NAME}"
@@ -55,28 +56,28 @@ def __get_sync_program_root():
 	root_components = path_components[:root_index + 1]
 	return os.path.join(*root_components)
 
-def __get_executable_file(name):
-	return os.path.join(
-		os.path.dirname(os.path.abspath(__file__)),
-		"test_files",
-		name
-	)
+def __add_execution_permission(file_path):
+	current_mode = os.stat(file_path).st_mode
+	new_mode = current_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+	os.chmod(file_path, new_mode)
 
 @pytest.fixture(params=[False])
 def __setup_evironment(request, __mock_sync_program_name):
 	is_compiled = request.param
 	sync_program_root = __get_sync_program_root()
+	dest_executable_file = os.path.join(
+		mode_add_model_executor._SYNC_PROGRAM_PATH,
+		mode_add_model_executor._SYNC_PROGRAM_NAME
+	)
 	try:
 		if not is_compiled:
 			delete_paths([sync_program_root])
 		else:
 			copy_file_from_reference(
-				__get_executable_file(__mock_sync_program_name),
-				os.path.join(
-					mode_add_model_executor._SYNC_PROGRAM_PATH,
-					mode_add_model_executor._SYNC_PROGRAM_NAME
-				)
+				get_test_file(__mock_sync_program_name),
+				dest_executable_file
 			)
+			__add_execution_permission(dest_executable_file)
 		yield is_compiled
 	finally:
 		delete_paths([sync_program_root])

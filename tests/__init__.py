@@ -75,3 +75,11 @@ def delete_paths(paths: List[str]):
 			shutil.rmtree(path, ignore_errors=True)
 		else:
 			os.remove(path)
+
+def get_test_file(file_path: str):
+	return os.path.join(
+		os.path.dirname(os.path.abspath(__file__)),
+		"e2e",
+		"test_files",
+		file_path
+	)
