@@ -8,7 +8,7 @@ from xmipp3_installer.installer.tmp import versions
 
 from .shell_command_outputs import mode_version
 from .. import (
-	get_assertion_message, copy_file_from_reference, delete_paths
+	get_assertion_message, copy_file_from_reference, delete_paths, get_test_file
 )
 
 def test_returns_short_version():
@@ -40,13 +40,6 @@ def test_returns_full_version(
 		result.stdout == expected_output
 	), get_assertion_message("full version", expected_output, result.stdout)
 
-def __get_test_library_versions_file():
-	return os.path.join(
-		os.path.dirname(os.path.abspath(__file__)),
-		"test_files",
-		"libraries-with-versions.txt"
-	)
-
 def __delete_library_versions_file():
 	delete_paths([os.path.dirname(constants.LIBRARY_VERSIONS_FILE)])
 
@@ -69,7 +62,7 @@ def __setup_evironment(request):
 			__delete_library_versions_file()
 		else:
 			copy_file_from_reference(
-				__get_test_library_versions_file(),
+				get_test_file("libraries-with-versions.txt"),
 				constants.LIBRARY_VERSIONS_FILE
 			)
 		if not sources_exist:
