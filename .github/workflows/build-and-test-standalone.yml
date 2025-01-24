@@ -63,12 +63,11 @@ jobs:
         run: |
           chmod +x $SCRIPT_PATH
           poetry run $SCRIPT_PATH e2e
-          poetry run python -m coverage report --data-file=./conf/coverage/.coverage.e2e
       
       - name: Generate coverage files
         run: |
           poetry run python -m coverage combine ./conf/coverage
-          poetry run python -m coverage xml
+          poetry run python -m coverage xml -i
       
       - name: SonarQube Scan
         if: matrix.python-version == '3.12'
