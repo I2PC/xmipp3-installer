@@ -66,8 +66,8 @@ jobs:
       
       - name: Generate coverage files
         run: |
-          python -m coverage combine ./conf/coverage
-          python -m coverage xml
+          poetry run python -m coverage combine ./conf/coverage
+          poetry run python -m coverage xml
       
       - name: SonarQube Scan
         if: matrix.python-version == '3.12'
