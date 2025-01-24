@@ -50,6 +50,7 @@ Push-Location $ROOT_DIR
       Run-Tests "unitary" $RCFILE_UNITARY $CONFIGFILE_UNITARY
       Run-Tests "integration" $RCFILE_INTEGRATION $CONFIGFILE_INTEGRATION
       Run-Tests "e2e" $RCFILE_E2E $CONFIGFILE_E2E
+      Invoke-Expression "python -m coverage combine $RCFOLDER"
     }
     default {
       Write-Host "Invalid test type: $TestType"
@@ -58,7 +59,6 @@ Push-Location $ROOT_DIR
     }
   }
 
-  Invoke-Expression "python -m coverage combine ./conf/coverage"
   Invoke-Expression "python -m coverage xml"
 
 Pop-Location
