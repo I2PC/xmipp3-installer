@@ -1,6 +1,8 @@
 [run]
 branch=True
 data_file = ./conf/coverage/.coverage.e2e
+omit = 
+  dist/**
 
 [report]
 skip_empty = true
@@ -9,4 +11,3 @@ show_missing = true
 omit = 
   tests/__init__.py
   src/**
-  xmipp_sync_data.py
