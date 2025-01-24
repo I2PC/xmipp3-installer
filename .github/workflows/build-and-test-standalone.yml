@@ -49,7 +49,6 @@ jobs:
         run: |
           chmod +x $SCRIPT_PATH
           poetry run $SCRIPT_PATH unitary
-          poetry run python -m coverage report --data-file=./conf/coverage/.coverage.unitary
       
       - name: Run integration tests
         env:
@@ -57,7 +56,6 @@ jobs:
         run: |
           chmod +x $SCRIPT_PATH
           poetry run $SCRIPT_PATH integration
-          poetry run python -m coverage report --data-file=./conf/coverage/.coverage.integration
       
       - name: Run e2e tests
         env:

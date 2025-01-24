@@ -1,8 +1,6 @@
 [run]
 branch=True
 data_file = ./conf/coverage/.coverage.unitary
-omit = 
-  dist/**
 
 [report]
 skip_empty = true
