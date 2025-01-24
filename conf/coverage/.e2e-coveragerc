@@ -1,6 +1,8 @@
 [run]
 branch=True
 data_file = ./conf/coverage/.coverage.e2e
+omit = 
+  dist/**
 
 [report]
 skip_empty = true
