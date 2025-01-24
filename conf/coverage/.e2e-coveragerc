@@ -9,4 +9,4 @@ show_missing = true
 omit = 
   tests/__init__.py
   src/**
-  dist/**
+  xmipp_sync_data.py
