@@ -8,7 +8,7 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 
 from .. import (
-	get_file_content, normalize_line_endings,
+	get_file_content, normalize_line_endings, get_test_file,
 	copy_file_from_reference, delete_paths
 )
 
@@ -49,12 +49,12 @@ def test_writes_expected_config_file(
 	), f"Expected:\n{get_file_content(expected_file)}\n\nReceived:\n{get_file_content(constants.CONFIG_FILE)}"
 
 def __get_test_config_file(file_name, input):
-	return os.path.join(
-		os.path.dirname(os.path.abspath(__file__)),
-		"test_files",
-		"conf_files",
-		"input" if input else "output",
-		file_name
+	return get_test_file(
+		os.path.join(
+			"conf_files",
+			"input" if input else "output",
+			file_name
+		)
 	)
 
 def __change_config_file_date():
