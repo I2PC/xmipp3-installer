@@ -47,6 +47,7 @@ pushd "${ROOT_DIR}" > /dev/null
             run_tests "integration" $RCFILE_INTEGRATION $CONFIGFILE_INTEGRATION
             run_tests "e2e" $RCFILE_E2E $CONFIGFILE_E2E
             python -m coverage combine $RCFOLDER
+            python -m coverage xml
             ;;
         *)
             echo "Invalid test type: $TEST_TYPE"
@@ -55,6 +56,5 @@ pushd "${ROOT_DIR}" > /dev/null
             ;;
     esac
 
-    python -m coverage xml
 
 popd > /dev/null
