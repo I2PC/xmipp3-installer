@@ -2,6 +2,8 @@ name: Build package in standalone version
 on:
   workflow_dispatch:
   pull_request:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
@@ -33,7 +35,7 @@ jobs:
 
       - name: Install project
         working-directory: ${{ github.workspace }}
-        run: poetry install
+        run: poetry install --with dev
 
       - name: Use CLI standalone
         run: poetry run ${{ vars.MODULE_NAME }} -h
@@ -61,6 +63,11 @@ jobs:
         run: |
           chmod +x $SCRIPT_PATH
           poetry run $SCRIPT_PATH e2e
+      
+      - name: Generate coverage files
+        run: |
+          poetry run python -m coverage combine ./conf/coverage
+          poetry run python -m coverage xml
       
       - name: SonarQube Scan
         if: matrix.python-version == '3.12'

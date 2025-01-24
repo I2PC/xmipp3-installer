@@ -27,7 +27,7 @@ function Run-Tests {
   )
 
   Write-Host "Running $TestType tests..."
-  $pytestCommand = "python -m pytest -v --cache-clear --cov --cov-config=$RcFile -c=$ConfFile --rootdir=$ROOT_DIR --junitxml=report.xml --cov-report xml --cov-report term"
+  $pytestCommand = "python -m pytest -v --cache-clear --cov --cov-config=$RcFile -c=$ConfFile --rootdir=$ROOT_DIR --junitxml=report.xml --cov-report term"
   Invoke-Expression $pytestCommand
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
@@ -50,6 +50,8 @@ Push-Location $ROOT_DIR
       Run-Tests "unitary" $RCFILE_UNITARY $CONFIGFILE_UNITARY
       Run-Tests "integration" $RCFILE_INTEGRATION $CONFIGFILE_INTEGRATION
       Run-Tests "e2e" $RCFILE_E2E $CONFIGFILE_E2E
+      Invoke-Expression "python -m coverage combine $RCFOLDER"
+      Invoke-Expression "python -m coverage xml"
     }
     default {
       Write-Host "Invalid test type: $TestType"
@@ -57,5 +59,6 @@ Push-Location $ROOT_DIR
       exit 1
     }
   }
+
 
 Pop-Location

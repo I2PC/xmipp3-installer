@@ -1,5 +1,4 @@
 import os
-import stat
 import sys
 from io import StringIO
 from unittest.mock import patch
@@ -12,13 +11,12 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes import mode_add_model_executor
 
 from .shell_command_outputs import mode_add_model
-from .. import copy_file_from_reference, delete_paths, get_assertion_message, get_test_file
+from .. import get_assertion_message
 
-__SYNC_PROGRAM_ROOT = "dist"
 __MODEL_PATH = f"./tests/e2e/test_files/{mode_add_model.MODEL_NAME}"
 
 @pytest.mark.parametrize(
-	"__mock_sys_argv,__setup_evironment,update,"
+	"__mock_sys_argv,__mock_sync_program_path,update,"
 	"__mock_sys_stdin,expected_message",
 	[
 		pytest.param(mode_add_model.NON_EXISTING_MODEL_PATH, False, False, False, mode_add_model.NO_MODEL),
@@ -30,11 +28,11 @@ __MODEL_PATH = f"./tests/e2e/test_files/{mode_add_model.MODEL_NAME}"
 		pytest.param(__MODEL_PATH, True, False, True, mode_add_model.UPLOADED),
 		pytest.param(__MODEL_PATH, True, True, True, mode_add_model.UPLOADED)
 	],
-	indirect=["__mock_sys_argv", "__setup_evironment", "__mock_sys_stdin"]
+	indirect=["__mock_sys_argv", "__mock_sync_program_path", "__mock_sys_stdin"]
 )
 def test_add_model(
 	__mock_sys_argv,
-	__setup_evironment,
+	__mock_sync_program_path,
 	update,
 	__mock_sys_stdin,
 	expected_message,
@@ -49,38 +47,6 @@ def test_add_model(
 	assert (
 		output == expected_message
 	), get_assertion_message("add model output", expected_message, output)
-
-def __get_sync_program_root():
-	path_components = os.path.normpath(mode_add_model_executor._SYNC_PROGRAM_PATH).split(os.sep)
-	root_index = path_components.index(__SYNC_PROGRAM_ROOT)
-	root_components = path_components[:root_index + 1]
-	return os.path.join(*root_components)
-
-def __add_execution_permission(file_path):
-	current_mode = os.stat(file_path).st_mode
-	new_mode = current_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-	os.chmod(file_path, new_mode)
-
-@pytest.fixture(params=[False])
-def __setup_evironment(request, __mock_sync_program_name):
-	is_compiled = request.param
-	sync_program_root = __get_sync_program_root()
-	dest_executable_file = os.path.join(
-		mode_add_model_executor._SYNC_PROGRAM_PATH,
-		mode_add_model_executor._SYNC_PROGRAM_NAME
-	)
-	try:
-		if not is_compiled:
-			delete_paths([sync_program_root])
-		else:
-			copy_file_from_reference(
-				get_test_file(__mock_sync_program_name),
-				dest_executable_file
-			)
-			__add_execution_permission(dest_executable_file)
-		yield is_compiled
-	finally:
-		delete_paths([sync_program_root])
 
 @pytest.fixture(autouse=True, params=[__MODEL_PATH])
 def __mock_sys_argv(request):
@@ -111,5 +77,16 @@ def __mock_sync_program_name():
 		mode_add_model_executor,
 		"_SYNC_PROGRAM_NAME",
 		mode_add_model.SYNC_PROGRAM_NAME
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True, params=[False])
+def __mock_sync_program_path(request):
+	model_path = os.path.dirname(__MODEL_PATH)
+	new_value = model_path if request.param else mode_add_model_executor._SYNC_PROGRAM_PATH
+	with patch.object(
+		mode_add_model_executor,
+		"_SYNC_PROGRAM_PATH",
+		new_value
 	) as mock_object:
 		yield mock_object

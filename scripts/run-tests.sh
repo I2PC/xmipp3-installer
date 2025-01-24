@@ -21,7 +21,7 @@ run_tests() {
     local conffile=$3
 
     echo "Running ${test_type} tests..."
-    python -m pytest -v --cache-clear --cov --cov-config=$rcfile -c=$conffile --rootdir="${ROOT_DIR}" --junitxml=report.xml --cov-report xml --cov-report term
+    python -m pytest -v --cache-clear --cov --cov-config=$rcfile -c=$conffile --rootdir="${ROOT_DIR}" --junitxml=report.xml --cov-report term
     PYTEST_EXIT_CODE=$?
     if [ $PYTEST_EXIT_CODE -ne 0 ]; then
         exit $PYTEST_EXIT_CODE
@@ -46,6 +46,8 @@ pushd "${ROOT_DIR}" > /dev/null
             run_tests "unitary" $RCFILE_UNITARY $CONFIGFILE_UNITARY
             run_tests "integration" $RCFILE_INTEGRATION $CONFIGFILE_INTEGRATION
             run_tests "e2e" $RCFILE_E2E $CONFIGFILE_E2E
+            python -m coverage combine $RCFOLDER
+            python -m coverage xml
             ;;
         *)
             echo "Invalid test type: $TEST_TYPE"
@@ -53,5 +55,6 @@ pushd "${ROOT_DIR}" > /dev/null
             exit 1
             ;;
     esac
+
 
 popd > /dev/null
