@@ -35,7 +35,7 @@ jobs:
 
       - name: Install project
         working-directory: ${{ github.workspace }}
-        run: poetry install
+        run: poetry install --with dev
 
       - name: Use CLI standalone
         run: poetry run ${{ vars.MODULE_NAME }} -h
