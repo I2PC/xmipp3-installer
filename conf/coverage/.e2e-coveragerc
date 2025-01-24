@@ -9,3 +9,4 @@ show_missing = true
 omit = 
   tests/__init__.py
   src/**
+  dist/**
