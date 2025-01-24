@@ -21,7 +21,7 @@ run_tests() {
     local conffile=$3
 
     echo "Running ${test_type} tests..."
-    python -m pytest -v --cache-clear --cov --cov-config=$rcfile -c=$conffile --rootdir="${ROOT_DIR}" --junitxml=report.xml --cov-report xml --cov-report term
+    python -m pytest -v --cache-clear --cov --cov-config=$rcfile -c=$conffile --rootdir="${ROOT_DIR}" --junitxml=report.xml --cov-report term
     PYTEST_EXIT_CODE=$?
     if [ $PYTEST_EXIT_CODE -ne 0 ]; then
         exit $PYTEST_EXIT_CODE
@@ -53,5 +53,8 @@ pushd "${ROOT_DIR}" > /dev/null
             exit 1
             ;;
     esac
+
+    python -m coverage combine ./conf/coverage
+    python -m coverage xml
 
 popd > /dev/null

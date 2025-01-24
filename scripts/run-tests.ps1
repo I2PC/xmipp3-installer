@@ -27,7 +27,7 @@ function Run-Tests {
   )
 
   Write-Host "Running $TestType tests..."
-  $pytestCommand = "python -m pytest -v --cache-clear --cov --cov-config=$RcFile -c=$ConfFile --rootdir=$ROOT_DIR --junitxml=report.xml --cov-report xml --cov-report term"
+  $pytestCommand = "python -m pytest -v --cache-clear --cov --cov-config=$RcFile -c=$ConfFile --rootdir=$ROOT_DIR --junitxml=report.xml --cov-report term"
   Invoke-Expression $pytestCommand
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
@@ -57,5 +57,8 @@ Push-Location $ROOT_DIR
       exit 1
     }
   }
+
+  Invoke-Expression "python -m coverage combine ./conf/coverage"
+  Invoke-Expression "python -m coverage xml"
 
 Pop-Location
