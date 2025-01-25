@@ -24,10 +24,6 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 	#### Return:
 	- (dict | None): Dictionary with the required info or None if user id could not be produced.
 	"""
-	user_id = __get_user_id()
-	if user_id is None:
-		return
-	
 	library_versions = cmake_handler.get_library_versions_from_cmake_file(
 		constants.LIBRARY_VERSIONS_FILE
 	)
@@ -44,7 +40,7 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 
 	return {
 		"user": {
-			"userId": user_id
+			"userId": __get_user_id()
 		},
 		"version": {
 			"os": get_os_release_name(),
@@ -159,11 +155,11 @@ def __find_mac_address_in_lines(lines: List[str]) -> Optional[str]:
 	"""
 	for line_index in range(len(lines) - 1):
 		line = lines[line_index]
-		match = re.match(r"^\d+: (enp|wlp|eth)\w+", line)
+		match = re.match(r"^\d+: (enp|wlp|eth|ens)\w+", line)
 		if not match:
 			continue
 		interface_name = match.group(1)
-		if interface_name.startswith(('enp', 'wlp', 'eth')):
+		if interface_name.startswith(('enp', 'wlp', 'eth', 'ens')):
 			return re.search(
 				r"link/ether ([0-9a-f:]{17})",
 				lines[line_index + 1]
