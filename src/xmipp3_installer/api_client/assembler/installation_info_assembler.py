@@ -96,16 +96,16 @@ def __get_installation_branch_name(branch_name: str) -> str:
 	else:
 		return branch_name
 
-def __get_user_id() -> Optional[str]:
+def __get_user_id() -> str:
 	"""
 	### Returns the unique user id for this machine.
 	
 	#### Returns:
-	- (str | None): User id, or None if there were any errors.
+	- (str): User id, or 'Anoymous' if there were any errors.
 	"""
 	mac_address = __get_mac_address()
 	if not mac_address:
-		return
+		return "Anonymous"
 	
 	sha256 = hashlib.sha256()
 	sha256.update(mac_address.encode())
