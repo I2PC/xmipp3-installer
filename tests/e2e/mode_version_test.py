@@ -5,10 +5,11 @@ import pytest
 
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
+from xmipp3_installer.repository import file_operations
 
 from .shell_command_outputs import mode_version
 from .. import (
-	get_assertion_message, copy_file_from_reference, delete_paths, get_test_file
+	get_assertion_message, copy_file_from_reference, get_test_file
 )
 
 def test_returns_short_version():
@@ -41,10 +42,12 @@ def test_returns_full_version(
 	), get_assertion_message("full version", expected_output, result.stdout)
 
 def __delete_library_versions_file():
-	delete_paths([os.path.dirname(constants.LIBRARY_VERSIONS_FILE)])
+	file_operations.delete_paths(
+		[os.path.dirname(constants.LIBRARY_VERSIONS_FILE)]
+	)
 
 def __delete_sources():
-	delete_paths([
+	file_operations.delete_paths([
 		os.path.join(constants.SOURCES_PATH, source)
 		for source in constants.XMIPP_SOURCES
 	])
