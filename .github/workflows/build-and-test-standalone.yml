@@ -95,7 +95,7 @@ jobs:
           path: ${{ github.workspace }}
       
       - name: Unzip reports
-        run: unzip test-reports.zip
+        run: ls && unzip test-reports.zip
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
