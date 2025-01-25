@@ -94,8 +94,13 @@ jobs:
           name: test-reports
           path: ${{ github.workspace }}
       
+      - name: Test paths
+        run: |
+          sudo apt install -y tree
+          tree
+      
       - name: Unzip reports
-        run: ls && unzip test-reports.zip
+        run: unzip reports.zip
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
