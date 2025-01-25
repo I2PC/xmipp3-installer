@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -39,7 +39,13 @@ jobs:
       
       - name: Use CLI as Python module
         run: poetry run python -m ${{ vars.MODULE_NAME }} -h
-      
+        
+    #- name: Check source code with Ruff
+    #  run: poetry run python -m ruff check --config ./conf/ruff-src.toml
+    #
+    #- name: Check tests code with Ruff
+    #  run: poetry run python -m ruff check --config ./conf/ruff-tests.toml
+
       - name: Run unitary tests
         env:
           SCRIPT_PATH: ./scripts/run-tests.sh
@@ -72,15 +78,9 @@ jobs:
         with:
           name: test-reports
           path: reports.zip
-          
-      #- name: Check source code with Ruff
-      #  run: poetry run python -m ruff check --config ./conf/ruff-src.toml
-      #
-      #- name: Check tests code with Ruff
-      #  run: poetry run python -m ruff check --config ./conf/ruff-tests.toml
 
-  scan:
-    needs: build
+  sonar-scan:
+    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -93,11 +93,6 @@ jobs:
         with:
           name: test-reports
           path: ${{ github.workspace }}
-      
-      - name: Test paths
-        run: |
-          sudo apt install -y tree
-          tree
       
       - name: Unzip reports
         run: unzip reports.zip
