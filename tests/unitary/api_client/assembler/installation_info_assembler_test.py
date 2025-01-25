@@ -107,6 +107,7 @@ __EMPTY_INSTALLATION_INFO = {
   "returnCode": 0,
   "logTail": None
 }
+__DEFAULT_USER_ID = "Anonymous"
 
 def test_calls_run_shell_command_when_getting_cpu_flags(__mock_run_shell_command):
   installation_info_assembler.__get_cpu_flags()
@@ -294,8 +295,8 @@ def test_calls_hashlib_sha256_hexdigest_when_getting_user_id(
 @pytest.mark.parametrize(
   "__mock_get_mac_address,__mock_hashlib_sha256,expected_user_id",
   [
-    pytest.param(None, None, None),
-    pytest.param(None, "test-id", None),
+    pytest.param(None, None, __DEFAULT_USER_ID),
+    pytest.param(None, "test-id", __DEFAULT_USER_ID),
     pytest.param(__ETH_MAC_ADDRESS, None, None),
     pytest.param(__ETH_MAC_ADDRESS, "test-id", "test-id")
   ],
