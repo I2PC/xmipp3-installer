@@ -61,21 +61,6 @@ def copy_file_from_reference(source_file: str, dest_file: str):
 		os.makedirs(file_directory, exist_ok=True)
 	shutil.copyfile(source_file, dest_file)
 
-def delete_paths(paths: List[str]):
-	"""
-	### Deletes all the given paths (files or directories).
-
-	#### Params:
-	- path (list(str)): List of paths to delete.
-	"""
-	for path in paths:
-		if not os.path.exists(path):
-			continue
-		if os.path.isdir(path):
-			shutil.rmtree(path, ignore_errors=True)
-		else:
-			os.remove(path)
-
 def get_test_file(file_path: str):
 	return os.path.join(
 		os.path.dirname(os.path.abspath(__file__)),
