@@ -2,6 +2,7 @@ import os
 import tarfile
 from typing import Dict, Tuple
 
+from xmipp3_installer.application import user_interactions
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
@@ -87,7 +88,7 @@ class ModeAddModelExecutor(mode_executor.ModeExecutor):
 			f"You are going to be connected to {self.login} to write in folder {constants.SCIPION_SOFTWARE_EM}.",
 			"Continue? YES/no (case sensitive)"
 		]))
-		return input() == 'YES'
+		return user_interactions.get_user_confirmation("YES")
 
 	def __upload_model(self) -> Tuple[int, str]:
 		"""

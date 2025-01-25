@@ -154,30 +154,26 @@ def test_calls_logger_when_getting_confirmation(
 	expected_text += "\nContinue? YES/no (case sensitive)"
 	__mock_logger.assert_called_once_with(expected_text)
 
-def test_calls_input_when_getting_confirmation(__mock_input):
+def test_calls_get_user_interaction_when_getting_confirmation(
+	__mock_get_user_interaction
+):
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	executor._ModeAddModelExecutor__get_confirmation()
-	__mock_input.assert_called_once_with()
+	__mock_get_user_interaction.assert_called_once_with("YES")
 
 @pytest.mark.parametrize(
-	"__mock_input,expected_confirmation",
-	[
-		pytest.param("NO", False),
-		pytest.param("", False),
-		pytest.param("yes", False),
-		pytest.param("YES", True)
-	],
-	indirect=["__mock_input"]
+	"__mock_get_user_interaction",
+	[pytest.param(False), pytest.param(True)],
+	indirect=["__mock_get_user_interaction"]
 )
 def test_returns_expected_confirmation_result(
-	__mock_input,
-	expected_confirmation
+	__mock_get_user_interaction
 ):
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	confirmation = executor._ModeAddModelExecutor__get_confirmation()
 	assert (
-		confirmation == expected_confirmation
-	), get_assertion_message("confirmation value", expected_confirmation, confirmation)
+		confirmation == __mock_get_user_interaction("")
+	), get_assertion_message("confirmation value", __mock_get_user_interaction(""), confirmation)
 
 def test_calls_os_abspath_when_uploading_model(
 	__mock_os_path_abspath,
@@ -421,9 +417,11 @@ def __mock_tarfile_open(request):
 		mock_method.return_value.__enter__.return_value = tar_file
 		yield mock_method
 
-@pytest.fixture(params=["YES"], autouse=True)
-def __mock_input(request):
-	with patch("builtins.input") as mock_method:
+@pytest.fixture(params=[True], autouse=True)
+def __mock_get_user_interaction(request):
+	with patch(
+		"xmipp3_installer.application.user_interactions.get_user_confirmation"
+	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
 
