@@ -92,10 +92,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: test-reports
-          path: reports.zip
+          path: ${{ github.workspace }}
       
       - name: Unzip reports
-        run: unzip reports.zip
+        run: unzip test-reports.zip
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
