@@ -25,7 +25,13 @@ __IP_ADDR_LINES = [
   "\tlink/ether 00:08:9b:c4:30:30 brd ff:ff:ff:ff:ff:ff",
   "\tinet 192.168.1.10/24 brd 192.168.1.255 scope global eth1",
   "\tineto fe80::208:9bff:fec4:3030/64 scope link",
-  "\t\tvalid_lft forever preferred_lft forever"
+  "\t\tvalid_lft forever preferred_lft forever",
+  "4: enp0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
+  f"\tlink/ether {__ETH_MAC_ADDRESS} brd ff:ff:ff:ff:ff:ff",
+  "5: wlp0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
+  f"\tlink/ether {__ETH_MAC_ADDRESS} brd ff:ff:ff:ff:ff:ff",
+  "5: ens0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
+  f"\tlink/ether {__ETH_MAC_ADDRESS} brd ff:ff:ff:ff:ff:ff"
 ]
 __IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
 __USER_ID = "test-user-id"
@@ -189,7 +195,7 @@ def test_calls_re_match_when_finding_mac_address_in_lines_with_valid_lines(__moc
   installation_info_assembler.__find_mac_address_in_lines(__LINES)
   __mock_re_match.assert_has_calls([
     call(
-      r"^\d+: (enp|wlp|eth)\w+",
+      r"^\d+: (enp|wlp|eth|ens)\w+",
       line
     ) for line in __LINES[:-1]
   ])
@@ -217,6 +223,9 @@ def test_calls_re_search_group_when_finding_mac_address_in_lines(__mock_re_match
     pytest.param([__IP_ADDR_LINES[5]], None),
     pytest.param(__IP_ADDR_LINES[0:2], None),
     pytest.param(__IP_ADDR_LINES[5:7], __ETH_MAC_ADDRESS),
+    pytest.param(__IP_ADDR_LINES[12:14], __ETH_MAC_ADDRESS),
+    pytest.param(__IP_ADDR_LINES[14:16], __ETH_MAC_ADDRESS),
+    pytest.param(__IP_ADDR_LINES[16:18], __ETH_MAC_ADDRESS),
     pytest.param(__IP_ADDR_LINES, __ETH_MAC_ADDRESS)
   ]
 )
@@ -378,8 +387,12 @@ def test_returns_expected_installation_branch_name(
     branch_name == expected_branch_name
   ), get_assertion_message("installation branch name", expected_branch_name, branch_name)
 
-def test_calls_get_user_id_when_getting_installation_info(__mock_get_user_id):
-  __mock_get_user_id.return_value = None
+def test_calls_get_user_id_when_getting_installation_info(
+  __mock_get_user_id,
+  __mock_get_library_versions_from_cmake_file,
+  __mock_run_parallel_jobs,
+  __mock_get_os_release_name
+):
   installation_info_assembler.get_installation_info()
   __mock_get_user_id.assert_called_once_with()
 
@@ -421,24 +434,16 @@ def test_calls_run_parallel_jobs_when_getting_installation_info(
 
 @pytest.mark.parametrize(
   "ret_code,"
-  "__mock_get_user_id,"
   "__mock_get_library_versions_from_cmake_file,"
   "__mock_run_parallel_jobs,"
   "expected_info",
   [
-    pytest.param(0, None, {}, [None for _ in range(5)], None),
-    pytest.param(1, None, {}, [None for _ in range(5)], None),
-    pytest.param(0, None, {"test": "something"}, ["value" for _ in range(5)], None),
-    pytest.param(1, None, {"test": "something"}, ["value" for _ in range(5)], None),
-    pytest.param(0, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
-    pytest.param(1, None, __LIBRARY_VERSIONS, ["value" for _ in range(5)], None),
-    pytest.param(0, __USER_ID, {}, [None for _ in range(5)], __EMPTY_INSTALLATION_INFO),
-    pytest.param(1, __USER_ID, {}, [None for _ in range(5)], {**__EMPTY_INSTALLATION_INFO, "returnCode": 1}),
-    pytest.param(0, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "logTail": None}),
-    pytest.param(1, __USER_ID, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "returnCode": 1})
+    pytest.param(0, {}, [None for _ in range(5)], __EMPTY_INSTALLATION_INFO),
+    pytest.param(1, {}, [None for _ in range(5)], {**__EMPTY_INSTALLATION_INFO, "returnCode": 1}),
+    pytest.param(0, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "logTail": None}),
+    pytest.param(1, __LIBRARY_VERSIONS, __ENVIROMENT_INFO, {**__INSTALLATION_INFO, "returnCode": 1})
   ],
   indirect=[
-    "__mock_get_user_id",
     "__mock_get_library_versions_from_cmake_file",
     "__mock_run_parallel_jobs"
   ]
