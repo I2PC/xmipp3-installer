@@ -80,6 +80,7 @@ jobs:
       #  run: poetry run python -m ruff check --config ./conf/ruff-tests.toml
 
   scan:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
