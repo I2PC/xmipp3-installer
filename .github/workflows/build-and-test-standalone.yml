@@ -53,7 +53,8 @@ jobs:
         run: tree
       
       - name: Run delete
-        run: poetry run ${{ vars.MODULE_NAME }} cleanBin << "y"
+        run: poetry run ${{ vars.MODULE_NAME }} cleanBin << "y
+          "
       
       - name: Check after
         run: tree
