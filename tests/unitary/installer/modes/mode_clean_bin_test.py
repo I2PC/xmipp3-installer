@@ -127,22 +127,31 @@ def test_returns_expected_empty_dirs(__mock_os_walk):
 		empty_dirs == expected_empty_dirs
 	), get_assertion_message("empty directories", expected_empty_dirs, empty_dirs)
 
-def test_calls_glob_when_getting_compilation_files(__mock_glob):
+def test_calls_os_walk_when_getting_compilation_files(__mock_os_walk):
 	ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
-	__mock_glob.assert_has_calls([
-		call('**/*.so', recursive=True, root_dir=constants.SOURCES_PATH),
-		call('**/*.os', recursive=True, root_dir=constants.SOURCES_PATH),
-		call('**/*.o', recursive=True, root_dir=constants.SOURCES_PATH)
+	__mock_os_walk.assert_called_once_with(constants.SOURCES_PATH)
+
+def test_calls_glob_when_getting_compilation_files(
+	__mock_os_walk,
+	__mock_fnmatch_filter
+):
+	files = ["file1", "file2", "file3"]
+	__mock_os_walk.return_value = [("root", [], files)]
+	ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
+	__mock_fnmatch_filter.assert_has_calls([
+		call(files, '*.so'),
+		call(files, '*.os'),
+		call(files, '*.o')
 	])
 	assert (
-		__mock_glob.call_count == 3
-	), get_assertion_message("call count", 3, __mock_glob.call_count)
+		__mock_fnmatch_filter.call_count == 3
+	), get_assertion_message("call count", 3, __mock_fnmatch_filter.call_count)
 
 def test_returns_expected_compilation_files(
-	__mock_glob,
+	__mock_fnmatch_filter,
 	__mock_os_path_join
 ):
-	__mock_glob.side_effect = [["file1"], ["file2", "file3"], ["file4"]]
+	__mock_fnmatch_filter.side_effect = [["file1"], ["file2", "file3"], ["file4"]]
 	expected_compilation_files = [
 		__mock_os_path_join(constants.SOURCES_PATH, file_name)
 		for file_name in ["file1", "file2", "file3", "file4"]
@@ -311,8 +320,17 @@ def __mock_os_walk():
 
 @pytest.fixture(autouse=True)
 def __mock_os_path_join():
+	def __join_with_foward_slashes(*args):
+		args = [arg.rstrip("/") for arg in args]
+		return '/'.join([*args])
 	with patch("os.path.join") as mock_method:
-		mock_method.side_effect = lambda *args: '/'.join([*args])
+		mock_method.side_effect = __join_with_foward_slashes
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_fnmatch_filter():
+	with patch("glob.fnmatch.filter") as mock_method:
+		mock_method.return_value = []
 		yield mock_method
 
 @pytest.fixture
