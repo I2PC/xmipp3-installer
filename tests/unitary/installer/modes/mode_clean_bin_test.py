@@ -110,6 +110,7 @@ def test_calls_os_walk_when_getting_empty_dirs(
 	)
 
 def test_returns_expected_empty_dirs(__mock_os_walk):
+	__mock_os_walk.side_effect = None
 	__mock_os_walk.return_value = [
 		("dist", ["folder1", "folder2"], []),
 		("dist/folder1", [], ["file1"]),
@@ -135,6 +136,7 @@ def test_calls_glob_when_getting_compilation_files(
 	__mock_os_walk,
 	__mock_fnmatch_filter
 ):
+	__mock_os_walk.side_effect = None
 	files = ["file1", "file2", "file3"]
 	__mock_os_walk.return_value = [("root", [], files)]
 	ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
