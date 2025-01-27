@@ -46,20 +46,18 @@ jobs:
     #- name: Check tests code with Ruff
     #  run: poetry run python -m ruff check --config ./conf/ruff-tests.toml
 
-      - name: Run unitary tests
-        env:
-          SCRIPT_PATH: ./scripts/run-tests.sh
-        run: |
-          chmod +x $SCRIPT_PATH
-          poetry run $SCRIPT_PATH unitary
+      - name: Install tree
+        run: sudp apt install tree -y
       
-      - name: Run integration tests
-        env:
-          SCRIPT_PATH: ./scripts/run-tests.sh
-        run: |
-          chmod +x $SCRIPT_PATH
-          poetry run $SCRIPT_PATH integration
+      - name: Check before
+        run: tree
       
+      - name: Run delete
+        run: poetry run ${{ vars.MODULE_NAME }} cleanBin << "y"
+      
+      - name: Check after
+        run: tree
+
       - name: Run e2e tests
         env:
           SCRIPT_PATH: ./scripts/run-tests.sh
