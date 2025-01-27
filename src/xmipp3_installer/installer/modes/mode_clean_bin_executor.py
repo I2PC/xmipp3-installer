@@ -77,7 +77,10 @@ class ModeCleanBinExecutor(mode_executor.ModeExecutor):
 			compilation_files.extend(
 				glob.glob(pattern, recursive=True, root_dir=constants.SOURCES_PATH)
 			)
-		return compilation_files
+		return [
+			os.path.join(constants.SOURCES_PATH, compilation_file)
+			for compilation_file in compilation_files
+		]
 
 	@staticmethod
 	def __get_empty_dirs() -> List[str]:
