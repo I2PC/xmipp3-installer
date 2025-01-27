@@ -154,7 +154,7 @@ def test_calls_glob_when_getting_paths_to_delete(
 	__mock_get_pycache_dirs
 ):
 	ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete()
-	__mock_glob.assert_called_once_with("**/.dblite", recursive=True)
+	__mock_glob.assert_called_once_with("**/*.dblite", recursive=True)
 
 def test_calls_get_compilation_files_when_getting_paths_to_delete(
 	__mock_glob,

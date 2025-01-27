@@ -53,7 +53,7 @@ class ModeCleanBinExecutor(mode_executor.ModeExecutor):
 		- (list(str)): List containing all the paths to delete.
 		"""
 		dblite_files = glob.glob(
-			"**/.dblite",
+			"**/*.dblite",
 			recursive=True
 		)
 		return [
