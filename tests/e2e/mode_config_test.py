@@ -4,6 +4,7 @@ import subprocess
 
 import pytest
 
+from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
 from xmipp3_installer.repository import file_operations
 from xmipp3_installer.repository.config import ConfigurationFileHandler
@@ -34,7 +35,7 @@ def test_writes_expected_config_file(
 	expected_file,
 	overwrite
 ):
-	command_words = ["xmipp3_installer", "config"]
+	command_words = ["xmipp3_installer", modes.MODE_CONFIG]
 	if overwrite:
 		command_words.append("-o")
 	subprocess.run(command_words, stdout=subprocess.PIPE)

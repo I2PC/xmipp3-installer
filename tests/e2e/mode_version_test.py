@@ -3,6 +3,7 @@ import subprocess
 
 import pytest
 
+from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.repository import file_operations
@@ -34,7 +35,7 @@ def test_returns_full_version(
 	__setup_evironment,
 	expected_output_function
 ):
-	command_words = ["xmipp3_installer", "version"]
+	command_words = ["xmipp3_installer", modes.MODE_VERSION]
 	result = subprocess.run(command_words, capture_output=True, text=True)
 	expected_output = expected_output_function()
 	assert (
