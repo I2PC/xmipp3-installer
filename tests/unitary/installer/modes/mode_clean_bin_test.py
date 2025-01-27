@@ -47,9 +47,8 @@ def test_calls_logger_when_getting_confirmation(
 	expected_message = __mock_logger_yellow(
 		f"WARNING: This will DELETE from {constants.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"
 	)
-	expected_message += f"\n{__mock_logger_yellow(
-		'If you are sure you want to do this, type \'y\' (case sensitive):'
-	)}"
+	second_line_message = 'If you are sure you want to do this, type \'y\' (case sensitive):'
+	expected_message += f"\n{__mock_logger_yellow(second_line_message)}"
 	__mock_logger.assert_called_once_with(expected_message)
 
 def test_calls_get_user_confirmation_when_getting_confirmation(
