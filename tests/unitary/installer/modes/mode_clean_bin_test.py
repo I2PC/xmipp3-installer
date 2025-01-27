@@ -315,7 +315,7 @@ def __mock_path():
 @pytest.fixture(autouse=True)
 def __mock_os_walk():
 	with patch("os.walk") as mock_method:
-		mock_method.return_value = [("", [], [])]
+		mock_method.side_effect = lambda root: [(root, [], [])]
 		yield mock_method
 
 @pytest.fixture(autouse=True)

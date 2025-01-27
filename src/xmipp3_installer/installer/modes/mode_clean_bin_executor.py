@@ -74,7 +74,6 @@ class ModeCleanBinExecutor(mode_executor.ModeExecutor):
 		"""
 		compilation_files = []
 		for root, _, files in os.walk(constants.SOURCES_PATH):
-			root = os.path.join(constants.SOURCES_PATH, root)
 			for pattern in ['*.so', '*.os', '*.o']:
 				for filename in glob.fnmatch.filter(files, pattern):
 					compilation_files.append(os.path.join(root, filename))
