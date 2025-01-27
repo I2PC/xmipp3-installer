@@ -73,14 +73,12 @@ class ModeCleanBinExecutor(mode_executor.ModeExecutor):
 		- (list(str)): List containing all the paths to compilation-related files.
 		"""
 		compilation_files = []
-		for pattern in ['**/*.so', '**/*.os', '**/*.o']:
-			compilation_files.extend(
-				glob.glob(pattern, recursive=True, root_dir=constants.SOURCES_PATH)
-			)
-		return [
-			os.path.join(constants.SOURCES_PATH, compilation_file)
-			for compilation_file in compilation_files
-		]
+		for root, _, files in os.walk(constants.SOURCES_PATH):
+			root = os.path.join(constants.SOURCES_PATH, root)
+			for pattern in ['*.so', '*.os', '*.o']:
+				for filename in glob.fnmatch.filter(files, pattern):
+					compilation_files.append(os.path.join(root, filename))
+		return compilation_files
 
 	@staticmethod
 	def __get_empty_dirs() -> List[str]:
