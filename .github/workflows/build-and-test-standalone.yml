@@ -47,7 +47,7 @@ jobs:
     #  run: poetry run python -m ruff check --config ./conf/ruff-tests.toml
 
       - name: Install tree
-        run: sudp apt install tree -y
+        run: sudo apt install tree -y
       
       - name: Check before
         run: tree
