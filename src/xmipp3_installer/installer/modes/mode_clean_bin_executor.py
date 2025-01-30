@@ -22,10 +22,7 @@ class ModeCleanBinExecutor(mode_executor.ModeExecutor):
 		"""
 		if not ModeCleanBinExecutor.__get_confirmation():
 			return errors.INTERRUPTED_ERROR, ""
-		file_operations.delete_paths([
-			*ModeCleanBinExecutor.__get_paths_to_delete(),
-			constants.BUILD_PATH
-		])
+		file_operations.delete_paths(ModeCleanBinExecutor.__get_paths_to_delete())
 		logger(predefined_messages.get_done_message())
 		return 0, ""
 	
