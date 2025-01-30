@@ -4,11 +4,11 @@ import pytest
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.modes.mode_clean_bin_executor import ModeCleanBinExecutor
+from xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor import ModeCleanBinExecutor
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.tmp import versions
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
 def test_implements_interface_mode_executor():
 	executor = ModeCleanBinExecutor({})
@@ -341,7 +341,7 @@ def __mock_glob():
 @pytest.fixture
 def __mock_get_compilation_files():
 	with patch(
-		"xmipp3_installer.installer.modes.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files"
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files"
 	) as mock_method:
 		mock_method.return_value = ["compilation_file1", "compilation_file2"]
 		yield mock_method
@@ -349,7 +349,7 @@ def __mock_get_compilation_files():
 @pytest.fixture
 def __mock_get_empty_dirs():
 	with patch(
-		"xmipp3_installer.installer.modes.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs"
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs"
 	) as mock_method:
 		mock_method.return_value = ["empty_dir"]
 		yield mock_method
@@ -357,7 +357,7 @@ def __mock_get_empty_dirs():
 @pytest.fixture
 def __mock_get_pycache_dirs():
 	with patch(
-		"xmipp3_installer.installer.modes.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_pycache_dirs"
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_pycache_dirs"
 	) as mock_method:
 		mock_method.return_value = ["__pycache__"]
 		yield mock_method
@@ -365,7 +365,7 @@ def __mock_get_pycache_dirs():
 @pytest.fixture(params=[True])
 def __mock_get_confirmation(request):
 	with patch(
-		"xmipp3_installer.installer.modes.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_confirmation"
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_confirmation"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
@@ -373,7 +373,7 @@ def __mock_get_confirmation(request):
 @pytest.fixture
 def __mock_get_paths_to_delete():
 	with patch(
-		"xmipp3_installer.installer.modes.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete"
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete"
 	) as mock_method:
 		mock_method.return_value = ["path1", "path2"]
 		yield mock_method
