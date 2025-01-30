@@ -241,10 +241,7 @@ def test_calls_delete_paths_to_delete_when_running_executor(
 	__mock_logger
 ):
 	ModeCleanBinExecutor({}).run()
-	__mock_delete_paths.assert_called_once_with([
-		*__mock_get_paths_to_delete(),
-		constants.BUILD_PATH
-	])
+	__mock_delete_paths.assert_called_once_with(__mock_get_paths_to_delete())
 
 def test_calls_logger_when_running_executor(
 	__mock_get_confirmation,
