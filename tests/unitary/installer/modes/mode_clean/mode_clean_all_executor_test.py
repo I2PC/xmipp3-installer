@@ -5,9 +5,9 @@ import pytest
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
-from xmipp3_installer.installer.modes.mode_clean_all_executor import ModeCleanAllExecutor
+from xmipp3_installer.installer.modes.mode_clean.mode_clean_all_executor import ModeCleanAllExecutor
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
 def test_implements_interface_mode_executor():
 	executor = ModeCleanAllExecutor({})
@@ -186,7 +186,7 @@ def __mock_os_path_join():
 @pytest.fixture(params=[True])
 def __mock_get_confirmation(request):
 	with patch(
-		"xmipp3_installer.installer.modes.mode_clean_all_executor.ModeCleanAllExecutor._ModeCleanAllExecutor__get_confirmation"
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_all_executor.ModeCleanAllExecutor._ModeCleanAllExecutor__get_confirmation"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
@@ -194,7 +194,7 @@ def __mock_get_confirmation(request):
 @pytest.fixture
 def __mock_get_paths_to_delete():
 	with patch(
-		"xmipp3_installer.installer.modes.mode_clean_all_executor.ModeCleanAllExecutor._ModeCleanAllExecutor__get_paths_to_delete"
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_all_executor.ModeCleanAllExecutor._ModeCleanAllExecutor__get_paths_to_delete"
 	) as mock_method:
 		mock_method.return_value = ["path1", "path2"]
 		yield mock_method
