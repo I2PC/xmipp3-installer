@@ -21,11 +21,10 @@ class InstallationManager:
 		#### Params:
 		- args (dict): Dictionary containing all parsed command-line arguments.
 		"""
-    self.args = args
     self.mode = args.pop(modes.MODE, modes.MODE_ALL)
-    self.config_handler = config.ConfigurationFileHandler(path=constants.CONFIG_FILE, show_errors=False)
-    self.config_values = self.config_handler.values
-    self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](args)
+    config_handler = config.ConfigurationFileHandler(path=constants.CONFIG_FILE, show_errors=False)
+    self.context = {**args, **config_handler.values}
+    self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](self.context)
 
   def run_installer(self):
     """
@@ -43,7 +42,7 @@ class InstallationManager:
       logger.log_error(output, ret_code=ret_code, add_portal_link=ret_code != errors.INTERRUPTED_ERROR)
     if (
       self.mode_executor.sends_installation_info and 
-      self.config_values.get(variables.SEND_INSTALLATION_STATISTICS, False)
+      self.context.get(variables.SEND_INSTALLATION_STATISTICS, False)
     ):
       logger("Sending anonymous installation info...")
       api_client.send_installation_attempt(
