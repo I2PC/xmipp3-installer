@@ -13,6 +13,7 @@ from xmipp3_installer.repository.config_vars import default_values, variables
 from ... import get_assertion_message
 
 __PATH = "/path/to/config.conf"
+__PROVIDED_SHOW_ERRORS = False
 __DATE = "25-11-2024 01:26.46"
 __DATE_TIME = datetime(2024, 11, 25, 1, 26, 46, 292469)
 __FILE_LINES = [
@@ -86,6 +87,32 @@ def test_sets_config_file_path_when_constructing_configuration_file_with_default
 		"config file path",
 		config_handler._ConfigurationFileHandler__path,
 		constants.CONFIG_FILE
+	)
+
+def test_sets_show_errors_variable_when_constructing_with_provided_value(
+	__mock_read_config,
+	__mock_read_config_date
+):
+	config_handler = ConfigurationFileHandler(show_errors=__PROVIDED_SHOW_ERRORS)
+	assert (
+		config_handler._ConfigurationFileHandler__show_errors == __PROVIDED_SHOW_ERRORS
+	), get_assertion_message(
+		"config file show errors variable",
+		config_handler._ConfigurationFileHandler__show_errors,
+		__PROVIDED_SHOW_ERRORS
+	)
+
+def test_sets_show_errors_variable_when_constructing_configuration_file_with_default_value(
+	__mock_read_config,
+	__mock_read_config_date
+):
+	config_handler = ConfigurationFileHandler()
+	assert (
+		config_handler._ConfigurationFileHandler__show_errors == True
+	), get_assertion_message(
+		"config file show errors variable",
+		config_handler._ConfigurationFileHandler__show_errors,
+		True
 	)
 
 def test_sets_config_variables_when_constructing_configuration_file(
