@@ -27,7 +27,7 @@ class ConfigurationFileHandler(Singleton):
 		- path (str): Optional. Path to the configuration file.
 		"""
 		self.__path = path
-		self.__show_errors = show_errors
+		self.show_errors = show_errors
 		self.values = {}
 		self.read_config()
 		self.last_modified = self.__read_config_date()
@@ -39,15 +39,11 @@ class ConfigurationFileHandler(Singleton):
 		file_lines = self.__get_file_content()
 		result = {}
 		for line_number, line in enumerate(file_lines):
-			try:
-				key_value_pair = self.__parse_config_line(line, line_number + 1)
-			except InvalidConfigLineError as error:
-				logger(str(error))
+			new_result = self.__add_line_values(result.copy(), line, line_number + 1)
+			if new_result is None:
 				result = {}
 				break
-			if key_value_pair:
-				key, value = key_value_pair
-				result[key] = value
+			result = new_result
 		self.values = {**default_values.CONFIG_DEFAULT_VALUES, **result}
 
 	def write_config(self, overwrite: bool=False):
@@ -124,6 +120,30 @@ class ConfigurationFileHandler(Singleton):
 			if match:
 				return match.group()
 		return ""
+
+	def __add_line_values(self, config: Dict, line: str, line_number: int) -> Optional[Dict]:
+		"""
+		### Adds the config values present in the current line to the given dictionary.
+
+		#### Params:
+		- config (dict): Dictionary with all the present variables.
+		- line (str): Current line to extract values from.
+		- line_number (int): Line index in the list of lines that compose the file.
+
+		#### Returns:
+		- (dict | None): An updated dictionary with the newly obtained variable, or None if there was an error.
+		"""
+		try:
+			key_value_pair = self.__parse_config_line(line, line_number)
+		except InvalidConfigLineError as error:
+			if self.show_errors:
+				logger(str(error))
+			config = {}
+			return
+		if key_value_pair:
+			key, value = key_value_pair
+			config[key] = value
+		return config
 
 	def __parse_config_line(self, line: str, line_number: int) -> Optional[Tuple[str, str]]:
 		"""

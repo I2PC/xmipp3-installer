@@ -55,6 +55,7 @@ __DEFAULT_CONFIG_VALUES = {
 	"variable3-section2": "default3-section2",
 	"variable1-section3": "default-section3"
 }
+__INVALID_LINE_ERROR_MESSAGE = "invalid line error message"
 
 def test_inherits_from_singleton_class(
 		__mock_read_config,
@@ -95,10 +96,10 @@ def test_sets_show_errors_variable_when_constructing_with_provided_value(
 ):
 	config_handler = ConfigurationFileHandler(show_errors=__PROVIDED_SHOW_ERRORS)
 	assert (
-		config_handler._ConfigurationFileHandler__show_errors == __PROVIDED_SHOW_ERRORS
+		config_handler.show_errors == __PROVIDED_SHOW_ERRORS
 	), get_assertion_message(
 		"config file show errors variable",
-		config_handler._ConfigurationFileHandler__show_errors,
+		config_handler.show_errors,
 		__PROVIDED_SHOW_ERRORS
 	)
 
@@ -108,10 +109,10 @@ def test_sets_show_errors_variable_when_constructing_configuration_file_with_def
 ):
 	config_handler = ConfigurationFileHandler()
 	assert (
-		config_handler._ConfigurationFileHandler__show_errors == True
+		config_handler.show_errors == True
 	), get_assertion_message(
 		"config file show errors variable",
-		config_handler._ConfigurationFileHandler__show_errors,
+		config_handler.show_errors,
 		True
 	)
 
@@ -367,23 +368,56 @@ def test_returns_expected_config_line_when_making_config_line(
 		config_line == expected_line
 	), get_assertion_message("configuration file line", expected_line, config_line)
 
-def test_calls_logger_when_reading_config_with_invalid_lines(
+def test_calls_parse_config_line_when_adding_line_values(
 	__mock_init,
 	__mock_get_file_content,
+	__mock_parse_config_line,
+	__mock_logger
+):
+	line = "line string"
+	line_number = 0
+	ConfigurationFileHandler()._ConfigurationFileHandler__add_line_values({}, line, line_number)
+	__mock_parse_config_line.assert_called_once_with(line, line_number)
+
+@pytest.mark.parametrize(
+	"__mock_parse_config_line",
+	[pytest.param(False)],
+	indirect=["__mock_parse_config_line"]
+)
+def test_calls_logger_when_adding_line_values_with_invalid_lines_and_show_error_enabled(
+	__mock_init,
+	__mock_get_file_content,
+	__mock_parse_config_line,
 	__mock_generate_invalid_config_line_error_message,
 	__mock_logger
 ):
-	lines_with_wrong_data = [*__CORRECT_FILE_LINES, "aaaaa"]
-	__mock_get_file_content.return_value = lines_with_wrong_data
-	config_handler = ConfigurationFileHandler()
-	config_handler.read_config()
+	__mock_generate_invalid_config_line_error_message.side_effect = None
+	__mock_generate_invalid_config_line_error_message.return_value = __INVALID_LINE_ERROR_MESSAGE
+	file_handler = ConfigurationFileHandler()
+	file_handler.show_errors = True
+	file_handler._ConfigurationFileHandler__add_line_values({}, "", 0)
 	__mock_logger.assert_called_once_with(str(InvalidConfigLineError(
-		__mock_generate_invalid_config_line_error_message(
-			constants.CONFIG_FILE,
-			len(lines_with_wrong_data),
-			lines_with_wrong_data[-1]
-		))
-	))
+		__mock_generate_invalid_config_line_error_message()
+	)))
+
+@pytest.mark.parametrize(
+	"__mock_parse_config_line",
+	[pytest.param(False)],
+	indirect=["__mock_parse_config_line"]
+)
+def test_does_not_call_logger_when_adding_line_values_with_invalid_lines_and_show_error_disabled(
+	__mock_init,
+	__mock_get_file_content,
+	__mock_parse_config_line,
+	__mock_generate_invalid_config_line_error_message,
+	__mock_logger
+):
+	__mock_generate_invalid_config_line_error_message.side_effect = None
+	__mock_generate_invalid_config_line_error_message.return_value = __INVALID_LINE_ERROR_MESSAGE
+	file_handler = ConfigurationFileHandler()
+	file_handler.show_errors = False
+	file_handler._ConfigurationFileHandler__add_line_values({}, "", 0)
+	__mock_logger.assert_not_called()
 
 def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 	__mock_init,
@@ -868,4 +902,15 @@ def __mock_get_unkown_variable_lines():
 		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_unkown_variable_lines"
 	) as mock_method:
 		mock_method.side_effect = side_effect
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_parse_config_line(request):
+	with patch(
+		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__parse_config_line"
+	) as mock_method:
+		if request.param:
+			mock_method.return_value = ('key', 'value')
+		else:
+			mock_method.side_effect = InvalidConfigLineError(__INVALID_LINE_ERROR_MESSAGE)
 		yield mock_method
