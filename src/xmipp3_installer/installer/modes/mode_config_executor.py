@@ -10,15 +10,15 @@ from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository import config
 
 class ModeConfigExecutor(mode_executor.ModeExecutor):
-	def __init__(self, args: Dict):
+	def __init__(self, context: Dict):
 		"""
 		### Constructor.
 		
 		#### Params:
-		- args (dict): Dictionary containing all parsed command-line arguments.
+		- context (dict): Dictionary containing the installation context variables.
 		"""
-		super().__init__(args)
-		self.overwrite = args.pop(params.PARAM_OVERWRITE, False)
+		super().__init__(context)
+		self.overwrite = context.pop(params.PARAM_OVERWRITE, False)
 		self.config_values = {}
 	
 	def run(self) -> Tuple[int, str]:
