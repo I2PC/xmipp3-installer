@@ -21,13 +21,10 @@ __CONFIG_VALUES = {
 	'key1': 'value1',
 	'key2': 'value2'
 }
-
-def test_stores_args_when_initializing(__mock_mode_executors):
-	args = {'mode': __MODE_NAME}
-	installation_manager = installer_service.InstallationManager(args)
-	assert (
-		installation_manager.args == args
-	), get_assertion_message("stored arguments", args, installation_manager.args)
+__ARGS = {
+	"mode": modes.MODE_ALL,
+	"variable1": "value1"
+}
 
 @pytest.mark.parametrize(
 	"expected_mode",
@@ -58,30 +55,20 @@ def test_initializes_config_file_handler_when_initializing(
 	installer_service.InstallationManager({})
 	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE, show_errors=False)
 
-def test_stores_config_file_handler_when_initializing(
+def test_stores_installation_context_when_initializing(
 	__mock_mode_executors,
 	__mock_configuration_file_handler
 ):
-	installation_manager = installer_service.InstallationManager({})
+	installation_manager = installer_service.InstallationManager(__ARGS.copy())
+	expected_args = __ARGS.copy()
+	expected_args.pop("mode")
+	expected_context = {**expected_args, **__mock_configuration_file_handler().values}
 	assert (
-		installation_manager.config_handler == __mock_configuration_file_handler()
-	), get_assertion_message(
-		"stored config handler",
-		__mock_configuration_file_handler(),
-		installation_manager.config_handler
-	)
-
-def test_stores_config_file_values_when_initializing(
-	__mock_mode_executors,
-	__mock_configuration_file_handler
-):
-	installation_manager = installer_service.InstallationManager({})
-	assert (
-		installation_manager.config_values == __mock_configuration_file_handler().values
+		installation_manager.context == expected_context
 	), get_assertion_message(
 		"stored config values",
-		__mock_configuration_file_handler().values,
-		installation_manager.config_values
+		expected_context,
+		installation_manager.context
 	)
 
 @pytest.mark.parametrize(
@@ -184,7 +171,7 @@ def test_calls_get_installation_info_when_running_executor_deppending_on_attribu
 	all_executor.sends_installation_info = sends_installation_info
 	all_executor.run.return_value = (ret_code, "")
 	installation_manager = installer_service.InstallationManager({})
-	installation_manager.config_values = {__SEND_INSTALLATION_INFO_KEY: config_sends_installation_info}
+	installation_manager.context = {__SEND_INSTALLATION_INFO_KEY: config_sends_installation_info}
 	installation_manager.run_installer()
 	if sends_installation_info and config_sends_installation_info:
 		__mock_get_installation_info.assert_called_once_with(ret_code=ret_code)
@@ -210,7 +197,7 @@ def test_calls_send_installation_attempt_when_running_executor_deppending_on_att
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installation_manager = installer_service.InstallationManager({})
-	installation_manager.config_values = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
+	installation_manager.context = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
 	installation_manager.run_installer()
 	if sends_info and config_sends_info:
 		__mock_send_installation_info.assert_called_once_with(__mock_get_installation_info())
@@ -237,7 +224,7 @@ def test_calls_logger_when_running_executor_deppending_on_attribute(
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installation_manager = installer_service.InstallationManager({})
-	installation_manager.config_values = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
+	installation_manager.context = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
 	installation_manager.run_installer()
 	if sends_info and config_sends_info:
 		__mock_logger.assert_called_once_with("Sending anonymous installation info...")
