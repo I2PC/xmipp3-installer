@@ -24,16 +24,10 @@ jobs:
     - name: Install Package
       run: pip install -e .
     
-    - name: Commands
-      run: |
-        pip show ${{ vars.MODULE_NAME }}
-        pip show ${{ vars.MODULE_NAME }} | grep Version
-        pip show ${{ vars.MODULE_NAME }} | grep Version | awk '{print $2}'
-    
     - name: Get package version
       id: version
       run: |
-        export VERSION=$(pip show ${{ vars.MODULE_NAME }} | grep Version | awk '{print $2}')
+        export VERSION=$(python -c "import importlib.metadata; print(importlib.metadata.version(\"${{ vars.MODULE_NAME }}\"))")
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         echo "Version number: $VERSION"
     
