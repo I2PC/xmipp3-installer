@@ -2,7 +2,6 @@ from unittest.mock import patch, MagicMock, call
 
 import pytest
 
-from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor import ModeCleanBinExecutor
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_executor import ModeCleanExecutor
