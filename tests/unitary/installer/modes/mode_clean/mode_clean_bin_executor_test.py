@@ -38,10 +38,11 @@ def test_does_not_override_parent_config_values(__dummy_test_mode_clean_executor
 	), get_assertion_message("config values", base_config, inherited_config)
 
 def test_returns_expected_confirmation_keyword():
+	expected_keyword = "y"
 	confirmation_keyword = ModeCleanBinExecutor({})._get_confirmation_keyword()
 	assert (
-		confirmation_keyword == "y"
-	), get_assertion_message("confirmation keyword", "y", confirmation_keyword)
+		confirmation_keyword == expected_keyword
+	), get_assertion_message("confirmation keyword", expected_keyword, confirmation_keyword)
 
 def test_calls_get_confirmation_keyword_when_getting_confirmation_message(
 	__mock_get_confirmation_keyword
