@@ -56,7 +56,7 @@ def test_initializes_config_file_handler_when_initializing(
 	__mock_configuration_file_handler
 ):
 	installer_service.InstallationManager({})
-	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE)
+	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE, show_errors=False)
 
 def test_stores_config_file_handler_when_initializing(
 	__mock_mode_executors,

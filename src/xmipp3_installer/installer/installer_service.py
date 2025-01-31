@@ -23,9 +23,9 @@ class InstallationManager:
 		"""
     self.args = args
     self.mode = args.pop(modes.MODE, modes.MODE_ALL)
-    self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](args)
-    self.config_handler = config.ConfigurationFileHandler(path=constants.CONFIG_FILE)
+    self.config_handler = config.ConfigurationFileHandler(path=constants.CONFIG_FILE, show_errors=False)
     self.config_values = self.config_handler.values
+    self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](args)
 
   def run_installer(self):
     """
