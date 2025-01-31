@@ -14,15 +14,15 @@ from xmipp3_installer.repository import config
 class ModeVersionExecutor(mode_executor.ModeExecutor):
 	__LEFT_TEXT_LEN = 25
 
-	def __init__(self, args: Dict):
+	def __init__(self, context: Dict):
 		"""
 		### Constructor.
 		
 		#### Params:
-		- args (dict): Dictionary containing all parsed command-line arguments.
+		- context (dict): Dictionary containing the installation context variables.
 		"""
-		super().__init__(args)
-		self.short = args.pop(params.PARAM_SHORT, False)
+		super().__init__(context)
+		self.short = context.pop(params.PARAM_SHORT, False)
 		self.config_exists = os.path.exists(constants.CONFIG_FILE)
 		self.version_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
 		self.is_configured = self.config_exists and self.version_file_exists

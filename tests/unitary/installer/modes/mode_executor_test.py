@@ -29,8 +29,8 @@ def test_sets_args_attribute_in_initialization(__dummy_test_mode_executor):
   args = {"key": "value"}
   executor = __dummy_test_mode_executor(args)
   assert (
-    executor.args == args
-  ), get_assertion_message("args attribute", args, executor.args)
+    executor.context == args
+  ), get_assertion_message("args attribute", args, executor.context)
 
 def test_sets_executor_default_config_without_override(__dummy_test_mode_executor):
   executor = __dummy_test_mode_executor({})

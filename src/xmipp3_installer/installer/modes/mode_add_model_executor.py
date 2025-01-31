@@ -14,17 +14,17 @@ _SYNC_PROGRAM_PATH = os.path.join(".", "dist", "bin")
 _SYNC_PROGRAM_NAME = "xmipp_sync_data"
 
 class ModeAddModelExecutor(mode_executor.ModeExecutor):
-	def __init__(self, args: Dict):
+	def __init__(self, context: Dict):
 		"""
 		### Constructor.
 		
 		#### Params:
-		- args (dict): Dictionary containing all parsed command-line arguments.
+		- context (dict): Dictionary containing the installation context variables.
 		"""
-		super().__init__(args)
-		self.login = args.pop(params.PARAM_LOGIN)
-		self.model_path = args.pop(params.PARAM_MODEL_PATH)
-		self.update = args.pop(params.PARAM_UPDATE, False)
+		super().__init__(context)
+		self.login = context.pop(params.PARAM_LOGIN)
+		self.model_path = context.pop(params.PARAM_MODEL_PATH)
+		self.update = context.pop(params.PARAM_UPDATE, False)
 		self.model_dir = os.path.dirname(self.model_path)
 		self.model_name = os.path.basename(self.model_path)
 		self.tar_file_name = f"xmipp_model_{self.model_name}.tgz"
