@@ -19,7 +19,7 @@ class ConfigurationFileHandler(Singleton):
 	__ASSIGNMENT_SEPARATOR = '='
 	__LAST_MODIFIED_TEXT = "Config file automatically generated on"
 
-	def __init__(self, path: str=constants.CONFIG_FILE):
+	def __init__(self, path: str=constants.CONFIG_FILE, show_errors: bool=True):
 		"""
 		### Constructor.
 		
@@ -27,6 +27,7 @@ class ConfigurationFileHandler(Singleton):
 		- path (str): Optional. Path to the configuration file.
 		"""
 		self.__path = path
+		self.__show_errors = show_errors
 		self.values = {}
 		self.read_config()
 		self.last_modified = self.__read_config_date()
