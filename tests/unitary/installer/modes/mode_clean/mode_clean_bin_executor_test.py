@@ -5,23 +5,23 @@ import pytest
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor import ModeCleanBinExecutor
-from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
+from xmipp3_installer.installer.modes.mode_clean.mode_clean_executor import ModeCleanExecutor
 from xmipp3_installer.installer.tmp import versions
 
 from ..... import get_assertion_message
 
-def test_implements_interface_mode_executor():
+def test_implements_interface_mode_clean_executor():
 	executor = ModeCleanBinExecutor({})
 	assert (
-		isinstance(executor, ModeExecutor)
+		isinstance(executor, ModeCleanExecutor)
 	), get_assertion_message(
 		"parent class",
-		ModeExecutor.__name__,
+		ModeCleanExecutor.__name__,
 		executor.__class__.__bases__[0].__name__
 	)
 
-def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
-	base_executor = __dummy_test_mode_executor({})
+def test_does_not_override_parent_config_values(__dummy_test_mode_clean_executor):
+	base_executor = __dummy_test_mode_clean_executor({})
 	base_executor.run()  # To cover dummy implementation execution
 	config_executor = ModeCleanBinExecutor({})
 	base_config = (
@@ -38,41 +38,33 @@ def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
 		inherited_config == base_config
 	), get_assertion_message("config values", base_config, inherited_config)
 
-def test_calls_logger_when_getting_confirmation(
-	__mock_logger,
-	__mock_logger_yellow,
-	__mock_get_user_confirmation
+def test_returns_expected_confirmation_keyword():
+	confirmation_keyword = ModeCleanBinExecutor({})._get_confirmation_keyword()
+	assert (
+		confirmation_keyword == "y"
+	), get_assertion_message("confirmation keyword", "y", confirmation_keyword)
+
+def test_calls_get_confirmation_keyword_when_getting_confirmation_message(
+	__mock_get_confirmation_keyword
 ):
-	ModeCleanBinExecutor._ModeCleanBinExecutor__get_confirmation()
-	expected_message = __mock_logger_yellow(
+	ModeCleanBinExecutor({})._get_confirmation_message()
+	__mock_get_confirmation_keyword.assert_called_once_with()
+
+def test_returns_expected_confirmation_message(
+	__mock_get_confirmation_keyword,
+	__mock_logger_yellow
+):
+	confirmation_message = ModeCleanBinExecutor({})._get_confirmation_message()
+	expected_confirmation_message = __mock_logger_yellow(
 		f"WARNING: This will DELETE from {constants.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"
 	)
-	second_line_message = 'If you are sure you want to do this, type \'y\' (case sensitive):'
-	expected_message += f"\n{__mock_logger_yellow(second_line_message)}"
-	__mock_logger.assert_called_once_with(expected_message)
-
-def test_calls_get_user_confirmation_when_getting_confirmation(
-	__mock_get_user_confirmation
-):
-	ModeCleanBinExecutor._ModeCleanBinExecutor__get_confirmation()
-	__mock_get_user_confirmation.assert_called_once_with("y")
-
-@pytest.mark.parametrize(
-	"__mock_get_user_confirmation",
-	[pytest.param(False), pytest.param(True)],
-	indirect=["__mock_get_user_confirmation"]
-)
-def test_gets_expected_user_confirmation(
-	__mock_get_user_confirmation
-):
-	confirmation = ModeCleanBinExecutor._ModeCleanBinExecutor__get_confirmation()
-	assert (
-		confirmation == __mock_get_user_confirmation()
-	), get_assertion_message(
-		"user confirmation",
-		__mock_get_user_confirmation(),
-		confirmation
+	second_line = __mock_logger_yellow(
+		f"If you are sure you want to do this, type '{__mock_get_confirmation_keyword()}' (case sensitive):"
 	)
+	expected_confirmation_message += f"\n{second_line}"
+	assert (
+		confirmation_message == expected_confirmation_message
+	), get_assertion_message("confirmation message", expected_confirmation_message, confirmation_message)
 
 def test_calls_path_rglob_when_getting_pycache_dirs(
 	__mock_path
@@ -169,7 +161,7 @@ def test_calls_glob_when_getting_paths_to_delete(
 	__mock_get_empty_dirs,
 	__mock_get_pycache_dirs
 ):
-	ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete()
+	ModeCleanBinExecutor({})._get_paths_to_delete()
 	__mock_glob.assert_called_once_with("**/*.dblite", recursive=True)
 
 def test_calls_get_compilation_files_when_getting_paths_to_delete(
@@ -178,7 +170,7 @@ def test_calls_get_compilation_files_when_getting_paths_to_delete(
 	__mock_get_empty_dirs,
 	__mock_get_pycache_dirs
 ):
-	ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete()
+	ModeCleanBinExecutor({})._get_paths_to_delete()
 	__mock_get_compilation_files.assert_called_once_with()
 
 def test_calls_get_empty_dirs_when_getting_paths_to_delete(
@@ -187,7 +179,7 @@ def test_calls_get_empty_dirs_when_getting_paths_to_delete(
 	__mock_get_empty_dirs,
 	__mock_get_pycache_dirs
 ):
-	ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete()
+	ModeCleanBinExecutor({})._get_paths_to_delete()
 	__mock_get_empty_dirs.assert_called_once_with()
 
 def test_calls_get_pycache_dirs_when_getting_paths_to_delete(
@@ -196,7 +188,7 @@ def test_calls_get_pycache_dirs_when_getting_paths_to_delete(
 	__mock_get_empty_dirs,
 	__mock_get_pycache_dirs
 ):
-	ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete()
+	ModeCleanBinExecutor({})._get_paths_to_delete()
 	__mock_get_pycache_dirs.assert_called_once_with()
 
 def test_returns_expected_paths_to_delete(
@@ -213,72 +205,29 @@ def test_returns_expected_paths_to_delete(
 		*__mock_get_pycache_dirs(),
 		constants.BUILD_PATH
 	]
-	paths_to_delete = ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete()
+	paths_to_delete = ModeCleanBinExecutor({})._get_paths_to_delete()
 	assert (
 		paths_to_delete == expected_paths_to_delete
 	), get_assertion_message("paths to delete", expected_paths_to_delete, paths_to_delete)
 
-def test_calls_get_confirmation_when_running_executor(
-	__mock_get_confirmation,
-	__mock_get_paths_to_delete,
-	__mock_logger
-):
-	ModeCleanBinExecutor({}).run()
-	__mock_get_confirmation.assert_called_once_with()
-
-def test_calls_get_paths_to_delete_when_running_executor(
-	__mock_get_confirmation,
-	__mock_get_paths_to_delete,
-	__mock_logger
-):
-	ModeCleanBinExecutor({}).run()
-	__mock_get_paths_to_delete.assert_called_once_with()
-
-def test_calls_delete_paths_to_delete_when_running_executor(
-	__mock_get_confirmation,
-	__mock_get_paths_to_delete,
-	__mock_delete_paths,
-	__mock_logger
-):
-	ModeCleanBinExecutor({}).run()
-	__mock_delete_paths.assert_called_once_with(__mock_get_paths_to_delete())
-
-def test_calls_logger_when_running_executor(
-	__mock_get_confirmation,
-	__mock_get_paths_to_delete,
-	__mock_delete_paths,
-	__mock_logger,
-	__mock_get_done_message
-):
-	ModeCleanBinExecutor({}).run()
-	__mock_logger.assert_called_once_with(
-		__mock_get_done_message()
-	)
-
-@pytest.mark.parametrize(
-	"__mock_get_confirmation",
-	[pytest.param(False), pytest.param(True)],
-	indirect=["__mock_get_confirmation"]
-)
-def test_returns_expected_values_when_running_executor(
-	__mock_get_confirmation,
-	__mock_get_paths_to_delete,
-	__mock_delete_paths,
-	__mock_logger,
-	__mock_get_done_message
-):
-	expected_values = (0, "") if __mock_get_confirmation() else (errors.INTERRUPTED_ERROR, "")
-	values = ModeCleanBinExecutor({}).run()
-	assert (
-		values == expected_values
-	), get_assertion_message("return values", expected_values, values)
+@pytest.fixture
+def __dummy_test_mode_clean_executor():
+	class TestExecutor(ModeCleanExecutor):
+		def _get_paths_to_delete(self):
+			return []
+		def _get_confirmation_message(self):
+			return ""
+		def _get_confirmation_keyword(self):
+			return ""
+	return TestExecutor
 
 @pytest.fixture
-def __dummy_test_mode_executor():
-	class TestExecutor(ModeExecutor):
-		def run(self):
-			return (0, "")
-	return TestExecutor
+def __mock_get_confirmation_keyword():
+	with patch(
+		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._get_confirmation_keyword"
+	) as mock_method:
+		mock_method.return_value = "confirmation keyword"
+		yield mock_method
 
 @pytest.fixture(autouse=True)
 def __mock_logger():
@@ -360,35 +309,4 @@ def __mock_get_pycache_dirs():
 		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_pycache_dirs"
 	) as mock_method:
 		mock_method.return_value = ["__pycache__"]
-		yield mock_method
-
-@pytest.fixture(params=[True])
-def __mock_get_confirmation(request):
-	with patch(
-		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_confirmation"
-	) as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
-
-@pytest.fixture
-def __mock_get_paths_to_delete():
-	with patch(
-		"xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_paths_to_delete"
-	) as mock_method:
-		mock_method.return_value = ["path1", "path2"]
-		yield mock_method
-
-@pytest.fixture(autouse=True)
-def __mock_delete_paths():
-	with patch(
-		"xmipp3_installer.repository.file_operations.delete_paths"
-	) as mock_method:
-		yield mock_method
-
-@pytest.fixture(autouse=True)
-def __mock_get_done_message():
-	with patch(
-		"xmipp3_installer.application.logger.predefined_messages.get_done_message"
-	) as mock_method:
-		mock_method.return_value = "Done message"
 		yield mock_method
