@@ -1,5 +1,6 @@
 name: Generate release (Pypi, tag, & GitHub Release)
 on: workflow_dispatch
+push:
 
 jobs:
   deploy:
@@ -21,6 +22,12 @@ jobs:
     
     - name: Install Package
       run: pip install -e .
+    
+    - name: Commands
+      run: |
+        pip show ${{ vars.MODULE_NAME }}
+        pip show ${{ vars.MODULE_NAME }} | grep Version
+        pip show ${{ vars.MODULE_NAME }} | grep Version | awk '{print $2}'
     
     - name: Get package version
       id: version
