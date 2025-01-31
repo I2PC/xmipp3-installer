@@ -21,7 +21,9 @@ def test_implements_interface_mode_clean_executor():
 
 def test_does_not_override_parent_config_values(__dummy_test_mode_clean_executor):
 	base_executor = __dummy_test_mode_clean_executor({})
-	base_executor.run()  # To cover dummy implementation execution
+	base_executor._get_paths_to_delete() # To cover dummy implementation execution
+	base_executor._get_confirmation_message() # To cover dummy implementation execution
+	base_executor._get_confirmation_keyword() # To cover dummy implementation execution
 	config_executor = ModeCleanBinExecutor({})
 	base_config = (
 		base_executor.logs_to_file,
