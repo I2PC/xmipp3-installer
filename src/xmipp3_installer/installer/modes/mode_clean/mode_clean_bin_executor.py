@@ -1,48 +1,15 @@
 import glob
 import os
 import pathlib
-from typing import Tuple, List
+from typing import List
 
-from xmipp3_installer.application import user_interactions
-from xmipp3_installer.application.logger import errors
-from xmipp3_installer.application.logger import predefined_messages
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.modes import mode_executor
+from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
 from xmipp3_installer.installer.tmp import versions
-from xmipp3_installer.repository import file_operations
 
-class ModeCleanBinExecutor(mode_executor.ModeExecutor):
-	def run(self) -> Tuple[int, str]:
-		"""
-		### Deletes the compiled binaries.
-
-		#### Returns:
-		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
-		"""
-		if not ModeCleanBinExecutor.__get_confirmation():
-			return errors.INTERRUPTED_ERROR, ""
-		file_operations.delete_paths(ModeCleanBinExecutor.__get_paths_to_delete())
-		logger(predefined_messages.get_done_message())
-		return 0, ""
-	
-	@staticmethod
-	def __get_confirmation() -> bool:
-		"""
-		### Asks the user for confirmation.
-
-		#### Returns:
-		- (bool): True if the user confirms, False otherwise.
-		"""
-		confirmation_text = "y"
-		logger('\n'.join([
-			logger.yellow(f"WARNING: This will DELETE from {constants.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"),
-			logger.yellow(f"If you are sure you want to do this, type '{confirmation_text}' (case sensitive):")
-		]))
-		return user_interactions.get_user_confirmation(confirmation_text)
-
-	@staticmethod
-	def __get_paths_to_delete() -> List[str]:
+class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
+	def _get_paths_to_delete(self) -> List[str]:
 		"""
 		### Returns a list of all the paths to be deleted.
 
@@ -60,6 +27,27 @@ class ModeCleanBinExecutor(mode_executor.ModeExecutor):
 			*ModeCleanBinExecutor.__get_pycache_dirs(),
 			constants.BUILD_PATH
 		]
+
+	def _get_confirmation_keyword(self) -> str:
+		"""
+		### Returns the keyword needed to be introduced by the user to confirm an operation.
+
+		#### Returns:
+		- (str): Confirmation keyword.
+		"""
+		return "y"
+	
+	def _get_confirmation_message(self) -> str:
+		"""
+		### Returns message to be printed when asking for user confirmation.
+
+		#### Returns:
+		- (str): Confirmation message.
+		"""
+		return '\n'.join([
+			logger.yellow(f"WARNING: This will DELETE from {constants.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"),
+			logger.yellow(f"If you are sure you want to do this, type '{self._get_confirmation_keyword()}' (case sensitive):")
+		])
 	
 	@staticmethod
 	def __get_compilation_files():
