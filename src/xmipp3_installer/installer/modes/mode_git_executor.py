@@ -6,6 +6,7 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import shell_handler
+from xmipp3_installer.installer.tmp import versions
 
 class ModeGitExecutor(mode_executor.ModeExecutor):
 	def __init__(self, context: Dict):
@@ -25,30 +26,42 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		cmd = f"git {' '.join(self.command)}"
+		cmd = f"git {self.command}"
 		logger(f"Running command '{cmd}' for all xmipp sources...")
 
-		for source in constants.XMIPP_SOURCES:
+		for source in [versions.XMIPP, constants.XMIPP_SOURCES]:
 			logger("")
-			source_path = os.path.abspath(os.path.join(constants.SOURCES_PATH, source))
-			if not os.path.exists(source_path):
-				logger(logger.yellow(
-					f"WARNING: Source {source} does not exist in path {source_path}. Skipping."
-				))
-				continue
-
-			logger(logger.blue(
-				f"Running command for {source} in path {source_path}..."
-			))
-			
-			ret_code, output = shell_handler.run_shell_command(
-				cmd,
-				cwd=source_path,
-				show_output=True,
-				show_error=True
-			)
-			
+			ret_code, output = self.__execute_git_command_for_source(source, cmd)
 			if ret_code:
 				return ret_code, output
 
-		return 0, "" 
+		return 0, ""
+
+	def __execute_git_command_for_source(self, source: str, cmd: str) -> Tuple[int, str]:
+		"""
+		### Executes the git command for a specific source.
+
+		#### Params:
+		- source (str): The source repository name.
+		- cmd (str): The git command to execute.
+
+		#### Returns:
+		- (tuple(int, str)): Tuple containing the return code and output message.
+		"""
+		source_path = os.path.abspath(os.path.join(constants.SOURCES_PATH, source))
+		if not os.path.exists(source_path):
+			logger(logger.yellow(
+				f"WARNING: Source {source} does not exist in path {source_path}. Skipping."
+			))
+			return 0, ""
+
+		logger(logger.blue(
+			f"Running command for {source} in path {source_path}..."
+		))
+		
+		return shell_handler.run_shell_command(
+			cmd,
+			cwd=source_path,
+			show_output=True,
+			show_error=True
+		) 
