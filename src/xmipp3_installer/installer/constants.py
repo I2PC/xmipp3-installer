@@ -7,7 +7,7 @@ import os
 XMIPP_CORE = 'xmippCore'
 XMIPP_VIZ = 'xmippViz'
 XMIPP_PLUGIN = 'scipion-em-xmipp'
-XMIPP_SOURCES = [XMIPP_CORE, XMIPP_VIZ, XMIPP_PLUGIN]
+XMIPP_SOURCES = [XMIPP_CORE, XMIPP_VIZ]
 
 # Paths
 SOURCES_PATH = "src"

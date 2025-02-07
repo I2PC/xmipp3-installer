@@ -300,14 +300,10 @@ def test_returns_expected_sources_info(__mock_get_source_info):
 @pytest.mark.parametrize(
 	"__mock_exists_sources,expected_result",
 	[
-		pytest.param([False, False, False], False),
-		pytest.param([False, False, True], False),
-		pytest.param([False, True, False], False),
-		pytest.param([False, True, True], False),
-		pytest.param([True, False, False], False),
-		pytest.param([True, False, True], False),
-		pytest.param([True, True, False], False),
-		pytest.param([True, True, True], True)
+		pytest.param([False, False], False),
+		pytest.param([False, True], False),
+		pytest.param([True, False], False),
+		pytest.param([True, True], True)
 	],
 	indirect=["__mock_exists_sources"]
 )
@@ -589,18 +585,15 @@ def __mock_exists_init(request, __mock_exists):
 	__mock_exists.side_effect = __side_effect
 	yield __mock_exists
 
-@pytest.fixture(params=[[True, True, True]])
+@pytest.fixture(params=[[True, True]])
 def __mock_exists_sources(request, __mock_exists):
 	def __side_effect(path):
 		core_exists = request.param[0]
 		viz_exists = request.param[1]
-		plugin_exists = request.param[2]
 		if path == os.path.join(constants.SOURCES_PATH, constants.XMIPP_CORE):
 			return core_exists
 		elif path == os.path.join(constants.SOURCES_PATH, constants.XMIPP_VIZ):
 			return viz_exists
-		elif path == os.path.join(constants.SOURCES_PATH, constants.XMIPP_PLUGIN):
-			return plugin_exists
 		else:
 			return False
 	_ = __side_effect("non-existent") # To cover system case
