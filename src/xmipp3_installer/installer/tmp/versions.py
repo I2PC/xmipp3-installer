@@ -27,14 +27,6 @@ XMIPP_VERSIONS = {
 	XMIPP_CORE: {											
 		VERSION_KEY: __LATEST_RELEASE_NUMBER,				
 		VERNAME_KEY: __LATEST_RELEASE_NAME  
-	},																
-	XMIPP_VIZ: {											
-		VERSION_KEY: __LATEST_RELEASE_NUMBER,				
-		VERNAME_KEY: __LATEST_RELEASE_NAME  
-	},																
-	XMIPP_PLUGIN: {										
-		VERSION_KEY: __LATEST_RELEASE_NUMBER,				
-		VERNAME_KEY: __LATEST_RELEASE_NAME  
-	}																	
+	}
 }																		
 #####################################

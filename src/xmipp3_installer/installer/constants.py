@@ -5,9 +5,7 @@ import os
 # Repository names
 #XMIPP = 'xmipp'
 XMIPP_CORE = 'xmippCore'
-XMIPP_VIZ = 'xmippViz'
-XMIPP_PLUGIN = 'scipion-em-xmipp'
-XMIPP_SOURCES = [XMIPP_CORE, XMIPP_VIZ]
+XMIPP_SOURCES = [XMIPP_CORE]
 
 # Paths
 SOURCES_PATH = "src"

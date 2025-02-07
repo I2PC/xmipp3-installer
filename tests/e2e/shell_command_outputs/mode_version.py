@@ -32,15 +32,10 @@ Release date:            {versions.RELEASE_DATE}
 Compilation date:        -
 System version:          {installation_info_assembler.get_os_release_name()}"""
 
-__SOURCES_NOT_FOUND_SECTION = f"""xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}
-xmippViz branch:         {__SOURCE_NOT_FOUND_MESSAGE}"""
+__SOURCES_NOT_FOUND_SECTION = f"""xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}"""
 
 def get_sources_found_section():
-  found_source_message = __get_found_source_message()
-  return '\n'.join([
-    f"xmippCore branch:        {found_source_message}",
-    f"xmippViz branch:         {found_source_message}"
-  ])
+  return f"xmippCore branch:        {__get_found_source_message()}"
 
 def get_full_info_before_config():
   return '\n'.join([
