@@ -32,7 +32,7 @@ Release date:            {versions.RELEASE_DATE}
 Compilation date:        -
 System version:          {installation_info_assembler.get_os_release_name()}"""
 
-__SOURCES_NOT_FOUND_SECTION = f"""xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}"""
+__SOURCES_NOT_FOUND_SECTION = f"xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}"
 
 def get_sources_found_section():
   return f"xmippCore branch:        {__get_found_source_message()}"
