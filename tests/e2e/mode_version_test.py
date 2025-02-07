@@ -3,7 +3,6 @@ import subprocess
 
 import pytest
 
-from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
