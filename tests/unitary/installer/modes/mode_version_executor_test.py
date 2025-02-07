@@ -298,17 +298,15 @@ def test_returns_expected_sources_info(__mock_get_source_info):
 	), get_assertion_message("sources info", expected_sources_info, sources_info)
 
 @pytest.mark.parametrize(
-	"__mock_exists_sources,expected_result",
+	"__mock_exists,expected_result",
 	[
-		pytest.param([False, False], False),
-		pytest.param([False, True], False),
-		pytest.param([True, False], False),
-		pytest.param([True, True], True)
+		pytest.param(False, False),
+		pytest.param(True, True)
 	],
-	indirect=["__mock_exists_sources"]
+	indirect=["__mock_exists"]
 )
 def test_returns_expected_value_when_checking_if_all_sources_are_present(
-	__mock_exists_sources,
+	__mock_exists,
 	expected_result
 ):
 	result = ModeVersionExecutor._ModeVersionExecutor__are_all_sources_present()
@@ -579,21 +577,6 @@ def __mock_exists_init(request, __mock_exists):
 			return config_file_exists
 		elif path == constants.LIBRARY_VERSIONS_FILE:
 			return lib_file_exists
-		else:
-			return False
-	_ = __side_effect("non-existent") # To cover system case
-	__mock_exists.side_effect = __side_effect
-	yield __mock_exists
-
-@pytest.fixture(params=[[True, True]])
-def __mock_exists_sources(request, __mock_exists):
-	def __side_effect(path):
-		core_exists = request.param[0]
-		viz_exists = request.param[1]
-		if path == os.path.join(constants.SOURCES_PATH, constants.XMIPP_CORE):
-			return core_exists
-		elif path == os.path.join(constants.SOURCES_PATH, constants.XMIPP_VIZ):
-			return viz_exists
 		else:
 			return False
 	_ = __side_effect("non-existent") # To cover system case
