@@ -6,7 +6,6 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.tmp import versions
 
 class ModeGitExecutor(mode_executor.ModeExecutor):
 	def __init__(self, context: Dict):
@@ -29,7 +28,7 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		cmd = f"git {self.command}"
 		logger(f"Running command '{cmd}' for all xmipp sources...")
 
-		for source in [versions.XMIPP, constants.XMIPP_SOURCES]:
+		for source in [constants.XMIPP, constants.XMIPP_CORE]:
 			logger("")
 			ret_code, output = self.__execute_git_command_for_source(source, cmd)
 			if ret_code:
