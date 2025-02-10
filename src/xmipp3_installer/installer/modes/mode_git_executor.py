@@ -17,7 +17,8 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		"""
 		super().__init__(context)
 		command_param_list = context.pop(params.PARAM_GIT_COMMAND)
-		self.command = ' '.join(command_param_list)
+		command_params = ' '.join(command_param_list)
+		self.command = f"git {command_params}"
 	
 	def run(self) -> Tuple[int, str]:
 		"""
@@ -26,24 +27,22 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		cmd = f"git {self.command}"
-		logger(f"Running command '{cmd}' for all xmipp sources...")
+		logger(f"Running command '{self.command}' for all xmipp sources...")
 
 		for source in [constants.XMIPP, constants.XMIPP_CORE]:
 			logger("")
-			ret_code, output = self.__execute_git_command_for_source(source, cmd)
+			ret_code, output = self.__execute_git_command_for_source(source)
 			if ret_code:
 				return ret_code, output
 
 		return 0, ""
 
-	def __execute_git_command_for_source(self, source: str, cmd: str) -> Tuple[int, str]:
+	def __execute_git_command_for_source(self, source: str) -> Tuple[int, str]:
 		"""
 		### Executes the git command for a specific source.
 
 		#### Params:
 		- source (str): The source repository name.
-		- cmd (str): The git command to execute.
 
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and output message.
@@ -60,7 +59,7 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		))
 		
 		return shell_handler.run_shell_command(
-			cmd,
+			self.command,
 			cwd=source_path,
 			show_output=True,
 			show_error=True
