@@ -87,8 +87,8 @@ def __get_installation_branch_name(branch_name: str) -> str:
 	#### Return:
 	- (str): Release name if Xmipp is in a release branch, or the branch name otherwise.
 	"""
-	if not branch_name or branch_name == versions.MASTER_BRANCHNAME:
-		return versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]
+	if not branch_name or branch_name == constants.MASTER_BRANCHNAME:
+		return versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]
 	else:
 		return branch_name
 

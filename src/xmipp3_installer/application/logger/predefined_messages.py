@@ -1,4 +1,5 @@
 from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.handlers import git_handler
 from xmipp3_installer.installer.tmp import versions
 
@@ -51,7 +52,7 @@ def get_success_message() -> str:
 	#### Returms:
 	- (str): Success message.
 	"""
-	tag_version = versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]
+	tag_version = versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]
 	release_name = tag_version if git_handler.is_tag() else git_handler.get_current_branch()
 
 	box_wrapper = '*  *'

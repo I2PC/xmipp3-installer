@@ -318,7 +318,7 @@ def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
 	version_executor = ModeVersionExecutor({})
 	version_executor.short = True
 	version_executor.run()
-	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERNAME_KEY])
+	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY])
 
 @pytest.mark.parametrize(
 	"__mock_are_all_sources_present,__mock_exists_library_versions,__mock_is_tag,expected_title_version_type",
@@ -355,7 +355,7 @@ def test_calls_logger_when_running_executor_in_long_format(
 	version_executor = ModeVersionExecutor({})
 	version_executor.short = False
 	version_executor.run()
-	expected_title = f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})"
+	expected_title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})"
 	expected_calls = [
 		call(f"{logger.bold(expected_title)}\n"),
 		call(__mock_get_dates_section.return_value),

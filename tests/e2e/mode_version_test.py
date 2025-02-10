@@ -16,7 +16,7 @@ from .. import (
 def test_returns_short_version():
 	command_words = ["xmipp3_installer", modes.MODE_VERSION, "--short"]
 	result = subprocess.run(command_words, capture_output=True, text=True)
-	expected_version = f"{versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERNAME_KEY]}\n"
+	expected_version = f"{versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY]}\n"
 	assert (
 		result.stdout == expected_version
 	), get_assertion_message("short version", expected_version, result.stdout)

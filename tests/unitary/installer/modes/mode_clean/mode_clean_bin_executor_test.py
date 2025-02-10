@@ -97,7 +97,7 @@ def test_calls_os_walk_when_getting_empty_dirs(
 	__mock_os_walk.assert_called_once_with(
 		__mock_os_path_join(
 			constants.SOURCES_PATH,
-			versions.XMIPP,
+			constants.XMIPP,
 			"applications",
 			"programs"
 		)

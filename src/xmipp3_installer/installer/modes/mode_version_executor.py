@@ -35,10 +35,10 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error.
 		"""
 		if self.short:
-			logger(versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERNAME_KEY])
+			logger(versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY])
 		else:
 			version_type = 'release' if git_handler.is_tag() else git_handler.get_current_branch()
-			title = f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({version_type})"
+			title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({version_type})"
 			logger(f"{logger.bold(title)}\n")
 			logger(self.__get_dates_section())
 			system_version_left_text = self.__add_padding_spaces("System version: ")
