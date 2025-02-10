@@ -3,12 +3,6 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.installer.handlers import git_handler
-from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
-
-def __get_found_source_message():
-  version_executor = ModeVersionExecutor({})
-  source_message_line:str = version_executor._ModeVersionExecutor__get_source_info("")
-  return source_message_line.replace("branch:", "").strip()
 
 __TITLE = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({git_handler.get_current_branch()})"
 
@@ -36,7 +30,7 @@ System version:          {installation_info_assembler.get_os_release_name()}"""
 __SOURCES_NOT_FOUND_SECTION = f"xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}"
 
 def get_sources_found_section():
-  return f"xmippCore branch:        {__get_found_source_message()}"
+  return f"xmippCore branch:        {git_handler.get_current_branch()} ({git_handler.get_current_commit()})"
 
 def get_full_info_before_config():
   return '\n'.join([
