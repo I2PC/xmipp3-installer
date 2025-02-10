@@ -6,7 +6,6 @@ import pytest
 
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
-from xmipp3_installer.installer import installer_service
 
 from .... import get_assertion_message
 
