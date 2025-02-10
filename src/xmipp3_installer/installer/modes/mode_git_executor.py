@@ -16,7 +16,8 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		- context (dict): Dictionary containing the installation context variables.
 		"""
 		super().__init__(context)
-		self.command = context.pop(params.PARAM_GIT_COMMAND)
+		command_param_list = context.pop(params.PARAM_GIT_COMMAND)
+		self.command = ' '.join(command_param_list)
 	
 	def run(self) -> Tuple[int, str]:
 		"""
