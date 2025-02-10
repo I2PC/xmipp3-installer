@@ -13,8 +13,6 @@ from .. import (
 	get_assertion_message, copy_file_from_reference, get_test_file
 )
 
-__CORE_SOURCE = os.path.join(constants.SOURCES_PATH, constants.XMIPP_CORE)
-
 def test_returns_short_version():
 	command_words = ["xmipp3_installer", modes.MODE_VERSION, "--short"]
 	result = subprocess.run(command_words, capture_output=True, text=True)
@@ -61,10 +59,10 @@ def __setup_evironment(request):
 				constants.LIBRARY_VERSIONS_FILE
 			)
 		if not sources_exist:
-			file_operations.delete_paths([__CORE_SOURCE])
+			file_operations.delete_paths([constants.XMIPP_CORE_PATH])
 		else:
-			os.makedirs(__CORE_SOURCE, exist_ok=True)
+			os.makedirs(constants.XMIPP_CORE_PATH, exist_ok=True)
 		yield lib_file_exist, sources_exist
 	finally:
 		__delete_library_versions_file()
-		file_operations.delete_paths([__CORE_SOURCE])
+		file_operations.delete_paths([constants.XMIPP_CORE_PATH])

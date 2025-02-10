@@ -66,10 +66,10 @@ def test_returns_expected_confirmation_message(
 		confirmation_message == expected_confirmation_message
 	), get_assertion_message("confirmation message", expected_confirmation_message, confirmation_message)
 
-def test_returns_expected_paths_to_delete(__mock_os_path_join):
+def test_returns_expected_paths_to_delete():
 	paths = ModeCleanAllExecutor({})._get_paths_to_delete()
 	expected_paths = [
-		__mock_os_path_join(constants.SOURCES_PATH, constants.XMIPP_CORE),
+		constants.XMIPP_CORE_PATH,
 		constants.INSTALL_PATH,
 		constants.BUILD_PATH,
 		constants.CONFIG_FILE
@@ -103,13 +103,4 @@ def __mock_logger_yellow():
 		"xmipp3_installer.application.logger.logger.Logger.yellow"
 	) as mock_method:
 		mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
-		yield mock_method
-
-@pytest.fixture(autouse=True)
-def __mock_os_path_join():
-	def __join_with_foward_slashes(*args):
-		args = [arg.rstrip("/") for arg in args]
-		return '/'.join([*args])
-	with patch("os.path.join") as mock_method:
-		mock_method.side_effect = __join_with_foward_slashes
 		yield mock_method

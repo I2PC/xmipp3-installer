@@ -5,7 +5,6 @@ import pytest
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor import ModeCleanBinExecutor
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_executor import ModeCleanExecutor
-from xmipp3_installer.installer.tmp import versions
 
 from ..... import get_assertion_message
 

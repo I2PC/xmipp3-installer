@@ -9,8 +9,6 @@ from xmipp3_installer.repository import file_operations
 
 from .. import get_assertion_message
 
-__CORE_SOURCE = os.path.join(constants.SOURCES_PATH, constants.XMIPP_CORE)
-
 @pytest.mark.parametrize(
   "confirmation_text",
   [
@@ -31,7 +29,7 @@ def test_deletes_expected_files(__setup_environment, confirmation_text):
   )
   
   for remaining_path in [
-    __CORE_SOURCE,
+    constants.XMIPP_CORE_PATH,
     constants.INSTALL_PATH,
     constants.BUILD_PATH,
     constants.CONFIG_FILE
@@ -52,14 +50,14 @@ def __create_config_file():
 @pytest.fixture
 def __setup_environment():
   try:
-    os.makedirs(__CORE_SOURCE, exist_ok=True)
+    os.makedirs(constants.XMIPP_CORE_PATH, exist_ok=True)
     os.makedirs(constants.INSTALL_PATH, exist_ok=True)
     os.makedirs(constants.BUILD_PATH, exist_ok=True)
     __create_config_file()
     yield
   finally:
     file_operations.delete_paths([
-      __CORE_SOURCE,
+      constants.XMIPP_CORE_PATH,
       constants.INSTALL_PATH,
       constants.BUILD_PATH,
     ])
