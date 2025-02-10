@@ -49,7 +49,7 @@ PARAMS = {
 		DESCRIPTION: "Shows the tests available and how to invoke those."
 	},
 	PARAM_GIT_COMMAND: {
-		SHORT_VERSION: "command",
+		SHORT_VERSION: PARAM_GIT_COMMAND,
 		DESCRIPTION: "Git command to run on all source repositories."
 	},
 	PARAM_LOGIN: {
