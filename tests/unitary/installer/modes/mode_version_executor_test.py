@@ -297,23 +297,6 @@ def test_returns_expected_sources_info(__mock_get_source_info):
 		sources_info == expected_sources_info
 	), get_assertion_message("sources info", expected_sources_info, sources_info)
 
-@pytest.mark.parametrize(
-	"__mock_exists,expected_result",
-	[
-		pytest.param(False, False),
-		pytest.param(True, True)
-	],
-	indirect=["__mock_exists"]
-)
-def test_returns_expected_value_when_checking_if_all_sources_are_present(
-	__mock_exists,
-	expected_result
-):
-	result = ModeVersionExecutor._ModeVersionExecutor__are_all_sources_present()
-	assert (
-		result == expected_result
-	), get_assertion_message("are all sources present value", expected_result, result)
-
 def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
 	version_executor = ModeVersionExecutor({})
 	version_executor.short = True
@@ -321,20 +304,19 @@ def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
 	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY])
 
 @pytest.mark.parametrize(
-	"__mock_are_all_sources_present,__mock_exists_library_versions,__mock_is_tag,expected_title_version_type",
+	"__mock_exist_sources_and_library_versions,__mock_is_tag,expected_title_version_type",
 	[
-		pytest.param(False, False, False, __BRANCH_NAME),
-		pytest.param(False, False, True, 'release'),
-		pytest.param(False, True, False, __BRANCH_NAME),
-		pytest.param(False, True, True, 'release'),
-		pytest.param(True, False, False, __BRANCH_NAME),
-		pytest.param(True, False, True, 'release'),
-		pytest.param(True, True, False, __BRANCH_NAME),
-		pytest.param(True, True, True, 'release')
+		pytest.param((False, False), False, __BRANCH_NAME),
+		pytest.param((False, False), True, 'release'),
+		pytest.param((False, True), False, __BRANCH_NAME),
+		pytest.param((False, True), True, 'release'),
+		pytest.param((True, False), False, __BRANCH_NAME),
+		pytest.param((True, False), True, 'release'),
+		pytest.param((True, True), False, __BRANCH_NAME),
+		pytest.param((True, True), True, 'release')
 	],
 	indirect=[
-		"__mock_are_all_sources_present",
-		"__mock_exists_library_versions",
+		"__mock_exist_sources_and_library_versions",
 		"__mock_is_tag"
 	]
 )
@@ -347,9 +329,8 @@ def test_calls_logger_when_running_executor_in_long_format(
 	__mock_add_padding_spaces,
 	__mock_get_os_release_name,
 	__mock_get_sources_info,
-	__mock_exists_library_versions,
 	__mock_get_library_versions_section,
-	__mock_are_all_sources_present,
+	__mock_exist_sources_and_library_versions,
 	__mock_get_configuration_warning_message
 ):
 	version_executor = ModeVersionExecutor({})
@@ -362,9 +343,12 @@ def test_calls_logger_when_running_executor_in_long_format(
 		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name.return_value}"),
 		call(__mock_get_sources_info.return_value),
 	]
-	if __mock_exists_library_versions(constants.LIBRARY_VERSIONS_FILE):
+	if __mock_exist_sources_and_library_versions(constants.LIBRARY_VERSIONS_FILE):
 		expected_calls.append(call(f"\n{__mock_get_library_versions_section.return_value}"))
-	if not __mock_exists_library_versions(constants.LIBRARY_VERSIONS_FILE) or not __mock_are_all_sources_present():
+	if (
+		not __mock_exist_sources_and_library_versions(constants.LIBRARY_VERSIONS_FILE) or
+		not __mock_exist_sources_and_library_versions(constants.XMIPP_CORE_PATH)
+	):
 		expected_calls.append(call(f"\n{__mock_get_configuration_warning_message.return_value}"))
 	__mock_logger.assert_has_calls(expected_calls)
 	assert (
@@ -595,6 +579,21 @@ def __mock_exists_library_versions(request, __mock_exists):
 	__mock_exists.side_effect = __side_effect
 	yield __mock_exists
 
+@pytest.fixture(params=[(True, True)])
+def __mock_exist_sources_and_library_versions(__mock_exists, request):
+	def __side_effect(path):
+		source_exists = request.param[0]
+		library_version_file_exists = request.param[1]
+		if path == constants.XMIPP_CORE_PATH:
+			return source_exists
+		elif path == constants.LIBRARY_VERSIONS_FILE:
+			return library_version_file_exists
+		else:
+			return False
+	_ = __side_effect("non-existent") # To cover system case
+	__mock_exists.side_effect = __side_effect
+	yield __mock_exists
+
 @pytest.fixture(params=[True])
 def __mock_exists(request):
 	with patch("os.path.exists") as mock_method:
@@ -725,14 +724,6 @@ def __mock_logger_yellow():
 		"xmipp3_installer.application.logger.logger.Logger.yellow"
 	) as mock_method:
 		mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
-		yield mock_method
-
-@pytest.fixture(params=[False])
-def __mock_are_all_sources_present(request):
-	with patch(
-		"xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__are_all_sources_present"
-	) as mock_method:
-		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture

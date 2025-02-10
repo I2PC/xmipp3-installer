@@ -47,7 +47,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			library_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
 			if library_file_exists:
 				logger(f"\n{self.__get_library_versions_section()}")
-			if not ModeVersionExecutor.__are_all_sources_present() or not library_file_exists:
+			if not os.path.exists(constants.XMIPP_CORE_PATH) or not library_file_exists:
 				logger(f"\n{self.__get_configuration_warning_message()}")
 		return 0, ""
 
@@ -130,19 +130,6 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			library_left_text = self.__add_padding_spaces(f"{library}: ")
 			version_lines.append(f"{library_left_text}{version}")
 		return '\n'.join(version_lines)
-
-	@staticmethod
-	def __are_all_sources_present() -> bool:
-		"""
-		### Check if all required source packages are present.
-
-		#### Returns:
-		- (bool): True if all source packages are present, False otherwise.
-		"""
-		for source_package in constants.XMIPP_SOURCES:
-			if not os.path.exists(os.path.join(constants.SOURCES_PATH, source_package)):
-				return False
-		return True
 
 	def __get_configuration_warning_message(self) -> str:
 		"""
