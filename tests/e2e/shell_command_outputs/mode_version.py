@@ -1,5 +1,6 @@
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.installer.handlers import git_handler
 from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
@@ -9,7 +10,7 @@ def __get_found_source_message():
   source_message_line:str = version_executor._ModeVersionExecutor__get_source_info("")
   return source_message_line.replace("branch:", "").strip()
 
-__TITLE = f"Xmipp {versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]} ({git_handler.get_current_branch()})"
+__TITLE = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({git_handler.get_current_branch()})"
 
 __SOURCE_NOT_FOUND_MESSAGE = logger.yellow("Not found")
 

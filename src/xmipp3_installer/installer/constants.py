@@ -3,9 +3,13 @@
 import os
 
 # Repository names
-#XMIPP = 'xmipp'
+XMIPP = 'xmipp'
 XMIPP_CORE = 'xmippCore'
 XMIPP_SOURCES = [XMIPP_CORE]
+
+# Branch names
+DEVEL_BRANCHNAME = 'devel'
+MASTER_BRANCHNAME = 'master'
 
 # Paths
 SOURCES_PATH = "src"
@@ -16,7 +20,7 @@ INSTALL_PATH = "dist"
 LOG_FILE = 'compilation.log'
 LIBRARY_VERSIONS_FILE = os.path.join(BUILD_PATH, 'versions.txt')
 CONFIG_FILE = 'xmipp.conf'
-SCIPION_SOFTWARE_EM = "scipionfiles/downloads/scipion/software/em"
+SCIPION_SOFTWARE_EM = os.path.join("scipionfiles", "downloads", "scipion", "software", "em")
 
 # Others
 TAIL_LOG_NCHARS = 300

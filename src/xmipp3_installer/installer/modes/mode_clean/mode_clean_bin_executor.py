@@ -74,7 +74,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 		"""
 		empty_dirs = [] 
 		for root, dirs, files in os.walk(os.path.join(
-			constants.SOURCES_PATH, versions.XMIPP, "applications", "programs"
+			constants.SOURCES_PATH, constants.XMIPP, "applications", "programs"
 		)): 
 			if not len(dirs) and not len(files): 
 				empty_dirs.append(root) 

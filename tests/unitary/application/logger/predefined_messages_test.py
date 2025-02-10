@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.logger import predefined_messages
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
 
 from .... import get_assertion_message
@@ -168,6 +169,6 @@ def __mock_get_current_branch():
 @pytest.fixture(autouse=True)
 def __mock_xmipp_versions():
   with patch.object(versions, "XMIPP_VERSIONS", new={'key1': {'key2': __TAG_VERSION}}):
-    with patch.object(versions, "XMIPP", new="key1"):
+    with patch.object(constants, "XMIPP", new="key1"):
       with patch.object(versions, "VERSION_KEY", new="key2"):
         yield __TAG_VERSION

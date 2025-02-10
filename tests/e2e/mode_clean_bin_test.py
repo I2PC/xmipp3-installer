@@ -19,7 +19,7 @@ __O_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.o")
 __DUMMY_FILE = os.path.join(__COMPILATION_FILES_DIR, "dummy_file")
 __DIR_STRUCT_ROOT = os.path.join(
   constants.SOURCES_PATH,
-  versions.XMIPP,
+  constants.XMIPP,
   "applications",
   "programs"
 )
@@ -101,7 +101,7 @@ def __setup_environment():
   finally:
     file_operations.delete_paths([
       __COMPILATION_FILES_DIR,
-      os.path.join(constants.SOURCES_PATH, versions.XMIPP),
+      os.path.join(constants.SOURCES_PATH, constants.XMIPP),
       __DBLITE_FILE,
       __PYCACHE_ROOT,
       constants.BUILD_PATH

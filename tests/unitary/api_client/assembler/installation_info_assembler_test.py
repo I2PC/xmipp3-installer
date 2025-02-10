@@ -106,7 +106,7 @@ __EMPTY_INSTALLATION_INFO = {
     "jpeg": None
   },
   "xmipp": {
-    "branch": versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY],
+    "branch": versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY],
     "updated": None,
     "installedByScipion": None
   },
@@ -370,9 +370,9 @@ def test_returns_expected_os_release_name(
 @pytest.mark.parametrize(
   "received_branch_name,expected_branch_name",
   [
-    pytest.param(None, versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]),
-    pytest.param("", versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]),
-    pytest.param(versions.MASTER_BRANCHNAME, versions.XMIPP_VERSIONS[versions.XMIPP][versions.VERSION_KEY]),
+    pytest.param(None, versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]),
+    pytest.param("", versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]),
+    pytest.param(constants.MASTER_BRANCHNAME, versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]),
     pytest.param("devel", "devel")
   ]
 )
