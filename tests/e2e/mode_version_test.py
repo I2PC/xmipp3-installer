@@ -13,6 +13,8 @@ from .. import (
 	get_assertion_message, copy_file_from_reference, get_test_file
 )
 
+__CORE_SOURCE = os.path.join(constants.SOURCES_PATH, constants.XMIPP_CORE)
+
 def test_returns_short_version():
 	command_words = ["xmipp3_installer", modes.MODE_VERSION, "--short"]
 	result = subprocess.run(command_words, capture_output=True, text=True)
@@ -47,17 +49,6 @@ def __delete_library_versions_file():
 		[os.path.dirname(constants.LIBRARY_VERSIONS_FILE)]
 	)
 
-def __delete_sources():
-	file_operations.delete_paths([
-		os.path.join(constants.SOURCES_PATH, source)
-		for source in constants.XMIPP_SOURCES
-	])
-
-def __make_source_directories():
-	for source in constants.XMIPP_SOURCES:
-		source_path = os.path.join(constants.SOURCES_PATH, source)
-		os.makedirs(source_path, exist_ok=True)
-
 @pytest.fixture(params=[False, False])
 def __setup_evironment(request):
 	lib_file_exist, sources_exist = request.param
@@ -70,10 +61,10 @@ def __setup_evironment(request):
 				constants.LIBRARY_VERSIONS_FILE
 			)
 		if not sources_exist:
-			__delete_sources()
+			file_operations.delete_paths([__CORE_SOURCE])
 		else:
-			__make_source_directories()
+			os.makedirs(__CORE_SOURCE, exist_ok=True)
 		yield lib_file_exist, sources_exist
 	finally:
 		__delete_library_versions_file()
-		__delete_sources()
+		file_operations.delete_paths([__CORE_SOURCE])

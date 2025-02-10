@@ -69,13 +69,10 @@ def test_returns_expected_confirmation_message(
 def test_returns_expected_paths_to_delete(__mock_os_path_join):
 	paths = ModeCleanAllExecutor({})._get_paths_to_delete()
 	expected_paths = [
-		*[
-				__mock_os_path_join(constants.SOURCES_PATH, source)
-				for source in constants.XMIPP_SOURCES
-			],
-			constants.INSTALL_PATH,
-			constants.BUILD_PATH,
-			constants.CONFIG_FILE
+		__mock_os_path_join(constants.SOURCES_PATH, constants.XMIPP_CORE),
+		constants.INSTALL_PATH,
+		constants.BUILD_PATH,
+		constants.CONFIG_FILE
 	]
 	assert (
 		paths == expected_paths

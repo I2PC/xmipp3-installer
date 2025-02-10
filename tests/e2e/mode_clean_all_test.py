@@ -5,15 +5,11 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.repository import file_operations
 
 from .. import get_assertion_message
 
-__SOURCES_PATHS = [
-  os.path.join(constants.SOURCES_PATH, source)
-  for source in constants.XMIPP_SOURCES
-]
+__CORE_SOURCE = os.path.join(constants.SOURCES_PATH, constants.XMIPP_CORE)
 
 @pytest.mark.parametrize(
   "confirmation_text",
@@ -35,7 +31,7 @@ def test_deletes_expected_files(__setup_environment, confirmation_text):
   )
   
   for remaining_path in [
-    *__SOURCES_PATHS,
+    __CORE_SOURCE,
     constants.INSTALL_PATH,
     constants.BUILD_PATH,
     constants.CONFIG_FILE
@@ -53,21 +49,17 @@ def __create_config_file():
   with open(constants.CONFIG_FILE, "w") as empty_file:
     empty_file.write("")
 
-def __generate_sources():
-  for source_path in __SOURCES_PATHS:
-    os.makedirs(source_path, exist_ok=True)
-
 @pytest.fixture
 def __setup_environment():
   try:
-    __generate_sources()
+    os.makedirs(__CORE_SOURCE, exist_ok=True)
     os.makedirs(constants.INSTALL_PATH, exist_ok=True)
     os.makedirs(constants.BUILD_PATH, exist_ok=True)
     __create_config_file()
     yield
   finally:
     file_operations.delete_paths([
-      *__SOURCES_PATHS,
+      __CORE_SOURCE,
       constants.INSTALL_PATH,
       constants.BUILD_PATH,
     ])
