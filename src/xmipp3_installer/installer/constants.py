@@ -5,7 +5,6 @@ import os
 # Repository names
 XMIPP = 'xmipp'
 XMIPP_CORE = 'xmippCore'
-XMIPP_SOURCES = [XMIPP_CORE]
 
 # Branch names
 DEVEL_BRANCHNAME = 'devel'
