@@ -22,7 +22,7 @@ __XMIPP_PATH = os.path.join(constants.SOURCES_PATH, constants.XMIPP)
 	],
 	indirect=["__setup_evironment"]
 )
-def test_returns_full_version(
+def test_returns_returns_expected_git_command_output(
 	__setup_evironment,
 	expected_output_function
 ):
