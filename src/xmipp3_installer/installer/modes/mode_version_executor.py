@@ -43,7 +43,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			logger(self.__get_dates_section())
 			system_version_left_text = self.__add_padding_spaces("System version: ")
 			logger(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
-			logger(self.__get_sources_info())
+			logger(self.__get_xmipp_core_info())
 			library_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
 			if library_file_exists:
 				logger(f"\n{self.__get_library_versions_section()}")
@@ -67,36 +67,20 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			dates_section += "-"
 		return dates_section
 	
-	def __get_sources_info(self) -> str:
+	def __get_xmipp_core_info(self) -> str:
 		"""
-		### Returns the message section related to sources.
+		### Returns the info message related to xmippCore.
 
 		#### Returns:
-		- (str): Sources related message section.
+		- (str): Info message about xmippCore.
 		"""
-		sources_message_lines = []
-		for source_package in constants.XMIPP_SOURCES:
-			sources_message_lines.append(self.__get_source_info(source_package))
-		return '\n'.join(sources_message_lines)
-
-	def __get_source_info(self, source: str) -> str:
-		"""
-		### Returns the info message related to a given source.
-
-		#### Params:
-		- source (str): Source to get the message about.
-
-		#### Returns:
-		- (str): Info message about the given source.
-		"""
-		source_path = os.path.join(constants.SOURCES_PATH, source)
-		source_left_text = self.__add_padding_spaces(f"{source} branch: ")
-		if not os.path.exists(source_path):
+		source_left_text = self.__add_padding_spaces(f"{constants.XMIPP_CORE} branch: ")
+		if not os.path.exists(constants.XMIPP_CORE_PATH):
 			return f"{source_left_text}{logger.yellow('Not found')}"
-		current_commit = git_handler.get_current_commit(dir=source_path)
-		commit_branch = git_handler.get_commit_branch(current_commit, dir=source_path)
-		current_branch = git_handler.get_current_branch(dir=source_path)
-		display_name = commit_branch if git_handler.is_tag(dir=source_path) else current_branch
+		current_commit = git_handler.get_current_commit(dir=constants.XMIPP_CORE_PATH)
+		commit_branch = git_handler.get_commit_branch(current_commit, dir=constants.XMIPP_CORE_PATH)
+		current_branch = git_handler.get_current_branch(dir=constants.XMIPP_CORE_PATH)
+		display_name = commit_branch if git_handler.is_tag(dir=constants.XMIPP_CORE_PATH) else current_branch
 		return f"{source_left_text}{display_name} ({current_commit})"
 
 	def __add_padding_spaces(self, left_text: str) -> str:
