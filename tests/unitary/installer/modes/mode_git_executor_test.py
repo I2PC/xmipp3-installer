@@ -10,7 +10,7 @@ from .... import get_assertion_message
 __GIT_COMMAND_PARAMS = ["status", "-s"]
 __GIT_COMMAND = "git status -s"
 __ARGS = {
-	'git-command': __GIT_COMMAND_PARAMS
+	'command': __GIT_COMMAND_PARAMS
 }
 __RETURN_VALUES_STR = "return values"
 __SOURCES = [constants.XMIPP, constants.XMIPP_CORE]
