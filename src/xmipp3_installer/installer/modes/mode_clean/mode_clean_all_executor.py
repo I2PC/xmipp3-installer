@@ -14,10 +14,7 @@ class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
 		- (list(str)): List containing all the paths to delete.
 		"""
 		return [
-			*[
-				os.path.join(constants.SOURCES_PATH, source)
-				for source in constants.XMIPP_SOURCES
-			],
+			os.path.join(constants.SOURCES_PATH, constants.XMIPP_CORE),
 			constants.INSTALL_PATH,
 			constants.BUILD_PATH,
 			constants.CONFIG_FILE
