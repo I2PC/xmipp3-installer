@@ -319,23 +319,21 @@ def test_calls_logger_when_running_executor_in_long_format(
 	version_executor.short = False
 	version_executor.run()
 	expected_title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})"
-	expected_calls = [
-		call(f"{logger.bold(expected_title)}\n"),
-		call(__mock_get_dates_section()),
-		call(f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name()}"),
-		call(__mock_get_xmipp_core_info())
+
+	expected_lines = [
+		f"{logger.bold(expected_title)}\n",
+		__mock_get_dates_section(),
+		f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name()}",
+		__mock_get_xmipp_core_info()
 	]
 	if __mock_exist_sources_and_library_versions(constants.LIBRARY_VERSIONS_FILE):
-		expected_calls.append(call(f"\n{__mock_get_library_versions_section()}"))
+		expected_lines.append(f"\n{__mock_get_library_versions_section()}")
 	if (
 		not __mock_exist_sources_and_library_versions(constants.LIBRARY_VERSIONS_FILE) or
 		not __mock_exist_sources_and_library_versions(constants.XMIPP_CORE_PATH)
 	):
-		expected_calls.append(call(f"\n{__mock_get_configuration_warning_message()}"))
-	__mock_logger.assert_has_calls(expected_calls)
-	assert (
-		__mock_logger.call_count == len(expected_calls)
-	), get_assertion_message("number of logger calls", len(expected_calls), __mock_logger.call_count)
+		expected_lines.append(f"\n{__mock_get_configuration_warning_message()}")
+	__mock_logger.assert_called_once_with('\n'.join(expected_lines))
 
 def test_calls_is_tag_when_running_executor_in_long_format(
 	__mock_logger,

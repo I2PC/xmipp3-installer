@@ -34,22 +34,34 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error.
 		"""
-		if self.short:
-			logger(versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY])
-		else:
-			version_type = 'release' if git_handler.is_tag() else git_handler.get_current_branch()
-			title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({version_type})"
-			logger(f"{logger.bold(title)}\n")
-			logger(self.__get_dates_section())
-			system_version_left_text = self.__add_padding_spaces("System version: ")
-			logger(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
-			logger(self.__get_xmipp_core_info())
-			library_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
-			if library_file_exists:
-				logger(f"\n{self.__get_library_versions_section()}")
-			if not os.path.exists(constants.XMIPP_CORE_PATH) or not library_file_exists:
-				logger(f"\n{self.__get_configuration_warning_message()}")
+		installation_info = (
+			versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY]
+			if self.short else self.__get_long_version()
+		)
+		logger(installation_info)
 		return 0, ""
+
+	def __get_long_version(self) -> str:
+		"""
+		### Returns the long version of the installation info.
+
+		#### Returns:
+		- (str): Long version of the installation info.
+		"""
+		installation_info_lines = []
+		version_type = 'release' if git_handler.is_tag() else git_handler.get_current_branch()
+		title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({version_type})"
+		installation_info_lines.append(f"{logger.bold(title)}\n")
+		installation_info_lines.append(self.__get_dates_section())
+		system_version_left_text = self.__add_padding_spaces("System version: ")
+		installation_info_lines.append(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
+		installation_info_lines.append(self.__get_xmipp_core_info())
+		library_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
+		if library_file_exists:
+			installation_info_lines.append(f"\n{self.__get_library_versions_section()}")
+		if not os.path.exists(constants.XMIPP_CORE_PATH) or not library_file_exists:
+			installation_info_lines.append(f"\n{self.__get_configuration_warning_message()}")
+		return '\n'.join(installation_info_lines)
 
 	def __get_dates_section(self) -> str:
 		"""
