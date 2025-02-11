@@ -6,8 +6,8 @@ import pytest
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.modes.mode_models import mode_models_executor
 from xmipp3_installer.installer.modes.mode_models.mode_add_model_executor import ModeAddModelExecutor
-from xmipp3_installer.installer.modes.mode_models.mode_models_executor import ModeModelsExecutor
 
 from ..... import get_assertion_message
 
@@ -28,10 +28,10 @@ __RETURN_VALUES_STR = "return values"
 def test_implements_interface_mode_models_executor():
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	assert (
-		isinstance(executor, ModeModelsExecutor)
+		isinstance(executor, mode_models_executor.ModeModelsExecutor)
 	), get_assertion_message(
 		"parent class",
-		ModeModelsExecutor.__name__,
+		mode_models_executor.ModeModelsExecutor.__name__,
 		executor.__class__.__bases__[0].__name__
 	)
 
@@ -248,7 +248,6 @@ def test_calls_logger_if_model_path_is_not_dir_when_running_executor(
 ):
 	__mock_os_path_isdir.return_value = False
 	executor = ModeAddModelExecutor(__ARGS.copy())
-	executor.sync_program_path = __MODEL_PATH
 	executor.run()
 	error_message = __mock_logger_red(f"{__MODEL_PATH} is not a directory. Please, check the path.")
 	error_message += "\n"
@@ -420,3 +419,12 @@ def __mock_os_path_exists(request):
 	with patch("os.path.exists") as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_sync_program_path():
+	with patch.object(
+		mode_models_executor,
+		"_SYNC_PROGRAM_PATH",
+		__MODEL_PATH
+	) as mock_object:
+		yield mock_object
