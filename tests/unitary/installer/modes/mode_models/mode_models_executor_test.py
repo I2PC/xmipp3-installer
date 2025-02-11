@@ -4,12 +4,17 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.logger import errors
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes import mode_executor
+from xmipp3_installer.installer.modes.mode_models import mode_models_executor
 from xmipp3_installer.installer.modes.mode_models.mode_models_executor import ModeModelsExecutor
 
 from ..... import get_assertion_message
 
-__SYNC_PROGRAM_PATH = os.path.join(".", "dist", "bin", "xmipp_sync_data")
+__SYNC_PROGRAM_PATH = os.path.join(
+	mode_models_executor._SYNC_PROGRAM_PATH,
+	mode_models_executor._SYNC_PROGRAM_NAME
+)
 
 class DummyModelsExecutor(ModeModelsExecutor):
 	def _execute_model_operation(self):
