@@ -1,17 +1,17 @@
+import os
 import tarfile
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, call, MagicMock
 
 import pytest
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.modes import mode_add_model_executor
-from xmipp3_installer.installer.modes.mode_add_model_executor import ModeAddModelExecutor
-from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
+from xmipp3_installer.installer.modes.mode_models.mode_add_model_executor import ModeAddModelExecutor
+from xmipp3_installer.installer.modes.mode_models.mode_models_executor import ModeModelsExecutor
 
-from .... import get_assertion_message
+from ..... import get_assertion_message
 
-__LOGIN = "test@test.com"
+__LOGIN = "user@host"
 __MODEL_PATH = "/path/to/mymodel"
 __MODEL_DIRNAME = "/path/to"
 __MODEL_NAME = "mymodel"
@@ -25,13 +25,13 @@ __READ_ERROR = tarfile.ReadError("could not read")
 __COMPRESSION_ERROR = tarfile.CompressionError("could not compress")
 __RETURN_VALUES_STR = "return values"
 
-def test_implements_interface_mode_executor():
+def test_implements_interface_mode_models_executor():
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	assert (
-		isinstance(executor, ModeExecutor)
+		isinstance(executor, ModeModelsExecutor)
 	), get_assertion_message(
 		"parent class",
-		ModeExecutor.__name__,
+		ModeModelsExecutor.__name__,
 		executor.__class__.__bases__[0].__name__
 	)
 
@@ -63,11 +63,12 @@ def test_sets_update_values_when_initializing(update):
 def test_sets_path_related_values_when_initializing(
 	model_path,
 	expected_model_dir,
-	expected_model_name
+	expected_model_name,
+	__mock_os_path_join
 ):
 	executor = ModeAddModelExecutor({**__ARGS, 'modelPath': model_path})
 	expected_tar_name = f"xmipp_model_{expected_model_name}.tgz"
-	expected_tar_path = f"{expected_model_dir}/{expected_tar_name}"
+	expected_tar_path = __mock_os_path_join(expected_model_dir, expected_tar_name)
 	received_values = [
 		executor.model_dir,
 		executor.model_name,
@@ -83,24 +84,6 @@ def test_sets_path_related_values_when_initializing(
 	assert (
 		received_values == expected_values
 	), get_assertion_message("path related values", expected_values, received_values)
-
-def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
-	base_executor = __dummy_test_mode_executor({})
-	base_executor.run()  # To cover dummy implementation execution
-	add_model_executor = ModeAddModelExecutor(__ARGS.copy())
-	base_config = (
-		base_executor.logs_to_file,
-		base_executor.prints_with_substitution,
-		base_executor.prints_banner_on_exit
-	)
-	inherited_config = (
-		add_model_executor.logs_to_file,
-		add_model_executor.prints_with_substitution,
-		add_model_executor.prints_banner_on_exit
-	)
-	assert (
-		inherited_config == base_config
-	), get_assertion_message("config values", base_config, inherited_config)
 
 def test_calls_logger_when_generating_compressed_file(
 	__mock_logger,
@@ -149,39 +132,32 @@ def test_calls_logger_when_getting_confirmation(
 ):
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	executor._ModeAddModelExecutor__get_confirmation()
-	expected_text = __mock_logger_yellow("Warning: Uploading, please BE CAREFUL! This can be dangerous.")
-	expected_text += f"\nYou are going to be connected to {__LOGIN} to write in folder {constants.SCIPION_SOFTWARE_EM}."
-	expected_text += "\nContinue? YES/no (case sensitive)"
-	__mock_logger.assert_called_once_with(expected_text)
+	expected_message = '\n'.join([
+		__mock_logger_yellow("Warning: Uploading, please BE CAREFUL! This can be dangerous."),
+		f"You are going to be connected to {__LOGIN} to write in folder {constants.SCIPION_SOFTWARE_EM}.",
+		"Continue? YES/no (case sensitive)"
+	])
+	__mock_logger.assert_called_once_with(expected_message)
 
-def test_calls_get_user_interaction_when_getting_confirmation(
-	__mock_get_user_interaction
+def test_calls_get_user_confirmation_when_getting_confirmation(
+	__mock_get_user_confirmation
 ):
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	executor._ModeAddModelExecutor__get_confirmation()
-	__mock_get_user_interaction.assert_called_once_with("YES")
+	__mock_get_user_confirmation.assert_called_once_with("YES")
 
-@pytest.mark.parametrize(
-	"__mock_get_user_interaction",
-	[pytest.param(False), pytest.param(True)],
-	indirect=["__mock_get_user_interaction"]
-)
-def test_returns_expected_confirmation_result(
-	__mock_get_user_interaction
+def test_returns_get_user_confirmation_output_when_getting_confirmation(
+	__mock_get_user_confirmation
 ):
 	executor = ModeAddModelExecutor(__ARGS.copy())
-	confirmation = executor._ModeAddModelExecutor__get_confirmation()
+	return_value = executor._ModeAddModelExecutor__get_confirmation()
 	assert (
-		confirmation == __mock_get_user_interaction("")
-	), get_assertion_message("confirmation value", __mock_get_user_interaction(""), confirmation)
-
-def test_calls_os_abspath_when_uploading_model(
-	__mock_os_path_abspath,
-	__mock_run_shell_command
-):
-	executor = ModeAddModelExecutor(__ARGS.copy())
-	executor._ModeAddModelExecutor__upload_model()
-	__mock_os_path_abspath.assert_called_once_with(__TAR_PATH)
+		return_value == __mock_get_user_confirmation.return_value
+	), get_assertion_message(
+		"confirmation output",
+		__mock_get_user_confirmation.return_value,
+		return_value
+	)
 
 @pytest.mark.parametrize(
 	"update,expected_update_str",
@@ -191,22 +167,15 @@ def test_calls_run_shell_command_when_uploading_model(
 	update,
 	expected_update_str,
 	__mock_run_shell_command,
-	__mock_os_path_abspath,
-	__mock_sync_program_path,
-	__mock_os_path_join
+	__mock_os_path_join,
+	__mock_os_path_abspath
 ):
 	executor = ModeAddModelExecutor({**__ARGS, 'update': update})
 	executor._ModeAddModelExecutor__upload_model()
-	args = ', '.join([
-		__LOGIN,
-		__mock_os_path_abspath(__TAR_PATH),
-		constants.SCIPION_SOFTWARE_EM,
-		expected_update_str
-	])
-	expected_relative_call_path = __mock_os_path_join(".", mode_add_model_executor._SYNC_PROGRAM_NAME)
+	args = f"{__LOGIN}, {__mock_os_path_abspath(__TAR_PATH)}, {constants.SCIPION_SOFTWARE_EM}, {expected_update_str}"
 	__mock_run_shell_command.assert_called_once_with(
-		f"{expected_relative_call_path} upload {args}",
-		cwd=__mock_sync_program_path
+		f"{__mock_os_path_join('.', os.path.basename(executor.sync_program_path))} upload {args}",
+		cwd=os.path.dirname(executor.sync_program_path)
 	)
 
 def test_calls_os_remove_when_upload_is_ok_when_uploading_model(
@@ -274,78 +243,57 @@ def test_returns_expected_upload_output_status(
 def test_calls_logger_if_model_path_is_not_dir_when_running_executor(
 	__mock_os_path_isdir,
 	__mock_logger,
-	__mock_logger_red
+	__mock_logger_red,
+	__mock_os_path_exists
 ):
 	__mock_os_path_isdir.return_value = False
 	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor.sync_program_path = __MODEL_PATH
 	executor.run()
 	error_message = __mock_logger_red(f"{__MODEL_PATH} is not a directory. Please, check the path.")
 	error_message += "\n"
 	error_message += __mock_logger_red("The name of the model will be the name of that folder.")
 	__mock_logger.assert_called_once_with(error_message)
 
-def test_calls_logger_if_sync_program_path_does_not_exist_when_running_executor(
-	__mock_os_path_exists,
-	__mock_logger,
-	__mock_logger_red,
-	__mock_os_path_join,
-	__mock_sync_program_path
-):
-	__mock_os_path_exists.return_value = False
-	executor = ModeAddModelExecutor(__ARGS.copy())
-	executor.run()
-	expected_full_path = __mock_os_path_join(__mock_sync_program_path, mode_add_model_executor._SYNC_PROGRAM_NAME)
-	error_message = __mock_logger_red(f"{expected_full_path} does not exist.")
-	error_message += "\n"
-	error_message += __mock_logger_red("Xmipp needs to be compiled successfully before running this command!")
-	__mock_logger.assert_called_once_with(error_message)
-
 @pytest.mark.parametrize(
-	"__mock_os_path_isdir,__mock_os_path_exists,__mock_generate_compressed_file,"
+	"__mock_os_path_isdir,__mock_generate_compressed_file,"
 	"__mock_get_confirmation,__mock_upload_model,expected_return_values",
 	[
 		pytest.param(
-			False, False, (1, "compression error"), False, (1, "upload error"), (errors.IO_ERROR, ""),
+			False, (1, "compression error"), False, (1, "upload error"), (errors.IO_ERROR, ""),
 		),
 		pytest.param(
-			False, True, (0, ""), True, (0, ""), (errors.IO_ERROR, ""),
+			False, (0, ""), True, (0, ""), (errors.IO_ERROR, ""),
 		),
 		pytest.param(
-			True, False, (1, "compression error"), False, (1, "upload error"), (errors.IO_ERROR, ""),
+			True, (1, "compression error"), False, (1, "upload error"), (1, "compression error"),
 		),
 		pytest.param(
-			True, False, (0, ""), True, (0, ""), (errors.IO_ERROR, ""),
+			True, (1, "compression error"), True, (0, ""), (1, "compression error"),
 		),
 		pytest.param(
-			True, True, (1, "compression error"), False, (1, "upload error"), (1, "compression error"),
+			True, (0, ""), False, (1, "upload error"), (errors.INTERRUPTED_ERROR, ""),
 		),
 		pytest.param(
-			True, True, (1, "compression error"), (0, ""), True, (1, "compression error"),
+			True, (0, ""), False, (0, ""), (errors.INTERRUPTED_ERROR, ""),
 		),
 		pytest.param(
-			True, True, (0, ""), False, (1, "upload error"), (errors.INTERRUPTED_ERROR, ""),
+			True, (0, ""), True, (1, "upload error"), (1, "upload error"),
 		),
 		pytest.param(
-			True, True, (0, ""), False, (0, ""), (errors.INTERRUPTED_ERROR, ""),
-		),
-		pytest.param(
-			True, True, (0, ""), True, (1, "upload error"), (1, "upload error"),
-		),
-		pytest.param(
-			True, True, (0, ""), True, (0, "upload ok"), (0, "upload ok"),
+			True, (0, ""), True, (0, ""), (0, ""),
 		)
 	],
 	indirect=[
 		"__mock_os_path_isdir",
-		"__mock_os_path_exists",
 		"__mock_generate_compressed_file",
 		"__mock_get_confirmation",
 		"__mock_upload_model"
 	]
 )
 def test_returns_expected_values_when_running_executor(
-	__mock_os_path_isdir,
 	__mock_os_path_exists,
+	__mock_os_path_isdir,
 	__mock_generate_compressed_file,
 	__mock_get_confirmation,
 	__mock_upload_model,
@@ -363,23 +311,18 @@ def __raise_tarfile_exception(is_read_error):
 	raise __COMPRESSION_ERROR
 
 @pytest.fixture(autouse=True)
-def __mock_os_path_join():
-	with patch("os.path.join") as mock_method:
-		mock_method.side_effect = lambda *args: '/'.join([*args])
-		yield mock_method
-
-@pytest.fixture
-def __dummy_test_mode_executor():
-	class TestExecutor(ModeExecutor):
-		def run(self):
-			return (0, "")
-	return TestExecutor
-
-@pytest.fixture(autouse=True)
 def __mock_logger():
 	with patch(
 		"xmipp3_installer.application.logger.logger.Logger.__call__"
 	) as mock_method:
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_logger_red():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.red"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"red-{text}-red"
 		yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -398,12 +341,10 @@ def __mock_logger_green():
 		mock_method.side_effect = lambda text: f"green-{text}-green"
 		yield mock_method
 
-@pytest.fixture(autouse=True)
-def __mock_logger_red():
-	with patch(
-		"xmipp3_installer.application.logger.logger.Logger.red"
-	) as mock_method:
-		mock_method.side_effect = lambda text: f"red-{text}-red"
+@pytest.fixture(autouse=True, params=[True])
+def __mock_os_path_isdir(request):
+	with patch("os.path.isdir") as mock_method:
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture(params=[(False, False)])
@@ -417,12 +358,55 @@ def __mock_tarfile_open(request):
 		mock_method.return_value.__enter__.return_value = tar_file
 		yield mock_method
 
-@pytest.fixture(params=[True], autouse=True)
-def __mock_get_user_interaction(request):
+@pytest.fixture(autouse=True)
+def __mock_get_user_confirmation():
 	with patch(
 		"xmipp3_installer.application.user_interactions.get_user_confirmation"
 	) as mock_method:
+		mock_method.return_value = True
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_run_shell_command(request):
+	with patch(
+		"xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
+	) as mock_method:
 		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_generate_compressed_file(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_models.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__generate_compressed_file"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_get_confirmation(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_models.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__get_confirmation"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_upload_model(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_models.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__upload_model"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_os_path_join():
+	with patch("os.path.join") as mock_method:
+		mock_method.side_effect = lambda *args: '/'.join([*args])
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_os_remove():
+	with patch("os.remove") as mock_method:
 		yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -431,60 +415,8 @@ def __mock_os_path_abspath():
 		mock_method.side_effect = lambda path: f"abs-{path}-abs"
 		yield mock_method
 
-@pytest.fixture(params=[(0, "")])
-def __mock_run_shell_command(request):
-  with patch(
-    "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
-  ) as mock_method:
-    mock_method.return_value = request.param
-    yield mock_method
-
-@pytest.fixture(autouse=True)
-def __mock_os_remove():
-	with patch("os.remove") as mock_method:
-		yield mock_method
-
-@pytest.fixture(autouse=True)
-def __mock_sync_program_path(__mock_os_path_join):
-	with patch.object(
-		mode_add_model_executor,
-		"_SYNC_PROGRAM_PATH",
-		"./dist/bin"
-	) as mock_object:
-		yield mock_object
-
-@pytest.fixture(autouse=True, params=[True])
-def __mock_os_path_isdir(request):
-	with patch("os.path.isdir") as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
-
 @pytest.fixture(params=[True])
 def __mock_os_path_exists(request):
 	with patch("os.path.exists") as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
-
-@pytest.fixture(params=[(0, "")])
-def __mock_generate_compressed_file(request):
-	with patch(
-		"xmipp3_installer.installer.modes.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__generate_compressed_file"
-	) as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
-
-@pytest.fixture(params=[True])
-def __mock_get_confirmation(request):
-	with patch(
-		"xmipp3_installer.installer.modes.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__get_confirmation"
-	) as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
-
-@pytest.fixture(params=[(0, "")])
-def __mock_upload_model(request):
-	with patch(
-		"xmipp3_installer.installer.modes.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__upload_model"
-	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
