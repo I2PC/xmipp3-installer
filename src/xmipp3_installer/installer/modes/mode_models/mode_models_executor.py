@@ -4,9 +4,10 @@ from typing import Dict, Tuple
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes import mode_executor
 
-_SYNC_PROGRAM_PATH = os.path.join(".", "dist", "bin")
+_SYNC_PROGRAM_PATH = os.path.join(".", constants.BINARIES_PATH)
 _SYNC_PROGRAM_NAME = "xmipp_sync_data"
 
 class ModeModelsExecutor(mode_executor.ModeExecutor):
