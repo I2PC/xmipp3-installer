@@ -59,8 +59,7 @@ def test_calls_logger_to_show_error_when_running_shell_command(
   )
   __mock_logger_error.assert_called_once_with(
     __mock_run_command()[1],
-    ret_code=ret_code,
-    substitute=substitute
+    ret_code=ret_code
   )
 
 def test_returns_interrupted_error_if_receives_keyboard_interrupt_when_running_command(
