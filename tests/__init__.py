@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import Any, List
+from typing import Any
 
 def get_assertion_message(item: str, expected: Any, received: Any) -> str:
 	"""
