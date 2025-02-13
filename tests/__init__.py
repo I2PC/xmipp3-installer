@@ -36,15 +36,24 @@ def get_file_content(file_path: str) -> str:
 	with open(file_path, "r") as config_file:
 		return config_file.read()
 
+def normalize_string_line_endings(text: str) -> str:
+	"""
+	### Adapts the content of a text for different OSs.
+
+	#### Params:
+	- text (str): Text to adapt.
+	"""
+	return text.replace('\r\n', '\n')
+
 def normalize_file_line_endings(file_path: str):
 	"""
 	### Adapts the content of a file for different OSs.
 
 	#### Params:
-	- file_path (str): 
+	- file_path (str): Path to the file.
 	"""
 	content = get_file_content(file_path)
-	content = content.replace('\r\n', '\n')
+	content = normalize_string_line_endings(content)
 	with open(file_path, 'w') as file:
 		file.write(content)
 
