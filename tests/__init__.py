@@ -36,7 +36,7 @@ def get_file_content(file_path: str) -> str:
 	with open(file_path, "r") as config_file:
 		return config_file.read()
 
-def normalize_string_line_endings(text: str) -> str:
+def normalize_text_line_endings(text: str) -> str:
 	"""
 	### Adapts the content of a text for different OSs.
 
@@ -53,7 +53,7 @@ def normalize_file_line_endings(file_path: str):
 	- file_path (str): Path to the file.
 	"""
 	content = get_file_content(file_path)
-	content = normalize_string_line_endings(content)
+	content = normalize_text_line_endings(content)
 	with open(file_path, 'w') as file:
 		file.write(content)
 
