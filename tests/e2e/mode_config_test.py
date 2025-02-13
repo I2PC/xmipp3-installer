@@ -10,7 +10,7 @@ from xmipp3_installer.repository import file_operations
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 
 from .. import (
-	get_file_content, normalize_line_endings,
+	get_file_content, normalize_file_line_endings,
 	get_test_file, copy_file_from_reference
 )
 
@@ -44,7 +44,7 @@ def test_writes_expected_config_file(
 		__get_test_config_file(expected_file, False),
 		__setup_config_evironment
 	)
-	normalize_line_endings(__setup_config_evironment)
+	normalize_file_line_endings(__setup_config_evironment)
 	assert (
 		filecmp.cmp(
 			constants.CONFIG_FILE,

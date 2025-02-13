@@ -36,7 +36,7 @@ def get_file_content(file_path: str) -> str:
 	with open(file_path, "r") as config_file:
 		return config_file.read()
 
-def normalize_line_endings(file_path: str):
+def normalize_file_line_endings(file_path: str):
 	"""
 	### Adapts the content of a file for different OSs.
 
