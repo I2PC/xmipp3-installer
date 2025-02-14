@@ -9,7 +9,7 @@ from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.installer.handlers import git_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_handler
-from xmipp3_installer.repository import config
+from xmipp3_installer.repository.config_vars import variables
 
 class ModeVersionExecutor(mode_executor.ModeExecutor):
 	__LEFT_TEXT_LEN = 25
@@ -23,9 +23,9 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		"""
 		super().__init__(context)
 		self.short = context.pop(params.PARAM_SHORT, False)
-		self.config_exists = os.path.exists(constants.CONFIG_FILE)
+		config_exists = os.path.exists(constants.CONFIG_FILE)
 		self.version_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
-		self.is_configured = self.config_exists and self.version_file_exists
+		self.is_configured = config_exists and self.version_file_exists
 	
 	def run(self) -> Tuple[int, str]:
 		"""
@@ -71,11 +71,8 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		"""
 		dates_section = f"{self.__add_padding_spaces('Release date: ')}{versions.RELEASE_DATE}\n"
 		dates_section += f"{self.__add_padding_spaces('Compilation date: ')}"
-		if self.config_exists:
-			config_file = config.ConfigurationFileHandler(path=constants.CONFIG_FILE)
-			dates_section += config_file.get_config_date()
-		else:
-			dates_section += "-"
+		last_modified = self.context.get(variables.LAST_MODIFIED_KEY)
+		dates_section += last_modified if last_modified else '-'
 		return dates_section
 	
 	def __get_xmipp_core_info(self) -> str:
