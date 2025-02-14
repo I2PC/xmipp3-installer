@@ -467,7 +467,7 @@ def test_calls_make_config_line_when_getting_toggle_lines(
 ):
 	config_handler = ConfigurationFileHandler()
 	for section in __CONFIG_VARIABLES.keys():
-		config_handler._ConfigurationFileHandler__get_toggle_lines(
+		config_handler._ConfigurationFileHandler__get_section_lines(
 			section,
 			__CONFIG_VALUES.copy()
 		)
@@ -488,7 +488,7 @@ def test_removes_keys_from_dictionary_when_getting_toggle_lines(
 	config_handler = ConfigurationFileHandler()
 	config_values = __CONFIG_VALUES.copy()
 	for section in __CONFIG_VARIABLES.keys():
-		config_handler._ConfigurationFileHandler__get_toggle_lines(
+		config_handler._ConfigurationFileHandler__get_section_lines(
 			section,
 			config_values
 		)
@@ -504,7 +504,7 @@ def test_returns_expected_lines_when_getting_toggle_lines(
 ):
 	config_handler = ConfigurationFileHandler()
 	for section in __CONFIG_VARIABLES.keys():
-		section_lines = config_handler._ConfigurationFileHandler__get_toggle_lines(
+		section_lines = config_handler._ConfigurationFileHandler__get_section_lines(
 			section,
 			__CONFIG_VALUES.copy()
 		)
@@ -649,7 +649,7 @@ def test_calls_get_toggle_lines_when_writing_config(
 	assert (
 		call_params == expected_call_params
 	), get_assertion_message(
-		"call params for function __get_toggle_lines",
+		"call params for function __get_section_lines",
 		expected_call_params,
 		call_params
 	)
@@ -856,7 +856,7 @@ def __mock_make_config_line():
 @pytest.fixture
 def __mock_get_toggle_lines():
 	with patch(
-		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_toggle_lines"
+		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_section_lines"
 	) as mock_method:
 		yield mock_method
 
