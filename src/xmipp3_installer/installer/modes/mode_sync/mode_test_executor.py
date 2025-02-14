@@ -19,7 +19,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		- context (dict): Dictionary containing the installation context variables.
 		"""
 		super().__init__(context)
-		self.test_names = context.pop(params.PARAM_TEST_NAME)
+		self.test_names = context.pop(params.PARAM_TEST_NAMES)
 		self.cuda = context.pop(variables.CUDA)
 		self.xmipp_src = os.environ.get('XMIPP_SRC', None)
 		self.tests_path = None
@@ -53,7 +53,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 			task = "download"
 			show_output = True
 
-		args = f"tests/data {urls.SCIPION_TESTS_URLS} {dataset}"
+		args = f"tests/data {urls.SCIPION_TESTS_URL} {dataset}"
 		ret_code, output = shell_handler.run_shell_command(
 			f"{self.sync_program_path} {task} {args}",
 			cwd=os.path.join(constants.SOURCES_PATH, constants.XMIPP),
@@ -71,7 +71,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		no_cuda_str = '--noCuda' if self.cuda == 'OFF' else ''
+		no_cuda_str = '--noCuda' if not self.cuda else ''
 		logger(f" Tests to do: {', '.join(self.test_names)}")
 
 		# TODO: Should be scipion3?
