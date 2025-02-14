@@ -178,7 +178,7 @@ def __add_params_mode_test(subparser: argparse.ArgumentParser):
 	#### Params:
 	- subparser (ArgumentParser): Subparser to add the params to.
 	"""
-	subparser.add_argument(*format.get_param_names(params.PARAM_TEST_NAMES), nargs='?', default=None)
+	subparser.add_argument(*format.get_param_names(params.PARAM_TEST_NAMES), nargs='*', default=None)
 	subparser.add_argument(*format.get_param_names(params.PARAM_SHOW_TESTS), action='store_true')
 
 def __add_params_mode_version(subparser: argparse.ArgumentParser):
