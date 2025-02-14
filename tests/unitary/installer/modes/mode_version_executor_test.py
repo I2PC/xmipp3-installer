@@ -2,13 +2,13 @@ from unittest.mock import patch, call
 
 import pytest
 
-from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
-from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
-from xmipp3_installer.installer.tmp import versions
-from xmipp3_installer.installer import constants
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.repository import config
+from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.tmp import versions
+from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
+from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
+from xmipp3_installer.repository.config_vars import variables
 
 from .... import get_assertion_message
 
@@ -78,16 +78,15 @@ def test_sets_overwrite_value_to_introduced_value_in_args(expected_short):
   ],
   indirect=["__mock_exists_init"]
 )
-def test_sets_file_exists_values_as_expected_when_initializing(__mock_exists_init):
+def test_sets_library_file_exists_value_as_expected_when_initializing(__mock_exists_init):
 	version_executor = ModeVersionExecutor({})
-	file_exist_values = (version_executor.config_exists, version_executor.version_file_exists)
-	expected_values = (
-		__mock_exists_init(constants.CONFIG_FILE),
-		__mock_exists_init(constants.LIBRARY_VERSIONS_FILE)
-	)
 	assert (
-		file_exist_values == expected_values
-	), get_assertion_message("file exists values", expected_values, file_exist_values)
+		version_executor.version_file_exists == __mock_exists_init(constants.LIBRARY_VERSIONS_FILE)
+	), get_assertion_message(
+		"file exists values",
+		__mock_exists_init(constants.LIBRARY_VERSIONS_FILE),
+		version_executor.version_file_exists
+	)
 
 @pytest.mark.parametrize(
   "__mock_exists_init,expected_is_configured",
@@ -153,24 +152,6 @@ def test_calls_add_padding_spaces_when_getting_dates_section(
 		call('Compilation date: ')
 	])
 
-def test_instantiates_configuration_file_handler_when_getting_dates_section_and_config_exists(
-	__mock_add_padding_spaces,
-	__mock_configuration_file_handler
-):
-	version_executor = ModeVersionExecutor({})
-	version_executor.config_exists = True
-	version_executor._ModeVersionExecutor__get_dates_section()
-	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE)
-
-def test_calls_configuration_file_handler_get_config_date_when_getting_dates_section_and_config_exists(
-	__mock_add_padding_spaces,
-	__mock_configuration_file_handler
-):
-	version_executor = ModeVersionExecutor({})
-	version_executor.config_exists = True
-	version_executor._ModeVersionExecutor__get_dates_section()
-	__mock_configuration_file_handler().get_config_date.assert_called_once_with()
-
 @pytest.mark.parametrize(
 	"config_file_exists,expected_compilation_date",
 	[
@@ -181,11 +162,12 @@ def test_calls_configuration_file_handler_get_config_date_when_getting_dates_sec
 def test_returns_expected_dates_section(
 	config_file_exists,
 	expected_compilation_date,
-	__mock_add_padding_spaces,
-	__mock_configuration_file_handler
+	__mock_add_padding_spaces
 ):
-	version_executor = ModeVersionExecutor({})
-	version_executor.config_exists = config_file_exists
+	context = {
+		variables.LAST_MODIFIED_KEY: __DATE if config_file_exists else ''
+	}
+	version_executor = ModeVersionExecutor(context)
 	dates_section = version_executor._ModeVersionExecutor__get_dates_section()
 	expected_dates_section = f"{__FIXED_DATES_SECTION_PART}{expected_compilation_date}"
 	assert (
@@ -614,13 +596,6 @@ def __mock_add_padding_spaces():
 	) as mock_method:
 		mock_method.side_effect = lambda text: text
 		yield mock_method
-
-@pytest.fixture
-def __mock_configuration_file_handler():
-	with patch.object(config, "ConfigurationFileHandler") as mock_object:
-		instance = mock_object.return_value
-		instance.get_config_date.return_value = __DATE
-		yield mock_object
 
 @pytest.fixture
 def __mock_get_current_commit():
