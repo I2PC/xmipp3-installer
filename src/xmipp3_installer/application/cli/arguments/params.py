@@ -42,7 +42,7 @@ PARAMS = {
 	},
 	PARAM_TEST_NAMES: {
 		SHORT_VERSION: PARAM_TEST_NAMES,
-		DESCRIPTION: "Name of the tests to run. If combined with --show, greps the test name from the test list."
+		DESCRIPTION: "Name of the tests to run. If combined with --show, greps the test names from the test list."
 	},
 	PARAM_SHOW_TESTS: {
 		LONG_VERSION: "--show",
