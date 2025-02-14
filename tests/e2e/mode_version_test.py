@@ -47,22 +47,27 @@ def __delete_library_versions_file():
 		[os.path.dirname(constants.LIBRARY_VERSIONS_FILE)]
 	)
 
-@pytest.fixture(params=[False, False])
+@pytest.fixture(params=[False, False, False])
 def __setup_evironment(request):
-	lib_file_exist, sources_exist = request.param
+	config_done, sources_exist = request.param
 	try:
-		if not lib_file_exist:
+		if not config_done:
 			__delete_library_versions_file()
+			file_operations.delete_paths([constants.CONFIG_FILE])
 		else:
 			copy_file_from_reference(
 				get_test_file("libraries-with-versions.txt"),
 				constants.LIBRARY_VERSIONS_FILE
 			)
+			copy_file_from_reference(
+				get_test_file(os.path.join("conf_files", "input", "default.conf")),
+				constants.CONFIG_FILE
+			)
 		if not sources_exist:
 			file_operations.delete_paths([constants.XMIPP_CORE_PATH])
 		else:
 			os.makedirs(constants.XMIPP_CORE_PATH, exist_ok=True)
-		yield lib_file_exist, sources_exist
+		yield config_done, sources_exist
 	finally:
 		__delete_library_versions_file()
-		file_operations.delete_paths([constants.XMIPP_CORE_PATH])
+		file_operations.delete_paths([constants.CONFIG_FILE, constants.XMIPP_CORE_PATH])

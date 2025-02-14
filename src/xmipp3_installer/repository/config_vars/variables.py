@@ -24,6 +24,9 @@ LINK_SCIPION = 'XMIPP_LINK_TO_SCIPION'
 BUILD_TESTING = 'BUILD_TESTING'
 SKIP_RPATH='CMAKE_SKIP_RPATH'
 
+# Not stored in ket=value format
+LAST_MODIFIED_KEY = "last_modified"
+
 # File structure
 TOGGLES = 'toggles'
 LOCATIONS = 'locations'
