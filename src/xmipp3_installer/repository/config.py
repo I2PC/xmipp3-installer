@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Dict, Any
 from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.installer import constants
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.repository.config_vars import default_values, variables
+from xmipp3_installer.repository.config_vars import default_values, variables, config_values_adapter
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 
 class ConfigurationFileHandler(Singleton):
@@ -44,7 +44,12 @@ class ConfigurationFileHandler(Singleton):
 				result = {}
 				break
 			result = new_result
-		self.values = {**default_values.CONFIG_DEFAULT_VALUES, **result}
+		self.values = {
+			**config_values_adapter.get_context_values_from_file_values(
+				default_values.CONFIG_DEFAULT_VALUES
+			),
+			**config_values_adapter.get_context_values_from_file_values(result)
+		}
 
 	def write_config(self, overwrite: bool=False):
 		"""
@@ -55,7 +60,7 @@ class ConfigurationFileHandler(Singleton):
 		"""
 		if overwrite:
 			self.values = default_values.CONFIG_DEFAULT_VALUES
-		values = self.values.copy()
+		values = config_values_adapter.get_file_values_from_context_values(self.values.copy())
 		self.last_modified = datetime.today().strftime('%d-%m-%Y %H:%M.%S')
 		
 		lines = ["##### TOGGLE SECTION #####\n"]
