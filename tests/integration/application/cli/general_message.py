@@ -34,7 +34,7 @@ Usage: xmipp [options]
     ---------------------------------------------
     # Test #
 
-    test [testName] [--show]                       Runs a given test.
+    test [testNames] [--show]                      Runs a given test.
     ---------------------------------------------
     # Developers #
 
@@ -89,7 +89,7 @@ Usage: xmipp [options]
     ---------------------------------------------
     # Test #
 
-    test [testName] [--show]                       Runs a given test.
+    test [testNames] [--show]                      Runs a given test.
     ---------------------------------------------
     # Developers #
 

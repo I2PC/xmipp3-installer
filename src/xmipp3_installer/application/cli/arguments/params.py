@@ -12,7 +12,7 @@ PARAM_SHORT = 'short'
 PARAM_JOBS = 'jobs'
 PARAM_BRANCH = 'branch'
 PARAM_MODELS_DIRECTORY = 'directory'
-PARAM_TEST_NAME = 'testName'
+PARAM_TEST_NAMES = 'testNames'
 PARAM_SHOW_TESTS = 'show-tests'
 PARAM_GIT_COMMAND = 'command'
 PARAM_LOGIN = 'login'
@@ -40,9 +40,9 @@ PARAMS = {
 		LONG_VERSION: "--directory",
 		DESCRIPTION: f"Directory where models will be saved. Default is \"{DEFAULT_BUILD_DIR}\"."
 	},
-	PARAM_TEST_NAME: {
-		SHORT_VERSION: PARAM_TEST_NAME,
-		DESCRIPTION: "Run certain test. If combined with --show, greps the test name from the test list."
+	PARAM_TEST_NAMES: {
+		SHORT_VERSION: PARAM_TEST_NAMES,
+		DESCRIPTION: "Name of the tests to run. If combined with --show, greps the test name from the test list."
 	},
 	PARAM_SHOW_TESTS: {
 		LONG_VERSION: "--show",
