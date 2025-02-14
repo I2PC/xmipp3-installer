@@ -2,8 +2,8 @@ import pytest
 from unittest.mock import patch, call
 
 from xmipp3_installer.installer import constants, urls
-from xmipp3_installer.installer.modes.mode_models import mode_models_executor
-from xmipp3_installer.installer.modes.mode_models.mode_get_models_executor import ModeGetModelsExecutor
+from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
+from xmipp3_installer.installer.modes.mode_sync.mode_get_models_executor import ModeGetModelsExecutor
 
 from ..... import get_assertion_message
 
@@ -14,13 +14,13 @@ __ARGS = {
 __SYNC_PROGRAM_PATH = "/path/to/sync/program"
 __SYNC_PROGRAM_NAME = "sync_name"
 
-def test_implements_interface_mode_models_executor():
+def test_implements_interface_mode_sync_executor():
 	executor = ModeGetModelsExecutor(__ARGS.copy())
 	assert (
-		isinstance(executor, mode_models_executor.ModeModelsExecutor)
+		isinstance(executor, mode_sync_executor.ModeSyncExecutor)
 	), get_assertion_message(
 		"parent class",
-		mode_models_executor.ModeModelsExecutor.__name__,
+		mode_sync_executor.ModeSyncExecutor.__name__,
 		executor.__class__.__bases__[0].__name__
 	)
 
@@ -191,7 +191,7 @@ def __mock_logger_green():
 @pytest.fixture(autouse=True)
 def __mock_sync_program_path():
 	with patch.object(
-		mode_models_executor,
+		mode_sync_executor,
 		"_SYNC_PROGRAM_PATH",
 		__SYNC_PROGRAM_PATH
 	) as mock_object:
@@ -200,7 +200,7 @@ def __mock_sync_program_path():
 @pytest.fixture(autouse=True)
 def __mock_sync_program_name():
 	with patch.object(
-		mode_models_executor,
+		mode_sync_executor,
 		"_SYNC_PROGRAM_NAME",
 		__SYNC_PROGRAM_NAME
 	) as mock_object:

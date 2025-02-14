@@ -2,12 +2,12 @@ import os
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.modes.mode_models import mode_models_executor
+from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
 LOGIN = "test@test.com"
 MODEL_NAME = "fake-model"
 NON_EXISTING_MODEL_PATH = "./does-not-exist"
-SYNC_PROGRAM_NAME = f"{mode_models_executor._SYNC_PROGRAM_NAME}.py"
+SYNC_PROGRAM_NAME = f"{mode_sync_executor._SYNC_PROGRAM_NAME}.py"
 
 __IO_ERROR = logger.red("""Error 7: Input/output error.
 This error can be caused by the installer not being able to read/write/create/delete a file. Check your permissions on this directory. 
@@ -21,7 +21,7 @@ NO_MODEL = f"""{logger.red(__NO_MODEL_INITIAL_MESSAGE)}
 {__IO_ERROR}
 """
 
-__NO_PROGRAM_INITIAL_MESSAGE = f"{os.path.join(mode_models_executor._SYNC_PROGRAM_PATH, SYNC_PROGRAM_NAME)} does not exist."
+__NO_PROGRAM_INITIAL_MESSAGE = f"{os.path.join(mode_sync_executor._SYNC_PROGRAM_PATH, SYNC_PROGRAM_NAME)} does not exist."
 NO_PROGRAM = f"""{logger.red(__NO_PROGRAM_INITIAL_MESSAGE)}
 {logger.red("Xmipp needs to be compiled successfully before running this command!")}
 {__IO_ERROR}

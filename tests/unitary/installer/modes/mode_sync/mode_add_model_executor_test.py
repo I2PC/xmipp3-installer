@@ -6,8 +6,8 @@ import pytest
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.modes.mode_models import mode_models_executor
-from xmipp3_installer.installer.modes.mode_models.mode_add_model_executor import ModeAddModelExecutor
+from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
+from xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor import ModeAddModelExecutor
 
 from ..... import get_assertion_message
 
@@ -25,13 +25,13 @@ __READ_ERROR = tarfile.ReadError("could not read")
 __COMPRESSION_ERROR = tarfile.CompressionError("could not compress")
 __RETURN_VALUES_STR = "return values"
 
-def test_implements_interface_mode_models_executor():
+def test_implements_interface_mode_sync_executor():
 	executor = ModeAddModelExecutor(__ARGS.copy())
 	assert (
-		isinstance(executor, mode_models_executor.ModeModelsExecutor)
+		isinstance(executor, mode_sync_executor.ModeSyncExecutor)
 	), get_assertion_message(
 		"parent class",
-		mode_models_executor.ModeModelsExecutor.__name__,
+		mode_sync_executor.ModeSyncExecutor.__name__,
 		executor.__class__.__bases__[0].__name__
 	)
 
@@ -376,7 +376,7 @@ def __mock_run_shell_command(request):
 @pytest.fixture(params=[(0, "")])
 def __mock_generate_compressed_file(request):
 	with patch(
-		"xmipp3_installer.installer.modes.mode_models.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__generate_compressed_file"
+		"xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__generate_compressed_file"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
@@ -384,7 +384,7 @@ def __mock_generate_compressed_file(request):
 @pytest.fixture(params=[True])
 def __mock_get_confirmation(request):
 	with patch(
-		"xmipp3_installer.installer.modes.mode_models.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__get_confirmation"
+		"xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__get_confirmation"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
@@ -392,7 +392,7 @@ def __mock_get_confirmation(request):
 @pytest.fixture(params=[(0, "")])
 def __mock_upload_model(request):
 	with patch(
-		"xmipp3_installer.installer.modes.mode_models.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__upload_model"
+		"xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__upload_model"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
@@ -423,7 +423,7 @@ def __mock_os_path_exists(request):
 @pytest.fixture(autouse=True)
 def __mock_sync_program_path():
 	with patch.object(
-		mode_models_executor,
+		mode_sync_executor,
 		"_SYNC_PROGRAM_PATH",
 		__MODEL_PATH
 	) as mock_object:

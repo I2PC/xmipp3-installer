@@ -8,7 +8,7 @@ from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.cli.arguments import modes
-from xmipp3_installer.installer.modes.mode_models import mode_models_executor
+from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
 from .shell_command_outputs import mode_get_models
 from .. import get_assertion_message, normalize_text_line_endings
@@ -58,7 +58,7 @@ def __mock_stdout_stderr():
 @pytest.fixture(autouse=True)
 def __mock_sync_program_name():
 	with patch.object(
-		mode_models_executor,
+		mode_sync_executor,
 		"_SYNC_PROGRAM_NAME",
 		mode_get_models.SYNC_PROGRAM_NAME
 	) as mock_object:
@@ -69,10 +69,10 @@ def __mock_sync_program_path(request):
 	new_value = (
 		mode_get_models.MODEL_DIR 
 		if request.param else 
-		mode_models_executor._SYNC_PROGRAM_PATH
+		mode_sync_executor._SYNC_PROGRAM_PATH
 	)
 	with patch.object(
-		mode_models_executor,
+		mode_sync_executor,
 		"_SYNC_PROGRAM_PATH",
 		new_value
 	) as mock_object:

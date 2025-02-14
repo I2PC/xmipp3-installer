@@ -8,9 +8,9 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_models.mode_models_executor import ModeModelsExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 
-class ModeAddModelExecutor(ModeModelsExecutor):
+class ModeAddModelExecutor(ModeSyncExecutor):
 	def __init__(self, context: Dict):
 		"""
 		### Constructor.
@@ -27,7 +27,7 @@ class ModeAddModelExecutor(ModeModelsExecutor):
 		self.tar_file_name = f"xmipp_model_{self.model_name}.tgz"
 		self.tar_file_path = os.path.join(self.model_dir, self.tar_file_name)
 
-	def _execute_model_operation(self) -> Tuple[int, str]:
+	def _sync_operation(self) -> Tuple[int, str]:
 		"""
 		### Uploads the model to the remote server.
 
