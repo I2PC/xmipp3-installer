@@ -25,6 +25,7 @@ __ARGS = {
 	"mode": modes.MODE_ALL,
 	"variable1": "value1"
 }
+__LAST_MODIFIED = "27-11-2024 15:35.00"
 
 @pytest.mark.parametrize(
 	"expected_mode",
@@ -62,7 +63,11 @@ def test_stores_installation_context_when_initializing(
 	installation_manager = installer_service.InstallationManager(__ARGS.copy())
 	expected_args = __ARGS.copy()
 	expected_args.pop("mode")
-	expected_context = {**expected_args, **__mock_configuration_file_handler().values}
+	expected_context = {
+		**expected_args,
+		**__mock_configuration_file_handler().values,
+		variables.LAST_MODIFIED_KEY: __mock_configuration_file_handler().last_modified
+	}
 	assert (
 		installation_manager.context == expected_context
 	), get_assertion_message(
@@ -333,6 +338,7 @@ def __mock_configuration_file_handler():
 		"xmipp3_installer.repository.config.ConfigurationFileHandler"
 	) as mock_class:
 		mock_class.return_value.values = __CONFIG_VALUES
+		mock_class.return_value.last_modified = __LAST_MODIFIED
 		yield mock_class
 
 @pytest.fixture(autouse=True)
