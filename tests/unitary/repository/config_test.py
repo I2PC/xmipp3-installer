@@ -23,9 +23,13 @@ __FILE_LINES = [
 	f"{ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT} {__DATE}\n",
 	"line4\n"
 ]
-__CORRECT_FILE_LINES = {
+__CORRECT_FILE_LINES = [
 	"key=value",
 	"mykey=test-value"
+]
+__CONVERTED_CORRECT_FILE_LINES = {
+	"key": "value",
+	"mykey": "test-value"
 }
 __TOGGLES_SECTION = "section1"
 __LOCATIONS_SECTION = "section2"
@@ -419,10 +423,41 @@ def test_does_not_call_logger_when_adding_line_values_with_invalid_lines_and_sho
 	file_handler._ConfigurationFileHandler__add_line_values({}, "", 0)
 	__mock_logger.assert_not_called()
 
+@pytest.mark.parametrize(
+	"__mock_get_file_content,expected_second_call_arg",
+	[
+		pytest.param(__CORRECT_FILE_LINES, __CONVERTED_CORRECT_FILE_LINES),
+		pytest.param([*__CORRECT_FILE_LINES, "aaa"], {})
+	],
+	indirect=["__mock_get_file_content"]
+)
+def test_calls_get_context_values_from_file_values_when_reading_config(
+	__mock_init,
+	__mock_get_file_content,
+	__mock_get_context_values_from_file_values,
+	expected_second_call_arg
+):
+	handler = ConfigurationFileHandler()
+	handler.show_errors = False
+	handler.read_config()
+	expected_calls = [
+		call(default_values.CONFIG_DEFAULT_VALUES),
+		call(expected_second_call_arg)
+	]
+	__mock_get_context_values_from_file_values.assert_has_calls(expected_calls)
+	assert (
+		__mock_get_context_values_from_file_values.call_count == len(expected_calls)
+	), get_assertion_message(
+		"call count",
+		__mock_get_context_values_from_file_values.call_count,
+		len(expected_calls)
+	)
+
 def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 	__mock_init,
 	__mock_get_file_content,
-	__mock_generate_invalid_config_line_error_message
+	__mock_generate_invalid_config_line_error_message,
+	__mock_get_context_values_from_file_values
 ):
 	__mock_get_file_content.return_value = [*__CORRECT_FILE_LINES, "aaaaa"]
 	config_handler = ConfigurationFileHandler()
@@ -567,7 +602,8 @@ def test_uses_default_values_when_writing_config_with_overwrite(
 	__mock_read_config,
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	config_handler = ConfigurationFileHandler()
 	config_handler.values = __CONFIG_VALUES.copy()
@@ -580,12 +616,26 @@ def test_uses_default_values_when_writing_config_with_overwrite(
 		config_handler.values
 	)
 
+def test_calls_get_file_values_from_context_values_when_writing_config(
+	__mock_read_config,
+	__mock_read_config_date,
+	__mock_get_toggle_lines,
+	__mock_datetime_today,
+	__mock_open,
+	__mock_get_file_values_from_context_values
+):
+	config_handler = ConfigurationFileHandler()
+	config_handler.values = __CONFIG_VALUES.copy()
+	config_handler.write_config()
+	__mock_get_file_values_from_context_values.assert_called_once_with(__CONFIG_VALUES)
+
 def test_calls_today_strftime_when_writing_config(
 	__mock_read_config,
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
 	__mock_datetime_today,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	config_handler = ConfigurationFileHandler()
 	config_handler.values = __CONFIG_VALUES.copy()
@@ -597,7 +647,8 @@ def test_calls_strftime_when_writing_config(
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
 	__mock_datetime_strftime,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	config_handler = ConfigurationFileHandler()
 	config_handler.write_config()
@@ -608,7 +659,8 @@ def test_saves_last_modified_when_writing_config(
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
 	__mock_datetime_strftime,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	config_handler = ConfigurationFileHandler()
 	config_handler.last_modified = None
@@ -625,7 +677,8 @@ def test_calls_get_toggle_lines_when_writing_config(
 	__mock_config_locations,
 	__mock_config_flags,
 	__mock_get_toggle_lines,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	call_params = []
 	def __record_input_params_in_mock(section: str, variables: Dict):
@@ -658,7 +711,8 @@ def test_calls_open_when_writing_config(
 	__mock_read_config,
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	config_handler = ConfigurationFileHandler()
 	config_handler.values = __CONFIG_VALUES.copy()
@@ -677,7 +731,8 @@ def test_does_not_call_get_unkown_variable_lines_when_writing_config_with_no_unk
 	__mock_get_toggle_lines,
 	__mock_get_unkown_variable_lines,
 	__mock_datetime_strftime,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
 	config_handler = ConfigurationFileHandler()
@@ -694,7 +749,8 @@ def test_calls_get_unkown_variable_lines_when_writing_config_with_no_unkown_vari
 	__mock_get_toggle_lines,
 	__mock_get_unkown_variable_lines,
 	__mock_datetime_strftime,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
 	config_handler = ConfigurationFileHandler()
@@ -720,7 +776,8 @@ def test_calls_file_writelines_when_writing_config(
 	__mock_get_toggle_lines,
 	__mock_get_unkown_variable_lines,
 	__mock_datetime_strftime,
-	__mock_open
+	__mock_open,
+	__mock_get_file_values_from_context_values
 ):
 	__mock_get_toggle_lines.side_effect = __mimick_get_toggle_lines
 	config_reference_values = config_values.copy()
@@ -913,4 +970,20 @@ def __mock_parse_config_line(request):
 			mock_method.return_value = ('key', 'value')
 		else:
 			mock_method.side_effect = InvalidConfigLineError(__INVALID_LINE_ERROR_MESSAGE)
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_context_values_from_file_values():
+	with patch(
+		"xmipp3_installer.repository.config_vars.config_values_adapter.get_context_values_from_file_values"
+	) as mock_method:
+		mock_method.side_effect = lambda values: values
+		yield mock_method
+
+@pytest.fixture
+def __mock_get_file_values_from_context_values():
+	with patch(
+		"xmipp3_installer.repository.config_vars.config_values_adapter.get_file_values_from_context_values"
+	) as mock_method:
+		mock_method.side_effect = lambda values: values
 		yield mock_method
