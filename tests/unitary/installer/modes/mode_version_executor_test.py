@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch, call
 
 import pytest
@@ -286,19 +285,27 @@ def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
 	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY])
 
 @pytest.mark.parametrize(
-	"__mock_exist_sources_and_library_versions,__mock_is_tag,expected_title_version_type",
+	"__mock_exist_sources_config_and_library_versions,__mock_is_tag,expected_title_version_type",
 	[
-		pytest.param((False, False), False, __BRANCH_NAME),
-		pytest.param((False, False), True, 'release'),
-		pytest.param((False, True), False, __BRANCH_NAME),
-		pytest.param((False, True), True, 'release'),
-		pytest.param((True, False), False, __BRANCH_NAME),
-		pytest.param((True, False), True, 'release'),
-		pytest.param((True, True), False, __BRANCH_NAME),
-		pytest.param((True, True), True, 'release')
+		pytest.param((False, False, False), False, __BRANCH_NAME),
+		pytest.param((False, False, False), True, 'release'),
+		pytest.param((False, False, True), False, __BRANCH_NAME),
+		pytest.param((False, False, True), True, 'release'),
+		pytest.param((False, True, False), False, __BRANCH_NAME),
+		pytest.param((False, True, False), True, 'release'),
+		pytest.param((False, True, True), False, __BRANCH_NAME),
+		pytest.param((False, True, True), True, 'release'),
+		pytest.param((True, False, False), False, __BRANCH_NAME),
+		pytest.param((True, False, False), True, 'release'),
+		pytest.param((True, False, True), False, __BRANCH_NAME),
+		pytest.param((True, False, True), True, 'release'),
+		pytest.param((True, True, False), False, __BRANCH_NAME),
+		pytest.param((True, True, False), True, 'release'),
+		pytest.param((True, True, True), False, __BRANCH_NAME),
+		pytest.param((True, True, True), True, 'release')
 	],
 	indirect=[
-		"__mock_exist_sources_and_library_versions",
+		"__mock_exist_sources_config_and_library_versions",
 		"__mock_is_tag"
 	]
 )
@@ -312,7 +319,7 @@ def test_calls_logger_when_running_executor_in_long_format(
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info,
 	__mock_get_library_versions_section,
-	__mock_exist_sources_and_library_versions,
+	__mock_exist_sources_config_and_library_versions,
 	__mock_get_configuration_warning_message
 ):
 	version_executor = ModeVersionExecutor({})
@@ -326,11 +333,12 @@ def test_calls_logger_when_running_executor_in_long_format(
 		f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name()}",
 		__mock_get_xmipp_core_info()
 	]
-	if __mock_exist_sources_and_library_versions(constants.LIBRARY_VERSIONS_FILE):
+	if __mock_exist_sources_config_and_library_versions(constants.LIBRARY_VERSIONS_FILE):
 		expected_lines.append(f"\n{__mock_get_library_versions_section()}")
 	if (
-		not __mock_exist_sources_and_library_versions(constants.LIBRARY_VERSIONS_FILE) or
-		not __mock_exist_sources_and_library_versions(constants.XMIPP_CORE_PATH)
+		not __mock_exist_sources_config_and_library_versions(constants.LIBRARY_VERSIONS_FILE) or
+		not __mock_exist_sources_config_and_library_versions(constants.CONFIG_FILE) or
+		not __mock_exist_sources_config_and_library_versions(constants.XMIPP_CORE_PATH)
 	):
 		expected_lines.append(f"\n{__mock_get_configuration_warning_message()}")
 	__mock_logger.assert_called_once_with('\n'.join(expected_lines))
@@ -559,13 +567,16 @@ def __mock_exists_library_versions(request, __mock_exists):
 	__mock_exists.side_effect = __side_effect
 	yield __mock_exists
 
-@pytest.fixture(params=[(True, True)])
-def __mock_exist_sources_and_library_versions(__mock_exists, request):
+@pytest.fixture(params=[(True, True, True)])
+def __mock_exist_sources_config_and_library_versions(__mock_exists, request):
 	def __side_effect(path):
 		source_exists = request.param[0]
-		library_version_file_exists = request.param[1]
+		config_file_exists = request.param[1]
+		library_version_file_exists = request.param[2]
 		if path == constants.XMIPP_CORE_PATH:
 			return source_exists
+		elif path == constants.CONFIG_FILE:
+			return config_file_exists
 		elif path == constants.LIBRARY_VERSIONS_FILE:
 			return library_version_file_exists
 		else:

@@ -56,10 +56,9 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		system_version_left_text = self.__add_padding_spaces("System version: ")
 		installation_info_lines.append(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
 		installation_info_lines.append(self.__get_xmipp_core_info())
-		library_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
-		if library_file_exists:
+		if self.version_file_exists:
 			installation_info_lines.append(f"\n{self.__get_library_versions_section()}")
-		if not os.path.exists(constants.XMIPP_CORE_PATH) or not library_file_exists:
+		if not self.is_configured or not os.path.exists(constants.XMIPP_CORE_PATH):
 			installation_info_lines.append(f"\n{self.__get_configuration_warning_message()}")
 		return '\n'.join(installation_info_lines)
 
