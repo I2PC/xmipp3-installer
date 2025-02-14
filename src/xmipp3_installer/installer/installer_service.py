@@ -23,7 +23,11 @@ class InstallationManager:
 		"""
     self.mode = args.pop(modes.MODE, modes.MODE_ALL)
     config_handler = config.ConfigurationFileHandler(path=constants.CONFIG_FILE, show_errors=False)
-    self.context = {**args, **config_handler.values}
+    self.context = {
+      **args,
+      **config_handler.values,
+      variables.LAST_MODIFIED_KEY: config_handler.last_modified
+    }
     self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](self.context)
 
   def run_installer(self):
