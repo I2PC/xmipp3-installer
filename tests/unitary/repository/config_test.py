@@ -422,11 +422,11 @@ def test_does_not_call_logger_when_adding_line_values_with_invalid_lines_and_sho
 def test_returns_default_config_values_when_reading_config_with_invalid_lines(
 	__mock_init,
 	__mock_get_file_content,
-	__mock_generate_invalid_config_line_error_message,
-	__mock_logger
+	__mock_generate_invalid_config_line_error_message
 ):
 	__mock_get_file_content.return_value = [*__CORRECT_FILE_LINES, "aaaaa"]
 	config_handler = ConfigurationFileHandler()
+	config_handler.show_errors = False
 	config_handler.read_config()
 	assert (
 		config_handler.values == default_values.CONFIG_DEFAULT_VALUES
