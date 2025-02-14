@@ -10,6 +10,7 @@ from xmipp3_installer.repository.config_vars import variables
 
 class ModeTestExecutor(ModeSyncExecutor):
 	"""Class to execute Xmipp tests."""
+	__DATASET_NAME = "xmipp_programs"
 
 	def __init__(self, context: Dict):
 		"""
@@ -22,16 +23,10 @@ class ModeTestExecutor(ModeSyncExecutor):
 		self.test_names = context.pop(params.PARAM_TEST_NAMES)
 		self.cuda = context.pop(variables.CUDA)
 		self.show = context.pop(params.PARAM_SHOW_TESTS)
-		self.xmipp_src = os.environ.get('XMIPP_SRC', None)
-		self.tests_path = None
-		self.dataset_path = None
-		if self.xmipp_src and os.path.isdir(self.xmipp_src):
-			os.environ['PYTHONPATH'] = ':'.join([
-				os.path.join(self.xmipp_src, constants.XMIPP),
-				os.environ.get('PYTHONPATH', '')
-			])
-			self.tests_path = os.path.join(self.xmipp_src, constants.XMIPP, 'tests')
-			self.dataset_path = os.path.join(self.tests_path, 'data')
+		python_home = context.pop(variables.PYTHON_HOME)
+		self.python_home = python_home if python_home else "python3"
+		self.tests_path = os.path.join(constants.BINARIES_PATH, 'tests')
+		self.dataset_path = os.path.join(self.tests_path, 'data')
 
 	def _sync_operation(self) -> Tuple[int, str]:
 		"""
@@ -40,29 +35,25 @@ class ModeTestExecutor(ModeSyncExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		if not self.xmipp_src or not os.path.isdir(self.xmipp_src):
-			logger(logger.red("XMIPP_SRC environment variable not set or directory does not exist"))
-			return 1, "Environment error"
-
-		dataset = 'xmipp_programs'
 		if os.path.isdir(self.dataset_path):
-			logger(logger.blue("Updating the test files"))
+			task_message = "Updating"
 			task = "update"
 			show_output = False
 		else:
-			logger(logger.blue("Downloading the test files"))
+			task_message = "Downloading"
 			task = "download"
 			show_output = True
+		logger(logger.blue(f"{task_message} the test files"))
 
-		args = f"tests/data {urls.SCIPION_TESTS_URL} {dataset}"
+		args = f"{self.dataset_path} {urls.SCIPION_TESTS_URL} {self.__DATASET_NAME}"
 		ret_code, output = shell_handler.run_shell_command(
 			f"{self.sync_program_path} {task} {args}",
 			cwd=os.path.join(constants.SOURCES_PATH, constants.XMIPP),
 			show_output=show_output
 		)
+
 		if ret_code:
 			return ret_code, output
-
 		return self.__run_tests()
 
 	def __run_tests(self) -> Tuple[int, str]:
@@ -72,15 +63,14 @@ class ModeTestExecutor(ModeSyncExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		no_cuda_str = '--noCuda' if not self.cuda else ''
-		logger(f" Tests to do: {', '.join(self.test_names)}")
+		no_cuda_str = "--noCuda" if not self.cuda else ""
+		show_str = "--show" if self.show else ""
 
-		# TODO: Should be scipion3?
-		python_exe = 'python3'
+		logger(f" Tests to run: {', '.join(self.test_names)}")
 		test_scripts = os.path.dirname(os.environ['XMIPP_TEST_DATA'])
-
+		
 		return shell_handler.run_shell_command(
-			f"{python_exe} test.py {' '.join(self.test_names)} {no_cuda_str}",
+			f"{self.python_home} test.py {' '.join(self.test_names)} {no_cuda_str}{show_str}",
 			cwd=test_scripts,
 			show_output=True,
 			show_error=True
