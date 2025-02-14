@@ -251,8 +251,8 @@ def test_returns_expected_mode_git_args(
 @pytest.mark.parametrize(
 	"__mock_sys_argv,expected_args",
 	[
-		pytest.param(["test", "mytest"], {"testName": "mytest"}),
-		pytest.param(["test", "mytest", "--show"], {"testName": "mytest", "show": True}),
+		pytest.param(["test", "mytest"], {"testNames": "mytest"}),
+		pytest.param(["test", "mytest", "--show"], {"testNames": "mytest", "show": True}),
 	],
 	indirect=["__mock_sys_argv"]
 )
