@@ -60,16 +60,15 @@ def test_writes_modified_variables_to_config_when_some_variable_values_are_chang
 	__mock_datetime_strftime
 ):
 	modified_key = "SEND_INSTALLATION_STATISTICS"
-	modified_value = "OFF"
 	config_handler = ConfigurationFileHandler(__mock_config_file.name)
-	config_handler.values.update({modified_key: modified_value})
+	config_handler.values.update({modified_key: False})
 	config_handler.write_config()
 	config_file_content = ''.join(
 		config_handler._ConfigurationFileHandler__get_file_content()
 	).split("\n")
 	expected_file_content = '\n'.join(
 		file_content.DEFAULT_FILE_LINES
-	).replace(f"{modified_key}=ON", f"{modified_key}={modified_value}").split("\n")
+	).replace(f"{modified_key}=ON", f"{modified_key}=OFF").split("\n")
 	assert (
 		config_file_content == expected_file_content
 	), get_assertion_message(
