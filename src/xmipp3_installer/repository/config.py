@@ -48,7 +48,10 @@ class ConfigurationFileHandler(Singleton):
 			**config_values_adapter.get_context_values_from_file_values(
 				default_values.CONFIG_DEFAULT_VALUES
 			),
-			**config_values_adapter.get_context_values_from_file_values(result)
+			**config_values_adapter.get_context_values_from_file_values(
+				result,
+				show_warnings=self.show_errors
+			)
 		}
 
 	def write_config(self, overwrite: bool=False):

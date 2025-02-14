@@ -424,25 +424,29 @@ def test_does_not_call_logger_when_adding_line_values_with_invalid_lines_and_sho
 	__mock_logger.assert_not_called()
 
 @pytest.mark.parametrize(
-	"__mock_get_file_content,expected_second_call_arg",
+	"__mock_get_file_content,expected_second_call_arg,show_errors",
 	[
-		pytest.param(__CORRECT_FILE_LINES, __CONVERTED_CORRECT_FILE_LINES),
-		pytest.param([*__CORRECT_FILE_LINES, "aaa"], {})
+		pytest.param(__CORRECT_FILE_LINES, __CONVERTED_CORRECT_FILE_LINES, False),
+		pytest.param(__CORRECT_FILE_LINES, __CONVERTED_CORRECT_FILE_LINES, True),
+		pytest.param([*__CORRECT_FILE_LINES, "aaa"], {}, False),
+		pytest.param([*__CORRECT_FILE_LINES, "aaa"], {}, True)
 	],
 	indirect=["__mock_get_file_content"]
 )
 def test_calls_get_context_values_from_file_values_when_reading_config(
 	__mock_init,
 	__mock_get_file_content,
+	__mock_logger,
 	__mock_get_context_values_from_file_values,
-	expected_second_call_arg
+	expected_second_call_arg,
+	show_errors
 ):
 	handler = ConfigurationFileHandler()
-	handler.show_errors = False
+	handler.show_errors = show_errors
 	handler.read_config()
 	expected_calls = [
 		call(default_values.CONFIG_DEFAULT_VALUES),
-		call(expected_second_call_arg)
+		call(expected_second_call_arg, show_warnings=show_errors)
 	]
 	__mock_get_context_values_from_file_values.assert_has_calls(expected_calls)
 	assert (
@@ -977,7 +981,7 @@ def __mock_get_context_values_from_file_values():
 	with patch(
 		"xmipp3_installer.repository.config_vars.config_values_adapter.get_context_values_from_file_values"
 	) as mock_method:
-		mock_method.side_effect = lambda values: values
+		mock_method.side_effect = lambda values, show_warnings=True: values
 		yield mock_method
 
 @pytest.fixture

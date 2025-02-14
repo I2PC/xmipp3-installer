@@ -64,16 +64,16 @@ def test_returns_expected_string_from_boolean(input_value, expected_value):
   ]
 )
 def test_returns_expected_boolean_from_string(input_key, input_value, expected_value):
-  value = config_values_adapter.__get_boolean_value_from_string(input_key, input_value)
+  value = config_values_adapter.__get_boolean_value_from_string(input_key, input_value, False)
   assert (
   	value == expected_value
 	), get_assertion_message("string to boolean value", expected_value, value)
 
-def test_calls_logger_when_toggle_key_has_unrecognized_value_while_converting_from_string_to_boolean(
+def test_calls_logger_when_toggle_key_has_unrecognized_value_and_show_error_is_true_while_converting_from_string_to_boolean(
 	__mock_logger,
 	__mock_logger_yellow
 ):
-	config_values_adapter.__get_boolean_value_from_string(__TOGGLE_KEY, __NON_TOGGLE_VALUE)
+	config_values_adapter.__get_boolean_value_from_string(__TOGGLE_KEY, __NON_TOGGLE_VALUE, True)
 	__mock_logger.assert_called_once_with(
 		__mock_logger_yellow(
 			f"WARNING: config variable '{__TOGGLE_KEY}' has unrecognized value '{__NON_TOGGLE_VALUE}'. "
@@ -82,9 +82,15 @@ def test_calls_logger_when_toggle_key_has_unrecognized_value_while_converting_fr
 		)
 	)
 
+def test_does_not_call_logger_when_toggle_key_has_unrecognized_value_and_show_error_is_false_while_converting_from_string_to_boolean(
+	__mock_logger
+):
+	config_values_adapter.__get_boolean_value_from_string(__TOGGLE_KEY, __NON_TOGGLE_VALUE, False)
+	__mock_logger.assert_not_called()
+
 def test_raises_key_error_when_unknown_key_has_unrecognized_value_while_converting_from_string_to_boolean():
 	with pytest.raises(KeyError):
-		config_values_adapter.__get_boolean_value_from_string(__UNKNOWN_KEY, __NON_TOGGLE_VALUE)
+		config_values_adapter.__get_boolean_value_from_string(__UNKNOWN_KEY, __NON_TOGGLE_VALUE, False)
 
 @pytest.mark.parametrize(
 	"key, value, expected_value",
@@ -126,7 +132,8 @@ def test_returns_expected_context_value_from_file_value(
 ):
 	converted_value = config_values_adapter.__get_context_value_from_file_value(
 		key,
-		value
+		value,
+		False
 	)
 	assert (
 		converted_value == expected_value
