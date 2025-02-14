@@ -10,8 +10,8 @@ from xmipp3_installer.installer.modes import mode_executor
 _SYNC_PROGRAM_PATH = os.path.join(".", constants.BINARIES_PATH)
 _SYNC_PROGRAM_NAME = "xmipp_sync_data"
 
-class ModeModelsExecutor(mode_executor.ModeExecutor):
-	"""Base class for model-related mode executors."""
+class ModeSyncExecutor(mode_executor.ModeExecutor):
+	"""Base class for mode executors with sync operations."""
 
 	def __init__(self, context: Dict):
 		"""
@@ -25,7 +25,7 @@ class ModeModelsExecutor(mode_executor.ModeExecutor):
 
 	def run(self) -> Tuple[int, str]:
 		"""
-		### Executes the model operation.
+		### Executes the sync operation.
 
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
@@ -36,12 +36,12 @@ class ModeModelsExecutor(mode_executor.ModeExecutor):
 				logger.red("Xmipp needs to be compiled successfully before running this command!")
 			]))
 			return errors.IO_ERROR, ""
-		return self._execute_model_operation()
+		return self._sync_operation()
 
 	@abstractmethod
-	def _execute_model_operation(self) -> Tuple[int, str]:
+	def _sync_operation(self) -> Tuple[int, str]:
 		"""
-		### Executes the specific model operation.
+		### Executes the specific sync operation.
 
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.

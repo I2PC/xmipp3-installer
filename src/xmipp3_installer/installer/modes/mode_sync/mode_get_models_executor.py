@@ -5,9 +5,9 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_models.mode_models_executor import ModeModelsExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 
-class ModeGetModelsExecutor(ModeModelsExecutor):
+class ModeGetModelsExecutor(ModeSyncExecutor):
 	def __init__(self, context: Dict):
 		"""
 		### Constructor.
@@ -21,7 +21,7 @@ class ModeGetModelsExecutor(ModeModelsExecutor):
 		if self.models_directory == self.dist_path:
 			self.models_directory = os.path.join(self.models_directory, 'models')
 
-	def _execute_model_operation(self) -> Tuple[int, str]:
+	def _sync_operation(self) -> Tuple[int, str]:
 		"""
 		### Downloads deep learning models.
 

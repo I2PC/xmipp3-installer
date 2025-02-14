@@ -2,14 +2,14 @@ import os
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants, urls
-from xmipp3_installer.installer.modes.mode_models import mode_models_executor
+from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
 from ..test_files import xmipp_sync_data
 
 MODEL_DIR = os.path.join(".", "tests", "e2e", "test_files")
-SYNC_PROGRAM_NAME = f"{mode_models_executor._SYNC_PROGRAM_NAME}.py"
+SYNC_PROGRAM_NAME = f"{mode_sync_executor._SYNC_PROGRAM_NAME}.py"
 REAL_MODELS_DIR = os.path.join(constants.SOURCES_PATH, constants.XMIPP, "models")
-__REAL_SYNC_PROGRAM_PATH = os.path.join(mode_models_executor._SYNC_PROGRAM_PATH, SYNC_PROGRAM_NAME)
+__REAL_SYNC_PROGRAM_PATH = os.path.join(mode_sync_executor._SYNC_PROGRAM_PATH, SYNC_PROGRAM_NAME)
 FAKE_SYNC_PROGRAM_FULL_PATH = os.path.join(MODEL_DIR, SYNC_PROGRAM_NAME)
 
 __IO_ERROR = logger.red("""Error 7: Input/output error.
