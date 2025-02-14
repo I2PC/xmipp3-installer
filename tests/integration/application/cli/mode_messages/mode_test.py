@@ -8,7 +8,7 @@ HELP_MESSAGE = {
     ---------------------------------------------
     # Options #
 
-    testNames                                      Name of the tests to run. If combined with --show, greps the test name from the test list.
+    testNames                                      Name of the tests to run. If combined with --show, greps the test names from the test list.
     --show                                         Shows the tests available and how to invoke those.
 
 Example 1: ./xmipp test xmipp_sample_test
@@ -22,7 +22,7 @@ Example 2: ./xmipp test --short
 
     testNames                                      Name of the tests to run.
                                                    If combined with --show,
-                                                   greps the test name from
+                                                   greps the test names from
                                                    the test list.
     --show                                         Shows the tests available
                                                    and how to invoke those.
