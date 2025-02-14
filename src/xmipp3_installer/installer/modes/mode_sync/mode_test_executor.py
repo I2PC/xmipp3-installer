@@ -21,6 +21,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		super().__init__(context)
 		self.test_names = context.pop(params.PARAM_TEST_NAMES)
 		self.cuda = context.pop(variables.CUDA)
+		self.show = context.pop(params.PARAM_SHOW_TESTS)
 		self.xmipp_src = os.environ.get('XMIPP_SRC', None)
 		self.tests_path = None
 		self.dataset_path = None
