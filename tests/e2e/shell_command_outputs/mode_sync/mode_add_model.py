@@ -4,7 +4,7 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
-from . import mode_sync
+from . import SYNC_PROGRAM_NAME
 from .. import IO_ERROR
 
 LOGIN = "test@test.com"
@@ -19,7 +19,7 @@ NO_MODEL = f"""{logger.red(__NO_MODEL_INITIAL_MESSAGE)}
 {IO_ERROR}
 """
 
-__NO_PROGRAM_INITIAL_MESSAGE = f"{os.path.join(mode_sync_executor._SYNC_PROGRAM_PATH, mode_sync.SYNC_PROGRAM_NAME)} does not exist."
+__NO_PROGRAM_INITIAL_MESSAGE = f"{os.path.join(mode_sync_executor._SYNC_PROGRAM_PATH, SYNC_PROGRAM_NAME)} does not exist."
 NO_PROGRAM = f"""{logger.red(__NO_PROGRAM_INITIAL_MESSAGE)}
 {logger.red("Xmipp needs to be compiled successfully before running this command!")}
 {IO_ERROR}
