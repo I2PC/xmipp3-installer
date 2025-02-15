@@ -10,19 +10,20 @@ from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
-from .shell_command_outputs.mode_sync import mode_add_model, SYNC_PROGRAM_NAME
+from .shell_command_outputs import mode_sync
+from .shell_command_outputs.mode_sync import mode_add_model
 from .. import get_assertion_message
 
-__MODEL_PATH = f"./tests/e2e/test_files/{mode_add_model.MODEL_NAME}"
+__MODEL_PATH = os.path.join(mode_sync.TEST_FILES_DIR, mode_add_model.MODEL_NAME)
 
 @pytest.mark.parametrize(
 	"__mock_sys_argv,__mock_sync_program_path,update,"
 	"__mock_sys_stdin,expected_message",
 	[
-		pytest.param(mode_add_model.NON_EXISTING_MODEL_PATH, False, False, False, mode_add_model.NO_PROGRAM),
+		pytest.param(mode_add_model.NON_EXISTING_MODEL_PATH, False, False, False, mode_sync.NO_PROGRAM),
 		pytest.param(mode_add_model.NON_EXISTING_MODEL_PATH, True, True, True, mode_add_model.NO_MODEL),
-		pytest.param(__MODEL_PATH, False, False, False, mode_add_model.NO_PROGRAM),
-		pytest.param(__MODEL_PATH, False, True, True, mode_add_model.NO_PROGRAM),
+		pytest.param(__MODEL_PATH, False, False, False, mode_sync.NO_PROGRAM),
+		pytest.param(__MODEL_PATH, False, True, True, mode_sync.NO_PROGRAM),
 		pytest.param(__MODEL_PATH, True, False, False, mode_add_model.CANCELLED),
 		pytest.param(__MODEL_PATH, True, True, False, mode_add_model.CANCELLED),
 		pytest.param(__MODEL_PATH, True, False, True, mode_add_model.UPLOADED),
@@ -76,7 +77,7 @@ def __mock_sync_program_name():
 	with patch.object(
 		mode_sync_executor,
 		"_SYNC_PROGRAM_NAME",
-		SYNC_PROGRAM_NAME
+		mode_sync.SYNC_PROGRAM_NAME
 	) as mock_object:
 		yield mock_object
 
