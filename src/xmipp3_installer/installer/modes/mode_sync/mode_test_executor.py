@@ -23,7 +23,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		self.test_names = context.pop(params.PARAM_TEST_NAMES)
 		self.cuda = context.pop(variables.CUDA)
 		self.show = context.pop(params.PARAM_SHOW_TESTS)
-		python_home = context.pop(variables.PYTHON_HOME)
+		python_home = context.pop(variables.PYTHON_HOME, None)
 		self.python_home = python_home if python_home else "python3"
 		self.tests_path = os.path.join(constants.BINARIES_PATH, 'tests')
 		self.dataset_path = os.path.join(self.tests_path, 'data')
