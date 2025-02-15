@@ -7,7 +7,7 @@ import pytest
 
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
-from xmipp3_installer.application.cli.arguments import modes
+from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
 from .shell_command_outputs import mode_sync
@@ -41,7 +41,7 @@ def test_add_model(
 ):
 	stdout, _ = __mock_stdout_stderr
 	if update:
-		__mock_sys_argv.append("--update")
+		__mock_sys_argv.append(params.PARAMS[params.PARAM_UPDATE][params.LONG_VERSION])
 	with pytest.raises(SystemExit):
 		cli.main()
 	output = stdout.getvalue()
