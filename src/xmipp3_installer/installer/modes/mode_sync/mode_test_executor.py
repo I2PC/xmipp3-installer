@@ -46,9 +46,13 @@ class ModeTestExecutor(ModeSyncExecutor):
 		logger(logger.blue(f"{task_message} the test files"))
 
 		args = f"{self.dataset_path} {urls.SCIPION_TESTS_URL} {self.__DATASET_NAME}"
+		sync_program_relative_call = os.path.join(
+			".",
+			os.path.basename(self.sync_program_path)
+		)
 		ret_code, output = shell_handler.run_shell_command(
-			f"{self.sync_program_path} {task} {args}",
-			cwd=os.path.join(constants.SOURCES_PATH, constants.XMIPP),
+			f"{sync_program_relative_call} {task} {args}",
+			cwd=os.path.dirname(self.sync_program_path),
 			show_output=show_output
 		)
 
