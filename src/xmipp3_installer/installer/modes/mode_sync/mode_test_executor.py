@@ -65,13 +65,11 @@ class ModeTestExecutor(ModeSyncExecutor):
 		"""
 		no_cuda_str = "--noCuda" if not self.cuda else ""
 		show_str = "--show" if self.show else ""
-
 		logger(f" Tests to run: {', '.join(self.test_names)}")
-		test_scripts = os.path.dirname(os.environ['XMIPP_TEST_DATA'])
 		
 		return shell_handler.run_shell_command(
 			f"{self.python_home} test.py {' '.join(self.test_names)} {no_cuda_str}{show_str}",
-			cwd=test_scripts,
+			cwd=self.tests_path,
 			show_output=True,
 			show_error=True
 		)
