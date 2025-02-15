@@ -10,7 +10,7 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
-from .shell_command_outputs import mode_get_models
+from .shell_command_outputs.mode_sync import mode_get_models, mode_sync
 from .. import get_assertion_message, normalize_text_line_endings
 
 @pytest.mark.parametrize(
@@ -60,7 +60,7 @@ def __mock_sync_program_name():
 	with patch.object(
 		mode_sync_executor,
 		"_SYNC_PROGRAM_NAME",
-		mode_get_models.SYNC_PROGRAM_NAME
+		mode_sync.SYNC_PROGRAM_NAME
 	) as mock_object:
 		yield mock_object
 
