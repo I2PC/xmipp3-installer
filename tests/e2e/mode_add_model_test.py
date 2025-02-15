@@ -5,12 +5,13 @@ from unittest.mock import patch
 
 import pytest
 
+from .shell_command_outputs.mode_sync import mode_sync
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
-from .shell_command_outputs import mode_add_model
+from .shell_command_outputs.mode_sync import mode_add_model
 from .. import get_assertion_message
 
 __MODEL_PATH = f"./tests/e2e/test_files/{mode_add_model.MODEL_NAME}"
@@ -76,7 +77,7 @@ def __mock_sync_program_name():
 	with patch.object(
 		mode_sync_executor,
 		"_SYNC_PROGRAM_NAME",
-		mode_add_model.SYNC_PROGRAM_NAME
+		mode_sync.SYNC_PROGRAM_NAME
 	) as mock_object:
 		yield mock_object
 
