@@ -10,14 +10,15 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
-from .shell_command_outputs.mode_sync import mode_get_models, SYNC_PROGRAM_NAME
+from .shell_command_outputs import mode_sync
+from .shell_command_outputs.mode_sync import mode_get_models
 from .. import get_assertion_message, normalize_text_line_endings
 
 @pytest.mark.parametrize(
 	"__mock_sync_program_path,__mock_os_path_isdir,expected_message",
 	[
-		pytest.param(False, False, mode_get_models.NO_PROGRAM),
-		 pytest.param(False, True, mode_get_models.NO_PROGRAM),
+		pytest.param(False, False, mode_sync.NO_PROGRAM),
+		 pytest.param(False, True, mode_sync.NO_PROGRAM),
 		pytest.param(True, False, mode_get_models.DOWNLOAD),
 		pytest.param(True, True, mode_get_models.UPDATE)
 	],
@@ -60,14 +61,14 @@ def __mock_sync_program_name():
 	with patch.object(
 		mode_sync_executor,
 		"_SYNC_PROGRAM_NAME",
-		SYNC_PROGRAM_NAME
+		mode_sync.SYNC_PROGRAM_NAME
 	) as mock_object:
 		yield mock_object
 
 @pytest.fixture(autouse=True, params=[False])
 def __mock_sync_program_path(request):
 	new_value = (
-		mode_get_models.MODEL_DIR 
+		mode_sync.TEST_FILES_DIR 
 		if request.param else 
 		mode_sync_executor._SYNC_PROGRAM_PATH
 	)
