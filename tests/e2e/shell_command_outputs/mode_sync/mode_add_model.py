@@ -5,27 +5,24 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
 from . import mode_sync
+from .. import IO_ERROR
 
 LOGIN = "test@test.com"
 MODEL_NAME = "fake-model"
 NON_EXISTING_MODEL_PATH = "./does-not-exist"
-
-__IO_ERROR = logger.red("""Error 7: Input/output error.
-This error can be caused by the installer not being able to read/write/create/delete a file. Check your permissions on this directory. 
-More details on the Xmipp documentation portal: https://i2pc.github.io/docs/""")
 
 __CANCELLED_ERROR = logger.red("Error -1: Process was interrupted by the user.")
 
 __NO_MODEL_INITIAL_MESSAGE = f"{NON_EXISTING_MODEL_PATH} is not a directory. Please, check the path."
 NO_MODEL = f"""{logger.red(__NO_MODEL_INITIAL_MESSAGE)}
 {logger.red("The name of the model will be the name of that folder.")}
-{__IO_ERROR}
+{IO_ERROR}
 """
 
 __NO_PROGRAM_INITIAL_MESSAGE = f"{os.path.join(mode_sync_executor._SYNC_PROGRAM_PATH, mode_sync.SYNC_PROGRAM_NAME)} does not exist."
 NO_PROGRAM = f"""{logger.red(__NO_PROGRAM_INITIAL_MESSAGE)}
 {logger.red("Xmipp needs to be compiled successfully before running this command!")}
-{__IO_ERROR}
+{IO_ERROR}
 """
 
 __PRE_CONFIRMATION_WARNING = f"""Creating the xmipp_model_{MODEL_NAME}.tgz model.
