@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 
 import pytest
@@ -207,9 +208,13 @@ def test_calls_run_shell_command_when_running_sync_operation(
 	executor = ModeTestExecutor(__CONTEXT.copy())
 	executor._sync_operation()
 	args = f"{executor.dataset_path} {urls.SCIPION_TESTS_URL} {__mock_dataset_name}"
+	sync_program_relative_path = __mock_os_path_join(
+		".",
+		os.path.basename(executor.sync_program_path)
+	)
 	__mock_run_shell_command.assert_called_once_with(
-		f"{executor.sync_program_path} {expected_task} {args}",
-			cwd=__mock_os_path_join(constants.SOURCES_PATH, constants.XMIPP),
+		f"{sync_program_relative_path} {expected_task} {args}",
+			cwd=os.path.dirname(executor.sync_program_path),
 			show_output=expected_show_output
 	)
 
