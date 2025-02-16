@@ -1,7 +1,7 @@
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 
-from ...shell_command_outputs import mode_sync
+from ... import shell_command_outputs
 
 LOGIN = "test@test.com"
 MODEL_NAME = "fake-model"
@@ -12,7 +12,7 @@ __CANCELLED_ERROR = logger.red("Error -1: Process was interrupted by the user.")
 __NO_MODEL_INITIAL_MESSAGE = f"{NON_EXISTING_MODEL_PATH} is not a directory. Please, check the path."
 NO_MODEL = f"""{logger.red(__NO_MODEL_INITIAL_MESSAGE)}
 {logger.red("The name of the model will be the name of that folder.")}
-{mode_sync.IO_ERROR}
+{shell_command_outputs.IO_ERROR}
 """
 
 __PRE_CONFIRMATION_WARNING = f"""Creating the xmipp_model_{MODEL_NAME}.tgz model.
