@@ -132,7 +132,7 @@ def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str=''
 	"""
 	if branch_exists_in_repo(repo_url, preferred_branch):
 		return preferred_branch
-	if viable_tag:
+	if tag_exists_in_repo(repo_url, viable_tag):
 		return viable_tag
 	return None
 
