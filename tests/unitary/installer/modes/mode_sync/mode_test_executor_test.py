@@ -6,6 +6,7 @@ import pytest
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
+from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
 from xmipp3_installer.installer.modes.mode_sync.mode_test_executor import ModeTestExecutor
 from xmipp3_installer.repository.config_vars import variables
 
@@ -289,8 +290,8 @@ def __mock_run_tests(request):
 @pytest.fixture(autouse=True)
 def __mock_dataset_name():
 	with patch.object(
-		ModeTestExecutor,
-		"DATASET_NAME",
+		mode_test_executor,
+		"_DATASET_NAME",
 		__DATASET_NAME
 	) as mock_object:
 		yield mock_object
@@ -298,8 +299,8 @@ def __mock_dataset_name():
 @pytest.fixture(autouse=True)
 def __mock_python_test_script_path():
 	with patch.object(
-		ModeTestExecutor,
-		"PYTHON_TEST_SCRIPT_PATH",
+		mode_test_executor,
+		"_PYTHON_TEST_SCRIPT_PATH",
 		__PYTHON_TEST_SCRIPT_PATH
 	) as mock_object:
 		yield mock_object
@@ -307,8 +308,8 @@ def __mock_python_test_script_path():
 @pytest.fixture(autouse=True)
 def __mock_python_test_script_name():
 	with patch.object(
-		ModeTestExecutor,
-		"PYTHON_TEST_SCRIPT_NAME",
+		mode_test_executor,
+		"_PYTHON_TEST_SCRIPT_NAME",
 		__PYTHON_TEST_SCRIPT_NAME
 	) as mock_object:
 		yield mock_object
@@ -316,8 +317,8 @@ def __mock_python_test_script_name():
 @pytest.fixture(autouse=True)
 def __mock_dataset_path():
 	with patch.object(
-		ModeTestExecutor,
-		"DATASET_PATH",
+		mode_test_executor,
+		"_DATASET_PATH",
 		__DATASET_PATH
 	) as mock_object:
 		yield mock_object

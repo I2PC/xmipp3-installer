@@ -93,8 +93,8 @@ def __mock_sync_program_path(request):
 @pytest.fixture(autouse=True)
 def __mock_python_test_script_path():
 	with patch.object(
-		mode_test_executor.ModeTestExecutor,
-		"PYTHON_TEST_SCRIPT_PATH",
+		mode_test_executor,
+		"_PYTHON_TEST_SCRIPT_PATH",
 		mode_sync.TEST_FILES_DIR
 	) as mock_object:
 		yield mock_object
@@ -102,8 +102,18 @@ def __mock_python_test_script_path():
 @pytest.fixture(autouse=True)
 def __mock_default_python_home():
 	with patch.object(
-		mode_test_executor.ModeTestExecutor,
-		"DEFAULT_PYTHON_HOME",
+		mode_test_executor,
+		"_DEFAULT_PYTHON_HOME",
 		"python"
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True, params=[False])
+def __mock_dataset_path(request, __mock_python_test_script_path):
+	new_value = mode_sync.TEST_FILES_DIR if request.param else mode_test_executor._DATASET_PATH
+	with patch.object(
+		mode_test_executor,
+		"_DATASET_PATH",
+		new_value
 	) as mock_object:
 		yield mock_object

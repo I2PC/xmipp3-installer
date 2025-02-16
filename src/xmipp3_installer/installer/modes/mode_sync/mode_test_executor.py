@@ -8,13 +8,14 @@ from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 from xmipp3_installer.repository.config_vars import variables
 
+_DATASET_NAME = "xmipp_programs"
+_PYTHON_TEST_SCRIPT_NAME = "test.py"
+_PYTHON_TEST_SCRIPT_PATH = os.path.join(constants.BINARIES_PATH, "tests")
+_DEFAULT_PYTHON_HOME = "python3"
+_DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
+
 class ModeTestExecutor(ModeSyncExecutor):
 	"""Class to execute Xmipp tests."""
-	DATASET_NAME = "xmipp_programs"
-	PYTHON_TEST_SCRIPT_PATH = os.path.join(constants.BINARIES_PATH, "tests")
-	PYTHON_TEST_SCRIPT_NAME = "test.py"
-	DATASET_PATH = os.path.join(PYTHON_TEST_SCRIPT_PATH, 'data')
-	DEFAULT_PYTHON_HOME = "python3"
 
 	def __init__(self, context: Dict):
 		"""
@@ -28,7 +29,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		self.cuda = context.pop(variables.CUDA)
 		self.show = context.pop(params.PARAM_SHOW_TESTS)
 		python_home = context.pop(variables.PYTHON_HOME, None)
-		self.python_home = python_home if python_home else self.DEFAULT_PYTHON_HOME
+		self.python_home = python_home if python_home else _DEFAULT_PYTHON_HOME
 
 	def _sync_operation(self) -> Tuple[int, str]:
 		"""
@@ -37,7 +38,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		if os.path.isdir(self.DATASET_PATH):
+		if os.path.isdir(_DATASET_PATH):
 			task_message = "Updating"
 			task = "update"
 			show_output = False
@@ -47,7 +48,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 			show_output = True
 		logger(logger.blue(f"{task_message} the test files"))
 
-		args = f"{self.DATASET_PATH} {urls.SCIPION_TESTS_URL} {self.DATASET_NAME}"
+		args = f"{_DATASET_PATH} {urls.SCIPION_TESTS_URL} {_DATASET_NAME}"
 		sync_program_relative_call = os.path.join(
 			".",
 			os.path.basename(self.sync_program_path)
@@ -74,8 +75,8 @@ class ModeTestExecutor(ModeSyncExecutor):
 		logger(f" Tests to run: {', '.join(self.test_names)}")
 		
 		return shell_handler.run_shell_command(
-			f"{self.python_home} {self.PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}",
-			cwd=self.PYTHON_TEST_SCRIPT_PATH,
+			f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}",
+			cwd=_PYTHON_TEST_SCRIPT_PATH,
 			show_output=True,
 			show_error=True
 		)
