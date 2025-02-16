@@ -281,6 +281,94 @@ def test_returns_expected_value_when_checking_if_ref_exists(
 		exists == expected_exists
 	), get_assertion_message("ref existence value", expected_exists, exists)
 
+@pytest.mark.parametrize(
+	"repo,branch",
+	[
+		pytest.param("repo1", "branch1"),
+		pytest.param("repo2", "branch2")
+	]
+)
+def test_calls_branch_exists_in_repo_when_getting_clonable_branch(
+	repo,
+	branch,
+	__mock_branch_exists_in_repo,
+	__mock_tag_exists_in_repo
+):
+	git_handler.get_clonable_branch(repo, branch, "tag_name")
+	__mock_branch_exists_in_repo.assert_called_once_with(repo, branch)
+
+@pytest.mark.parametrize(
+	"repo,branch,tag",
+	[
+		pytest.param("repo1", "branch1", "tag1"),
+		pytest.param("repo2", "branch2", "tag2")
+	]
+)
+def test_calls_tag_exists_in_repo_when_getting_clonable_branch_and_branch_does_not_exist(
+	repo,
+	branch,
+	tag,
+	__mock_branch_exists_in_repo,
+	__mock_tag_exists_in_repo
+):
+	__mock_branch_exists_in_repo.return_value = False
+	git_handler.get_clonable_branch(repo, branch, tag)
+	__mock_tag_exists_in_repo.assert_called_once_with(repo, tag)
+
+def test_does_not_call_tag_exists_in_repo_when_getting_clonable_branch_and_branch_exists(
+	__mock_branch_exists_in_repo,
+	__mock_tag_exists_in_repo
+):
+	git_handler.get_clonable_branch("repo", "branch", "tag")
+	__mock_tag_exists_in_repo.assert_not_called()
+
+@pytest.mark.parametrize(
+	"target_branch,"
+	"viable_tag,"
+	"__mock_branch_exists_in_repo,"
+	"__mock_tag_exists_in_repo,"
+	"expected_clonable_branch",
+	[
+		pytest.param(None, None, False, False, None),
+		pytest.param(None, None, False, True, None),
+		pytest.param(None, None, True, False, None),
+		pytest.param(None, None, True, True, None),
+		pytest.param(None, __REF_TAG_NAME, False, False, None),
+		pytest.param(None, __REF_TAG_NAME, False, True, __REF_TAG_NAME),
+		pytest.param(None, __REF_TAG_NAME, True, False, None),
+		pytest.param(None, __REF_TAG_NAME, True, True, __REF_TAG_NAME),
+		pytest.param(__BRANCH_NAME, None, False, False, None),
+		pytest.param(__BRANCH_NAME, None, False, True, None),
+		pytest.param(__BRANCH_NAME, None, True, False, __BRANCH_NAME),
+		pytest.param(__BRANCH_NAME, None, True, True, __BRANCH_NAME),
+		pytest.param(__BRANCH_NAME, __REF_TAG_NAME, False, False, None),
+		pytest.param(__BRANCH_NAME, __REF_TAG_NAME, False, True, __REF_TAG_NAME),
+		pytest.param(__BRANCH_NAME, __REF_TAG_NAME, True, False, __BRANCH_NAME),
+		pytest.param(__BRANCH_NAME, __REF_TAG_NAME, True, True, __BRANCH_NAME)
+	],
+	indirect=[
+		"__mock_branch_exists_in_repo",
+		"__mock_tag_exists_in_repo"
+	]
+)
+def test_returns_expected_clonable_branch(
+	target_branch,
+	viable_tag,
+	__mock_branch_exists_in_repo,
+	__mock_tag_exists_in_repo,
+	expected_clonable_branch
+):
+	clonable_branch = git_handler.get_clonable_branch(
+		"repo", target_branch, viable_tag
+	)
+	assert (
+		clonable_branch == expected_clonable_branch
+	), get_assertion_message(
+		"clonable branch",
+		expected_clonable_branch,
+		clonable_branch
+	)
+
 def __return_unchanged(value):
 	return value
 
@@ -304,6 +392,22 @@ def __mock_get_current_branch(request):
 def __mock_ref_exists_in_repo(request):
 	with patch(
 		"xmipp3_installer.installer.handlers.git_handler.__ref_exists_in_repo"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_branch_exists_in_repo(request):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.branch_exists_in_repo"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_tag_exists_in_repo(request):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.tag_exists_in_repo"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method

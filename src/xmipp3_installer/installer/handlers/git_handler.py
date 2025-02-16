@@ -113,7 +113,7 @@ def tag_exists_in_repo(repo_url: str, tag: str) -> bool:
 	"""
 	return __ref_exists_in_repo(repo_url, tag, False)
 
-def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str='') -> Optional[str]:
+def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str) -> Optional[str]:
 	"""
 	### Decides the target to be cloned from a given repository.
 
@@ -125,14 +125,14 @@ def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str=''
 	#### Params:
 	- repo_url (str): Url of the repositori to be cloned.
 	- preferred_branch (str): Preferred branch to clone into.
-	- viable_tag (str): Optional. If provided
+	- viable_tag (str): If exists, it is returned if branch does not.
 
 	#### Returns:
 	- (str): Name of the branch to clone the repository into.
 	"""
-	if branch_exists_in_repo(repo_url, preferred_branch):
+	if preferred_branch and branch_exists_in_repo(repo_url, preferred_branch):
 		return preferred_branch
-	if tag_exists_in_repo(repo_url, viable_tag):
+	if viable_tag and tag_exists_in_repo(repo_url, viable_tag):
 		return viable_tag
 	return None
 
