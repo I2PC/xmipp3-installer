@@ -13,7 +13,9 @@ __SHORT_COMMIT = "5c3a24f"
 __TAG_NAME = "tags/v3.24.06-Oceanus"
 __RAW_COMMIT_NAME = f"{__SHORT_COMMIT} tags/v3.24.06-Oceanus"
 __BRANCH_NAME = "devel"
-__GIT_LS_REMOTE_OUTPUT = f"4fb11a33809108b5f4550ac2657cb7cac448253f\trefs/heads/{__BRANCH_NAME}"
+__REF_TAG_NAME = "v1.0.0"
+__GIT_LS_REMOTE_OUTPUT_BRANCH = f"4fb11a33809108b5f4550ac2657cb7cac448253f\trefs/heads/{__BRANCH_NAME}"
+__GIT_LS_REMOTE_OUTPUT_TAG = f"4fb11a33809108b5f4550ac2657cb7cac448253f\trefs/tags/{__REF_TAG_NAME}"
 
 def test_calls_run_shell_command_when_getting_current_branch(
 	__mock_run_shell_command
@@ -168,34 +170,116 @@ def test_returns_expected_commit_branch(__mock_run_shell_command, expected_commi
 		pytest.param("repo2", "branch2")
 	]
 )
-def test_calls_run_shell_command_when_checking_if_branch_exists(
+def test_calls_ref_exists_in_repo_when_checking_if_branch_exists(
 	repo,
 	branch,
-	__mock_run_shell_command
+	__mock_ref_exists_in_repo
 ):
 	git_handler.branch_exists_in_repo(repo, branch)
-	__mock_run_shell_command.assert_called_once_with(
-		f"git ls-remote --heads {repo}.git {branch}"
+	__mock_ref_exists_in_repo.assert_called_once_with(
+		repo, branch, True
 	)
 
 @pytest.mark.parametrize(
-	"__mock_run_shell_command,expected_exists",
-	[
-		pytest.param((1, "some output"), False),
-		pytest.param((1, __GIT_LS_REMOTE_OUTPUT), False),
-		pytest.param((0, "some output"), False),
-		pytest.param((0, __GIT_LS_REMOTE_OUTPUT), True)
-	],
-	indirect=["__mock_run_shell_command"]
+	"__mock_ref_exists_in_repo",
+	[pytest.param(False), pytest.param(True)],
+	indirect=["__mock_ref_exists_in_repo"]
 )
 def test_returns_expected_value_when_checking_if_branch_exists(
-	__mock_run_shell_command,
-	expected_exists
+	__mock_ref_exists_in_repo
 ):
 	exists = git_handler.branch_exists_in_repo("repo_url", __BRANCH_NAME)
 	assert (
+		exists == __mock_ref_exists_in_repo()
+	), get_assertion_message("branch existence value", __mock_ref_exists_in_repo(), exists)
+
+@pytest.mark.parametrize(
+	"repo,tag",
+	[
+		pytest.param("repo1", "tag1"),
+		pytest.param("repo2", "tag2")
+	]
+)
+def test_calls_ref_exists_in_repo_when_checking_if_tag_exists(
+	repo,
+	tag,
+	__mock_ref_exists_in_repo
+):
+	git_handler.tag_exists_in_repo(repo, tag)
+	__mock_ref_exists_in_repo.assert_called_once_with(
+		repo, tag, False
+	)
+
+@pytest.mark.parametrize(
+	"__mock_ref_exists_in_repo",
+	[pytest.param(False), pytest.param(True)],
+	indirect=["__mock_ref_exists_in_repo"]
+)
+def test_returns_expected_value_when_checking_if_tag_exists(
+	__mock_ref_exists_in_repo
+):
+	exists = git_handler.tag_exists_in_repo("repo_url", __REF_TAG_NAME)
+	assert (
+		exists == __mock_ref_exists_in_repo()
+	), get_assertion_message("tag existence value", __mock_ref_exists_in_repo(), exists)
+
+@pytest.mark.parametrize(
+	"is_branch,repo,ref,expected_ref_type",
+	[
+		pytest.param(False, "repo1", "ref1", "tags"),
+		pytest.param(False, "repo2", "ref2", "tags"),
+		pytest.param(True, "repo1", "ref1", "heads"),
+		pytest.param(True, "repo2", "ref2", "heads")
+	]
+)
+def test_calls_run_shell_command_when_checking_if_ref_exists(
+	is_branch,
+	repo,
+	ref,
+	expected_ref_type,
+	__mock_run_shell_command
+):
+	git_handler.__ref_exists_in_repo(repo, ref, is_branch)
+	__mock_run_shell_command.assert_called_once_with(
+		f"git ls-remote --{expected_ref_type} {repo}.git refs/{expected_ref_type}/{ref}"
+	)
+
+@pytest.mark.parametrize(
+	"__mock_run_shell_command,ref_name,is_branch,expected_exists",
+	[
+		pytest.param((1, "some output"), __BRANCH_NAME, False, False),
+		pytest.param((1, "some output"), __BRANCH_NAME, True, False),
+		pytest.param((1, "some output"), __REF_TAG_NAME, False, False),
+		pytest.param((1, "some output"), __REF_TAG_NAME, True, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_BRANCH), __BRANCH_NAME, False, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_BRANCH), __BRANCH_NAME, True, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_BRANCH), __REF_TAG_NAME, False, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_BRANCH), __REF_TAG_NAME, True, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_TAG), __BRANCH_NAME, False, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_TAG), __BRANCH_NAME, True, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_TAG), __REF_TAG_NAME, False, False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT_TAG), __REF_TAG_NAME, True, False),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_BRANCH), __BRANCH_NAME, False, False),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_BRANCH), __BRANCH_NAME, True, True),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_TAG), __BRANCH_NAME, False, False),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_TAG), __BRANCH_NAME, True, False),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_BRANCH), __REF_TAG_NAME, False, False),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_BRANCH), __REF_TAG_NAME, True, False),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_TAG), __REF_TAG_NAME, False, True),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT_TAG), __REF_TAG_NAME, True, False)
+	],
+	indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_value_when_checking_if_ref_exists(
+	__mock_run_shell_command,
+	ref_name,
+	is_branch,
+	expected_exists
+):
+	exists = git_handler.__ref_exists_in_repo("repo_url", ref_name, is_branch)
+	assert (
 		exists == expected_exists
-	), get_assertion_message("branch existence value", expected_exists, exists)
+	), get_assertion_message("ref existence value", expected_exists, exists)
 
 def __return_unchanged(value):
 	return value
@@ -212,6 +296,14 @@ def __mock_run_shell_command(request):
 def __mock_get_current_branch(request):
 	with patch(
 		"xmipp3_installer.installer.handlers.git_handler.get_current_branch"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(params=[True])
+def __mock_ref_exists_in_repo(request):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.__ref_exists_in_repo"
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
