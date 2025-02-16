@@ -10,13 +10,16 @@ from xmipp3_installer.repository import config
 
 from .... import get_assertion_message
 
+__CONTEXT = {
+	params.PARAM_OVERWRITE: False
+}
 __PERMISSION_ERROR_MESSAGE = "Cannot open that file."
 __CONFIG_VALUES = {"key1": "value1", "key2": "value2"}
 __FILE_FROM_SCRATCH_MESSAGE = "Generating config file from scratch with default values..."
 __READ_FILE_MESSAGE = "Reading config file..."
 
 def test_implements_interface_mode_executor():
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	assert (
 		isinstance(config_executor, ModeExecutor)
 	), get_assertion_message(
@@ -25,11 +28,9 @@ def test_implements_interface_mode_executor():
 		config_executor.__class__.__bases__[0].__name__
 	)
 
-def test_sets_overwrite_value_false_when_not_provided():
-	config_executor = ModeConfigExecutor({})
-	assert (
-		config_executor.overwrite == False
-	), get_assertion_message("overwrite value", False, config_executor.overwrite)
+def test_raises_key_error_when_overwrite_value_not_provided():
+	with pytest.raises(KeyError):
+		ModeConfigExecutor({})
 
 @pytest.mark.parametrize(
 	"expected_overwrite",
@@ -40,21 +41,21 @@ def test_sets_overwrite_value_false_when_not_provided():
 	]
 )
 def test_sets_overwrite_value_to_introduced_value_in_args(expected_overwrite):
-	config_executor = ModeConfigExecutor({params.PARAM_OVERWRITE: expected_overwrite})
+	config_executor = ModeConfigExecutor({**__CONTEXT, params.PARAM_OVERWRITE: expected_overwrite})
 	assert (
 		config_executor.overwrite == expected_overwrite
 	), get_assertion_message("overwrite value", expected_overwrite, config_executor.overwrite)
 
 def test_sets_config_values_empty_when_initializing():
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	assert (
 		config_executor.config_values == {}
 	), get_assertion_message("config values", {}, config_executor.config_values)
 
 def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
-	base_executor = __dummy_test_mode_executor({})
+	base_executor = __dummy_test_mode_executor(__CONTEXT.copy())
 	base_executor.run()  # To cover dummy implementation execution
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	base_config = (
 		base_executor.logs_to_file,
 		base_executor.prints_with_substitution,
@@ -74,7 +75,7 @@ def test_calls_get_section_message_when_running_executor(
 	__mock_configuration_file_handler,
 	__mock_get_section_message
 ):
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	config_executor.run()
 	__mock_get_section_message.assert_called_once_with("Managing config file")
 
@@ -83,7 +84,7 @@ def test_calls_get_done_message_when_running_executor(
 	__mock_configuration_file_handler,
 	__mock_get_done_message
 ):
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	config_executor.run()
 	__mock_get_done_message.assert_called_once_with()
 
@@ -106,7 +107,7 @@ def test_calls_logger_when_running_executor(
 	__mock_get_section_message,
 	__mock_get_done_message
 ):
-	config_executor = ModeConfigExecutor({'overwrite': mode_overwrite})
+	config_executor = ModeConfigExecutor({**__CONTEXT, 'overwrite': mode_overwrite})
 	config_executor.run()
 	expected_calls = [
 		call(__mock_get_section_message("Managing config file")),
@@ -122,7 +123,7 @@ def test_calls_configuration_file_handler_when_running_executor(
 	__mock_configuration_file_handler,
 	__mock_logger
 ):
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	config_executor.run()
 	__mock_configuration_file_handler.assert_called_once_with()
 
@@ -130,7 +131,7 @@ def test_calls_configuration_file_handler_write_config_when_running_executor(
 	__mock_configuration_file_handler,
 	__mock_logger
 ):
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	config_executor.run()
 	__mock_configuration_file_handler().write_config.assert_called_once_with(
 		overwrite=config_executor.overwrite
@@ -149,7 +150,7 @@ def test_stores_expected_config_values_when_running_executor(
 	expected_config_values,
 	__mock_logger
 ):
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	config_executor.run()
 	assert (
 		config_executor.config_values == expected_config_values
@@ -172,7 +173,7 @@ def test_returns_expected_values_when_running_executor(
 	expected_values,
 	__mock_logger
 ):
-	config_executor = ModeConfigExecutor({})
+	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	values = config_executor.run()
 	assert (
 		values == expected_values
