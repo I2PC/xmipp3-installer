@@ -10,13 +10,8 @@ REAL_MODELS_DIR = os.path.join(constants.SOURCES_PATH, constants.XMIPP, "models"
 FAKE_SYNC_PROGRAM_FULL_PATH = os.path.join(".", "tests", "e2e", "test_files", mode_sync.SYNC_PROGRAM_NAME)
 
 def get_test_messages_section(test_names: str) -> str:
-  test_names_str = ', '.join(test_names)
-  initial_message =  f"\tTests to run: {test_names_str}"
-  fake_calls = [test.MESSAGE for _ in test_names]
-  return "\n".join([
-    initial_message,
-    *fake_calls
-	])
+  test_names_str = ' '.join(test_names)
+  return f" Tests to run: {test_names_str}\n{test.MESSAGE}"
 
 __DOWNLOAD_SECTION = '\n'.join([
 	logger.blue("Downloading the test files"),
