@@ -21,7 +21,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
 		super().__init__(context)
 		self.login = context.pop(params.PARAM_LOGIN)
 		self.model_path = context.pop(params.PARAM_MODEL_PATH)
-		self.update = context.pop(params.PARAM_UPDATE, False)
+		self.update = context.pop(params.PARAM_UPDATE)
 		self.model_dir = os.path.dirname(self.model_path)
 		self.model_name = os.path.basename(self.model_path)
 		self.tar_file_name = f"xmipp_model_{self.model_name}.tgz"

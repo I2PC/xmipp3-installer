@@ -4,6 +4,7 @@ from unittest.mock import patch, call, MagicMock
 
 import pytest
 
+from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
@@ -17,16 +18,17 @@ __MODEL_DIRNAME = "/path/to"
 __MODEL_NAME = "mymodel"
 __TAR_NAME = f"xmipp_model_{__MODEL_NAME}.tgz"
 __TAR_PATH = f"{__MODEL_DIRNAME}/{__TAR_NAME}"
-__ARGS = {
-	'login': __LOGIN,
-	'modelPath': __MODEL_PATH
+__CONTEXT = {
+	params.PARAM_LOGIN: __LOGIN,
+	params.PARAM_MODEL_PATH: __MODEL_PATH,
+	params.PARAM_UPDATE: False
 }
 __READ_ERROR = tarfile.ReadError("could not read")
 __COMPRESSION_ERROR = tarfile.CompressionError("could not compress")
 __RETURN_VALUES_STR = "return values"
 
 def test_implements_interface_mode_sync_executor():
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	assert (
 		isinstance(executor, mode_sync_executor.ModeSyncExecutor)
 	), get_assertion_message(
@@ -35,18 +37,26 @@ def test_implements_interface_mode_sync_executor():
 		executor.__class__.__bases__[0].__name__
 	)
 
-def test_sets_update_value_false_when_not_provided():
-	executor = ModeAddModelExecutor(__ARGS.copy())
-	assert (
-		executor.update == False
-	), get_assertion_message("update value", False, executor.update)
+@pytest.mark.parametrize(
+	"missing_param",
+	[
+		pytest.param(params.PARAM_LOGIN),
+		pytest.param(params.PARAM_MODEL_PATH),
+		pytest.param(params.PARAM_UPDATE)
+	]
+)
+def test_raises_key_error_when_expected_value_not_provided(missing_param):
+	new_context = __CONTEXT.copy()
+	del new_context[missing_param]
+	with pytest.raises(KeyError):
+		ModeAddModelExecutor(new_context)
 
 @pytest.mark.parametrize(
 	"update",
 	[pytest.param(False), pytest.param(True)]
 )
 def test_sets_update_values_when_initializing(update):
-	executor = ModeAddModelExecutor({**__ARGS, 'update': update})
+	executor = ModeAddModelExecutor({**__CONTEXT, 'update': update})
 	assert (
 		executor.update == update
 	), get_assertion_message("update value", update, executor.update)
@@ -66,7 +76,7 @@ def test_sets_path_related_values_when_initializing(
 	expected_model_name,
 	__mock_os_path_join
 ):
-	executor = ModeAddModelExecutor({**__ARGS, 'modelPath': model_path})
+	executor = ModeAddModelExecutor({**__CONTEXT, 'modelPath': model_path})
 	expected_tar_name = f"xmipp_model_{expected_model_name}.tgz"
 	expected_tar_path = __mock_os_path_join(expected_model_dir, expected_tar_name)
 	received_values = [
@@ -89,17 +99,17 @@ def test_calls_logger_when_generating_compressed_file(
 	__mock_logger,
 	__mock_tarfile_open
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__generate_compressed_file()
 	__mock_logger.assert_called_once_with(f"Creating the {__TAR_NAME} model.")
 
 def test_calls_tarfile_open_when_generating_compressed_file(__mock_tarfile_open):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__generate_compressed_file()
 	__mock_tarfile_open.assert_called_once_with(__TAR_PATH, "w:gz")
 
 def test_calls_tarfile_add_when_generating_compressed_file(__mock_tarfile_open):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__generate_compressed_file()
 	__mock_tarfile_open.return_value.__enter__.return_value.add.assert_called_once_with(
 		__MODEL_PATH,
@@ -120,7 +130,7 @@ def test_returns_expected_outputs_when_generating_compressed_file(
 	__mock_tarfile_open,
 	expected_return_values
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	return_values = executor._ModeAddModelExecutor__generate_compressed_file()
 	assert (
 		return_values == expected_return_values
@@ -130,7 +140,7 @@ def test_calls_logger_when_getting_confirmation(
 	__mock_logger,
 	__mock_logger_yellow
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__get_confirmation()
 	expected_message = '\n'.join([
 		__mock_logger_yellow("Warning: Uploading, please BE CAREFUL! This can be dangerous."),
@@ -142,14 +152,14 @@ def test_calls_logger_when_getting_confirmation(
 def test_calls_get_user_confirmation_when_getting_confirmation(
 	__mock_get_user_confirmation
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__get_confirmation()
 	__mock_get_user_confirmation.assert_called_once_with("YES")
 
 def test_returns_get_user_confirmation_output_when_getting_confirmation(
 	__mock_get_user_confirmation
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	return_value = executor._ModeAddModelExecutor__get_confirmation()
 	assert (
 		return_value == __mock_get_user_confirmation.return_value
@@ -170,7 +180,7 @@ def test_calls_run_shell_command_when_uploading_model(
 	__mock_os_path_join,
 	__mock_os_path_abspath
 ):
-	executor = ModeAddModelExecutor({**__ARGS, 'update': update})
+	executor = ModeAddModelExecutor({**__CONTEXT, 'update': update})
 	executor._ModeAddModelExecutor__upload_model()
 	args = f"{__LOGIN}, {__mock_os_path_abspath(__TAR_PATH)}, {constants.SCIPION_SOFTWARE_EM}, {expected_update_str}"
 	__mock_run_shell_command.assert_called_once_with(
@@ -182,7 +192,7 @@ def test_calls_os_remove_when_upload_is_ok_when_uploading_model(
 	__mock_run_shell_command,
 	__mock_os_remove
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__upload_model()
 	__mock_os_remove.assert_called_once_with(__TAR_PATH)
 
@@ -191,7 +201,7 @@ def test_does_not_call_os_remove_when_upload_is_not_ok(
 	__mock_os_remove
 ):
 	__mock_run_shell_command.return_value = (1, "")
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__upload_model()
 	__mock_os_remove.assert_not_called()
 
@@ -210,7 +220,7 @@ def test_calls_logger_deppending_on_upload_status(
 	__mock_logger_green,
 	__mock_run_shell_command
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor._ModeAddModelExecutor__upload_model()
 	calls = [call(f"Trying to upload the model using {__LOGIN} as login")]
 	if __mock_run_shell_command.return_value[0] == 0:
@@ -234,7 +244,7 @@ def test_returns_expected_upload_output_status(
 	__mock_run_shell_command,
 	expected_results
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	return_values = executor._ModeAddModelExecutor__upload_model()
 	assert (
 		return_values == expected_results
@@ -247,7 +257,7 @@ def test_calls_logger_if_model_path_is_not_dir_when_running_executor(
 	__mock_os_path_exists
 ):
 	__mock_os_path_isdir.return_value = False
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	executor.run()
 	error_message = __mock_logger_red(f"{__MODEL_PATH} is not a directory. Please, check the path.")
 	error_message += "\n"
@@ -298,7 +308,7 @@ def test_returns_expected_values_when_running_executor(
 	__mock_upload_model,
 	expected_return_values
 ):
-	executor = ModeAddModelExecutor(__ARGS.copy())
+	executor = ModeAddModelExecutor(__CONTEXT.copy())
 	return_values = executor.run()
 	assert (
 		return_values == expected_return_values
