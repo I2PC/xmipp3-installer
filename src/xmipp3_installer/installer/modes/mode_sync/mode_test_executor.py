@@ -14,6 +14,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 	PYTHON_TEST_SCRIPT_PATH = os.path.join(constants.BINARIES_PATH, "tests")
 	PYTHON_TEST_SCRIPT_NAME = "test.py"
 	DATASET_PATH = os.path.join(PYTHON_TEST_SCRIPT_PATH, 'data')
+	DEFAULT_PYTHON_HOME = "python3"
 
 	def __init__(self, context: Dict):
 		"""
@@ -27,7 +28,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		self.cuda = context.pop(variables.CUDA)
 		self.show = context.pop(params.PARAM_SHOW_TESTS)
 		python_home = context.pop(variables.PYTHON_HOME, None)
-		self.python_home = python_home if python_home else "python3"
+		self.python_home = python_home if python_home else self.DEFAULT_PYTHON_HOME
 
 	def _sync_operation(self) -> Tuple[int, str]:
 		"""
