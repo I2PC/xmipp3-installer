@@ -114,6 +114,7 @@ __EMPTY_INSTALLATION_INFO = {
   "logTail": None
 }
 __DEFAULT_USER_ID = "Anonymous"
+__USERNAME = "username"
 
 def test_calls_run_shell_command_when_getting_cpu_flags(__mock_run_shell_command):
   installation_info_assembler.__get_cpu_flags()
@@ -275,10 +276,23 @@ def test_returns_expected_mac_address_when_getting_mac_address(
     mac_address == expected_mac_address
   ), get_assertion_message("MAC address", expected_mac_address, mac_address)
 
-def test_calls_get_mac_address_when_getting_user_id(__mock_get_mac_address):
+def test_calls_get_mac_address_when_getting_user_id(
+  __mock_get_mac_address,
+  __mock_getuser
+):
   __mock_get_mac_address.return_value = None
+  __mock_getuser.return_value = None
   installation_info_assembler.__get_user_id()
   __mock_get_mac_address.assert_called_once_with()
+
+def test_calls_getuser_if_not_mac_address_when_getting_user_id(
+  __mock_get_mac_address,
+  __mock_getuser
+):
+  __mock_get_mac_address.return_value = None
+  __mock_getuser.return_value = None
+  installation_info_assembler.__get_user_id()
+  __mock_getuser.assert_called_once_with()
 
 def test_calls_hashlib_sha256_when_getting_user_id(
     __mock_get_mac_address,
@@ -288,9 +302,9 @@ def test_calls_hashlib_sha256_when_getting_user_id(
   __mock_hashlib_sha256.assert_called_once_with()
 
 def test_calls_hashlib_sha256_update_when_getting_user_id(
-    __mock_get_mac_address,
-    __mock_hashlib_sha256
-  ):
+  __mock_get_mac_address,
+  __mock_hashlib_sha256
+):
   installation_info_assembler.__get_user_id()
   __mock_hashlib_sha256().update.assert_called_once_with(__mock_get_mac_address().encode())
 
@@ -302,14 +316,23 @@ def test_calls_hashlib_sha256_hexdigest_when_getting_user_id(
   __mock_hashlib_sha256().hexdigest.assert_called_once_with()
 
 @pytest.mark.parametrize(
-  "__mock_get_mac_address,__mock_hashlib_sha256,expected_user_id",
+  "__mock_getuser,__mock_get_mac_address,"
+  "__mock_hashlib_sha256,expected_user_id",
   [
-    pytest.param(None, None, __DEFAULT_USER_ID),
-    pytest.param(None, "test-id", __DEFAULT_USER_ID),
-    pytest.param(__ETH_MAC_ADDRESS, None, None),
-    pytest.param(__ETH_MAC_ADDRESS, "test-id", "test-id")
+    pytest.param(None, None, None, __DEFAULT_USER_ID),
+    pytest.param(None, None, "test-id", __DEFAULT_USER_ID),
+    pytest.param(None, __ETH_MAC_ADDRESS, None, None),
+    pytest.param(None, __ETH_MAC_ADDRESS, "test-id", "test-id"),
+    pytest.param(__USERNAME, None, None, None),
+    pytest.param(__USERNAME, None, "test-id", "test-id"),
+    pytest.param(__USERNAME, __ETH_MAC_ADDRESS, None, None),
+    pytest.param(__USERNAME, __ETH_MAC_ADDRESS, "test-id", "test-id")
   ],
-  indirect=["__mock_get_mac_address", "__mock_hashlib_sha256"]
+  indirect=[
+    "__mock_getuser",
+    "__mock_get_mac_address",
+    "__mock_hashlib_sha256"
+  ]
 )
 def test_returns_expected_user_id(
     __mock_get_mac_address,
@@ -574,4 +597,12 @@ def __mock_get_os_release_name():
     "xmipp3_installer.api_client.assembler.installation_info_assembler.get_os_release_name"
   ) as mock_method:
     mock_method.return_value = __RELEASE_NAME_LINUX
+    yield mock_method
+
+@pytest.fixture(params=[__USERNAME], autouse=True)
+def __mock_getuser(request):
+  with patch(
+    "getpass.getuser"
+  ) as mock_method:
+    mock_method.return_value = request.param
     yield mock_method

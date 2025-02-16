@@ -1,5 +1,6 @@
 """### Contains functions to assemble the data dictionary required by the API client."""
 
+import getpass
 import hashlib
 import platform
 import re
@@ -99,12 +100,14 @@ def __get_user_id() -> str:
 	#### Returns:
 	- (str): User id, or 'Anoymous' if there were any errors.
 	"""
-	mac_address = __get_mac_address()
-	if not mac_address:
-		return "Anonymous"
+	identifier = __get_mac_address()
+	if not identifier:
+		identifier = getpass.getuser()
+		if not identifier:
+			return "Anonymous"
 	
 	sha256 = hashlib.sha256()
-	sha256.update(mac_address.encode())
+	sha256.update(identifier.encode())
 	return sha256.hexdigest()
 
 def __get_cpu_flags() -> List[str]:
