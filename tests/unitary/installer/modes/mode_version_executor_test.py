@@ -12,6 +12,9 @@ from xmipp3_installer.repository.config_vars import variables
 
 from .... import get_assertion_message
 
+__CONTEXT = {
+	params.PARAM_SHORT: False
+}
 __LEFT_TEXT_LEN = 5
 __DATE = "dd/mm/yyyy"
 __FIXED_DATES_SECTION_PART = f"""Release date: {versions.RELEASE_DATE}
@@ -39,7 +42,7 @@ __LIBRARIES_WITH_VERSION_SECTION = '\n'.join([
 ])
 
 def test_implements_interface_mode_executor():
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	assert (
 		isinstance(version_executor, ModeExecutor)
 	), get_assertion_message(
@@ -48,11 +51,9 @@ def test_implements_interface_mode_executor():
 		version_executor.__class__.__bases__[0].__name__
 	)
 
-def test_sets_short_value_false_when_not_provided():
-	version_executor = ModeVersionExecutor({})
-	assert (
-		version_executor.short == False
-	), get_assertion_message("short value", False, version_executor.short)
+def test_raises_key_error_when_short_param_not_provided():
+	with pytest.raises(KeyError):
+		ModeVersionExecutor({})
 
 @pytest.mark.parametrize(
 	"expected_short",
@@ -62,8 +63,8 @@ def test_sets_short_value_false_when_not_provided():
 		pytest.param(None)
 	]
 )
-def test_sets_overwrite_value_to_introduced_value_in_args(expected_short):
-	version_executor = ModeVersionExecutor({params.PARAM_SHORT: expected_short})
+def test_sets_short_value_to_introduced_value_in_args(expected_short):
+	version_executor = ModeVersionExecutor({**__CONTEXT.copy(), params.PARAM_SHORT: expected_short})
 	assert (
 		version_executor.short == expected_short
 	), get_assertion_message("short value", expected_short, version_executor.short)
@@ -79,7 +80,7 @@ def test_sets_overwrite_value_to_introduced_value_in_args(expected_short):
   indirect=["__mock_exists_init"]
 )
 def test_sets_library_file_exists_value_as_expected_when_initializing(__mock_exists_init):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	assert (
 		version_executor.version_file_exists == __mock_exists_init(constants.LIBRARY_VERSIONS_FILE)
 	), get_assertion_message(
@@ -99,15 +100,15 @@ def test_sets_library_file_exists_value_as_expected_when_initializing(__mock_exi
   indirect=["__mock_exists_init"]
 )
 def test_sets_is_configured_values_as_expected_when_initializing(__mock_exists_init, expected_is_configured):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	assert (
 		version_executor.is_configured == expected_is_configured
 	), get_assertion_message("is configured values", expected_is_configured, version_executor.is_configured)
 
 def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
-	base_executor = __dummy_test_mode_executor({})
+	base_executor = __dummy_test_mode_executor(__CONTEXT.copy())
 	base_executor.run()  # To cover dummy implementation execution
-	config_executor = ModeVersionExecutor({})
+	config_executor = ModeVersionExecutor(__CONTEXT.copy())
 	base_config = (
 		base_executor.logs_to_file,
 		base_executor.prints_with_substitution,
@@ -136,7 +137,7 @@ def test_returns_expected_text_when_adding_padding_spaces(
 	expected_result,
 	__mock_left_text_len
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	result_text = version_executor._ModeVersionExecutor__add_padding_spaces(input_text)
 	assert (
 		result_text == expected_result
@@ -145,7 +146,7 @@ def test_returns_expected_text_when_adding_padding_spaces(
 def test_calls_add_padding_spaces_when_getting_dates_section(
 	__mock_add_padding_spaces
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_dates_section()
 	__mock_add_padding_spaces.assert_has_calls([
 		call('Release date: '),
@@ -165,6 +166,7 @@ def test_returns_expected_dates_section(
 	__mock_add_padding_spaces
 ):
 	context = {
+		**__CONTEXT.copy(),
 		variables.LAST_MODIFIED_KEY: __DATE if config_file_exists else ''
 	}
 	version_executor = ModeVersionExecutor(context)
@@ -179,7 +181,7 @@ def test_calls_add_padding_spaces_when_getting_source_info(
 	__mock_exists
 ):
 	__mock_exists.return_value = False
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
 	__mock_add_padding_spaces.assert_called_once_with(__XMIPP_CORE_LEFT_TEXT)
 
@@ -191,7 +193,7 @@ def test_calls_get_current_commit_when_getting_source_info(
 	__mock_get_current_branch,
 	__mock_is_tag
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
 	__mock_get_current_commit.assert_called_once_with(dir=constants.XMIPP_CORE_PATH)
 
@@ -203,7 +205,7 @@ def test_calls_get_commit_branch_when_getting_source_info(
 	__mock_get_current_branch,
 	__mock_is_tag
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
 	__mock_get_commit_branch.assert_called_once_with(
 		__mock_get_current_commit.return_value,
@@ -218,7 +220,7 @@ def test_calls_get_current_branch_when_getting_source_info(
 	__mock_get_current_branch,
 	__mock_is_tag
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
 	__mock_get_current_branch.assert_called_once_with(dir=constants.XMIPP_CORE_PATH)
 
@@ -230,7 +232,7 @@ def test_calls_is_tag_when_getting_source_info(
 	__mock_get_current_branch,
 	__mock_is_tag
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
 	__mock_is_tag.assert_called_once_with(dir=constants.XMIPP_CORE_PATH)
 
@@ -253,7 +255,7 @@ def test_returns_expected_source_info(
 	__mock_get_current_branch,
 	__mock_is_tag
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	source_info = version_executor._ModeVersionExecutor__get_xmipp_core_info()
 	expected_info = f"{__XMIPP_CORE_LEFT_TEXT}{expected_info_right}"
 	assert (
@@ -261,7 +263,7 @@ def test_returns_expected_source_info(
 	), get_assertion_message("source info", expected_info, source_info)
 
 def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = True
 	version_executor.run()
 	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY])
@@ -304,7 +306,7 @@ def test_calls_logger_when_running_executor_in_long_format(
 	__mock_exist_sources_config_and_library_versions,
 	__mock_get_configuration_warning_message
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	expected_title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})"
@@ -334,7 +336,7 @@ def test_calls_is_tag_when_running_executor_in_long_format(
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	__mock_is_tag.assert_called_once_with()
@@ -348,7 +350,7 @@ def test_calls_get_current_branch_when_running_executor_in_long_format_and_is_no
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	__mock_get_current_branch.assert_called_once_with()
@@ -363,7 +365,7 @@ def test_does_not_call_get_current_branch_when_running_executor_in_long_format_a
 	__mock_get_xmipp_core_info
 ):
 	__mock_is_tag.return_value = True
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	__mock_get_current_branch.assert_not_called()
@@ -377,7 +379,7 @@ def test_calls_get_dates_section_when_running_executor_in_long_format(
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	__mock_get_dates_section.assert_called_once_with()
@@ -391,7 +393,7 @@ def test_calls_add_padding_spaces_when_running_executor_in_long_format(
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	__mock_add_padding_spaces.assert_called_once_with("System version: ")
@@ -405,7 +407,7 @@ def test_calls_get_os_release_name_when_running_executor_in_long_format(
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	__mock_get_os_release_name.assert_called_once_with()
@@ -419,7 +421,7 @@ def test_calls_get_sources_info_when_running_executor_in_long_format(
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
 	__mock_get_xmipp_core_info.assert_called_once_with()
@@ -441,7 +443,7 @@ def test_returns_success_and_no_message_when_running_executor(
 	__mock_get_os_release_name,
 	__mock_get_xmipp_core_info
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = short_format
 	result = version_executor.run()
 	assert (
@@ -452,7 +454,7 @@ def test_calls_os_path_exists_when_getting_library_versions_section(
 	__mock_exists
 ):
 	__mock_exists.return_value = False
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_library_versions_section()
 	__mock_exists.assert_called_with(constants.LIBRARY_VERSIONS_FILE)
 
@@ -460,7 +462,7 @@ def test_calls_get_library_versions_from_cmake_file_when_getting_library_version
 	__mock_exists_library_versions,
 	__mock_get_library_versions_from_cmake_file
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_library_versions_section()
 	__mock_get_library_versions_from_cmake_file.assert_called_with(constants.LIBRARY_VERSIONS_FILE)
 
@@ -469,7 +471,7 @@ def test_calls_add_padding_spaces_when_getting_library_versions_section(
 	__mock_get_library_versions_from_cmake_file,
 	__mock_add_padding_spaces
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_library_versions_section()
 	__mock_add_padding_spaces.assert_has_calls([
 		call(f"{library}: ") for library in __LIBRARIES_WITH_VERSIONS.keys()
@@ -493,7 +495,7 @@ def test_returns_expected_library_versions_section(
 		expected_versions_section = ""
 	else:
 		expected_versions_section = __LIBRARIES_WITH_VERSION_SECTION
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	versions_section = version_executor._ModeVersionExecutor__get_library_versions_section()
 	assert (
 		versions_section == expected_versions_section
@@ -502,7 +504,7 @@ def test_returns_expected_library_versions_section(
 def test_calls_logger_yellow_when_getting_configuration_warning_message(
 	__mock_logger_yellow
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_configuration_warning_message()
 	__mock_logger_yellow.assert_has_calls([
 		call("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
@@ -512,7 +514,7 @@ def test_calls_logger_yellow_when_getting_configuration_warning_message(
 def test_returns_expected_configuration_warning_message(
 	__mock_logger_yellow
 ):
-	version_executor = ModeVersionExecutor({})
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	warning_message = version_executor._ModeVersionExecutor__get_configuration_warning_message()
 	expected_warning_message = '\n'.join([
 		__mock_logger_yellow("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
