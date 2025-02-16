@@ -22,7 +22,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		- context (dict): Dictionary containing the installation context variables.
 		"""
 		super().__init__(context)
-		self.short = context.pop(params.PARAM_SHORT, False)
+		self.short = context.pop(params.PARAM_SHORT)
 		config_exists = os.path.exists(constants.CONFIG_FILE)
 		self.version_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
 		self.is_configured = config_exists and self.version_file_exists
