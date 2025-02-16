@@ -12,6 +12,8 @@ __COMMIT2 = "792cq86301pqw"
 __SHORT_COMMIT = "5c3a24f"
 __TAG_NAME = "tags/v3.24.06-Oceanus"
 __RAW_COMMIT_NAME = f"{__SHORT_COMMIT} tags/v3.24.06-Oceanus"
+__BRANCH_NAME = "devel"
+__GIT_LS_REMOTE_OUTPUT = f"4fb11a33809108b5f4550ac2657cb7cac448253f\trefs/heads/{__BRANCH_NAME}"
 
 def test_calls_run_shell_command_when_getting_current_branch(
 	__mock_run_shell_command
@@ -158,6 +160,42 @@ def test_returns_expected_commit_branch(__mock_run_shell_command, expected_commi
 	assert (
 		commit_branch == expected_commit_branch
 	), get_assertion_message("commit branch", expected_commit_branch, commit_branch)
+
+@pytest.mark.parametrize(
+	"repo,branch",
+	[
+		pytest.param("repo1", "branch1"),
+		pytest.param("repo2", "branch2")
+	]
+)
+def test_calls_run_shell_command_when_checking_if_branch_exists(
+	repo,
+	branch,
+	__mock_run_shell_command
+):
+	git_handler.branch_exists_in_repo(repo, branch)
+	__mock_run_shell_command.assert_called_once_with(
+		f"git ls-remote --heads {repo}.git {branch}"
+	)
+
+@pytest.mark.parametrize(
+	"__mock_run_shell_command,expected_exists",
+	[
+		pytest.param((1, "some output"), False),
+		pytest.param((1, __GIT_LS_REMOTE_OUTPUT), False),
+		pytest.param((0, "some output"), False),
+		pytest.param((0, __GIT_LS_REMOTE_OUTPUT), True)
+	],
+	indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_value_when_checking_if_branch_exists(
+	__mock_run_shell_command,
+	expected_exists
+):
+	exists = git_handler.branch_exists_in_repo("repo_url", __BRANCH_NAME)
+	assert (
+		exists == expected_exists
+	), get_assertion_message("branch existence value", expected_exists, exists)
 
 def __return_unchanged(value):
 	return value
