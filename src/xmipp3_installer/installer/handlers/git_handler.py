@@ -84,3 +84,21 @@ def get_commit_branch(commit: str, dir: str="./") -> str:
 	if ret_code or not output:
 		return ''
 	return output.replace(commit, "").replace(" ", "")
+
+def branch_exists_in_repo(repo_url: str, branch: str) -> bool:
+	"""
+	### Checks if the given branch exists in the given repository.
+
+	#### Params:
+	- repo (str): Repository to check from.
+	- branch (str): Name of the branch to check for.
+
+	#### Returns:
+	- (bool): True if the branch exists, False otherwise.
+	"""
+	ret_code, output = shell_handler.run_shell_command(
+		f"git ls-remote --heads {repo_url}.git {branch}"
+	)
+	if ret_code:
+		return False
+	return f"refs/heads/{branch}" in output
