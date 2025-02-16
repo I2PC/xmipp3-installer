@@ -216,21 +216,22 @@ def test_calls_run_shell_command_when_running_sync_operation(
 	)
 
 @pytest.mark.parametrize(
-	"__mock_run_shell_command,__mock_run_tests,expected_result",
+	"__mock_sync_operation,__mock_run_tests,expected_result",
 	[
 		pytest.param((1, "command error"), (2, "test error"), (1, "command error")),
 		pytest.param((1, "command error"), (0, ""), (1, "command error")),
 		pytest.param((0, ""), (2, "test error"), (2, "test error")),
 		pytest.param((0, ""), (0, ""), (0, ""))
 	],
-	indirect=["__mock_run_shell_command", "__mock_run_tests"]
+	indirect=["__mock_sync_operation", "__mock_run_tests"]
 )
 def test_returns_expected_result(
-	__mock_run_shell_command,
+	__mock_sync_operation,
 	__mock_run_tests,
-	expected_result
+	expected_result,
+	__mock_os_path_exists
 ):
-	result = ModeTestExecutor(__CONTEXT.copy())._sync_operation()
+	result = ModeTestExecutor(__CONTEXT.copy()).run()
 	assert (
 		result == expected_result
 	), get_assertion_message("sync result", expected_result, result)
@@ -322,3 +323,17 @@ def __mock_dataset_path():
 		__DATASET_PATH
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture
+def __mock_os_path_exists():
+	with patch("os.path.exists") as mock_method:
+		mock_method.return_value = True
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_sync_operation(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._sync_operation"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method

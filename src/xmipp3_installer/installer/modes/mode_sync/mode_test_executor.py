@@ -30,6 +30,18 @@ class ModeTestExecutor(ModeSyncExecutor):
 		self.show = context.pop(params.PARAM_SHOW_TESTS)
 		python_home = context.pop(variables.PYTHON_HOME, None)
 		self.python_home = python_home if python_home else _DEFAULT_PYTHON_HOME
+	
+	def run(self) -> Tuple[int, str]:
+		"""
+		### Runs the provided tests.
+
+		#### Returns:
+		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
+		"""
+		ret_code, output = super().run()
+		if ret_code:
+			return ret_code, output
+		return self.__run_tests()
 
 	def _sync_operation(self) -> Tuple[int, str]:
 		"""
@@ -53,15 +65,11 @@ class ModeTestExecutor(ModeSyncExecutor):
 			".",
 			os.path.basename(self.sync_program_path)
 		)
-		ret_code, output = shell_handler.run_shell_command(
+		return shell_handler.run_shell_command(
 			f"{sync_program_relative_call} {task} {args}",
 			cwd=os.path.dirname(self.sync_program_path),
 			show_output=show_output
 		)
-
-		if ret_code:
-			return ret_code, output
-		return self.__run_tests()
 
 	def __run_tests(self) -> Tuple[int, str]:
 		"""
