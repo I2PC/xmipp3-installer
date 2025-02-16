@@ -1,5 +1,7 @@
 """### Functions that interact with Git via shell."""
 
+from typing import Optional
+
 from xmipp3_installer.installer.handlers import shell_handler
 
 def get_current_branch(dir: str='./') -> str:
@@ -96,9 +98,60 @@ def branch_exists_in_repo(repo_url: str, branch: str) -> bool:
 	#### Returns:
 	- (bool): True if the branch exists, False otherwise.
 	"""
+	return __ref_exists_in_repo(repo_url, branch, True)
+
+def tag_exists_in_repo(repo_url: str, tag: str) -> bool:
+	"""
+	### Checks if the given tag exists in the given repository.
+
+	#### Params:
+	- repo_url (str): Repository to check from.
+	- tag (str): Name of the tag to check for.
+
+	#### Returns:
+	- (bool): True if the tag exists, False otherwise.
+	"""
+	return __ref_exists_in_repo(repo_url, tag, False)
+
+def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str='') -> Optional[str]:
+	"""
+	### Decides the target to be cloned from a given repository.
+
+	The preferred branch will be selected if exists,
+	followed in priority by the viable tag if provided.
+	Finally, if no branch could be selected, None is returned,
+	meaning that repository's default branch will be used.
+
+	#### Params:
+	- repo_url (str): Url of the repositori to be cloned.
+	- preferred_branch (str): Preferred branch to clone into.
+	- viable_tag (str): Optional. If provided
+
+	#### Returns:
+	- (str): Name of the branch to clone the repository into.
+	"""
+	if branch_exists_in_repo(repo_url, preferred_branch):
+		return preferred_branch
+	if viable_tag:
+		return viable_tag
+	return None
+
+def __ref_exists_in_repo(repo_url: str, ref: str, is_branch: bool) -> bool:
+	"""
+	### Checks if a given reference exists in the given repository.
+
+	#### Params:
+	- repo_url (str): Repository to check from.
+	- ref (str): Reference to check for.
+	- is_branch (bool): If True, the reference is a branch. If False, it is a tag.
+
+	#### Returns:
+	- (bool): True if the ref exists, False otherwise.
+	"""
+	ref_type = "heads" if is_branch else "tags"
 	ret_code, output = shell_handler.run_shell_command(
-		f"git ls-remote --heads {repo_url}.git {branch}"
+		f"git ls-remote --{ref_type} {repo_url}.git refs/{ref_type}/{ref}"
 	)
 	if ret_code:
 		return False
-	return f"refs/heads/{branch}" in output
+	return f"refs/{ref_type}/{ref}" in output
