@@ -20,7 +20,10 @@ __CONTEXT = {
 	variables.CUDA: True
 }
 __PYHTON_HOME = "/path/to/python"
+__DATASET_PATH = "/path/to/dataset"
 __DATASET_NAME = "dataset_name"
+__PYTHON_TEST_SCRIPT_PATH = "/path/to/python_script"
+__PYTHON_TEST_SCRIPT_NAME = "script_name"
 
 def test_implements_interface_mode_sync_executor():
 	executor = ModeTestExecutor(__CONTEXT.copy())
@@ -32,28 +35,17 @@ def test_implements_interface_mode_sync_executor():
 		executor.__class__.__bases__[0].__name__
 	)
 
-def test_sets_expected_values_when_initializing(
-	__mock_binaries_path,
-	__mock_os_path_join
-):
+def test_sets_expected_values_when_initializing():
 	executor = ModeTestExecutor(__CONTEXT.copy())
 	values = (
 		executor.test_names,
 		executor.cuda,
-		executor.show,
-		executor.tests_path,
-		executor.dataset_path
+		executor.show
 	)
 	expected_values = (
 		__MULTIPLE_TESTS,
 		True,
-		False,
-		__mock_os_path_join(__mock_binaries_path, "tests"),
-		__mock_os_path_join(
-			__mock_binaries_path,
-			"tests",
-			"data"
-		)
+		False
 	)
 	assert (
 		values == expected_values
@@ -126,7 +118,9 @@ def test_calls_run_shell_command_when_running_tests(
 	expected_show,
 	__mock_run_shell_command,
 	__mock_os_path_join,
-	__mock_binaries_path
+	__mock_binaries_path,
+	__mock_python_test_script_name,
+	__mock_python_test_script_path
 ):
 	new_context = {
 		**__CONTEXT,
@@ -137,8 +131,8 @@ def test_calls_run_shell_command_when_running_tests(
 	executor = ModeTestExecutor(new_context)
 	executor._ModeTestExecutor__run_tests()
 	__mock_run_shell_command.assert_called_once_with(
-		f"{executor.python_home} test.py {' '.join(__MULTIPLE_TESTS)} {expected_no_cuda}{expected_show}",
-		cwd=__mock_os_path_join(__mock_binaries_path, "tests"),
+		f"{executor.python_home} {__mock_python_test_script_name} {' '.join(__MULTIPLE_TESTS)} {expected_no_cuda}{expected_show}",
+		cwd=__mock_python_test_script_path,
 		show_output=True,
 		show_error=True
 	)
@@ -158,12 +152,13 @@ def test_returns_expected_results_when_running_tests(
 
 def test_calls_path_os_isdir_when_running_sync_operation(
 	__mock_os_path_isdir,
-	__mock_run_shell_command
+	__mock_run_shell_command,
+	__mock_dataset_path
 ):
 	executor = ModeTestExecutor(__CONTEXT.copy())
 	executor._sync_operation()
 	__mock_os_path_isdir.assert_called_once_with(
-		executor.dataset_path
+		__mock_dataset_path
 	)
 
 @pytest.mark.parametrize(
@@ -203,11 +198,12 @@ def test_calls_run_shell_command_when_running_sync_operation(
 	__mock_os_path_join,
 	__mock_run_shell_command,
 	__mock_run_tests,
-	__mock_dataset_name
+	__mock_dataset_name,
+	__mock_dataset_path
 ):
 	executor = ModeTestExecutor(__CONTEXT.copy())
 	executor._sync_operation()
-	args = f"{executor.dataset_path} {urls.SCIPION_TESTS_URL} {__mock_dataset_name}"
+	args = f"{__mock_dataset_path} {urls.SCIPION_TESTS_URL} {__mock_dataset_name}"
 	sync_program_relative_path = __mock_os_path_join(
 		".",
 		os.path.basename(executor.sync_program_path)
@@ -294,7 +290,34 @@ def __mock_run_tests(request):
 def __mock_dataset_name():
 	with patch.object(
 		ModeTestExecutor,
-		"_ModeTestExecutor__DATASET_NAME",
+		"DATASET_NAME",
 		__DATASET_NAME
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_python_test_script_path():
+	with patch.object(
+		ModeTestExecutor,
+		"PYTHON_TEST_SCRIPT_PATH",
+		__PYTHON_TEST_SCRIPT_PATH
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_python_test_script_name():
+	with patch.object(
+		ModeTestExecutor,
+		"PYTHON_TEST_SCRIPT_NAME",
+		__PYTHON_TEST_SCRIPT_NAME
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_dataset_path():
+	with patch.object(
+		ModeTestExecutor,
+		"DATASET_PATH",
+		__DATASET_PATH
 	) as mock_object:
 		yield mock_object

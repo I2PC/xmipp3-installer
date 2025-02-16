@@ -10,7 +10,10 @@ from xmipp3_installer.repository.config_vars import variables
 
 class ModeTestExecutor(ModeSyncExecutor):
 	"""Class to execute Xmipp tests."""
-	__DATASET_NAME = "xmipp_programs"
+	DATASET_NAME = "xmipp_programs"
+	PYTHON_TEST_SCRIPT_PATH = os.path.join(constants.BINARIES_PATH, "tests")
+	PYTHON_TEST_SCRIPT_NAME = "test.py"
+	DATASET_PATH = os.path.join(PYTHON_TEST_SCRIPT_PATH, 'data')
 
 	def __init__(self, context: Dict):
 		"""
@@ -25,8 +28,6 @@ class ModeTestExecutor(ModeSyncExecutor):
 		self.show = context.pop(params.PARAM_SHOW_TESTS)
 		python_home = context.pop(variables.PYTHON_HOME, None)
 		self.python_home = python_home if python_home else "python3"
-		self.tests_path = os.path.join(constants.BINARIES_PATH, 'tests')
-		self.dataset_path = os.path.join(self.tests_path, 'data')
 
 	def _sync_operation(self) -> Tuple[int, str]:
 		"""
@@ -35,7 +36,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		if os.path.isdir(self.dataset_path):
+		if os.path.isdir(self.DATASET_PATH):
 			task_message = "Updating"
 			task = "update"
 			show_output = False
@@ -45,7 +46,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 			show_output = True
 		logger(logger.blue(f"{task_message} the test files"))
 
-		args = f"{self.dataset_path} {urls.SCIPION_TESTS_URL} {self.__DATASET_NAME}"
+		args = f"{self.DATASET_PATH} {urls.SCIPION_TESTS_URL} {self.DATASET_NAME}"
 		sync_program_relative_call = os.path.join(
 			".",
 			os.path.basename(self.sync_program_path)
@@ -72,8 +73,8 @@ class ModeTestExecutor(ModeSyncExecutor):
 		logger(f" Tests to run: {', '.join(self.test_names)}")
 		
 		return shell_handler.run_shell_command(
-			f"{self.python_home} test.py {' '.join(self.test_names)} {no_cuda_str}{show_str}",
-			cwd=self.tests_path,
+			f"{self.python_home} {self.PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}",
+			cwd=self.PYTHON_TEST_SCRIPT_PATH,
 			show_output=True,
 			show_error=True
 		)
