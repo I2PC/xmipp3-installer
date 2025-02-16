@@ -18,7 +18,7 @@ class ModeConfigExecutor(mode_executor.ModeExecutor):
 		- context (dict): Dictionary containing the installation context variables.
 		"""
 		super().__init__(context)
-		self.overwrite = context.pop(params.PARAM_OVERWRITE, False)
+		self.overwrite = context.pop(params.PARAM_OVERWRITE)
 		self.config_values = {}
 	
 	def run(self) -> Tuple[int, str]:
