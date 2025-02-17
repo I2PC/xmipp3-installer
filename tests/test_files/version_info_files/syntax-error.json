@@ -1,0 +1,12 @@
+{
+  "xmipp": {
+    "version_number": "3.X.Y",
+    "version_name": "v3.X.Y-TBD",
+    "release_date": "dd/mm/yyyy"
+  },,
+  "sources": {
+    "xmippCore": {
+      "min_version": "3.25.0"
+    }
+  }
+}
