@@ -12,7 +12,7 @@ from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_get_models
-from .. import get_assertion_message, normalize_text_line_endings
+from .. import get_assertion_message, normalize_text_line_endings, TEST_FILES_DIR
 
 @pytest.mark.parametrize(
 	"__mock_sync_program_path,__mock_os_path_isdir,expected_message",
@@ -68,7 +68,7 @@ def __mock_sync_program_name():
 @pytest.fixture(autouse=True, params=[False])
 def __mock_sync_program_path(request):
 	new_value = (
-		mode_sync.TEST_FILES_DIR 
+		TEST_FILES_DIR 
 		if request.param else 
 		mode_sync_executor._SYNC_PROGRAM_PATH
 	)

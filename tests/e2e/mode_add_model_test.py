@@ -12,9 +12,9 @@ from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_add_model
-from .. import get_assertion_message
+from .. import get_assertion_message, TEST_FILES_DIR
 
-__MODEL_PATH = os.path.join(mode_sync.TEST_FILES_DIR, mode_add_model.MODEL_NAME)
+__MODEL_PATH = os.path.join(TEST_FILES_DIR, mode_add_model.MODEL_NAME)
 
 @pytest.mark.parametrize(
 	"__mock_sys_argv,__mock_sync_program_path,update,"
