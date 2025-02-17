@@ -22,6 +22,7 @@ LIBRARY_VERSIONS_FILE = os.path.join(BUILD_PATH, 'versions.txt')
 CONFIG_FILE = 'xmipp.conf'
 SCIPION_SOFTWARE_EM = os.path.join("scipionfiles", "downloads", "scipion", "software", "em")
 XMIPP_CORE_PATH = os.path.join(SOURCES_PATH, XMIPP_CORE)
+VERSION_INFO_FILE = "version-info.json"
 
 # Others
 TAIL_LOG_NCHARS = 300
