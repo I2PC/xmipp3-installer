@@ -2,11 +2,12 @@ from unittest.mock import patch, call
 
 import pytest
 
-from xmipp3_installer.repository import file_operations
+from xmipp3_installer.shared import file_operations
 
 from ... import get_assertion_message
 
 __PATHS = ['/path/to/file1', '/path/to/file2']
+__NUMBER_OF_CALLS_TEXT = "number of calls"
 
 @pytest.mark.parametrize(
 	"paths",
@@ -28,7 +29,7 @@ def test_calls_os_path_exists_for_each_path_when_deleting_paths(
 	__mock_os_path_exists.assert_has_calls(expected_calls)
 	assert (
 		len(paths) == __mock_os_path_exists.call_count
-	), get_assertion_message("number of calls", len(paths), __mock_os_path_exists.call_count)
+	), get_assertion_message(__NUMBER_OF_CALLS_TEXT, len(paths), __mock_os_path_exists.call_count)
 
 @pytest.mark.parametrize(
 	"paths",
@@ -49,7 +50,7 @@ def test_calls_isdir_when_deleting_paths_that_exist(
 	__mock_os_path_isdir.assert_has_calls(expected_calls)
 	assert (
 		len(paths) == __mock_os_path_isdir.call_count
-	), get_assertion_message("number of calls", len(paths), __mock_os_path_isdir.call_count)
+	), get_assertion_message(__NUMBER_OF_CALLS_TEXT, len(paths), __mock_os_path_isdir.call_count)
 
 @pytest.mark.parametrize(
 	"paths",
@@ -72,7 +73,7 @@ def test_calls_rmtree_when_deleting_dirs_that_exist(
 	__mock_rmtree.assert_has_calls(expected_calls)
 	assert (
 		len(paths) == __mock_rmtree.call_count
-	), get_assertion_message("number of calls", len(paths), __mock_rmtree.call_count)
+	), get_assertion_message(__NUMBER_OF_CALLS_TEXT, len(paths), __mock_rmtree.call_count)
 
 @pytest.mark.parametrize(
 	"paths",
@@ -93,7 +94,7 @@ def test_calls_os_remove_when_deleting_files_that_exist(
 	__mock_os_remove.assert_has_calls(expected_calls)
 	assert (
 		len(paths) == __mock_os_remove.call_count
-	), get_assertion_message("number of calls", len(paths), __mock_os_remove.call_count)
+	), get_assertion_message(__NUMBER_OF_CALLS_TEXT, len(paths), __mock_os_remove.call_count)
 
 def test_does_not_call_isdir_rmtree_os_remove_when_deleting_paths_that_do_not_exist(
 	__mock_os_path_exists,
