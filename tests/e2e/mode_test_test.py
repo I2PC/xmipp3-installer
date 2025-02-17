@@ -12,7 +12,7 @@ from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_test
-from .. import get_assertion_message, normalize_text_line_endings
+from .. import get_assertion_message, normalize_text_line_endings, TEST_FILES_DIR
 
 __INDIVIDUAL_TEST = "test1"
 __MULTIPLE_TESTS = f"{__INDIVIDUAL_TEST} test2 test3"
@@ -84,7 +84,7 @@ def __mock_sync_program_name():
 @pytest.fixture(autouse=True, params=[False])
 def __mock_sync_program_path(request):
 	new_value = (
-		mode_sync.TEST_FILES_DIR
+		TEST_FILES_DIR
 		if request.param else
 		mode_sync_executor._SYNC_PROGRAM_PATH
 	)
@@ -100,7 +100,7 @@ def __mock_python_test_script_path():
 	with patch.object(
 		mode_test_executor,
 		"_PYTHON_TEST_SCRIPT_PATH",
-		mode_sync.TEST_FILES_DIR
+		TEST_FILES_DIR
 	) as mock_object:
 		yield mock_object
 
@@ -115,7 +115,7 @@ def __mock_default_python_home():
 
 @pytest.fixture(autouse=True, params=[False])
 def __mock_dataset_path(request, __mock_python_test_script_path):
-	new_value = mode_sync.TEST_FILES_DIR if request.param else mode_test_executor._DATASET_PATH
+	new_value = TEST_FILES_DIR if request.param else mode_test_executor._DATASET_PATH
 	with patch.object(
 		mode_test_executor,
 		"_DATASET_PATH",

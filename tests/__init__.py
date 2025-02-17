@@ -2,6 +2,11 @@ import os
 import shutil
 from typing import Any
 
+TEST_FILES_DIR = os.path.join(
+	os.path.dirname(os.path.abspath(__file__)),
+	"test_files"
+)
+
 def get_assertion_message(item: str, expected: Any, received: Any) -> str:
 	"""
 	### Returns the assertion message for a given item and values.
@@ -72,8 +77,6 @@ def copy_file_from_reference(source_file: str, dest_file: str):
 
 def get_test_file(file_path: str):
 	return os.path.join(
-		os.path.dirname(os.path.abspath(__file__)),
-		"e2e",
-		"test_files",
+		TEST_FILES_DIR,
 		file_path
 	)
