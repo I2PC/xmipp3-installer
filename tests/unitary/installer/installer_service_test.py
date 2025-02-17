@@ -6,6 +6,7 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import installer_service, constants
 from xmipp3_installer.installer.modes import mode_selector
+from xmipp3_installer.repository import versions
 from xmipp3_installer.repository.config_vars import variables
 
 from ... import get_assertion_message
@@ -26,6 +27,17 @@ __ARGS = {
 	"variable1": "value1"
 }
 __LAST_MODIFIED = "27-11-2024 15:35.00"
+__VERSION_INFO = {
+	constants.XMIPP: {
+		versions.VERSION_NUMBER_KEY: "1.0.0",
+		versions.VERSION_NAME_KEY: "v1.0.0-Aphrodite"
+	},
+	versions.SOURCES_KEY: {
+		constants.XMIPP_CORE: {
+			versions.MIN_VERSION_KEY: "2.0.0"
+		}
+	}
+}
 
 @pytest.mark.parametrize(
 	"expected_mode",
@@ -56,9 +68,18 @@ def test_initializes_config_file_handler_when_initializing(
 	installer_service.InstallationManager({})
 	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE, show_errors=False)
 
+def test_calls_get_version_info_when_initializing(
+	__mock_mode_executors,
+	__mock_configuration_file_handler,
+	__mock_get_version_info
+):
+	installer_service.InstallationManager({})
+	__mock_get_version_info.assert_called_once_with(constants.VERSION_INFO_FILE)
+
 def test_stores_installation_context_when_initializing(
 	__mock_mode_executors,
-	__mock_configuration_file_handler
+	__mock_configuration_file_handler,
+	__mock_get_version_info
 ):
 	installation_manager = installer_service.InstallationManager(__ARGS.copy())
 	expected_args = __ARGS.copy()
@@ -66,7 +87,8 @@ def test_stores_installation_context_when_initializing(
 	expected_context = {
 		**expected_args,
 		**__mock_configuration_file_handler().values,
-		variables.LAST_MODIFIED_KEY: __mock_configuration_file_handler().last_modified
+		variables.LAST_MODIFIED_KEY: __mock_configuration_file_handler().last_modified,
+		installer_service.VERSIONS_CONTEXT_KEY: __mock_get_version_info()
 	}
 	assert (
 		installation_manager.context == expected_context
@@ -357,3 +379,11 @@ def __mock_mode_executors_interrupted(
 	__mock_mode_executors[modes.MODE_ALL]({}).run.side_effect = KeyboardInterrupt
 	__mock_mode_executors[__MODE_NAME]({}).run.side_effect = KeyboardInterrupt
 	yield __mock_mode_executors
+
+@pytest.fixture(autouse=True)
+def __mock_get_version_info():
+	with patch(
+		"xmipp3_installer.repository.versions.get_version_info"
+	) as mock_method:
+		mock_method.return_value = __VERSION_INFO
+		yield mock_method
