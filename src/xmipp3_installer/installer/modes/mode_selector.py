@@ -1,6 +1,6 @@
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes import (
-  mode_config_executor, mode_version_executor, mode_git_executor
+  mode_config_executor, mode_version_executor, mode_git_executor, mode_get_sources_executor
 )
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_all_executor, mode_clean_bin_executor
 from xmipp3_installer.installer.modes.mode_sync import (
@@ -16,7 +16,7 @@ MODE_EXECUTORS = {
   modes.MODE_CONFIG_BUILD: NotImplemented,
   modes.MODE_CONFIG: mode_config_executor.ModeConfigExecutor,
   modes.MODE_GET_MODELS: mode_get_models_executor.ModeGetModelsExecutor,
-  modes.MODE_GET_SOURCES: NotImplemented,
+  modes.MODE_GET_SOURCES: mode_get_sources_executor.ModeGetSourcesExecutor,
   modes.MODE_GIT: mode_git_executor.ModeGitExecutor,
   modes.MODE_TEST: mode_test_executor.ModeTestExecutor,
   modes.MODE_VERSION: mode_version_executor.ModeVersionExecutor
