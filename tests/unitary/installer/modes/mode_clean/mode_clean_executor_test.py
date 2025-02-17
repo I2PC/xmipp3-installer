@@ -229,7 +229,7 @@ def __mock_get_paths_to_delete(__dummy_test_mode_clean_executor, request):
 @pytest.fixture(autouse=True)
 def __mock_delete_paths():
 	with patch(
-		"xmipp3_installer.repository.file_operations.delete_paths"
+		"xmipp3_installer.shared.file_operations.delete_paths"
 	) as mock_method:
 		yield mock_method
 

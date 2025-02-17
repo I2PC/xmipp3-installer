@@ -6,7 +6,7 @@ from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger import predefined_messages
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.modes import mode_executor
-from xmipp3_installer.repository import file_operations
+from xmipp3_installer.shared import file_operations
 
 class ModeCleanExecutor(mode_executor.ModeExecutor):
 	def run(self) -> Tuple[int, str]:

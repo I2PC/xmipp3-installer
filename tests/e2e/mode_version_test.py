@@ -6,7 +6,7 @@ import pytest
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.tmp import versions
-from xmipp3_installer.repository import file_operations
+from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_version
 from .. import (

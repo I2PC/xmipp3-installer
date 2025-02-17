@@ -7,7 +7,7 @@ import pytest
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.repository import versions
-from xmipp3_installer.repository import file_operations
+from xmipp3_installer.shared import file_operations
 
 from ... import copy_file_from_reference, get_test_file, get_assertion_message
 
