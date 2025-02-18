@@ -7,9 +7,10 @@ from unittest.mock import patch
 
 import pytest
 
-from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.api_client import api_client
 from xmipp3_installer.api_client.assembler import installation_info_assembler
+from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer.handlers import versions_manager
 
 from . import shell_command_outputs, file_contents
 from ... import get_assertion_message
@@ -26,13 +27,19 @@ def test_records_api_call_when_sending_installation_attempt(
 	__mock_server
 ):
 	api_client.send_installation_attempt(
-		installation_info_assembler.get_installation_info()
+		installation_info_assembler.get_installation_info(__get_version_manager())
 	)
 	n_requests = len(__mock_server.requests)
 	assert (n_requests == 1), get_assertion_message("number of API calls", 1, n_requests)
 	assert (
 		__mock_server.requests[0].method == "POST"
 	), get_assertion_message("request method", "POST", __mock_server.requests[0].method)
+
+def __get_version_manager():
+	class DummyVersionManager(versions_manager.VersionsManager):
+		def __init__(self):
+			self.xmipp_version_number = "3.25.0"
+	return DummyVersionManager()
 
 @pytest.fixture
 def __mock_mac_address(fake_process):

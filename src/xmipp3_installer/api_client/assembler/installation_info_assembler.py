@@ -10,16 +10,16 @@ from typing import Optional, List, Dict
 import distro
 
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.handlers import shell_handler, git_handler
+from xmipp3_installer.installer.handlers import shell_handler, git_handler, versions_manager
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
 from xmipp3_installer.installer import orquestrator
-from xmipp3_installer.installer.tmp import versions
 
-def get_installation_info(ret_code: int=0) -> Optional[Dict]:
+def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> Optional[Dict]:
 	"""
 	### Creates a dictionary with the necessary data for the API POST message.
 	
 	#### Params:
+	- version_manager (VersionsManager): Object containing all the version-related info.
 	- ret_code (int): Optional. Return code for the API request.
 	
 	#### Return:
@@ -58,7 +58,9 @@ def get_installation_info(ret_code: int=0) -> Optional[Dict]:
 			"jpeg": library_versions.get(cmake_constants.CMAKE_JPEG)
 		},
 		"xmipp": {
-			"branch": __get_installation_branch_name(environment_info[1]),
+			"branch": __get_installation_branch_name(
+				environment_info[1], version_manager
+			),
 			"updated": environment_info[2],
 			"installedByScipion": environment_info[3]
 		},
@@ -78,20 +80,20 @@ def get_os_release_name() -> str:
 		return f"{distro.name()} {distro.version()}"
 	return f"{platform_system} {platform.release()}"
 
-def __get_installation_branch_name(branch_name: str) -> str:
+def __get_installation_branch_name(branch_name: str, version_manager: versions_manager.VersionsManager) -> str:
 	"""
 	### Returns the branch or release name of Xmipp.
 
 	#### Params:
 	- branch_name (str): Retrieved branch name.
+	- version_manager (VersionsManager): Object containing all the version-related info.
 
 	#### Return:
 	- (str): Release name if Xmipp is in a release branch, or the branch name otherwise.
 	"""
 	if not branch_name or branch_name == constants.MASTER_BRANCHNAME:
-		return versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]
-	else:
-		return branch_name
+		return version_manager.xmipp_version_number
+	return branch_name
 
 def __get_user_id() -> str:
 	"""
