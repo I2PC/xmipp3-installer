@@ -7,7 +7,7 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
 from xmipp3_installer.shared import file_operations
 
-from .. import get_assertion_message
+from .. import get_assertion_message, create_versions_json_file
 
 @pytest.mark.parametrize(
   "confirmation_text",
@@ -54,10 +54,12 @@ def __setup_environment():
     os.makedirs(constants.INSTALL_PATH, exist_ok=True)
     os.makedirs(constants.BUILD_PATH, exist_ok=True)
     __create_config_file()
+    create_versions_json_file()
     yield
   finally:
     file_operations.delete_paths([
       constants.XMIPP_CORE_PATH,
       constants.INSTALL_PATH,
       constants.BUILD_PATH,
+      constants.VERSION_INFO_FILE
     ])

@@ -8,11 +8,16 @@ from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.cli.arguments import modes
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
+from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_get_models
-from .. import get_assertion_message, normalize_text_line_endings, TEST_FILES_DIR
+from .. import (
+	get_assertion_message, normalize_text_line_endings,
+	TEST_FILES_DIR, create_versions_json_file
+)
 
 @pytest.mark.parametrize(
 	"__mock_sync_program_path,__mock_os_path_isdir,expected_message",
@@ -29,7 +34,8 @@ def test_get_models(
 	__mock_sync_program_path,
 	__mock_os_path_isdir,
 	expected_message,
-	__mock_stdout_stderr
+	__mock_stdout_stderr,
+	__setup_environment
 ):
 	stdout, _ = __mock_stdout_stderr
 	with pytest.raises(SystemExit):
@@ -84,3 +90,13 @@ def __mock_os_path_isdir(request):
 	with patch("os.path.isdir") as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
+
+@pytest.fixture
+def __setup_environment():
+  try:
+    create_versions_json_file()
+    yield
+  finally:
+    file_operations.delete_paths([
+      constants.VERSION_INFO_FILE
+    ])

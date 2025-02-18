@@ -7,12 +7,17 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
+from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_test
-from .. import get_assertion_message, normalize_text_line_endings, TEST_FILES_DIR
+from .. import (
+	get_assertion_message, normalize_text_line_endings,
+	TEST_FILES_DIR, create_versions_json_file
+)
 
 __INDIVIDUAL_TEST = "test1"
 __MULTIPLE_TESTS = f"{__INDIVIDUAL_TEST} test2 test3"
@@ -44,7 +49,8 @@ def test_add_model(
 	__mock_sys_argv,
 	show,
 	expected_message,
-	__mock_stdout_stderr
+	__mock_stdout_stderr,
+	__setup_environment
 ):
 	stdout, _ = __mock_stdout_stderr
 	if show:
@@ -122,3 +128,13 @@ def __mock_dataset_path(request, __mock_python_test_script_path):
 		new_value
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture
+def __setup_environment():
+  try:
+    create_versions_json_file()
+    yield
+  finally:
+    file_operations.delete_paths([
+      constants.VERSION_INFO_FILE
+    ])

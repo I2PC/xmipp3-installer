@@ -2,6 +2,8 @@ import os
 import shutil
 from typing import Any
 
+from xmipp3_installer.installer import constants
+
 TEST_FILES_DIR = os.path.join(
 	os.path.dirname(os.path.abspath(__file__)),
 	"test_files"
@@ -76,7 +78,30 @@ def copy_file_from_reference(source_file: str, dest_file: str):
 	shutil.copyfile(source_file, dest_file)
 
 def get_test_file(file_path: str):
+	"""
+	### Returns the absoulte path to a file inside the tests folder.
+
+	#### Params:
+	- file_path (str): Path to the file relative to the root of tests.
+
+	#### Returns:
+	- (str): Absolute path to the given file.
+	"""
 	return os.path.join(
 		TEST_FILES_DIR,
 		file_path
+	)
+
+def create_versions_json_file():
+	"""
+	### Generates a valid JSON versions file.
+	"""
+	copy_file_from_reference(
+		get_test_file(
+			os.path.join(
+				"version_info_files",
+				"valid.json"
+			)
+		),
+		constants.VERSION_INFO_FILE
 	)

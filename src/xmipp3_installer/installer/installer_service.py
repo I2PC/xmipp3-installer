@@ -28,7 +28,8 @@ class InstallationManager:
     self.context = {
       **args,
       **config_handler.values,
-      variables.LAST_MODIFIED_KEY: config_handler.last_modified
+      variables.LAST_MODIFIED_KEY: config_handler.last_modified,
+      VERSIONS_CONTEXT_KEY: versions_manager.VersionsManager(constants.VERSION_INFO_FILE)
     }
     self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](self.context)
 

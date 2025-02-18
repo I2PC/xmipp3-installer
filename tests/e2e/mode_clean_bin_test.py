@@ -5,10 +5,9 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.shared import file_operations
 
-from .. import get_assertion_message
+from .. import get_assertion_message, create_versions_json_file
 
 __COMPILATION_FILES_DIR = os.path.join(
   constants.SOURCES_PATH, "test_so"
@@ -97,6 +96,7 @@ def __setup_environment():
     __create_file(__DBLITE_FILE)
     os.makedirs(os.path.join(__PYCACHE_ROOT, "__pycache__"), exist_ok=True)
     os.makedirs(constants.BUILD_PATH, exist_ok=True)
+    create_versions_json_file()
     yield
   finally:
     file_operations.delete_paths([
@@ -104,5 +104,6 @@ def __setup_environment():
       os.path.join(constants.SOURCES_PATH, constants.XMIPP),
       __DBLITE_FILE,
       __PYCACHE_ROOT,
-      constants.BUILD_PATH
+      constants.BUILD_PATH,
+      constants.VERSION_INFO_FILE
     ])
