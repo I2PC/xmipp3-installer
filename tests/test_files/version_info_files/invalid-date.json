@@ -2,8 +2,8 @@
   "xmipp": {
     "version_number": "3.25.0",
     "version_name": "v3.25.0-TBD",
-    "release_date": "01/01/2000"
-  },,
+    "release_date": "dd/mm/yyyy"
+  },
   "sources": {
     "xmippCore": {
       "min_version": "3.25.0"
