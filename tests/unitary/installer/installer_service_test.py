@@ -6,7 +6,6 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import installer_service, constants
 from xmipp3_installer.installer.modes import mode_selector
-from xmipp3_installer.installer.handlers import versions_manager
 from xmipp3_installer.repository.config_vars import variables
 
 from ... import get_assertion_message
@@ -73,7 +72,7 @@ def test_stores_installation_context_when_initializing(
 		**expected_args,
 		**__mock_configuration_file_handler().values,
 		variables.LAST_MODIFIED_KEY: __mock_configuration_file_handler().last_modified,
-		installer_service.VERSIONS_CONTEXT_KEY: __mock_versions_manager()
+		constants.VERSIONS_CONTEXT_KEY: __mock_versions_manager()
 	}
 	assert (
 		installation_manager.context == expected_context
