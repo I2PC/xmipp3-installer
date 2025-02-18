@@ -153,7 +153,7 @@ def test_calls_get_success_message_when_running_executor_with_zero_exit_code_dep
 	installation_manager = installer_service.InstallationManager({})
 	installation_manager.run_installer()
 	if prints_message:
-		__mock_get_success_message.assert_called_once_with()
+		__mock_get_success_message.assert_called_once_with(__XMIP_VERSION_NUMBER)
 	else:
 		__mock_get_success_message.assert_not_called()
 
@@ -177,16 +177,23 @@ def test_calls_get_installation_info_when_running_executor_deppending_on_attribu
 	config_sends_installation_info,
 	__mock_logger_log_error,
 	__mock_logger,
-	__mock_get_installation_info
+	__mock_get_installation_info,
+	__mock_versions_manager
 ):
 	all_executor = __mock_mode_executors['all'](None)
 	all_executor.sends_installation_info = sends_installation_info
 	all_executor.run.return_value = (ret_code, "")
 	installation_manager = installer_service.InstallationManager({})
-	installation_manager.context = {__SEND_INSTALLATION_INFO_KEY: config_sends_installation_info}
+	installation_manager.context = {
+		**installation_manager.context,
+		__SEND_INSTALLATION_INFO_KEY: config_sends_installation_info
+	}
 	installation_manager.run_installer()
 	if sends_installation_info and config_sends_installation_info:
-		__mock_get_installation_info.assert_called_once_with(ret_code=ret_code)
+		__mock_get_installation_info.assert_called_once_with(
+			__mock_versions_manager(),
+			ret_code=ret_code
+		)
 	else:
 		__mock_get_installation_info.assert_not_called()
 
@@ -209,7 +216,10 @@ def test_calls_send_installation_attempt_when_running_executor_deppending_on_att
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installation_manager = installer_service.InstallationManager({})
-	installation_manager.context = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
+	installation_manager.context = {
+		**installation_manager.context,
+		__SEND_INSTALLATION_INFO_KEY: config_sends_info
+	}
 	installation_manager.run_installer()
 	if sends_info and config_sends_info:
 		__mock_send_installation_info.assert_called_once_with(__mock_get_installation_info())
@@ -236,7 +246,10 @@ def test_calls_logger_when_running_executor_deppending_on_attribute(
 ):
 	__mock_mode_executors['all'](None).sends_installation_info = sends_info
 	installation_manager = installer_service.InstallationManager({})
-	installation_manager.context = {__SEND_INSTALLATION_INFO_KEY: config_sends_info}
+	installation_manager.context = {
+		**installation_manager.context,
+		__SEND_INSTALLATION_INFO_KEY: config_sends_info
+	}
 	installation_manager.run_installer()
 	if sends_info and config_sends_info:
 		__mock_logger.assert_called_once_with("Sending anonymous installation info...")

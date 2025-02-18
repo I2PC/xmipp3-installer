@@ -4,8 +4,7 @@ import pytest
 
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.tmp import versions
-from xmipp3_installer.installer.handlers import git_handler
+from xmipp3_installer.installer.handlers import git_handler, versions_manager
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
 
 from .... import get_assertion_message
@@ -42,6 +41,7 @@ __PLATFORM_SYSTEM_LINUX = "Linux"
 __DISTRO_NAME = "Ubuntu"
 __DISTRO_VERSION = "24.04"
 __RELEASE_NAME_LINUX = f"{__DISTRO_NAME} {__DISTRO_VERSION}"
+__XMIPP_VERSION_NUMBER = "3.0.0"
 __LIBRARY_VERSIONS = {
   cmake_constants.CMAKE_CUDA: "12.2",
   cmake_constants.CMAKE_CMAKE: "3.16",
@@ -106,7 +106,7 @@ __EMPTY_INSTALLATION_INFO = {
     "jpeg": None
   },
   "xmipp": {
-    "branch": versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY],
+    "branch": __XMIPP_VERSION_NUMBER,
     "updated": None,
     "installedByScipion": None
   },
@@ -393,9 +393,9 @@ def test_returns_expected_os_release_name(
 @pytest.mark.parametrize(
   "received_branch_name,expected_branch_name",
   [
-    pytest.param(None, versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]),
-    pytest.param("", versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]),
-    pytest.param(constants.MASTER_BRANCHNAME, versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]),
+    pytest.param(None, __XMIPP_VERSION_NUMBER),
+    pytest.param("", __XMIPP_VERSION_NUMBER),
+    pytest.param(constants.MASTER_BRANCHNAME, __XMIPP_VERSION_NUMBER),
     pytest.param("devel", "devel")
   ]
 )
@@ -404,7 +404,8 @@ def test_returns_expected_installation_branch_name(
   expected_branch_name
 ):
   branch_name = installation_info_assembler.__get_installation_branch_name(
-    received_branch_name
+    received_branch_name,
+    __get_version_manager()
   )
   assert (
     branch_name == expected_branch_name
@@ -416,7 +417,7 @@ def test_calls_get_user_id_when_getting_installation_info(
   __mock_run_parallel_jobs,
   __mock_get_os_release_name
 ):
-  installation_info_assembler.get_installation_info()
+  installation_info_assembler.get_installation_info(__get_version_manager())
   __mock_get_user_id.assert_called_once_with()
 
 def test_calls_get_library_versions_from_cmake_file_when_getting_installation_info(
@@ -424,7 +425,7 @@ def test_calls_get_library_versions_from_cmake_file_when_getting_installation_in
   __mock_get_library_versions_from_cmake_file,
   __mock_run_parallel_jobs
 ):
-  installation_info_assembler.get_installation_info()
+  installation_info_assembler.get_installation_info(__get_version_manager())
   __mock_get_library_versions_from_cmake_file.assert_called_once_with(
     constants.LIBRARY_VERSIONS_FILE
   )
@@ -435,7 +436,7 @@ def test_calls_get_os_release_name_when_getting_installation_info(
   __mock_run_parallel_jobs,
   __mock_get_os_release_name
 ):
-  installation_info_assembler.get_installation_info()
+  installation_info_assembler.get_installation_info(__get_version_manager())
   __mock_get_os_release_name.assert_called_once_with()
 
 def test_calls_run_parallel_jobs_when_getting_installation_info(
@@ -443,7 +444,7 @@ def test_calls_run_parallel_jobs_when_getting_installation_info(
   __mock_get_library_versions_from_cmake_file,
   __mock_run_parallel_jobs
 ):
-  installation_info_assembler.get_installation_info()
+  installation_info_assembler.get_installation_info(__get_version_manager())
   __mock_run_parallel_jobs.assert_called_once_with(
     [
       installation_info_assembler.__get_cpu_flags,
@@ -479,10 +480,20 @@ def test_returns_expected_installation_info(
   expected_info,
   __mock_get_os_release_name
 ):
-  installation_info = installation_info_assembler.get_installation_info(ret_code=ret_code)
+  installation_info = installation_info_assembler.get_installation_info(
+    __get_version_manager(),
+    ret_code=ret_code
+  )
   assert (
     installation_info == expected_info
   ), get_assertion_message("installation information", expected_info, installation_info)
+
+def __get_version_manager():
+  version_number = __XMIPP_VERSION_NUMBER
+  class DummyVersionManager(versions_manager.VersionsManager):
+    def __init__(self):
+      self.xmipp_version_number = version_number
+  return DummyVersionManager()
 
 @pytest.fixture(params=[(0, "")])
 def __mock_run_shell_command(request):

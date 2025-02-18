@@ -59,6 +59,8 @@ class InstallationManager:
         )
       )
     if not ret_code and self.mode_executor.prints_banner_on_exit:
-      logger(predefined_messages.get_success_message())
+      logger(predefined_messages.get_success_message(
+        self.context[VERSIONS_CONTEXT_KEY].xmipp_version_number
+      ))
     return ret_code
   

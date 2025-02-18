@@ -60,7 +60,7 @@ def test_calls_is_tag_when_getting_success_message(
   __mock_is_tag,
   __mock_get_current_branch
 ):
-  predefined_messages.get_success_message()
+  predefined_messages.get_success_message(__TAG_VERSION)
   __mock_is_tag.assert_called_once_with()
 
 @pytest.mark.parametrize(
@@ -76,7 +76,7 @@ def test_calls_get_current_branch_when_getting_success_message_only_if_is_not_ta
   expected_call_number,
   __mock_get_current_branch
 ):
-  predefined_messages.get_success_message()
+  predefined_messages.get_success_message(__TAG_VERSION)
   assert (
     __mock_get_current_branch.call_count == expected_call_number
   ), get_assertion_message("get current branch call count", expected_call_number, __mock_get_current_branch.call_count)
@@ -95,7 +95,7 @@ def test_calls_logger_green_when_getting_success_message(
   __mock_get_current_branch,
   __mock_logger_green
 ):
-  predefined_messages.get_success_message()
+  predefined_messages.get_success_message(__TAG_VERSION)
   __mock_logger_green.assert_called_once_with(
     f'Xmipp {expected_release_name} has been successfully installed, enjoy it!'
   )
@@ -114,7 +114,7 @@ def test_returns_expected_success_message(
   __mock_get_current_branch,
   __mock_logger_green
 ):
-  success_message = predefined_messages.get_success_message()
+  success_message = predefined_messages.get_success_message(__TAG_VERSION)
   inner_message = f"Xmipp {expected_release_name} has been successfully installed, enjoy it!"
   line_len = len(f' {inner_message} ')
   expected_success_message = '\n'.join([
