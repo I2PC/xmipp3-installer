@@ -14,8 +14,15 @@ from .... import (
 	JSON_XMIPP_VERSION_NUMBER
 )
 
+class DummyVersionsManager:
+	def __init__(self):
+		self.xmipp_version_number = JSON_XMIPP_VERSION_NUMBER
+		self.xmipp_version_name = JSON_XMIPP_VERSION_NAME
+		self.xmipp_release_date = JSON_XMIPP_RELEASE_DATE
+
 __CONTEXT = {
-	params.PARAM_SHORT: False
+	params.PARAM_SHORT: False,
+	constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager()
 }
 __LEFT_TEXT_LEN = 5
 __DATE = "dd/mm/yyyy"
