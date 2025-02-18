@@ -490,7 +490,7 @@ def test_returns_expected_installation_info(
 
 def __get_version_manager():
   version_number = __XMIPP_VERSION_NUMBER
-  class DummyVersionManager(versions_manager.VersionsManager):
+  class DummyVersionManager():
     def __init__(self):
       self.xmipp_version_number = version_number
   return DummyVersionManager()
