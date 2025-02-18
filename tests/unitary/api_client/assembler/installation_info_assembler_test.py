@@ -30,6 +30,8 @@ __IP_ADDR_LINES = [
   "5: wlp0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
   f"\tlink/ether {__ETH_MAC_ADDRESS} brd ff:ff:ff:ff:ff:ff",
   "5: ens0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
+  f"\tlink/ether {__ETH_MAC_ADDRESS} brd ff:ff:ff:ff:ff:ff",
+  "5: eno0: <BROADCAST, MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000",
   f"\tlink/ether {__ETH_MAC_ADDRESS} brd ff:ff:ff:ff:ff:ff"
 ]
 __IP_ADDR_TEXT = '\n'.join(__IP_ADDR_LINES)
@@ -196,7 +198,7 @@ def test_calls_re_match_when_finding_mac_address_in_lines_with_valid_lines(__moc
   installation_info_assembler.__find_mac_address_in_lines(__LINES)
   __mock_re_match.assert_has_calls([
     call(
-      r"^\d+: (enp|wlp|eth|ens)\w+",
+      r"^\d+: (enp|wlp|eth|ens|eno)\w+",
       line
     ) for line in __LINES[:-1]
   ])
@@ -227,6 +229,7 @@ def test_calls_re_search_group_when_finding_mac_address_in_lines(__mock_re_match
     pytest.param(__IP_ADDR_LINES[12:14], __ETH_MAC_ADDRESS),
     pytest.param(__IP_ADDR_LINES[14:16], __ETH_MAC_ADDRESS),
     pytest.param(__IP_ADDR_LINES[16:18], __ETH_MAC_ADDRESS),
+    pytest.param(__IP_ADDR_LINES[18:], __ETH_MAC_ADDRESS),
     pytest.param(__IP_ADDR_LINES, __ETH_MAC_ADDRESS)
   ]
 )
