@@ -24,5 +24,8 @@ SCIPION_SOFTWARE_EM = os.path.join("scipionfiles", "downloads", "scipion", "soft
 XMIPP_CORE_PATH = os.path.join(SOURCES_PATH, XMIPP_CORE)
 VERSION_INFO_FILE = "version-info.json"
 
+# Context
+VERSIONS_CONTEXT_KEY = "versions"
+
 # Others
 TAIL_LOG_NCHARS = 300

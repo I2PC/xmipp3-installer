@@ -13,8 +13,6 @@ from xmipp3_installer.installer.modes import mode_selector
 from xmipp3_installer.repository import config
 from xmipp3_installer.repository.config_vars import variables
 
-VERSIONS_CONTEXT_KEY = "versions"
-
 class InstallationManager:
   def __init__(self, args: Dict):
     """
@@ -29,7 +27,7 @@ class InstallationManager:
       **args,
       **config_handler.values,
       variables.LAST_MODIFIED_KEY: config_handler.last_modified,
-      VERSIONS_CONTEXT_KEY: versions_manager.VersionsManager(constants.VERSION_INFO_FILE)
+      constants.VERSIONS_CONTEXT_KEY: versions_manager.VersionsManager(constants.VERSION_INFO_FILE)
     }
     self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](self.context)
 
@@ -54,13 +52,13 @@ class InstallationManager:
       logger("Sending anonymous installation info...")
       api_client.send_installation_attempt(
         installation_info_assembler.get_installation_info(
-          self.context[VERSIONS_CONTEXT_KEY],
+          self.context[constants.VERSIONS_CONTEXT_KEY],
           ret_code=ret_code
         )
       )
     if not ret_code and self.mode_executor.prints_banner_on_exit:
       logger(predefined_messages.get_success_message(
-        self.context[VERSIONS_CONTEXT_KEY].xmipp_version_number
+        self.context[constants.VERSIONS_CONTEXT_KEY].xmipp_version_number
       ))
     return ret_code
   
