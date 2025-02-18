@@ -5,19 +5,21 @@ import pytest
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
 from xmipp3_installer.repository.config_vars import variables
 
-from .... import get_assertion_message
+from .... import (
+	get_assertion_message, JSON_XMIPP_RELEASE_DATE, JSON_XMIPP_VERSION_NAME,
+	JSON_XMIPP_VERSION_NUMBER
+)
 
 __CONTEXT = {
 	params.PARAM_SHORT: False
 }
 __LEFT_TEXT_LEN = 5
 __DATE = "dd/mm/yyyy"
-__FIXED_DATES_SECTION_PART = f"""Release date: {versions.RELEASE_DATE}
+__FIXED_DATES_SECTION_PART = f"""Release date: {JSON_XMIPP_RELEASE_DATE}
 Compilation date: """
 __SOURCE = constants.XMIPP_CORE
 __COMMIT = "5c3a24f"
@@ -266,7 +268,7 @@ def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = True
 	version_executor.run()
-	__mock_logger.assert_called_once_with(versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY])
+	__mock_logger.assert_called_once_with(JSON_XMIPP_VERSION_NAME)
 
 @pytest.mark.parametrize(
 	"__mock_exist_sources_config_and_library_versions,__mock_is_tag,expected_title_version_type",
@@ -309,7 +311,7 @@ def test_calls_logger_when_running_executor_in_long_format(
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor.short = False
 	version_executor.run()
-	expected_title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({expected_title_version_type})"
+	expected_title = f"Xmipp {JSON_XMIPP_VERSION_NUMBER} ({expected_title_version_type})"
 
 	expected_lines = [
 		f"{logger.bold(expected_title)}\n",

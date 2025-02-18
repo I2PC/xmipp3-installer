@@ -5,19 +5,18 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_version
 from .. import (
 	get_assertion_message, copy_file_from_reference,
-	get_test_file, create_versions_json_file
+	get_test_file, create_versions_json_file, JSON_XMIPP_VERSION_NAME
 )
 
 def test_returns_short_version(__setup_evironment):
 	command_words = ["xmipp3_installer", modes.MODE_VERSION, "--short"]
 	result = subprocess.run(command_words, capture_output=True, text=True)
-	expected_version = f"{versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY]}\n"
+	expected_version = f"{JSON_XMIPP_VERSION_NAME}\n"
 	assert (
 		result.stdout == expected_version
 	), get_assertion_message("short version", expected_version, result.stdout)
@@ -75,5 +74,5 @@ def __setup_evironment(request):
 		file_operations.delete_paths([
 			constants.CONFIG_FILE,
 			constants.XMIPP_CORE_PATH,
-			constants.VERSION_INFO_FILE
+			#constants.VERSION_INFO_FILE
 		])

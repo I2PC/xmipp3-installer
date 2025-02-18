@@ -6,7 +6,6 @@ from typing import List
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
-from xmipp3_installer.installer.tmp import versions
 
 class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 	def _get_paths_to_delete(self) -> List[str]:

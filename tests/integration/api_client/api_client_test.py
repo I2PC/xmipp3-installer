@@ -10,10 +10,9 @@ import pytest
 from xmipp3_installer.api_client import api_client
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants, urls
-from xmipp3_installer.installer.handlers import versions_manager
 
 from . import shell_command_outputs, file_contents
-from ... import get_assertion_message
+from ... import get_assertion_message, JSON_XMIPP_VERSION_NUMBER
 
 def test_records_api_call_when_sending_installation_attempt(
 	__mock_mac_address,
@@ -38,7 +37,7 @@ def test_records_api_call_when_sending_installation_attempt(
 def __get_version_manager():
 	class DummyVersionManager():
 		def __init__(self):
-			self.xmipp_version_number = "3.25.0"
+			self.xmipp_version_number = JSON_XMIPP_VERSION_NUMBER
 	return DummyVersionManager()
 
 @pytest.fixture

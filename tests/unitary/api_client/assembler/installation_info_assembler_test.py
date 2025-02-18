@@ -4,7 +4,7 @@ import pytest
 
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.handlers import git_handler, versions_manager
+from xmipp3_installer.installer.handlers import git_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
 
 from .... import get_assertion_message

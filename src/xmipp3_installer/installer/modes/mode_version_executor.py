@@ -6,8 +6,7 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes import mode_executor
-from xmipp3_installer.installer.tmp import versions
-from xmipp3_installer.installer.handlers import git_handler
+from xmipp3_installer.installer.handlers import git_handler, versions_manager
 from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.repository.config_vars import variables
 
@@ -26,6 +25,10 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		config_exists = os.path.exists(constants.CONFIG_FILE)
 		self.version_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
 		self.is_configured = config_exists and self.version_file_exists
+		versions: versions_manager.VersionsManager = context[constants.VERSIONS_CONTEXT_KEY]
+		self.xmipp_version_number = versions.xmipp_version_number
+		self.xmipp_version_name = versions.xmipp_version_name
+		self.release_date = versions.xmipp_release_date
 	
 	def run(self) -> Tuple[int, str]:
 		"""
@@ -34,10 +37,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error.
 		"""
-		installation_info = (
-			versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY]
-			if self.short else self.__get_long_version()
-		)
+		installation_info =  self.xmipp_version_name if self.short else self.__get_long_version()
 		logger(installation_info)
 		return 0, ""
 
@@ -50,7 +50,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		"""
 		installation_info_lines = []
 		version_type = 'release' if git_handler.is_tag() else git_handler.get_current_branch()
-		title = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({version_type})"
+		title = f"Xmipp {self.xmipp_version_number} ({version_type})"
 		installation_info_lines.append(f"{logger.bold(title)}\n")
 		installation_info_lines.append(self.__get_dates_section())
 		system_version_left_text = self.__add_padding_spaces("System version: ")
@@ -69,7 +69,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (str): Dates related message section.
 		"""
-		dates_section = f"{self.__add_padding_spaces('Release date: ')}{versions.RELEASE_DATE}\n"
+		dates_section = f"{self.__add_padding_spaces('Release date: ')}{self.release_date}\n"
 		dates_section += f"{self.__add_padding_spaces('Compilation date: ')}"
 		last_modified = self.context.get(variables.LAST_MODIFIED_KEY)
 		dates_section += last_modified if last_modified else '-'

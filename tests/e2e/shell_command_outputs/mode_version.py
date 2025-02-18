@@ -1,10 +1,10 @@
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.tmp import versions
 from xmipp3_installer.installer.handlers import git_handler
 
-__TITLE = f"Xmipp {versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]} ({git_handler.get_current_branch()})"
+from ... import JSON_XMIPP_VERSION_NUMBER, JSON_XMIPP_RELEASE_DATE
+
+__TITLE = f"Xmipp {JSON_XMIPP_VERSION_NUMBER} ({git_handler.get_current_branch()})"
 __DATE = "10-12-2024 17:26.33"
 
 __SOURCE_NOT_FOUND_MESSAGE = logger.yellow("Not found")
@@ -24,13 +24,13 @@ Java:                    17.0.13"""
 
 __COMMON_SECTION_NO_CONFIG = f"""{logger.bold(__TITLE)}
 
-Release date:            {versions.RELEASE_DATE}
+Release date:            {JSON_XMIPP_RELEASE_DATE}
 Compilation date:        -
 System version:          {installation_info_assembler.get_os_release_name()}"""
 
 __COMMON_SECTION_WITH_CONFIG = f"""{logger.bold(__TITLE)}
 
-Release date:            {versions.RELEASE_DATE}
+Release date:            {JSON_XMIPP_RELEASE_DATE}
 Compilation date:        {__DATE}
 System version:          {installation_info_assembler.get_os_release_name()}"""
 
