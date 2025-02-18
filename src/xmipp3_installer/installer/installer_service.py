@@ -6,10 +6,11 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.handlers import versions_manager
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.application.logger import predefined_messages
 from xmipp3_installer.installer.modes import mode_selector
-from xmipp3_installer.repository import config, versions
+from xmipp3_installer.repository import config
 from xmipp3_installer.repository.config_vars import variables
 
 VERSIONS_CONTEXT_KEY = "versions"
@@ -27,8 +28,7 @@ class InstallationManager:
     self.context = {
       **args,
       **config_handler.values,
-      variables.LAST_MODIFIED_KEY: config_handler.last_modified,
-      VERSIONS_CONTEXT_KEY: versions.get_version_info(constants.VERSION_INFO_FILE)
+      variables.LAST_MODIFIED_KEY: config_handler.last_modified
     }
     self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](self.context)
 
@@ -57,3 +57,4 @@ class InstallationManager:
     if not ret_code and self.mode_executor.prints_banner_on_exit:
       logger(predefined_messages.get_success_message())
     return ret_code
+  
