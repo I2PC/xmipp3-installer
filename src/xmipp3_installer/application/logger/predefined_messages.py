@@ -1,7 +1,5 @@
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.handlers import git_handler
-from xmipp3_installer.installer.tmp import versions
 
 __SECTION_MESSAGE_LEN = 60
 
@@ -45,14 +43,16 @@ def get_section_message(text: str) -> str:
 	initial_dashes = ''.join(['-' for _ in range(n_initial_dashes)])
 	return f"{initial_dashes} {text} {final_dashes}"
 
-def get_success_message() -> str:
+def get_success_message(tag_version: str) -> str:
 	"""
 	### Returns the message shown when Xmipp is compiled successfully.
+
+	#### Params:
+	- tag_version (str): Version number of the latest release.
 	
 	#### Returms:
 	- (str): Success message.
 	"""
-	tag_version = versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERSION_KEY]
 	release_name = tag_version if git_handler.is_tag() else git_handler.get_current_branch()
 
 	box_wrapper = '*  *'
