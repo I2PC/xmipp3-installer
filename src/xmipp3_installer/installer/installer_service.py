@@ -53,7 +53,10 @@ class InstallationManager:
     ):
       logger("Sending anonymous installation info...")
       api_client.send_installation_attempt(
-        installation_info_assembler.get_installation_info(ret_code=ret_code)
+        installation_info_assembler.get_installation_info(
+          self.context[VERSIONS_CONTEXT_KEY],
+          ret_code=ret_code
+        )
       )
     if not ret_code and self.mode_executor.prints_banner_on_exit:
       logger(predefined_messages.get_success_message())
