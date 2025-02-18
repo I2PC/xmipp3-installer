@@ -103,7 +103,7 @@ def create_versions_json_file():
 	copy_file_from_reference(
 		get_test_file(
 			os.path.join(
-				"version_info_files",
+				"version-info-files",
 				"valid.json"
 			)
 		),

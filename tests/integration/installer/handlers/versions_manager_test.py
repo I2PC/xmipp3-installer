@@ -54,7 +54,7 @@ def __setup_environment(request):
       copy_file_from_reference(
         get_test_file(
           os.path.join(
-            "version_info_files",
+            "version-info-files",
             file_name
           )
         ),
