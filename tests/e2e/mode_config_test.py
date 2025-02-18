@@ -11,7 +11,7 @@ from xmipp3_installer.shared import file_operations
 
 from .. import (
 	get_file_content, normalize_file_line_endings,
-	get_test_file, copy_file_from_reference
+	get_test_file, copy_file_from_reference, create_versions_json_file
 )
 
 __DATE = "10-12-2024 17:26.33"
@@ -75,6 +75,7 @@ def __change_config_file_date():
 def __setup_config_evironment(request):
 	exists, copy_name = request.param
 	try:
+		create_versions_json_file()
 		if not exists:
 			file_operations.delete_paths([constants.CONFIG_FILE, copy_name])
 		else:
@@ -84,4 +85,8 @@ def __setup_config_evironment(request):
 			)
 		yield copy_name
 	finally:
-		file_operations.delete_paths([constants.CONFIG_FILE, copy_name])
+		file_operations.delete_paths([
+			constants.CONFIG_FILE,
+			copy_name,
+			constants.VERSION_INFO_FILE
+		])

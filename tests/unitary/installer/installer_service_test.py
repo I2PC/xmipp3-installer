@@ -27,6 +27,10 @@ __ARGS = {
 	"variable1": "value1"
 }
 __LAST_MODIFIED = "27-11-2024 15:35.00"
+__XMIP_VERSION_NUMBER = "3.X.Y"
+__XMIP_VERSION_NAME = "v3.X.Y-TBD"
+__XMIP_RELEASE_DATE = "18-02-2025 15:35.00"
+__XMIPP_CORE_MIN_VERSION = "3.Y.Z"
 
 @pytest.mark.parametrize(
 	"expected_mode",
@@ -59,7 +63,8 @@ def test_initializes_config_file_handler_when_initializing(
 
 def test_stores_installation_context_when_initializing(
 	__mock_mode_executors,
-	__mock_configuration_file_handler
+	__mock_configuration_file_handler,
+	__mock_versions_manager
 ):
 	installation_manager = installer_service.InstallationManager(__ARGS.copy())
 	expected_args = __ARGS.copy()
@@ -67,7 +72,8 @@ def test_stores_installation_context_when_initializing(
 	expected_context = {
 		**expected_args,
 		**__mock_configuration_file_handler().values,
-		variables.LAST_MODIFIED_KEY: __mock_configuration_file_handler().last_modified
+		variables.LAST_MODIFIED_KEY: __mock_configuration_file_handler().last_modified,
+		installer_service.VERSIONS_CONTEXT_KEY: __mock_versions_manager()
 	}
 	assert (
 		installation_manager.context == expected_context
@@ -358,3 +364,14 @@ def __mock_mode_executors_interrupted(
 	__mock_mode_executors[modes.MODE_ALL]({}).run.side_effect = KeyboardInterrupt
 	__mock_mode_executors[__MODE_NAME]({}).run.side_effect = KeyboardInterrupt
 	yield __mock_mode_executors
+
+@pytest.fixture(autouse=True)
+def __mock_versions_manager():
+	with patch(
+		"xmipp3_installer.installer.handlers.versions_manager.VersionsManager"
+	) as mock_class:
+		mock_class.return_value.xmipp_version_number = __XMIP_VERSION_NUMBER
+		mock_class.return_value.xmipp_version_name = __XMIP_VERSION_NAME
+		mock_class.return_value.xmipp_release_date = __XMIP_RELEASE_DATE
+		mock_class.return_value.xmipp_core_min_version = __XMIPP_CORE_MIN_VERSION
+		yield mock_class

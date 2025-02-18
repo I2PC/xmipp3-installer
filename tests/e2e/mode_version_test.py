@@ -10,10 +10,11 @@ from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_version
 from .. import (
-	get_assertion_message, copy_file_from_reference, get_test_file
+	get_assertion_message, copy_file_from_reference,
+	get_test_file, create_versions_json_file
 )
 
-def test_returns_short_version():
+def test_returns_short_version(__setup_evironment):
 	command_words = ["xmipp3_installer", modes.MODE_VERSION, "--short"]
 	result = subprocess.run(command_words, capture_output=True, text=True)
 	expected_version = f"{versions.XMIPP_VERSIONS[constants.XMIPP][versions.VERNAME_KEY]}\n"
@@ -47,10 +48,11 @@ def __delete_library_versions_file():
 		[os.path.dirname(constants.LIBRARY_VERSIONS_FILE)]
 	)
 
-@pytest.fixture(params=[False, False, False])
+@pytest.fixture(params=[(False, False)])
 def __setup_evironment(request):
 	config_done, sources_exist = request.param
 	try:
+		create_versions_json_file()
 		if not config_done:
 			__delete_library_versions_file()
 			file_operations.delete_paths([constants.CONFIG_FILE])
@@ -70,4 +72,8 @@ def __setup_evironment(request):
 		yield config_done, sources_exist
 	finally:
 		__delete_library_versions_file()
-		file_operations.delete_paths([constants.CONFIG_FILE, constants.XMIPP_CORE_PATH])
+		file_operations.delete_paths([
+			constants.CONFIG_FILE,
+			constants.XMIPP_CORE_PATH,
+			constants.VERSION_INFO_FILE
+		])

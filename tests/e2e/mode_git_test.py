@@ -8,7 +8,7 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_git
-from .. import get_assertion_message
+from .. import get_assertion_message, create_versions_json_file
 
 __XMIPP_PATH = os.path.join(constants.SOURCES_PATH, constants.XMIPP)
 
@@ -37,6 +37,7 @@ def test_returns_returns_expected_git_command_output(
 def __setup_evironment(request):
 	xmipp_exists, xmipp_core_exists = request.param
 	try:
+		create_versions_json_file()
 		if not xmipp_exists:
 			file_operations.delete_paths([__XMIPP_PATH])
 		else:
@@ -47,4 +48,8 @@ def __setup_evironment(request):
 			os.makedirs(constants.XMIPP_CORE_PATH, exist_ok=True)
 		yield xmipp_exists, xmipp_core_exists
 	finally:
-		file_operations.delete_paths([__XMIPP_PATH, constants.XMIPP_CORE_PATH])
+		file_operations.delete_paths([
+			__XMIPP_PATH,
+			constants.XMIPP_CORE_PATH,
+			constants.VERSION_INFO_FILE
+		])

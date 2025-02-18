@@ -8,11 +8,13 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
+from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_add_model
-from .. import get_assertion_message, TEST_FILES_DIR
+from .. import get_assertion_message, TEST_FILES_DIR, create_versions_json_file
 
 __MODEL_PATH = os.path.join(TEST_FILES_DIR, mode_add_model.MODEL_NAME)
 
@@ -37,7 +39,8 @@ def test_add_model(
 	update,
 	__mock_sys_stdin,
 	expected_message,
-	__mock_stdout_stderr
+	__mock_stdout_stderr,
+	__setup_environment
 ):
 	stdout, _ = __mock_stdout_stderr
 	if update:
@@ -91,3 +94,13 @@ def __mock_sync_program_path(request):
 		new_value
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture
+def __setup_environment():
+  try:
+    create_versions_json_file()
+    yield
+  finally:
+    file_operations.delete_paths([
+      constants.VERSION_INFO_FILE
+    ])
