@@ -114,6 +114,22 @@ def test_sets_is_configured_values_as_expected_when_initializing(__mock_exists_i
 		version_executor.is_configured == expected_is_configured
 	), get_assertion_message("is configured values", expected_is_configured, version_executor.is_configured)
 
+def test_sets_version_values_as_expected_when_initializing():
+	version_executor = ModeVersionExecutor(__CONTEXT.copy())
+	values = (
+		version_executor.xmipp_version_name,
+		version_executor.xmipp_version_number,
+		version_executor.release_date
+	)
+	expected_values = (
+		JSON_XMIPP_VERSION_NAME,
+		JSON_XMIPP_VERSION_NUMBER,
+		JSON_XMIPP_RELEASE_DATE
+	)
+	assert (
+		values == expected_values
+	), get_assertion_message("stored version values", expected_values, values)
+
 def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
 	base_executor = __dummy_test_mode_executor(__CONTEXT.copy())
 	base_executor.run()  # To cover dummy implementation execution
