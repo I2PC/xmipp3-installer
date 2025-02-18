@@ -1,0 +1,99 @@
+import json
+from datetime import datetime
+from typing import Dict, List
+
+from xmipp3_installer.installer import constants
+from xmipp3_installer.shared import singleton
+
+class VersionsManager(singleton.Singleton):
+  def __init__(self, version_file_path: str):
+    """
+    ### Constructor.
+    
+    Initializes the version manager by reading and validating version information from a JSON file.
+
+    #### Params:
+    - version_file_path (str): Path to the JSON file containing version information.
+
+    #### Raises:
+    - ValueError: If version numbers don't follow semver format (x.y.z) or release date isn't dd/mm/yyyy.
+    """
+    super().__init__()
+    self.version_file_path = version_file_path
+    version_info = self.__get_version_info()
+    self.xmipp_version_number = version_info[constants.XMIPP]["version_number"]
+    self.xmipp_version_name = version_info[constants.XMIPP]["version_name"]
+    self.xmipp_release_date = version_info[constants.XMIPP]["release_date"]
+    self.xmipp_core_min_version = version_info["sources"][constants.XMIPP_CORE]["min_version"]
+    self.__validate_fields()
+
+  def __get_version_info(self) -> Dict[str, str]:
+    """
+    ### Retrieves the version info from the version information JSON file.
+
+    #### Returns:
+    - (dict(str, str)): Dictionary containing the parsed values.
+    """
+    with open(self.version_file_path) as json_data:
+      version_info = json.load(json_data)
+    return version_info
+  
+  def __validate_fields(self):
+    """
+    ### Validates version numbers and release date format.
+    
+    Checks that:
+    - Version numbers follow semantic versioning (x.y.z)
+    - Release date follows dd/mm/yyyy format
+
+    #### Raises:
+    - ValueError: If any field doesn't match its required format.
+    """
+    self.__validate_version_numbers()
+    self.__validate_release_date()
+
+  def __validate_version_numbers(self):
+    """
+    ### Validates that version numbers follow semantic versioning format.
+    
+    Checks that version numbers are in x.y.z format where x, y, z are integers.
+
+    #### Raises:
+    - ValueError: If any version number doesn't follow the required format.
+    """
+    for version in [self.xmipp_version_number, self.xmipp_core_min_version]:
+      parts = version.split('.')
+      if not self.__is_valid_semver(parts):
+        raise ValueError(
+          f"Version number '{version}' is invalid. Must be three numbers separated by dots (x.y.z)."
+        )
+
+  def __is_valid_semver(self, version_parts: List[str]) -> bool:
+    """
+    ### Checks if version parts constitute a valid semantic version.
+    
+    #### Params:
+    - version_parts (list(str)): List of strings representing version number parts.
+
+    #### Returns:
+    - (bool): True if version follows semver format, False otherwise.
+    """
+    return len(version_parts) == 3 and all(part.isdigit() for part in version_parts)
+
+  def __validate_release_date(self):
+    """
+    ### Validates that release date follows dd/mm/yyyy format.
+    
+    Checks that:
+    - Date string follows dd/mm/yyyy format
+    - Date is a valid calendar date
+
+    #### Raises:
+    - ValueError: If release date doesn't follow the required format or is invalid.
+    """
+    try:
+      datetime.strptime(self.xmipp_release_date, "%d/%m/%Y")
+    except ValueError:
+      raise ValueError(
+        f"Release date '{self.xmipp_release_date}' is invalid. Must be in dd/mm/yyyy format."
+      )
