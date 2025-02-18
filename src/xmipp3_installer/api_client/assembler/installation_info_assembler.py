@@ -160,11 +160,11 @@ def __find_mac_address_in_lines(lines: List[str]) -> Optional[str]:
 	"""
 	for line_index in range(len(lines) - 1):
 		line = lines[line_index]
-		match = re.match(r"^\d+: (enp|wlp|eth|ens)\w+", line)
+		match = re.match(r"^\d+: (enp|wlp|eth|ens|eno)\w+", line)
 		if not match:
 			continue
 		interface_name = match.group(1)
-		if interface_name.startswith(('enp', 'wlp', 'eth', 'ens')):
+		if interface_name.startswith(('enp', 'wlp', 'eth', 'ens', 'eno')):
 			return re.search(
 				r"link/ether ([0-9a-f:]{17})",
 				lines[line_index + 1]
