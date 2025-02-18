@@ -56,7 +56,7 @@ def test_writes_expected_config_file(
 def __get_test_config_file(file_name, input):
 	return get_test_file(
 		os.path.join(
-			"conf_files",
+			"conf-files",
 			"input" if input else "output",
 			file_name
 		)

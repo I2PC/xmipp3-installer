@@ -61,7 +61,7 @@ def __setup_evironment(request):
 				constants.LIBRARY_VERSIONS_FILE
 			)
 			copy_file_from_reference(
-				get_test_file(os.path.join("conf_files", "input", "default.conf")),
+				get_test_file(os.path.join("conf-files", "input", "default.conf")),
 				constants.CONFIG_FILE
 			)
 		if not sources_exist:
