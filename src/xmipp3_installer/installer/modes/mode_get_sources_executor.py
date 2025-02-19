@@ -38,7 +38,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 		if (
 			current_branch and
 			current_branch != constants.MASTER_BRANCHNAME and
-			current_branch != constants.TAG_BRANCH_NAME
+			current_branch != self.xmipp_tag_name
 		):
 			tag_name = ""
 		clone_branch = git_handler.get_clonable_branch("", self.target_branch, tag_name)
