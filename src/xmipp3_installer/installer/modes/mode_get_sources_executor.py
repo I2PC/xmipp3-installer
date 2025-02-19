@@ -1,4 +1,3 @@
-import os
 from typing import Dict, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
@@ -6,7 +5,7 @@ from xmipp3_installer.application.logger import predefined_messages
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes import mode_executor
-from xmipp3_installer.installer.handlers import git_handler
+from xmipp3_installer.installer.handlers import git_handler, versions_manager
 
 class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 	def __init__(self, context: Dict, substitute: bool=False):
@@ -20,6 +19,8 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 		super().__init__(context)
 		self.substitute = substitute
 		self.target_branch = context.pop(params.PARAM_BRANCH)
+		versions: versions_manager.VersionsManager = context[constants.VERSIONS_CONTEXT_KEY]
+		self.xmipp_tag_name = versions.xmipp_version_name
 	
 	def run(self) -> Tuple[int, str]:
 		"""
