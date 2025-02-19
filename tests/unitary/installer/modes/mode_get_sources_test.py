@@ -26,9 +26,15 @@ def test_stores_expected_values_when_initializing():
     values == expected_values
   ), get_assertion_message("stored values", expected_values, values)
 
-def test_raises_key_error_if_branch_not_present_in_context_when_initializing():
+@pytest.mark.parametrize(
+  "variable_key",
+  [pytest.param(params.PARAM_BRANCH), pytest.param(constants.VERSIONS_CONTEXT_KEY)]
+)
+def test_raises_key_error_if_variable_not_present_in_context_when_initializing(
+  variable_key
+):
   context = __CONTEXT.copy()
-  del context[params.PARAM_BRANCH]
+  del context[variable_key]
   with pytest.raises(KeyError):
     ModeGetSourcesExecutor(context)
 
