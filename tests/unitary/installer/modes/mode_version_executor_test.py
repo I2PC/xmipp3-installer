@@ -9,16 +9,11 @@ from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
 from xmipp3_installer.repository.config_vars import variables
 
+from ... import DummyVersionsManager
 from .... import (
-	get_assertion_message, JSON_XMIPP_RELEASE_DATE, JSON_XMIPP_VERSION_NAME,
-	JSON_XMIPP_VERSION_NUMBER
+	get_assertion_message, JSON_XMIPP_RELEASE_DATE,
+	JSON_XMIPP_VERSION_NAME, JSON_XMIPP_VERSION_NUMBER
 )
-
-class DummyVersionsManager:
-	def __init__(self):
-		self.xmipp_version_number = JSON_XMIPP_VERSION_NUMBER
-		self.xmipp_version_name = JSON_XMIPP_VERSION_NAME
-		self.xmipp_release_date = JSON_XMIPP_RELEASE_DATE
 
 __CONTEXT = {
 	params.PARAM_SHORT: False,

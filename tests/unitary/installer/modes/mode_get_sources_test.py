@@ -4,11 +4,8 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.modes.mode_get_sources_executor import ModeGetSourcesExecutor
 
+from ... import DummyVersionsManager
 from .... import JSON_XMIPP_VERSION_NAME, get_assertion_message
-
-class DummyVersionsManager:
-  def __init__(self):
-    self.xmipp_version_name = JSON_XMIPP_VERSION_NAME
 
 __CONTEXT = {
   params.PARAM_BRANCH: constants.DEVEL_BRANCHNAME,
