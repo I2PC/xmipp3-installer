@@ -21,6 +21,7 @@ run_tests() {
     local conffile=$3
 
     echo "Running ${test_type} tests..."
+    chmod +x $ROOT_DIR/tests/test_files/*.py
     python -m pytest -v --cache-clear --cov --cov-config=$rcfile -c=$conffile --rootdir="${ROOT_DIR}" --junitxml=report.xml --cov-report term
     PYTEST_EXIT_CODE=$?
     if [ $PYTEST_EXIT_CODE -ne 0 ]; then
