@@ -102,5 +102,6 @@ def __setup_environment():
     yield
   finally:
     file_operations.delete_paths([
-      constants.VERSION_INFO_FILE
+      constants.VERSION_INFO_FILE,
+	  	f"xmipp_model_{mode_add_model.MODEL_NAME}.tgz"
     ])
