@@ -14,7 +14,10 @@ from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_add_model
-from .. import get_assertion_message, TEST_FILES_DIR, create_versions_json_file
+from .. import (
+	get_assertion_message, TEST_FILES_DIR,
+	create_versions_json_file, get_test_file
+)
 
 __MODEL_PATH = os.path.join(TEST_FILES_DIR, mode_add_model.MODEL_NAME)
 
@@ -103,5 +106,5 @@ def __setup_environment():
   finally:
     file_operations.delete_paths([
       constants.VERSION_INFO_FILE,
-	  	f"xmipp_model_{mode_add_model.MODEL_NAME}.tgz"
+	  	get_test_file(f"xmipp_model_{mode_add_model.MODEL_NAME}.tgz")
     ])
