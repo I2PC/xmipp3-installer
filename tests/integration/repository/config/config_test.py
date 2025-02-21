@@ -1,9 +1,12 @@
 import os
 import tempfile
+from typing import List
 from unittest.mock import patch, Mock
 
 import pytest
 
+from xmipp3_installer.installer import constants
+from xmipp3_installer.repository.config_vars import variables
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 
 from . import file_content
@@ -20,6 +23,7 @@ def test_writes_default_config_when_there_is_no_config_file(
 	config_file_content = ''.join(
 		config_handler._ConfigurationFileHandler__get_file_content()
 	).split("\n")
+	config_file_content = __change_config_cmake_path(config_file_content)
 	assert (
 		config_file_content == file_content.DEFAULT_FILE_LINES
 	), get_assertion_message(
@@ -47,6 +51,7 @@ def test_writes_unkown_variables_to_config_when_unkown_variables_are_added_to_va
 		"",
 		*file_content.LAST_MODIFIED_LINES
 	]
+	config_file_content = __change_config_cmake_path(config_file_content)
 	assert (
 		config_file_content == expected_file_content
 	), get_assertion_message(
@@ -69,6 +74,7 @@ def test_writes_modified_variables_to_config_when_some_variable_values_are_chang
 	expected_file_content = '\n'.join(
 		file_content.DEFAULT_FILE_LINES
 	).replace(f"{modified_key}=ON", f"{modified_key}=OFF").split("\n")
+	config_file_content = __change_config_cmake_path(config_file_content)
 	assert (
 		config_file_content == expected_file_content
 	), get_assertion_message(
@@ -104,6 +110,14 @@ def test_returns_file_stored_last_modification_date_when_there_is_no_value_store
 		__mock_datetime_strftime.today().strftime(),
 		stored_date
 	)
+
+def __change_config_cmake_path(content_lines: List[str]):
+	new_lines = []
+	for line in content_lines:
+		if line.startswith(variables.PREFIX_PATH):
+			line = f"{variables.PREFIX_PATH}="
+		new_lines.append(line)
+	return new_lines
 
 @pytest.fixture
 def __mock_config_file():

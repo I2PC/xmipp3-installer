@@ -6,6 +6,7 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
+from xmipp3_installer.repository.config_vars import variables
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 from xmipp3_installer.shared import file_operations
 
@@ -40,6 +41,7 @@ def test_writes_expected_config_file(
 		command_words.append("-o")
 	subprocess.run(command_words, stdout=subprocess.PIPE)
 	__change_config_file_date()
+	__change_config_cmake_path()
 	copy_file_from_reference(
 		__get_test_config_file(expected_file, False),
 		__setup_config_evironment
@@ -65,10 +67,20 @@ def __get_test_config_file(file_name, input):
 def __change_config_file_date():
 	file_hanlder = ConfigurationFileHandler()
 	old_date = file_hanlder.get_config_date()
-	with open(constants.CONFIG_FILE) as config_file:
-		content = config_file.read()
+	content = get_file_content(constants.CONFIG_FILE)
 	with open(constants.CONFIG_FILE, 'w') as config_file:
 		content = content.replace(old_date, __DATE)
+		config_file.write(content)
+
+def __change_config_cmake_path():
+	content = get_file_content(constants.CONFIG_FILE)
+	new_content_lines = []
+	for line in content.split("\n"):
+		if line.startswith(variables.PREFIX_PATH):
+			line = f"{variables.PREFIX_PATH}="
+		new_content_lines.append(line)
+	content = "\n".join(new_content_lines)
+	with open(constants.CONFIG_FILE, 'w') as config_file:
 		config_file.write(content)
 
 @pytest.fixture(params=[(False, "default.conf")])
