@@ -80,7 +80,7 @@ def __mock_get_cpu_flags(fake_process):
 def __mock_get_current_branch(fake_process):
 	fake_process.register_subprocess(
 		shlex.split("git rev-parse --abbrev-ref HEAD"),
-		stdout="master",
+		stdout=constants.MASTER_BRANCHNAME,
 		occurrences=2
 	)
 	yield fake_process
@@ -90,11 +90,11 @@ def __mock_is_branch_up_to_date(fake_process):
 	commit = "d46d18c25cb689eee68e412e4d3854cab6d3d065"
 	fake_process.register_subprocess(shlex.split("git fetch"))
 	fake_process.register_subprocess(
-		shlex.split(f"git rev-parse master"),
+		shlex.split(f"git rev-parse {constants.MASTER_BRANCHNAME}"),
 		stdout=commit
 	)
 	fake_process.register_subprocess(
-		shlex.split(f"git rev-parse origin/master"),
+		shlex.split(f"git rev-parse origin/{constants.MASTER_BRANCHNAME}"),
 		stdout=commit
 	)
 	yield fake_process
