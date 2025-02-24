@@ -5,6 +5,7 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_version
@@ -65,14 +66,14 @@ def __setup_evironment(request):
 				constants.CONFIG_FILE
 			)
 		if not sources_exist:
-			file_operations.delete_paths([constants.XMIPP_CORE_PATH])
+			file_operations.delete_paths([paths.get_source_path(constants.XMIPP_CORE)])
 		else:
-			os.makedirs(constants.XMIPP_CORE_PATH, exist_ok=True)
+			os.makedirs(paths.get_source_path(constants.XMIPP_CORE), exist_ok=True)
 		yield config_done, sources_exist
 	finally:
 		__delete_library_versions_file()
 		file_operations.delete_paths([
 			constants.CONFIG_FILE,
-			constants.XMIPP_CORE_PATH,
+			paths.get_source_path(constants.XMIPP_CORE),
 			constants.VERSION_INFO_FILE
 		])

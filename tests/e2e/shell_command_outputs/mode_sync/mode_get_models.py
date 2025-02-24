@@ -2,12 +2,13 @@ import os
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer.constants import paths
 
 from .. import mode_sync
 from ....test_files import xmipp_sync_data
 from .... import TEST_FILES_DIR
 
-REAL_MODELS_DIR = os.path.join(constants.SOURCES_PATH, constants.XMIPP, "models")
+REAL_MODELS_DIR = os.path.join(paths.SOURCES_PATH, constants.XMIPP, "models")
 FAKE_SYNC_PROGRAM_FULL_PATH = os.path.join(TEST_FILES_DIR, mode_sync.SYNC_PROGRAM_NAME)
 
 DOWNLOAD = '\n'.join([

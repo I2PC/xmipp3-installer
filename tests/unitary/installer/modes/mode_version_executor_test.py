@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch, call
 
 import pytest
@@ -5,6 +6,7 @@ import pytest
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
 from xmipp3_installer.repository.config_vars import variables
@@ -49,6 +51,7 @@ __LIBRARIES_WITH_VERSION_SECTION = '\n'.join([
 	f"{library}: {version}"
 	for library, version in __LIBRARIES_WITH_VERSIONS.items()
 ])
+__XMIPP_CORE_PATH = paths.get_source_path(constants.XMIPP_CORE)
 
 def test_implements_interface_mode_executor():
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
@@ -220,7 +223,7 @@ def test_calls_get_current_commit_when_getting_source_info(
 ):
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
-	__mock_get_current_commit.assert_called_once_with(dir=constants.XMIPP_CORE_PATH)
+	__mock_get_current_commit.assert_called_once_with(dir=__XMIPP_CORE_PATH)
 
 def test_calls_get_commit_branch_when_getting_source_info(
 	__mock_add_padding_spaces,
@@ -234,7 +237,7 @@ def test_calls_get_commit_branch_when_getting_source_info(
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
 	__mock_get_commit_branch.assert_called_once_with(
 		__mock_get_current_commit.return_value,
-		dir=constants.XMIPP_CORE_PATH
+		dir=__XMIPP_CORE_PATH
 	)
 
 def test_calls_get_current_branch_when_getting_source_info(
@@ -247,7 +250,7 @@ def test_calls_get_current_branch_when_getting_source_info(
 ):
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
-	__mock_get_current_branch.assert_called_once_with(dir=constants.XMIPP_CORE_PATH)
+	__mock_get_current_branch.assert_called_once_with(dir=__XMIPP_CORE_PATH)
 
 def test_calls_is_tag_when_getting_source_info(
 	__mock_add_padding_spaces,
@@ -259,7 +262,7 @@ def test_calls_is_tag_when_getting_source_info(
 ):
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_xmipp_core_info()
-	__mock_is_tag.assert_called_once_with(dir=constants.XMIPP_CORE_PATH)
+	__mock_is_tag.assert_called_once_with(dir=__XMIPP_CORE_PATH)
 
 @pytest.mark.parametrize(
 	"__mock_exists,__mock_is_tag,expected_info_right",
@@ -347,7 +350,7 @@ def test_calls_logger_when_running_executor_in_long_format(
 	if (
 		not __mock_exist_sources_config_and_library_versions(constants.LIBRARY_VERSIONS_FILE) or
 		not __mock_exist_sources_config_and_library_versions(constants.CONFIG_FILE) or
-		not __mock_exist_sources_config_and_library_versions(constants.XMIPP_CORE_PATH)
+		not __mock_exist_sources_config_and_library_versions(paths.XMIPP_CORE_PATH)
 	):
 		expected_lines.append(f"\n{__mock_get_configuration_warning_message()}")
 	__mock_logger.assert_called_once_with('\n'.join(expected_lines))
@@ -576,14 +579,17 @@ def __mock_exists_library_versions(request, __mock_exists):
 	__mock_exists.side_effect = __side_effect
 	yield __mock_exists
 
-@pytest.fixture(params=[(True, True, True)])
+@pytest.fixture(params=[(True, True, True, True)])
 def __mock_exist_sources_config_and_library_versions(__mock_exists, request):
 	def __side_effect(path):
-		source_exists = request.param[0]
-		config_file_exists = request.param[1]
-		library_version_file_exists = request.param[2]
-		if path == constants.XMIPP_CORE_PATH:
-			return source_exists
+		xmipp_core_exists = request.param[0]
+		xmipp_viz_exists = request.param[1]
+		config_file_exists = request.param[2]
+		library_version_file_exists = request.param[3]
+		if path == os.path.basename(constants.XMIPP_CORE):
+			return xmipp_core_exists
+		elif path == os.path.basename(constants.XMIPP_VIZ):
+			return xmipp_viz_exists
 		elif path == constants.CONFIG_FILE:
 			return config_file_exists
 		elif path == constants.LIBRARY_VERSIONS_FILE:

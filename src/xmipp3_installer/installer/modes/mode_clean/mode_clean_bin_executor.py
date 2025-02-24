@@ -5,6 +5,7 @@ from typing import List
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
 
 class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
@@ -44,7 +45,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 		- (str): Confirmation message.
 		"""
 		return '\n'.join([
-			logger.yellow(f"WARNING: This will DELETE from {constants.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"),
+			logger.yellow(f"WARNING: This will DELETE from {paths.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"),
 			logger.yellow(f"If you are sure you want to do this, type '{self._get_confirmation_keyword()}' (case sensitive):")
 		])
 	
@@ -57,7 +58,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 		- (list(str)): List containing all the paths to compilation-related files.
 		"""
 		compilation_files = []
-		for root, _, files in os.walk(constants.SOURCES_PATH):
+		for root, _, files in os.walk(paths.SOURCES_PATH):
 			for pattern in ['*.so', '*.os', '*.o']:
 				for filename in glob.fnmatch.filter(files, pattern):
 					compilation_files.append(os.path.join(root, filename))
@@ -73,7 +74,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 		"""
 		empty_dirs = [] 
 		for root, dirs, files in os.walk(os.path.join(
-			constants.SOURCES_PATH, constants.XMIPP, "applications", "programs"
+			paths.SOURCES_PATH, constants.XMIPP, "applications", "programs"
 		)): 
 			if not len(dirs) and not len(files): 
 				empty_dirs.append(root) 
