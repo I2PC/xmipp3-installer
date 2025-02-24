@@ -6,7 +6,7 @@
   },,
   "sources": {
     "xmippCore": {
-      "min_version": "3.25.0"
+      "target_tag": "v3"
     }
   }
 }

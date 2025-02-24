@@ -24,7 +24,7 @@ class VersionsManager(singleton.Singleton):
     self.xmipp_version_number = version_info[constants.XMIPP]["version_number"]
     self.xmipp_version_name = version_info[constants.XMIPP]["version_name"]
     self.xmipp_release_date = version_info[constants.XMIPP]["release_date"]
-    self.xmipp_core_min_version = version_info["sources"][constants.XMIPP_CORE]["min_version"]
+    self.xmipp_core_target_tag = version_info["sources"][constants.XMIPP_CORE]["target_tag"]
     self.__validate_fields()
 
   def __get_version_info(self) -> Dict[str, str]:
@@ -49,10 +49,10 @@ class VersionsManager(singleton.Singleton):
     #### Raises:
     - ValueError: If any field doesn't match its required format.
     """
-    self.__validate_version_numbers()
+    self.__validate_version_number()
     self.__validate_release_date()
 
-  def __validate_version_numbers(self):
+  def __validate_version_number(self):
     """
     ### Validates that version numbers follow semantic versioning format.
     
@@ -61,12 +61,11 @@ class VersionsManager(singleton.Singleton):
     #### Raises:
     - ValueError: If any version number doesn't follow the required format.
     """
-    for version in [self.xmipp_version_number, self.xmipp_core_min_version]:
-      parts = version.split('.')
-      if not self.__is_valid_semver(parts):
-        raise ValueError(
-          f"Version number '{version}' is invalid. Must be three numbers separated by dots (x.y.z)."
-        )
+    parts = self.xmipp_version_number.split('.')
+    if not self.__is_valid_semver(parts):
+      raise ValueError(
+        f"Version number '{self.xmipp_version_number}' is invalid. Must be three numbers separated by dots (x.y.z)."
+      )
 
   def __is_valid_semver(self, version_parts: List[str]) -> bool:
     """
