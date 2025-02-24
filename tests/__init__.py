@@ -2,7 +2,7 @@ import os
 import shutil
 from typing import Any
 
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 
 TEST_FILES_DIR = os.path.join(
 	os.path.dirname(os.path.abspath(__file__)),
@@ -107,5 +107,5 @@ def create_versions_json_file():
 				"valid.json"
 			)
 		),
-		constants.VERSION_INFO_FILE
+		paths.VERSION_INFO_FILE
 	)

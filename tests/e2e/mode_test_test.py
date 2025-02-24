@@ -7,7 +7,7 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
 from xmipp3_installer.shared import file_operations
@@ -136,5 +136,5 @@ def __setup_environment():
     yield
   finally:
     file_operations.delete_paths([
-      constants.VERSION_INFO_FILE
+      paths.VERSION_INFO_FILE
     ])

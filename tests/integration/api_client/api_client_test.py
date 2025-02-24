@@ -10,6 +10,7 @@ import pytest
 from xmipp3_installer.api_client import api_client
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer.constants import paths
 
 from . import shell_command_outputs, file_contents
 from ... import get_assertion_message, JSON_XMIPP_VERSION_NUMBER
@@ -62,7 +63,7 @@ def __mock_file():
 
 @pytest.fixture
 def __mock_library_versions_file(__mock_file):
-	with patch.object(constants, "LIBRARY_VERSIONS_FILE", __mock_file.name):
+	with patch.object(paths, "LIBRARY_VERSIONS_FILE", __mock_file.name):
 		with open(__mock_file.name, "w") as versions_file:
 			versions_file.write(file_contents.CMAKE_LIB_VERSIONS)
 		yield
@@ -79,7 +80,7 @@ def __mock_get_cpu_flags(fake_process):
 def __mock_get_current_branch(fake_process):
 	fake_process.register_subprocess(
 		shlex.split("git rev-parse --abbrev-ref HEAD"),
-		stdout="master",
+		stdout=constants.MASTER_BRANCHNAME,
 		occurrences=2
 	)
 	yield fake_process
@@ -89,11 +90,11 @@ def __mock_is_branch_up_to_date(fake_process):
 	commit = "d46d18c25cb689eee68e412e4d3854cab6d3d065"
 	fake_process.register_subprocess(shlex.split("git fetch"))
 	fake_process.register_subprocess(
-		shlex.split(f"git rev-parse master"),
+		shlex.split(f"git rev-parse {constants.MASTER_BRANCHNAME}"),
 		stdout=commit
 	)
 	fake_process.register_subprocess(
-		shlex.split(f"git rev-parse origin/master"),
+		shlex.split(f"git rev-parse origin/{constants.MASTER_BRANCHNAME}"),
 		stdout=commit
 	)
 	yield fake_process
@@ -102,7 +103,7 @@ def __mock_is_branch_up_to_date(fake_process):
 def __mock_log_tail(fake_process):
 	log_file_content = file_contents.LOG_TAIL
 	fake_process.register_subprocess(
-		shlex.split(f"tail -n {constants.TAIL_LOG_NCHARS} {constants.LOG_FILE}"),
+		shlex.split(f"tail -n {constants.TAIL_LOG_NCHARS} {paths.LOG_FILE}"),
 		stdout=log_file_content
 	)
 	yield fake_process

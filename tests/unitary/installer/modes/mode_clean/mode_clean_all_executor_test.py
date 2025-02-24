@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_executor import ModeCleanExecutor
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_all_executor import ModeCleanAllExecutor
 
@@ -67,16 +68,16 @@ def test_returns_expected_confirmation_message(
 	), get_assertion_message("confirmation message", expected_confirmation_message, confirmation_message)
 
 def test_returns_expected_paths_to_delete():
-	paths = ModeCleanAllExecutor({})._get_paths_to_delete()
+	paths_to_delete = ModeCleanAllExecutor({})._get_paths_to_delete()
 	expected_paths = [
-		constants.XMIPP_CORE_PATH,
-		constants.INSTALL_PATH,
-		constants.BUILD_PATH,
-		constants.CONFIG_FILE
+		*paths.XMIPP_SOURCE_PATHS,
+		paths.INSTALL_PATH,
+		paths.BUILD_PATH,
+		paths.CONFIG_FILE
 	]
 	assert (
-		paths == expected_paths
-	), get_assertion_message("paths to delete", expected_paths, paths)
+		paths_to_delete == expected_paths
+	), get_assertion_message("paths to delete", expected_paths, paths_to_delete)
 
 @pytest.fixture
 def __dummy_test_mode_clean_executor():

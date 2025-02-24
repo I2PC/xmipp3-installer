@@ -4,6 +4,7 @@ from typing import Dict, Tuple
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import shell_handler
 
@@ -47,7 +48,7 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and output message.
 		"""
-		source_path = os.path.abspath(os.path.join(constants.SOURCES_PATH, source))
+		source_path = os.path.abspath(os.path.join(paths.SOURCES_PATH, source))
 		if not os.path.exists(source_path):
 			logger(logger.yellow(
 				f"WARNING: Source {source} does not exist in path {source_path}. Skipping."

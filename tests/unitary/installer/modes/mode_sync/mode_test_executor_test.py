@@ -4,7 +4,8 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.cli.arguments import params
-from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer import urls
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
 from xmipp3_installer.installer.modes.mode_sync.mode_test_executor import ModeTestExecutor
@@ -239,7 +240,7 @@ def test_returns_expected_result(
 @pytest.fixture(autouse=True)
 def __mock_binaries_path():
 	with patch.object(
-		constants,
+		paths,
 		"BINARIES_PATH",
 		__BINARIES_PATH
 	) as mock_object:

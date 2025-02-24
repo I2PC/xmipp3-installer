@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Tuple
 
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 
 class ModeExecutor(ABC):
   """
@@ -34,7 +34,7 @@ class ModeExecutor(ABC):
     ### Configures the logger according to the specified config.
     """
     if self.logs_to_file:
-      logger.start_log_file(constants.LOG_FILE)
+      logger.start_log_file(paths.LOG_FILE)
     if self.prints_with_substitution:
       logger.set_allow_substitution(True)
   

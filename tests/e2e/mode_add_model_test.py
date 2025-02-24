@@ -8,13 +8,16 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_add_model
-from .. import get_assertion_message, TEST_FILES_DIR, create_versions_json_file
+from .. import (
+	get_assertion_message, TEST_FILES_DIR,
+	create_versions_json_file, get_test_file
+)
 
 __MODEL_PATH = os.path.join(TEST_FILES_DIR, mode_add_model.MODEL_NAME)
 
@@ -102,5 +105,6 @@ def __setup_environment():
     yield
   finally:
     file_operations.delete_paths([
-      constants.VERSION_INFO_FILE
+      paths.VERSION_INFO_FILE,
+	  	get_test_file(f"xmipp_model_{mode_add_model.MODEL_NAME}.tgz")
     ])

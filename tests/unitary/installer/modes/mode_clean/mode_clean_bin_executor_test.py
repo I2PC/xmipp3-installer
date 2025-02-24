@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock, call
 import pytest
 
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor import ModeCleanBinExecutor
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_executor import ModeCleanExecutor
 
@@ -57,7 +58,7 @@ def test_returns_expected_confirmation_message(
 ):
 	confirmation_message = ModeCleanBinExecutor({})._get_confirmation_message()
 	expected_confirmation_message = __mock_logger_yellow(
-		f"WARNING: This will DELETE from {constants.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"
+		f"WARNING: This will DELETE from {paths.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"
 	)
 	second_line = __mock_logger_yellow(
 		f"If you are sure you want to do this, type '{__mock_get_confirmation_keyword()}' (case sensitive):"
@@ -95,7 +96,7 @@ def test_calls_os_walk_when_getting_empty_dirs(
 	ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs()
 	__mock_os_walk.assert_called_once_with(
 		__mock_os_path_join(
-			constants.SOURCES_PATH,
+			paths.SOURCES_PATH,
 			constants.XMIPP,
 			"applications",
 			"programs"
@@ -105,16 +106,16 @@ def test_calls_os_walk_when_getting_empty_dirs(
 def test_returns_expected_empty_dirs(__mock_os_walk):
 	__mock_os_walk.side_effect = None
 	__mock_os_walk.return_value = [
-		(constants.INSTALL_PATH, ["folder1", "folder2"], []),
-		(f"{constants.INSTALL_PATH}/folder1", [], ["file1"]),
-		(f"{constants.INSTALL_PATH}/folder2", ["subfolder1", "subfolder2"], []),
-		(f"{constants.INSTALL_PATH}/folder2/subfolder1", [], []),
-		(f"{constants.INSTALL_PATH}/folder2/subfolder2", ["empty"], []),
-		(f"{constants.INSTALL_PATH}/folder2/subfolder2/empty", [], [])
+		(paths.INSTALL_PATH, ["folder1", "folder2"], []),
+		(f"{paths.INSTALL_PATH}/folder1", [], ["file1"]),
+		(f"{paths.INSTALL_PATH}/folder2", ["subfolder1", "subfolder2"], []),
+		(f"{paths.INSTALL_PATH}/folder2/subfolder1", [], []),
+		(f"{paths.INSTALL_PATH}/folder2/subfolder2", ["empty"], []),
+		(f"{paths.INSTALL_PATH}/folder2/subfolder2/empty", [], [])
 	]
 	expected_empty_dirs = [
-		f"{constants.INSTALL_PATH}/folder2/subfolder1",
-		f"{constants.INSTALL_PATH}/folder2/subfolder2/empty"
+		f"{paths.INSTALL_PATH}/folder2/subfolder1",
+		f"{paths.INSTALL_PATH}/folder2/subfolder2/empty"
 	]
 	empty_dirs = ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs()
 	assert (
@@ -123,7 +124,7 @@ def test_returns_expected_empty_dirs(__mock_os_walk):
 
 def test_calls_os_walk_when_getting_compilation_files(__mock_os_walk):
 	ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
-	__mock_os_walk.assert_called_once_with(constants.SOURCES_PATH)
+	__mock_os_walk.assert_called_once_with(paths.SOURCES_PATH)
 
 def test_calls_glob_when_getting_compilation_files(
 	__mock_os_walk,
@@ -148,7 +149,7 @@ def test_returns_expected_compilation_files(
 ):
 	__mock_fnmatch_filter.side_effect = [["file1"], ["file2", "file3"], ["file4"]]
 	expected_compilation_files = [
-		__mock_os_path_join(constants.SOURCES_PATH, file_name)
+		__mock_os_path_join(paths.SOURCES_PATH, file_name)
 		for file_name in ["file1", "file2", "file3", "file4"]
 	]
 	compilation_files = ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
@@ -204,7 +205,7 @@ def test_returns_expected_paths_to_delete(
 		*__mock_get_compilation_files(),
 		*__mock_get_empty_dirs(),
 		*__mock_get_pycache_dirs(),
-		constants.BUILD_PATH
+		paths.BUILD_PATH
 	]
 	paths_to_delete = ModeCleanBinExecutor({})._get_paths_to_delete()
 	assert (

@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, call
 
 from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.installer.modes.mode_sync.mode_get_models_executor import ModeGetModelsExecutor
 
@@ -40,8 +41,8 @@ def test_sets_dist_path_when_initializing(
 	[
 		pytest.param("some-directory", "some-directory"),
 		pytest.param(
-			f"{constants.SOURCES_PATH}/{constants.XMIPP}",
-			f"{constants.SOURCES_PATH}/{constants.XMIPP}/models"
+			f"{paths.SOURCES_PATH}/{constants.XMIPP}",
+			f"{paths.SOURCES_PATH}/{constants.XMIPP}/models"
 		)
 	]
 )
@@ -163,7 +164,7 @@ def __mock_run_shell_command(request):
 @pytest.fixture
 def __mock_sources_path():
 	with patch.object(
-		constants, "SOURCES_PATH", "sources_path"
+		paths, "SOURCES_PATH", "sources_path"
 	) as mock_object:
 		yield mock_object
 

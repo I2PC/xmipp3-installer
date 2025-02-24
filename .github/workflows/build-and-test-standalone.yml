@@ -63,9 +63,8 @@ jobs:
       - name: Run e2e tests
         env:
           SCRIPT_PATH: ./scripts/run-tests.sh
-          TEST_FILES_PATH: ./tests/test_files
         run: |
-          chmod +x $SCRIPT_PATH $TEST_FILES_PATH/*.py
+          chmod +x $SCRIPT_PATH
           $SCRIPT_PATH e2e
       
       - name: Generate report files

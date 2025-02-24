@@ -3,14 +3,15 @@ from typing import Dict, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer import urls
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 from xmipp3_installer.repository.config_vars import variables
 
 _DATASET_NAME = "xmipp_programs"
 _PYTHON_TEST_SCRIPT_NAME = "test.py"
-_PYTHON_TEST_SCRIPT_PATH = os.path.join(constants.BINARIES_PATH, "tests")
+_PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.BINARIES_PATH, "tests")
 _DEFAULT_PYTHON_HOME = "python3"
 _DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
 

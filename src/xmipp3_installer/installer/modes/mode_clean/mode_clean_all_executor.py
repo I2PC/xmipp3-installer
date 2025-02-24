@@ -1,8 +1,8 @@
-import os
 from typing import List
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
 
 class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
@@ -14,10 +14,10 @@ class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
 		- (list(str)): List containing all the paths to delete.
 		"""
 		return [
-			constants.XMIPP_CORE_PATH,
-			constants.INSTALL_PATH,
-			constants.BUILD_PATH,
-			constants.CONFIG_FILE
+			*[paths.get_source_path(source) for source in constants.XMIPP_SOURCES],
+			paths.INSTALL_PATH,
+			paths.BUILD_PATH,
+			paths.CONFIG_FILE
 		]
 	
 	def _get_confirmation_keyword(self) -> str:

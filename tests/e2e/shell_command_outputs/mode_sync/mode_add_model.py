@@ -1,5 +1,5 @@
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 
 from ... import shell_command_outputs
 
@@ -17,7 +17,7 @@ NO_MODEL = f"""{logger.red(__NO_MODEL_INITIAL_MESSAGE)}
 
 __PRE_CONFIRMATION_WARNING = f"""Creating the xmipp_model_{MODEL_NAME}.tgz model.
 {logger.yellow("Warning: Uploading, please BE CAREFUL! This can be dangerous.")}
-You are going to be connected to {LOGIN} to write in folder {constants.SCIPION_SOFTWARE_EM}.
+You are going to be connected to {LOGIN} to write in folder {paths.SCIPION_SOFTWARE_EM}.
 Continue? YES/no (case sensitive)
 """
 

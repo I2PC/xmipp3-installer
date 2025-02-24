@@ -6,7 +6,7 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor import ModeAddModelExecutor
 
@@ -144,7 +144,7 @@ def test_calls_logger_when_getting_confirmation(
 	executor._ModeAddModelExecutor__get_confirmation()
 	expected_message = '\n'.join([
 		__mock_logger_yellow("Warning: Uploading, please BE CAREFUL! This can be dangerous."),
-		f"You are going to be connected to {__LOGIN} to write in folder {constants.SCIPION_SOFTWARE_EM}.",
+		f"You are going to be connected to {__LOGIN} to write in folder {paths.SCIPION_SOFTWARE_EM}.",
 		"Continue? YES/no (case sensitive)"
 	])
 	__mock_logger.assert_called_once_with(expected_message)
@@ -182,7 +182,7 @@ def test_calls_run_shell_command_when_uploading_model(
 ):
 	executor = ModeAddModelExecutor({**__CONTEXT, 'update': update})
 	executor._ModeAddModelExecutor__upload_model()
-	args = f"{__LOGIN}, {__mock_os_path_abspath(__TAR_PATH)}, {constants.SCIPION_SOFTWARE_EM}, {expected_update_str}"
+	args = f"{__LOGIN}, {__mock_os_path_abspath(__TAR_PATH)}, {paths.SCIPION_SOFTWARE_EM}, {expected_update_str}"
 	__mock_run_shell_command.assert_called_once_with(
 		f"{__mock_os_path_join('.', os.path.basename(executor.sync_program_path))} upload {args}",
 		cwd=os.path.dirname(executor.sync_program_path)

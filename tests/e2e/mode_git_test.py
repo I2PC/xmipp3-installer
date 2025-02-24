@@ -5,12 +5,13 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_git
 from .. import get_assertion_message, create_versions_json_file
 
-__XMIPP_PATH = os.path.join(constants.SOURCES_PATH, constants.XMIPP)
+__XMIPP_PATH = paths.get_source_path(constants.XMIPP)
 
 @pytest.mark.parametrize(
 	"__setup_evironment,expected_output_function",
@@ -43,13 +44,15 @@ def __setup_evironment(request):
 		else:
 			os.makedirs(__XMIPP_PATH, exist_ok=True)
 		if not xmipp_core_exists:
-			file_operations.delete_paths([constants.XMIPP_CORE_PATH])
+			file_operations.delete_paths(
+				[paths.get_source_path(constants.XMIPP_CORE)]
+			)
 		else:
-			os.makedirs(constants.XMIPP_CORE_PATH, exist_ok=True)
+			os.makedirs(paths.get_source_path(constants.XMIPP_CORE), exist_ok=True)
 		yield xmipp_exists, xmipp_core_exists
 	finally:
 		file_operations.delete_paths([
 			__XMIPP_PATH,
-			constants.XMIPP_CORE_PATH,
-			constants.VERSION_INFO_FILE
+			paths.get_source_path(constants.XMIPP_CORE),
+			paths.VERSION_INFO_FILE
 		])

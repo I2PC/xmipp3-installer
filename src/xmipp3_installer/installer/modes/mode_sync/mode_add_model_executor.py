@@ -6,7 +6,7 @@ from xmipp3_installer.application import user_interactions
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 
@@ -74,7 +74,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
 		"""
 		logger('\n'.join([
 			logger.yellow("Warning: Uploading, please BE CAREFUL! This can be dangerous."),
-			f"You are going to be connected to {self.login} to write in folder {constants.SCIPION_SOFTWARE_EM}.",
+			f"You are going to be connected to {self.login} to write in folder {paths.SCIPION_SOFTWARE_EM}.",
 			"Continue? YES/no (case sensitive)"
 		]))
 		return user_interactions.get_user_confirmation("YES")
@@ -87,7 +87,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
 		update = '--update' if self.update else ''
-		args = f"{self.login}, {os.path.abspath(self.tar_file_path)}, {constants.SCIPION_SOFTWARE_EM}, {update}"    
+		args = f"{self.login}, {os.path.abspath(self.tar_file_path)}, {paths.SCIPION_SOFTWARE_EM}, {update}"    
 		logger(f"Trying to upload the model using {self.login} as login")
 		sync_program_relative_call = os.path.join(
 			".",
