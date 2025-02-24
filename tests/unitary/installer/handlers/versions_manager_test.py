@@ -12,12 +12,12 @@ __FILE_PATH = "/path/to/version.json"
 __VERSION_INFO = {
 	constants.XMIPP: {
 		"version_number": "3.23.1",
-		"version_name": "Blossom",
+		"version_name": "v3.23.1-Godname",
 		"release_date": "25/12/2023"
 	},
 	"sources": {
 		constants.XMIPP_CORE: {
-			"min_version": "1.0.0"
+			"target_tag": "v1"
 		}
 	}
 }
@@ -65,13 +65,13 @@ def test_sets_version_info_when_initializing(
 		version_manager.xmipp_version_number,
 		version_manager.xmipp_version_name,
 		version_manager.xmipp_release_date,
-		version_manager.xmipp_core_min_version
+		version_manager.xmipp_core_target_tag
 	)
 	expected_version_info = (
 		__VERSION_INFO[constants.XMIPP]["version_number"],
 		__VERSION_INFO[constants.XMIPP]["version_name"],
 		__VERSION_INFO[constants.XMIPP]["release_date"],
-		__VERSION_INFO["sources"][constants.XMIPP_CORE]["min_version"]
+		__VERSION_INFO["sources"][constants.XMIPP_CORE]["target_tag"]
 	)
 	assert (
 		version_info == expected_version_info
@@ -141,7 +141,7 @@ def test_raises_value_error_when_validating_invalid_fields(
 	), get_assertion_message("ValueError message", expected_error_message, error_message)
 
 def test_validates_version_numbers_successfully(__mock_init):
-	VersionsManager(__FILE_PATH)._VersionsManager__validate_version_numbers()
+	VersionsManager(__FILE_PATH)._VersionsManager__validate_version_number()
 
 @pytest.mark.parametrize(
 	"version_number,valid",
@@ -204,7 +204,7 @@ def __mock_init(request):
 		version_manager.xmipp_version_number = request.param[constants.XMIPP]["version_number"]
 		version_manager.xmipp_version_name = request.param[constants.XMIPP]["version_name"]
 		version_manager.xmipp_release_date = request.param[constants.XMIPP]["release_date"]
-		version_manager.xmipp_core_min_version = request.param["sources"][constants.XMIPP_CORE]["min_version"]
+		version_manager.xmipp_core_target_tag = request.param["sources"][constants.XMIPP_CORE]["target_tag"]
 		yield mock_method
 
 @pytest.fixture
