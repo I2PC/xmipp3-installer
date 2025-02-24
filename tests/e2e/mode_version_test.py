@@ -66,14 +66,15 @@ def __setup_evironment(request):
 				paths.CONFIG_FILE
 			)
 		if not sources_exist:
-			file_operations.delete_paths([paths.get_source_path(constants.XMIPP_CORE)])
+			file_operations.delete_paths(paths.XMIPP_SOURCE_PATHS)
 		else:
-			os.makedirs(paths.get_source_path(constants.XMIPP_CORE), exist_ok=True)
+			for source in paths.XMIPP_SOURCE_PATHS:
+				os.makedirs(source, exist_ok=True)
 		yield config_done, sources_exist
 	finally:
 		__delete_library_versions_file()
 		file_operations.delete_paths([
 			paths.CONFIG_FILE,
-			paths.get_source_path(constants.XMIPP_CORE),
+			*paths.XMIPP_SOURCE_PATHS,
 			paths.VERSION_INFO_FILE
 		])

@@ -56,10 +56,10 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		installation_info_lines.append(self.__get_dates_section())
 		system_version_left_text = self.__add_padding_spaces("System version: ")
 		installation_info_lines.append(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
-		installation_info_lines.append(self.__get_xmipp_core_info())
+		installation_info_lines.append(self.__get_sources_info())
 		if self.version_file_exists:
 			installation_info_lines.append(f"\n{self.__get_library_versions_section()}")
-		if not self.is_configured or not ModeVersionExecutor.__are_all_sources_present():
+		if not self.is_configured or not self.__are_all_sources_present():
 			installation_info_lines.append(f"\n{self.__get_configuration_warning_message()}")
 		return '\n'.join(installation_info_lines)
 
@@ -140,8 +140,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 			version_lines.append(f"{library_left_text}{version}")
 		return '\n'.join(version_lines)
 	
-	@staticmethod
-	def __are_all_sources_present() -> bool:
+	def __are_all_sources_present(self) -> bool:
 		"""
 		### Check if all required source packages are present.
 
