@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 
 from .... import get_assertion_message
 
@@ -117,7 +117,7 @@ def test_calls_logger_start_log_file_with_modified_configuration(
   __mock_logger_start_log_file
 ):
   __configured_mode_executor({})
-  __mock_logger_start_log_file.assert_called_once_with(constants.LOG_FILE)
+  __mock_logger_start_log_file.assert_called_once_with(paths.LOG_FILE)
 
 def test_does_not_call_logger_set_allow_substitution_with_default_configuration(
   __dummy_test_mode_executor,

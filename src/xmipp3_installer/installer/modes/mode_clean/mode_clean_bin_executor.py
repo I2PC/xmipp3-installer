@@ -25,7 +25,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 			*ModeCleanBinExecutor.__get_compilation_files(),
 			*ModeCleanBinExecutor.__get_empty_dirs(),
 			*ModeCleanBinExecutor.__get_pycache_dirs(),
-			constants.BUILD_PATH
+			paths.BUILD_PATH
 		]
 
 	def _get_confirmation_keyword(self) -> str:

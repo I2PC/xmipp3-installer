@@ -7,7 +7,7 @@ import pytest
 from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.repository.config_vars import default_values, variables
 
 from ... import get_assertion_message
@@ -87,11 +87,11 @@ def test_sets_config_file_path_when_constructing_configuration_file_with_default
 ):
 	config_handler = ConfigurationFileHandler()
 	assert (
-		config_handler._ConfigurationFileHandler__path == constants.CONFIG_FILE
+		config_handler._ConfigurationFileHandler__path == paths.CONFIG_FILE
 	), get_assertion_message(
 		"config file path",
 		config_handler._ConfigurationFileHandler__path,
-		constants.CONFIG_FILE
+		paths.CONFIG_FILE
 	)
 
 def test_sets_show_errors_variable_when_constructing_with_provided_value(
@@ -283,7 +283,7 @@ def test_raises_runtime_error_when_parsing_config_line_with_invalid_format(
 	with pytest.raises(
 		InvalidConfigLineError,
 		match=__mock_generate_invalid_config_line_error_message(
-			constants.CONFIG_FILE,
+			paths.CONFIG_FILE,
 			line_number,
 			line
 		)

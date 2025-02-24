@@ -5,7 +5,7 @@ import subprocess
 import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.repository.config_vars import variables
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 from xmipp3_installer.shared import file_operations
@@ -49,11 +49,11 @@ def test_writes_expected_config_file(
 	normalize_file_line_endings(__setup_config_evironment)
 	assert (
 		filecmp.cmp(
-			constants.CONFIG_FILE,
+			paths.CONFIG_FILE,
 			__setup_config_evironment,
 			shallow=False
 		)
-	), f"Expected:\n{get_file_content(__setup_config_evironment)}\n\nReceived:\n{get_file_content(constants.CONFIG_FILE)}"
+	), f"Expected:\n{get_file_content(__setup_config_evironment)}\n\nReceived:\n{get_file_content(paths.CONFIG_FILE)}"
 
 def __get_test_config_file(file_name, input):
 	return get_test_file(
@@ -67,20 +67,20 @@ def __get_test_config_file(file_name, input):
 def __change_config_file_date():
 	file_hanlder = ConfigurationFileHandler()
 	old_date = file_hanlder.get_config_date()
-	content = get_file_content(constants.CONFIG_FILE)
-	with open(constants.CONFIG_FILE, 'w') as config_file:
+	content = get_file_content(paths.CONFIG_FILE)
+	with open(paths.CONFIG_FILE, 'w') as config_file:
 		content = content.replace(old_date, __DATE)
 		config_file.write(content)
 
 def __change_config_cmake_path():
-	content = get_file_content(constants.CONFIG_FILE)
+	content = get_file_content(paths.CONFIG_FILE)
 	new_content_lines = []
 	for line in content.split("\n"):
 		if line.startswith(variables.PREFIX_PATH):
 			line = f"{variables.PREFIX_PATH}="
 		new_content_lines.append(line)
 	content = "\n".join(new_content_lines)
-	with open(constants.CONFIG_FILE, 'w') as config_file:
+	with open(paths.CONFIG_FILE, 'w') as config_file:
 		config_file.write(content)
 
 @pytest.fixture(params=[(False, "default.conf")])
@@ -89,16 +89,16 @@ def __setup_config_evironment(request):
 	try:
 		create_versions_json_file()
 		if not exists:
-			file_operations.delete_paths([constants.CONFIG_FILE, copy_name])
+			file_operations.delete_paths([paths.CONFIG_FILE, copy_name])
 		else:
 			copy_file_from_reference(
 				__get_test_config_file(copy_name, True),
-				constants.CONFIG_FILE
+				paths.CONFIG_FILE
 			)
 		yield copy_name
 	finally:
 		file_operations.delete_paths([
-			constants.CONFIG_FILE,
+			paths.CONFIG_FILE,
 			copy_name,
-			constants.VERSION_INFO_FILE
+			paths.VERSION_INFO_FILE
 		])

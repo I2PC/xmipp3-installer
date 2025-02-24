@@ -23,8 +23,8 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		"""
 		super().__init__(context)
 		self.short = context.pop(params.PARAM_SHORT)
-		config_exists = os.path.exists(constants.CONFIG_FILE)
-		self.version_file_exists = os.path.exists(constants.LIBRARY_VERSIONS_FILE)
+		config_exists = os.path.exists(paths.CONFIG_FILE)
+		self.version_file_exists = os.path.exists(paths.LIBRARY_VERSIONS_FILE)
 		self.is_configured = config_exists and self.version_file_exists
 		versions: versions_manager.VersionsManager = context[constants.VERSIONS_CONTEXT_KEY]
 		self.xmipp_version_number = versions.xmipp_version_number
@@ -131,10 +131,10 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (str): Libraries with their version.
 		"""
-		if not os.path.exists(constants.LIBRARY_VERSIONS_FILE):
+		if not os.path.exists(paths.LIBRARY_VERSIONS_FILE):
 			return ""
 		version_lines = [] 
-		versions = cmake_handler.get_library_versions_from_cmake_file(constants.LIBRARY_VERSIONS_FILE)
+		versions = cmake_handler.get_library_versions_from_cmake_file(paths.LIBRARY_VERSIONS_FILE)
 		for library, version in versions.items():
 			library_left_text = self.__add_padding_spaces(f"{library}: ")
 			version_lines.append(f"{library_left_text}{version}")
