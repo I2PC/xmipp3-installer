@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import List, Optional, Tuple, Dict, Any
 
 from xmipp3_installer.shared.singleton import Singleton
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.repository.config_vars import default_values, variables, config_values_adapter
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
@@ -19,7 +19,7 @@ class ConfigurationFileHandler(Singleton):
 	__ASSIGNMENT_SEPARATOR = '='
 	__LAST_MODIFIED_TEXT = "Config file automatically generated on"
 
-	def __init__(self, path: str=constants.CONFIG_FILE, show_errors: bool=True):
+	def __init__(self, path: str=paths.CONFIG_FILE, show_errors: bool=True):
 		"""
 		### Constructor.
 		
@@ -175,7 +175,7 @@ class ConfigurationFileHandler(Singleton):
 		if len(tokens) != 2:
 			raise InvalidConfigLineError(
 				InvalidConfigLineError.generate_error_message(
-					constants.CONFIG_FILE,
+					paths.CONFIG_FILE,
 					line_number,
 					line
 				)

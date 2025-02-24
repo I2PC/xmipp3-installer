@@ -15,9 +15,9 @@ class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
 		"""
 		return [
 			*[paths.get_source_path(source) for source in constants.XMIPP_SOURCES],
-			constants.INSTALL_PATH,
-			constants.BUILD_PATH,
-			constants.CONFIG_FILE
+			paths.INSTALL_PATH,
+			paths.BUILD_PATH,
+			paths.CONFIG_FILE
 		]
 	
 	def _get_confirmation_keyword(self) -> str:

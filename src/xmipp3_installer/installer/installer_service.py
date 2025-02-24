@@ -6,6 +6,7 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import versions_manager
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.application.logger import predefined_messages
@@ -22,12 +23,12 @@ class InstallationManager:
 		- args (dict): Dictionary containing all parsed command-line arguments.
 		"""
     self.mode = args.pop(modes.MODE, modes.MODE_ALL)
-    config_handler = config.ConfigurationFileHandler(path=constants.CONFIG_FILE, show_errors=False)
+    config_handler = config.ConfigurationFileHandler(path=paths.CONFIG_FILE, show_errors=False)
     self.context = {
       **args,
       **config_handler.values,
       variables.LAST_MODIFIED_KEY: config_handler.last_modified,
-      constants.VERSIONS_CONTEXT_KEY: versions_manager.VersionsManager(constants.VERSION_INFO_FILE)
+      constants.VERSIONS_CONTEXT_KEY: versions_manager.VersionsManager(paths.VERSION_INFO_FILE)
     }
     self.mode_executor: ModeExecutor = mode_selector.MODE_EXECUTORS[self.mode](self.context)
 

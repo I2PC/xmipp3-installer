@@ -54,5 +54,5 @@ def __setup_evironment(request):
 		file_operations.delete_paths([
 			__XMIPP_PATH,
 			paths.get_source_path(constants.XMIPP_CORE),
-			constants.VERSION_INFO_FILE
+			paths.VERSION_INFO_FILE
 		])

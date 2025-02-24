@@ -71,9 +71,9 @@ def test_returns_expected_paths_to_delete():
 	paths_to_delete = ModeCleanAllExecutor({})._get_paths_to_delete()
 	expected_paths = [
 		paths.get_source_path(constants.XMIPP_CORE),
-		constants.INSTALL_PATH,
-		constants.BUILD_PATH,
-		constants.CONFIG_FILE
+		paths.INSTALL_PATH,
+		paths.BUILD_PATH,
+		paths.CONFIG_FILE
 	]
 	assert (
 		paths_to_delete == expected_paths

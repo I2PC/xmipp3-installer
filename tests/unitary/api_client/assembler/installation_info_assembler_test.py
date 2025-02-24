@@ -4,6 +4,7 @@ import pytest
 
 from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import git_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
 
@@ -165,7 +166,7 @@ def test_returns_expected_is_installed_by_scipion(
 def test_calls_run_shell_command_when_getting_log_tail(__mock_run_shell_command):
   installation_info_assembler.__get_log_tail()
   __mock_run_shell_command.assert_called_once_with(
-    f"tail -n {constants.TAIL_LOG_NCHARS} {constants.LOG_FILE}"
+    f"tail -n {constants.TAIL_LOG_NCHARS} {paths.LOG_FILE}"
   )
 
 @pytest.mark.parametrize(
@@ -430,7 +431,7 @@ def test_calls_get_library_versions_from_cmake_file_when_getting_installation_in
 ):
   installation_info_assembler.get_installation_info(__get_version_manager())
   __mock_get_library_versions_from_cmake_file.assert_called_once_with(
-    constants.LIBRARY_VERSIONS_FILE
+    paths.LIBRARY_VERSIONS_FILE
   )
 
 def test_calls_get_os_release_name_when_getting_installation_info(

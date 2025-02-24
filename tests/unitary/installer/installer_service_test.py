@@ -5,6 +5,7 @@ import pytest
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import installer_service, constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes import mode_selector
 from xmipp3_installer.repository.config_vars import variables
 
@@ -58,7 +59,7 @@ def test_initializes_config_file_handler_when_initializing(
 	__mock_configuration_file_handler
 ):
 	installer_service.InstallationManager({})
-	__mock_configuration_file_handler.assert_called_once_with(path=constants.CONFIG_FILE, show_errors=False)
+	__mock_configuration_file_handler.assert_called_once_with(path=paths.CONFIG_FILE, show_errors=False)
 
 def test_stores_installation_context_when_initializing(
 	__mock_mode_executors,

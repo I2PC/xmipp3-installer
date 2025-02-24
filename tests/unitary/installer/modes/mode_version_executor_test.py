@@ -94,10 +94,10 @@ def test_sets_short_value_to_introduced_value_in_args(expected_short):
 def test_sets_library_file_exists_value_as_expected_when_initializing(__mock_exists_init):
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	assert (
-		version_executor.version_file_exists == __mock_exists_init(constants.LIBRARY_VERSIONS_FILE)
+		version_executor.version_file_exists == __mock_exists_init(paths.LIBRARY_VERSIONS_FILE)
 	), get_assertion_message(
 		"file exists values",
-		__mock_exists_init(constants.LIBRARY_VERSIONS_FILE),
+		__mock_exists_init(paths.LIBRARY_VERSIONS_FILE),
 		version_executor.version_file_exists
 	)
 
@@ -345,11 +345,11 @@ def test_calls_logger_when_running_executor_in_long_format(
 		f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name()}",
 		__mock_get_xmipp_core_info()
 	]
-	if __mock_exist_sources_config_and_library_versions(constants.LIBRARY_VERSIONS_FILE):
+	if __mock_exist_sources_config_and_library_versions(paths.LIBRARY_VERSIONS_FILE):
 		expected_lines.append(f"\n{__mock_get_library_versions_section()}")
 	if (
-		not __mock_exist_sources_config_and_library_versions(constants.LIBRARY_VERSIONS_FILE) or
-		not __mock_exist_sources_config_and_library_versions(constants.CONFIG_FILE) or
+		not __mock_exist_sources_config_and_library_versions(paths.LIBRARY_VERSIONS_FILE) or
+		not __mock_exist_sources_config_and_library_versions(paths.CONFIG_FILE) or
 		not __mock_exist_sources_config_and_library_versions(paths.XMIPP_CORE_PATH)
 	):
 		expected_lines.append(f"\n{__mock_get_configuration_warning_message()}")
@@ -484,7 +484,7 @@ def test_calls_os_path_exists_when_getting_library_versions_section(
 	__mock_exists.return_value = False
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_library_versions_section()
-	__mock_exists.assert_called_with(constants.LIBRARY_VERSIONS_FILE)
+	__mock_exists.assert_called_with(paths.LIBRARY_VERSIONS_FILE)
 
 def test_calls_get_library_versions_from_cmake_file_when_getting_library_versions_section(
 	__mock_exists_library_versions,
@@ -492,7 +492,7 @@ def test_calls_get_library_versions_from_cmake_file_when_getting_library_version
 ):
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	version_executor._ModeVersionExecutor__get_library_versions_section()
-	__mock_get_library_versions_from_cmake_file.assert_called_with(constants.LIBRARY_VERSIONS_FILE)
+	__mock_get_library_versions_from_cmake_file.assert_called_with(paths.LIBRARY_VERSIONS_FILE)
 
 def test_calls_add_padding_spaces_when_getting_library_versions_section(
 	__mock_exists_library_versions,
@@ -557,9 +557,9 @@ def __mock_exists_init(request, __mock_exists):
 	def __side_effect(path):
 		config_file_exists = request.param[0]
 		lib_file_exists = request.param[1]
-		if path == constants.CONFIG_FILE:
+		if path == paths.CONFIG_FILE:
 			return config_file_exists
-		elif path == constants.LIBRARY_VERSIONS_FILE:
+		elif path == paths.LIBRARY_VERSIONS_FILE:
 			return lib_file_exists
 		else:
 			return False
@@ -571,7 +571,7 @@ def __mock_exists_init(request, __mock_exists):
 def __mock_exists_library_versions(request, __mock_exists):
 	def __side_effect(path):
 		library_version_file_exists = request.param
-		if path == constants.LIBRARY_VERSIONS_FILE:
+		if path == paths.LIBRARY_VERSIONS_FILE:
 			return library_version_file_exists
 		else:
 			return False
@@ -590,9 +590,9 @@ def __mock_exist_sources_config_and_library_versions(__mock_exists, request):
 			return xmipp_core_exists
 		elif path == os.path.basename(constants.XMIPP_VIZ):
 			return xmipp_viz_exists
-		elif path == constants.CONFIG_FILE:
+		elif path == paths.CONFIG_FILE:
 			return config_file_exists
-		elif path == constants.LIBRARY_VERSIONS_FILE:
+		elif path == paths.LIBRARY_VERSIONS_FILE:
 			return library_version_file_exists
 		else:
 			return False

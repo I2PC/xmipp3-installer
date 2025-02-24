@@ -1,7 +1,7 @@
 """### Contains all constants needed for handling errors during Xmipp's installation."""
 
 from xmipp3_installer.installer.urls import CMAKE_INSTALL_DOCS_URL
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 
 # Error codes
 INTERRUPTED_ERROR = -1
@@ -15,7 +15,7 @@ CMAKE_INSTALL_ERROR = 6
 IO_ERROR = 7
 
 # Error messages
-__CHECK_LOG_MESSAGE = f'Check the inside file \'{constants.LOG_FILE}\'.'
+__CHECK_LOG_MESSAGE = f'Check the inside file \'{paths.LOG_FILE}\'.'
 ERROR_CODES = {
 	INTERRUPTED_ERROR: ['Process was interrupted by the user.', ''],
 	UNKOW_ERROR: ['', ''],

@@ -52,7 +52,7 @@ def test_deletes_expected_files(__setup_environment, confirmation_text):
     __O_FILE,
     os.path.join(__PYCACHE_ROOT, "__pycache__"),
     os.path.join(__DIR_STRUCT_ROOT, __EMPTY_DIR),
-    constants.BUILD_PATH
+    paths.BUILD_PATH
   ]:
     file_exists = os.path.exists(remaining_path)
     assert (
@@ -94,7 +94,7 @@ def __setup_environment():
     __generate_empty_dirs()
     __create_file(__DBLITE_FILE)
     os.makedirs(os.path.join(__PYCACHE_ROOT, "__pycache__"), exist_ok=True)
-    os.makedirs(constants.BUILD_PATH, exist_ok=True)
+    os.makedirs(paths.BUILD_PATH, exist_ok=True)
     create_versions_json_file()
     yield
   finally:
@@ -103,6 +103,6 @@ def __setup_environment():
       paths.get_source_path(constants.XMIPP),
       __DBLITE_FILE,
       __PYCACHE_ROOT,
-      constants.BUILD_PATH,
-      constants.VERSION_INFO_FILE
+      paths.BUILD_PATH,
+      paths.VERSION_INFO_FILE
     ])

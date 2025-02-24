@@ -106,16 +106,16 @@ def test_calls_os_walk_when_getting_empty_dirs(
 def test_returns_expected_empty_dirs(__mock_os_walk):
 	__mock_os_walk.side_effect = None
 	__mock_os_walk.return_value = [
-		(constants.INSTALL_PATH, ["folder1", "folder2"], []),
-		(f"{constants.INSTALL_PATH}/folder1", [], ["file1"]),
-		(f"{constants.INSTALL_PATH}/folder2", ["subfolder1", "subfolder2"], []),
-		(f"{constants.INSTALL_PATH}/folder2/subfolder1", [], []),
-		(f"{constants.INSTALL_PATH}/folder2/subfolder2", ["empty"], []),
-		(f"{constants.INSTALL_PATH}/folder2/subfolder2/empty", [], [])
+		(paths.INSTALL_PATH, ["folder1", "folder2"], []),
+		(f"{paths.INSTALL_PATH}/folder1", [], ["file1"]),
+		(f"{paths.INSTALL_PATH}/folder2", ["subfolder1", "subfolder2"], []),
+		(f"{paths.INSTALL_PATH}/folder2/subfolder1", [], []),
+		(f"{paths.INSTALL_PATH}/folder2/subfolder2", ["empty"], []),
+		(f"{paths.INSTALL_PATH}/folder2/subfolder2/empty", [], [])
 	]
 	expected_empty_dirs = [
-		f"{constants.INSTALL_PATH}/folder2/subfolder1",
-		f"{constants.INSTALL_PATH}/folder2/subfolder2/empty"
+		f"{paths.INSTALL_PATH}/folder2/subfolder1",
+		f"{paths.INSTALL_PATH}/folder2/subfolder2/empty"
 	]
 	empty_dirs = ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs()
 	assert (
@@ -205,7 +205,7 @@ def test_returns_expected_paths_to_delete(
 		*__mock_get_compilation_files(),
 		*__mock_get_empty_dirs(),
 		*__mock_get_pycache_dirs(),
-		constants.BUILD_PATH
+		paths.BUILD_PATH
 	]
 	paths_to_delete = ModeCleanBinExecutor({})._get_paths_to_delete()
 	assert (
