@@ -341,10 +341,18 @@ def test_calls_logger_when_running_executor_in_short_format(__mock_logger):
 		pytest.param(False, (False, False), True, 'release'),
 		pytest.param(False, (False, True), False, __BRANCH_NAME),
 		pytest.param(False, (False, True), True, 'release'),
+		pytest.param(False, (True, False), False, __BRANCH_NAME),
+		pytest.param(False, (True, False), True, 'release'),
+		pytest.param(False, (True, True), False, __BRANCH_NAME),
+		pytest.param(False, (True, True), True, 'release'),
 		pytest.param(True, (False, False), False, __BRANCH_NAME),
 		pytest.param(True, (False, False), True, 'release'),
 		pytest.param(True, (False, True), False, __BRANCH_NAME),
-		pytest.param(True, (False, True), True, 'release')
+		pytest.param(True, (False, True), True, 'release'),
+		pytest.param(True, (True, False), False, __BRANCH_NAME),
+		pytest.param(True, (True, False), True, 'release'),
+		pytest.param(True, (True, True), False, __BRANCH_NAME),
+		pytest.param(True, (True, True), True, 'release')
 	],
 	indirect=[
 		"__mock_are_all_sources_present",
