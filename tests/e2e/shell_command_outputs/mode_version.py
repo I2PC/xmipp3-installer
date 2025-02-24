@@ -34,10 +34,15 @@ Release date:            {JSON_XMIPP_RELEASE_DATE}
 Compilation date:        {__DATE}
 System version:          {installation_info_assembler.get_os_release_name()}"""
 
-__SOURCES_NOT_FOUND_SECTION = f"xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}"
+__SOURCES_NOT_FOUND_SECTION = f"""xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}
+xmippViz branch:         {__SOURCE_NOT_FOUND_MESSAGE}"""
 
 def get_sources_found_section():
-  return f"xmippCore branch:        {git_handler.get_current_branch()} ({git_handler.get_current_commit()})"
+  found_source_message = f"{git_handler.get_current_branch()} ({git_handler.get_current_commit()})"
+  return "\n".join([
+    f"xmippCore branch:        {found_source_message}",
+    f"xmippViz branch:        {found_source_message}"
+  ])
 
 def get_full_info_before_config():
   return '\n'.join([

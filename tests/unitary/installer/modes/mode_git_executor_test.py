@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, call
 
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_git_executor import ModeGitExecutor
 
@@ -64,7 +65,7 @@ def test_calls_os_path_abspath_for_each_source(__mock_os_path_abspath):
 	executor.run()
 	calls = []
 	for source in __SOURCES:
-		source_path = f"{constants.SOURCES_PATH}/{source}"
+		source_path = f"{paths.SOURCES_PATH}/{source}"
 		calls.append(call(source_path))
 	__mock_os_path_abspath.assert_has_calls(calls)
 	assert (
@@ -78,7 +79,7 @@ def test_calls_os_path_exists_for_each_source(
 	ModeGitExecutor(__ARGS.copy()).run()
 	calls = []
 	for source in __SOURCES:
-		source_path = f"abs-{constants.SOURCES_PATH}/{source}-abs"
+		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
 		calls.append(call(source_path))
 	__mock_os_path_exists.assert_has_calls(calls)
 	assert (
@@ -95,7 +96,7 @@ def test_calls_logger_when_source_does_not_exist(
 	executor.run()
 	calls = [call(f"Running command '{__GIT_COMMAND}' for all xmipp sources...")]
 	for source in __SOURCES:
-		source_path = f"abs-{constants.SOURCES_PATH}/{source}-abs"
+		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
 		calls.extend([
 			call(""),
 			call(__mock_logger_yellow(
@@ -114,7 +115,7 @@ def test_calls_logger_when_source_exists(
 	executor.run()
 	calls = [call(f"Running command '{__GIT_COMMAND}' for all xmipp sources...")]
 	for source in __SOURCES:
-		source_path = f"abs-{constants.SOURCES_PATH}/{source}-abs"
+		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
 		calls.extend([
 			call(""),
 			call(__mock_logger_blue(
@@ -130,7 +131,7 @@ def test_calls_run_shell_command_for_each_existing_source(
 	ModeGitExecutor(__ARGS.copy()).run()
 	calls = []
 	for source in __SOURCES:
-		source_path = f"abs-{constants.SOURCES_PATH}/{source}-abs"
+		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
 		calls.append(call(
 			__GIT_COMMAND,
 			cwd=source_path,
@@ -170,7 +171,7 @@ def test_execute_git_command_for_source_when_source_does_not_exist(
 		source
 	)
 	
-	source_path = f"abs-{constants.SOURCES_PATH}/{source}-abs"
+	source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
 	__mock_logger.assert_called_once_with(__mock_logger_yellow(
 		f"WARNING: Source {source} does not exist in path {source_path}. Skipping."
 	))
@@ -192,7 +193,7 @@ def test_execute_git_command_for_source_when_source_exists(
 		source
 	)
 	
-	source_path = f"abs-{constants.SOURCES_PATH}/{source}-abs"
+	source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
 	__mock_logger.assert_called_once_with(__mock_logger_blue(
 		f"Running command for {source} in path {source_path}..."
 	))

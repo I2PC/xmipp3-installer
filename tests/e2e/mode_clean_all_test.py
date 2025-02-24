@@ -5,6 +5,7 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.shared import file_operations
 
 from .. import get_assertion_message, create_versions_json_file
@@ -29,7 +30,7 @@ def test_deletes_expected_files(__setup_environment, confirmation_text):
   )
   
   for remaining_path in [
-    constants.XMIPP_CORE_PATH,
+    *paths.XMIPP_SOURCE_PATHS,
     constants.INSTALL_PATH,
     constants.BUILD_PATH,
     constants.CONFIG_FILE
@@ -50,7 +51,8 @@ def __create_config_file():
 @pytest.fixture
 def __setup_environment():
   try:
-    os.makedirs(constants.XMIPP_CORE_PATH, exist_ok=True)
+    for source in paths.XMIPP_SOURCE_PATHS:
+      os.makedirs(source, exist_ok=True)
     os.makedirs(constants.INSTALL_PATH, exist_ok=True)
     os.makedirs(constants.BUILD_PATH, exist_ok=True)
     __create_config_file()
@@ -58,7 +60,7 @@ def __setup_environment():
     yield
   finally:
     file_operations.delete_paths([
-      constants.XMIPP_CORE_PATH,
+      *paths.XMIPP_SOURCE_PATHS,
       constants.INSTALL_PATH,
       constants.BUILD_PATH,
       constants.VERSION_INFO_FILE

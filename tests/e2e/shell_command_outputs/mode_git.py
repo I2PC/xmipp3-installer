@@ -2,13 +2,14 @@ import os
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 
 __INITIAL_MESSAGE = "Running command 'git branch' for all xmipp sources..."
 __GIT_COMMAND_OUTPUT = shell_handler.run_shell_command("git branch")[1]
 
 def __get_abs_source_path(source_name):
-  return os.path.abspath(os.path.join(constants.SOURCES_PATH, source_name))
+  return os.path.abspath(paths.get_source_path(source_name))
 
 def __get_non_existing_source_message(source_name):
   return logger.yellow(
