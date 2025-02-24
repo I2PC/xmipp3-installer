@@ -41,7 +41,7 @@ def get_sources_found_section():
   found_source_message = f"{git_handler.get_current_branch()} ({git_handler.get_current_commit()})"
   return "\n".join([
     f"xmippCore branch:        {found_source_message}",
-    f"xmippViz branch:        {found_source_message}"
+    f"xmippViz branch:         {found_source_message}"
   ])
 
 def get_full_info_before_config():
