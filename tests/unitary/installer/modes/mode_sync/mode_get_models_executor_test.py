@@ -164,7 +164,7 @@ def __mock_run_shell_command(request):
 @pytest.fixture
 def __mock_sources_path():
 	with patch.object(
-		constants, "SOURCES_PATH", "sources_path"
+		paths, "SOURCES_PATH", "sources_path"
 	) as mock_object:
 		yield mock_object
 

@@ -70,7 +70,7 @@ def test_returns_expected_confirmation_message(
 def test_returns_expected_paths_to_delete():
 	paths_to_delete = ModeCleanAllExecutor({})._get_paths_to_delete()
 	expected_paths = [
-		paths.get_source_path(constants.XMIPP_CORE),
+		*paths.XMIPP_SOURCE_PATHS,
 		paths.INSTALL_PATH,
 		paths.BUILD_PATH,
 		paths.CONFIG_FILE
