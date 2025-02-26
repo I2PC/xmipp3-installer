@@ -2,25 +2,44 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_get_sources_executor import ModeGetSourcesExecutor
 
 from ... import DummyVersionsManager
-from .... import JSON_XMIPP_VERSION_NAME, get_assertion_message
+from .... import (
+  JSON_XMIPP_VERSION_NAME, get_assertion_message,
+  JSON_XMIPP_CORE_TARGET_TAG, JSON_XMIPP_VIZ_TARGET_TAG
+)
 
 __CONTEXT = {
   params.PARAM_BRANCH: constants.DEVEL_BRANCHNAME,
   constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager()
 }
 
+def test_implements_interface_mode_executor():
+	executor = ModeGetSourcesExecutor(__CONTEXT.copy())
+	assert (
+		isinstance(executor, ModeExecutor)
+	), get_assertion_message(
+		"parent class",
+		ModeExecutor.__name__,
+		executor.__class__.__bases__[0].__name__
+	)
+
 def test_stores_expected_values_when_initializing():
   executor = ModeGetSourcesExecutor(__CONTEXT.copy())
   values = (
     executor.target_branch,
-    executor.xmipp_tag_name
+    executor.xmipp_tag_name,
+    executor.source_versions
   )
   expected_values = (
     constants.DEVEL_BRANCHNAME,
-    JSON_XMIPP_VERSION_NAME
+    JSON_XMIPP_VERSION_NAME,
+    {
+      constants.XMIPP_CORE: JSON_XMIPP_CORE_TARGET_TAG,
+      constants.XMIPP_VIZ: JSON_XMIPP_VIZ_TARGET_TAG
+    }
   )
   assert (
     values == expected_values
