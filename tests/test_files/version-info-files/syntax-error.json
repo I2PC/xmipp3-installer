@@ -7,6 +7,9 @@
   "sources": {
     "xmippCore": {
       "target_tag": "v3"
+    },
+    "xmippViz": {
+      "target_tag": "v3"
     }
   }
 }
