@@ -3,6 +3,7 @@ from unittest.mock import patch, call
 import pytest
 
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
@@ -31,6 +32,7 @@ __PARAMS = {
 }
 __SOURCES_PATH = "sources_path"
 __I2PC_REPOSITORY_URL = "i2pc_repository_url"
+__XMIPP_SOURCES = ["source1", "source2"]
 
 def test_implements_interface_mode_executor():
 	executor = ModeGetSourcesExecutor(__CONTEXT.copy())
@@ -374,6 +376,46 @@ def test_returns_expected_result_when_getting_source(
 		result == __mock_run_source_command()
 	), get_assertion_message("result", __mock_run_source_command(), result)
 
+def test_calls_logger_when_running_executor(
+	__mock_logger,
+	__mock_get_section_message,
+	__mock_get_source
+):
+	ModeGetSourcesExecutor(__CONTEXT.copy()).run()
+	__mock_logger.assert_called_once_with(
+		__mock_get_section_message("Getting Xmipp sources")
+	)
+
+def test_calls_get_source_when_running_executor(
+	__mock_xmipp_sources,
+	__mock_get_source
+):
+	ModeGetSourcesExecutor(__CONTEXT.copy()).run()
+	expected_calls = [
+		call(source) for source in __mock_xmipp_sources
+	]
+	__mock_get_source.assert_has_calls(expected_calls)
+	assert (
+		__mock_get_source.call_count == len(expected_calls)
+	), get_assertion_message("call count", len(expected_calls), __mock_get_source.call_count)
+
+@pytest.mark.parametrize(
+	"__mock_get_source,expected_result",
+	[
+		pytest.param((1, "error"), (errors.SOURCE_CLONE_ERROR, "error")),
+		pytest.param((0, "success"), (0, ""))
+	],
+	indirect=["__mock_get_source"]
+)
+def test_returns_expected_result_when_running_executor(
+	__mock_get_source,
+	expected_result
+):
+	result = ModeGetSourcesExecutor(__CONTEXT.copy()).run()
+	assert (
+		result == expected_result
+	), get_assertion_message("executor result", expected_result, result)
+
 @pytest.fixture(params=[__BRANCH_NAME])
 def __mock_get_current_branch(request):
 	with patch(
@@ -491,5 +533,28 @@ def __mock_run_source_command(request):
 def __mock_i2pc_repo_url():
 	with patch.object(
 		urls, "I2PC_REPOSITORY_URL", __I2PC_REPOSITORY_URL
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_get_section_message():
+	with patch(
+		"xmipp3_installer.application.logger.predefined_messages.get_section_message"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"section-{text}-section"
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_get_source(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__get_source"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_xmipp_sources():
+	with patch.object(
+		constants, "XMIPP_SOURCES", __XMIPP_SOURCES
 	) as mock_object:
 		yield mock_object
