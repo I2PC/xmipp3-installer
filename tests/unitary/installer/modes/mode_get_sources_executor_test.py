@@ -285,7 +285,8 @@ def test_calls_logger_when_getting_source(
 	__mock_logger,
 	__mock_logger_yellow,
 	__mock_get_working_message,
-	__mock_get_done_message
+	__mock_get_done_message,
+	__mock_i2pc_repo_url
 ):
 	ModeGetSourcesExecutor(
 		{**__CONTEXT, __PARAM_BRANCH: target_branch}, substitute=substitute
@@ -297,8 +298,8 @@ def test_calls_logger_when_getting_source(
 	if target_branch and not __mock_select_ref_to_clone():
 		expected_calls.append(
 			call(__mock_logger_yellow(
-					f"Warning: branch \'{__CONTEXT[__PARAM_BRANCH]}\' does not exist for repository with url {__REPO_URL}.\n"
-					"Falling back to repository's default branch"
+					f"Warning: branch \'{target_branch}\' does not exist for repository with url {__mock_i2pc_repo_url}{source_name}.\n"
+					"Falling back to repository's default branch."
 				),
 				substitute=substitute
 			)
@@ -530,12 +531,12 @@ def __mock_get_done_message():
 		mock_method.return_value = "done message"
 		yield mock_method
 
-@pytest.fixture
-def __mock_select_ref_to_clone():
+@pytest.fixture(params=[__BRANCH_NAME])
+def __mock_select_ref_to_clone(request):
 	with patch(
 		"xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__select_ref_to_clone"
 	) as mock_method:
-		mock_method.return_value = __BRANCH_NAME
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture(params=[(0, "")])
