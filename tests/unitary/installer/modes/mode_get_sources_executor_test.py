@@ -238,29 +238,46 @@ def test_returns_expected_result_when_running_source_command(
 	), get_assertion_message("result", expected_result, result)
 
 @pytest.mark.parametrize(
-	"source_name,__mock_select_ref_to_clone,"
+	"target_branch,source_name,__mock_select_ref_to_clone,"
 	"__mock_run_source_command,substitute",
 	[
-		pytest.param(constants.XMIPP_CORE, None, (0, ""), False),
-		pytest.param(constants.XMIPP_CORE, None, (0, ""), True),
-		pytest.param(constants.XMIPP_CORE, None, (1, "error"), False),
-		pytest.param(constants.XMIPP_CORE, None, (1, "error"), True),
-		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), False),
-		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), True),
-		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), False),
-		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), True),
-		pytest.param(constants.XMIPP_VIZ, None, (0, ""), False),
-		pytest.param(constants.XMIPP_VIZ, None, (0, ""), True),
-		pytest.param(constants.XMIPP_VIZ, None, (1, "error"), False),
-		pytest.param(constants.XMIPP_VIZ, None, (1, "error"), True),
-		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), False),
-		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), True),
-		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), False),
-		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), True)
+		pytest.param(None, constants.XMIPP_CORE, None, (0, ""), False),
+		pytest.param(None, constants.XMIPP_CORE, None, (0, ""), True),
+		pytest.param(None, constants.XMIPP_CORE, None, (1, "error"), False),
+		pytest.param(None, constants.XMIPP_CORE, None, (1, "error"), True),
+		pytest.param(None, constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), False),
+		pytest.param(None, constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), True),
+		pytest.param(None, constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), False),
+		pytest.param(None, constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), True),
+		pytest.param(None, constants.XMIPP_VIZ, None, (0, ""), False),
+		pytest.param(None, constants.XMIPP_VIZ, None, (0, ""), True),
+		pytest.param(None, constants.XMIPP_VIZ, None, (1, "error"), False),
+		pytest.param(None, constants.XMIPP_VIZ, None, (1, "error"), True),
+		pytest.param(None, constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), False),
+		pytest.param(None, constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), True),
+		pytest.param(None, constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), False),
+		pytest.param(None, constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, None, (0, ""), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, None, (0, ""), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, None, (1, "error"), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, None, (1, "error"), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, None, (0, ""), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, None, (0, ""), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, None, (1, "error"), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, None, (1, "error"), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), True),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), False),
+		pytest.param(__BRANCH_NAME, constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), True)
 	],
 	indirect=["__mock_select_ref_to_clone", "__mock_run_source_command"]
 )
 def test_calls_logger_when_getting_source(
+	target_branch,
 	source_name,
 	__mock_select_ref_to_clone,
 	__mock_run_source_command,
@@ -271,13 +288,13 @@ def test_calls_logger_when_getting_source(
 	__mock_get_done_message
 ):
 	ModeGetSourcesExecutor(
-		__CONTEXT.copy(), substitute=substitute
+		{**__CONTEXT, __PARAM_BRANCH: target_branch}, substitute=substitute
 	)._ModeGetSourcesExecutor__get_source(source_name)
 	expected_calls = [
 		call(f"Cloning {source_name}...", substitute=substitute),
 		call(__mock_get_working_message(), substitute=substitute),
 	]
-	if not __mock_select_ref_to_clone():
+	if target_branch and not __mock_select_ref_to_clone():
 		expected_calls.append(
 			call(__mock_logger_yellow(
 					f"Warning: branch \'{__CONTEXT[__PARAM_BRANCH]}\' does not exist for repository with url {__REPO_URL}.\n"
