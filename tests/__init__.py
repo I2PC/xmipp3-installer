@@ -11,7 +11,8 @@ TEST_FILES_DIR = os.path.join(
 JSON_XMIPP_VERSION_NUMBER = "3.25.0"
 JSON_XMIPP_VERSION_NAME = f"v{JSON_XMIPP_VERSION_NUMBER}-TBD"
 JSON_XMIPP_RELEASE_DATE = "01/01/2000"
-JSON_XMIPP_CORE_MIN_VERSION = "3.25.0"
+JSON_XMIPP_CORE_TARGET_TAG = "v3"
+JSON_XMIPP_VIZ_TARGET_TAG = "v3"
 
 def get_assertion_message(item: str, expected: Any, received: Any) -> str:
 	"""

@@ -24,7 +24,7 @@ class VersionsManager(singleton.Singleton):
     self.xmipp_version_number = version_info[constants.XMIPP]["version_number"]
     self.xmipp_version_name = version_info[constants.XMIPP]["version_name"]
     self.xmipp_release_date = version_info[constants.XMIPP]["release_date"]
-    self.xmipp_core_target_tag = version_info["sources"][constants.XMIPP_CORE]["target_tag"]
+    self.sources_versions = version_info["sources_target_tag"]
     self.__validate_fields()
 
   def __get_version_info(self) -> Dict[str, str]:

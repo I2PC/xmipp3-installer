@@ -15,10 +15,9 @@ __VERSION_INFO = {
 		"version_name": "v3.23.1-Godname",
 		"release_date": "25/12/2023"
 	},
-	"sources": {
-		constants.XMIPP_CORE: {
-			"target_tag": "v1"
-		}
+	"sources_target_tag": {
+		constants.XMIPP_CORE: "v1",
+		constants.XMIPP_VIZ: "v2"
 	}
 }
 __INVALID_VERSION_INFO = {
@@ -65,13 +64,13 @@ def test_sets_version_info_when_initializing(
 		version_manager.xmipp_version_number,
 		version_manager.xmipp_version_name,
 		version_manager.xmipp_release_date,
-		version_manager.xmipp_core_target_tag
+		version_manager.sources_versions
 	)
 	expected_version_info = (
 		__VERSION_INFO[constants.XMIPP]["version_number"],
 		__VERSION_INFO[constants.XMIPP]["version_name"],
 		__VERSION_INFO[constants.XMIPP]["release_date"],
-		__VERSION_INFO["sources"][constants.XMIPP_CORE]["target_tag"]
+		__VERSION_INFO["sources_target_tag"]
 	)
 	assert (
 		version_info == expected_version_info
@@ -204,7 +203,7 @@ def __mock_init(request):
 		version_manager.xmipp_version_number = request.param[constants.XMIPP]["version_number"]
 		version_manager.xmipp_version_name = request.param[constants.XMIPP]["version_name"]
 		version_manager.xmipp_release_date = request.param[constants.XMIPP]["release_date"]
-		version_manager.xmipp_core_target_tag = request.param["sources"][constants.XMIPP_CORE]["target_tag"]
+		version_manager.sources_versions = request.param["sources_target_tag"]
 		yield mock_method
 
 @pytest.fixture
