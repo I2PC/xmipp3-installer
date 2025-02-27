@@ -125,10 +125,10 @@ def test_sets_allow_substitution(expected_allow_substitution):
 @pytest.mark.parametrize(
 	"error_message,ret_code,add_link,add_link_message,first_expected_message,second_expected_message",
 	[
-		pytest.param("", 1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param(__ERROR_MESSAGE, 1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param("", 1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param(__ERROR_MESSAGE, 1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
+		pytest.param("", 1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}"),
+		pytest.param(__ERROR_MESSAGE, 1, False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}"),
+		pytest.param("", 1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}"),
+		pytest.param(__ERROR_MESSAGE, 1, True, __PORTAL_LINK_MESSAGE,  __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}"),
 		pytest.param("", 2, False, '',  __ERROR_CODES[2][0], ''),
 		pytest.param(__ERROR_MESSAGE, 2, False, '',  __ERROR_CODES[2][0], ''),
 		pytest.param("", 2, True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[2][0], ''),
@@ -137,14 +137,14 @@ def test_sets_allow_substitution(expected_allow_substitution):
 		pytest.param(__ERROR_MESSAGE, 3, False, '', '', ''),
 		pytest.param("", 3, True, __PORTAL_LINK_MESSAGE, '', ''),
 		pytest.param(__ERROR_MESSAGE, 3, True, __PORTAL_LINK_MESSAGE, '', ''),
-		pytest.param("", 4, False, '', '', f"\n{__ERROR_CODES[4][1]} "),
-		pytest.param(__ERROR_MESSAGE, 4, False, '', '', f"\n{__ERROR_CODES[4][1]} "),
-		pytest.param("", 4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} "),
-		pytest.param(__ERROR_MESSAGE, 4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]} "),
-		pytest.param("", 'no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param(__ERROR_MESSAGE, 'no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param("", 'no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} "),
-		pytest.param(__ERROR_MESSAGE, 'no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]} ")
+		pytest.param("", 4, False, '', '', f"\n{__ERROR_CODES[4][1]}"),
+		pytest.param(__ERROR_MESSAGE, 4, False, '', '', f"\n{__ERROR_CODES[4][1]}"),
+		pytest.param("", 4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]}"),
+		pytest.param(__ERROR_MESSAGE, 4, True, __PORTAL_LINK_MESSAGE, '', f"\n{__ERROR_CODES[4][1]}"),
+		pytest.param("", 'no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}"),
+		pytest.param(__ERROR_MESSAGE, 'no-existe', False, '', __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}"),
+		pytest.param("", 'no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}"),
+		pytest.param(__ERROR_MESSAGE, 'no-existe', True, __PORTAL_LINK_MESSAGE, __ERROR_CODES[1][0], f"\n{__ERROR_CODES[1][1]}")
 	],
 )
 def test_calls_logger_with_expected_params_when_logging_error(
