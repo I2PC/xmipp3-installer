@@ -1,9 +1,9 @@
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 import pytest
 
 from xmipp3_installer.application.cli.arguments import params
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_get_sources_executor import ModeGetSourcesExecutor
@@ -30,6 +30,7 @@ __PARAMS = {
 	}
 }
 __SOURCES_PATH = "sources_path"
+__I2PC_REPOSITORY_URL = "i2pc_repository_url"
 
 def test_implements_interface_mode_executor():
 	executor = ModeGetSourcesExecutor(__CONTEXT.copy())
@@ -234,6 +235,145 @@ def test_returns_expected_result_when_running_source_command(
 		result == expected_result
 	), get_assertion_message("result", expected_result, result)
 
+@pytest.mark.parametrize(
+	"source_name,__mock_select_ref_to_clone,"
+	"__mock_run_source_command,substitute",
+	[
+		pytest.param(constants.XMIPP_CORE, None, (0, ""), False),
+		pytest.param(constants.XMIPP_CORE, None, (0, ""), True),
+		pytest.param(constants.XMIPP_CORE, None, (1, "error"), False),
+		pytest.param(constants.XMIPP_CORE, None, (1, "error"), True),
+		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), False),
+		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (0, ""), True),
+		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), False),
+		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, (1, "error"), True),
+		pytest.param(constants.XMIPP_VIZ, None, (0, ""), False),
+		pytest.param(constants.XMIPP_VIZ, None, (0, ""), True),
+		pytest.param(constants.XMIPP_VIZ, None, (1, "error"), False),
+		pytest.param(constants.XMIPP_VIZ, None, (1, "error"), True),
+		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), False),
+		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (0, ""), True),
+		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), False),
+		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME, (1, "error"), True)
+	],
+	indirect=["__mock_select_ref_to_clone", "__mock_run_source_command"]
+)
+def test_calls_logger_when_getting_source(
+	source_name,
+	__mock_select_ref_to_clone,
+	__mock_run_source_command,
+	substitute,
+	__mock_logger,
+	__mock_logger_yellow,
+	__mock_get_working_message,
+	__mock_get_done_message
+):
+	ModeGetSourcesExecutor(
+		__CONTEXT.copy(), substitute=substitute
+	)._ModeGetSourcesExecutor__get_source(source_name)
+	expected_calls = [
+		call(f"Cloning {source_name}...", substitute=substitute),
+		call(__mock_get_working_message(), substitute=substitute),
+	]
+	if not __mock_select_ref_to_clone():
+		expected_calls.append(
+			call(__mock_logger_yellow(
+					f"Warning: branch \'{__CONTEXT[__PARAM_BRANCH]}\' does not exist for repository with url {__REPO_URL}.\n"
+					"Falling back to repository's default branch"
+				),
+				substitute=substitute
+			)
+		)
+	if not __mock_run_source_command()[0]:
+		expected_calls.append(
+			call(__mock_get_done_message(), substitute=substitute)
+		)
+	__mock_logger.assert_has_calls(expected_calls)
+	assert (
+		__mock_logger.call_count == len(expected_calls)
+	), get_assertion_message("call count", len(expected_calls), __mock_logger.call_count)
+
+def test_calls_get_working_message_when_getting_source(
+	__mock_get_working_message,
+	__mock_select_ref_to_clone,
+	__mock_run_source_command
+):
+	ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+		constants.XMIPP_CORE
+	)
+	__mock_get_working_message.assert_called_once_with()
+
+@pytest.mark.parametrize(
+	"source_name",
+	[pytest.param(constants.XMIPP_CORE), pytest.param(constants.XMIPP_VIZ)]
+)
+def test_calls_select_ref_to_clone_when_getting_source(
+	source_name,
+	__mock_select_ref_to_clone,
+	__mock_run_source_command,
+	__mock_i2pc_repo_url
+):
+	ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+		source_name
+	)
+	__mock_select_ref_to_clone.assert_called_once_with(
+		source_name, f"{__mock_i2pc_repo_url}{source_name}"
+	)
+
+@pytest.mark.parametrize(
+	"source_name,__mock_select_ref_to_clone",
+	[
+		pytest.param(constants.XMIPP_CORE, None),
+		pytest.param(constants.XMIPP_CORE, __BRANCH_NAME),
+		pytest.param(constants.XMIPP_VIZ, None),
+		pytest.param(constants.XMIPP_VIZ, __BRANCH_NAME)
+	],
+	indirect=["__mock_select_ref_to_clone"]
+)
+def test_calls_run_source_command_when_getting_source(
+	source_name,
+	__mock_select_ref_to_clone,
+	__mock_run_source_command,
+	__mock_i2pc_repo_url
+):
+	ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+		source_name
+	)
+	__mock_run_source_command.assert_called_once_with(
+		source_name,
+		f"{__mock_i2pc_repo_url}{source_name}",
+		__mock_select_ref_to_clone()
+	)
+
+def test_calls_get_done_message_when_getting_source(
+	__mock_get_done_message,
+	__mock_select_ref_to_clone,
+	__mock_run_source_command
+):
+	ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+		constants.XMIPP_CORE
+	)
+	__mock_get_done_message.assert_called_once_with()
+
+@pytest.mark.parametrize(
+	"__mock_run_source_command",
+	[
+		pytest.param((1, "error")),
+		pytest.param((0, ""))
+	],
+	indirect=["__mock_run_source_command"]
+)
+def test_returns_expected_result_when_getting_source(
+	__mock_select_ref_to_clone,
+	__mock_run_source_command
+):
+	result = ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+		constants.XMIPP_CORE
+	)
+	assert (
+		result == __mock_run_source_command()
+	), get_assertion_message("result", __mock_run_source_command(), result)
+
 @pytest.fixture(params=[__BRANCH_NAME])
 def __mock_get_current_branch(request):
 	with patch(
@@ -297,5 +437,59 @@ def __mock_params():
 def __mock_sources_path():
 	with patch.object(
 		paths, "SOURCES_PATH", __SOURCES_PATH
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_logger():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.__call__"
+	) as mock_method:
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_logger_yellow():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.yellow"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_get_working_message():
+	with patch(
+		"xmipp3_installer.application.logger.predefined_messages.get_working_message"
+	) as mock_method:
+		mock_method.return_value = "working message"
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_get_done_message():
+	with patch(
+		"xmipp3_installer.application.logger.predefined_messages.get_done_message"
+	) as mock_method:
+		mock_method.return_value = "done message"
+		yield mock_method
+
+@pytest.fixture
+def __mock_select_ref_to_clone():
+	with patch(
+		"xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__select_ref_to_clone"
+	) as mock_method:
+		mock_method.return_value = __BRANCH_NAME
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_run_source_command(request):
+	with patch(
+		"xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__run_source_command"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_i2pc_repo_url():
+	with patch.object(
+		urls, "I2PC_REPOSITORY_URL", __I2PC_REPOSITORY_URL
 	) as mock_object:
 		yield mock_object
