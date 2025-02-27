@@ -112,7 +112,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 		logger(predefined_messages.get_working_message(), substitute=self.substitute)
 
 		clone_branch = self.__select_ref_to_clone(source_name, repo_url)
-		if not clone_branch:
+		if self.target_branch and not clone_branch:
 			warning_message = logger.yellow("\n".join([
 				f"Warning: branch \'{self.target_branch}\' does not exist for repository with url {repo_url}.",
 				"Falling back to repository's default branch."
