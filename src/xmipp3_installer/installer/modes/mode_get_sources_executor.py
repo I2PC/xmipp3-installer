@@ -89,7 +89,10 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 				cwd=source_path
 			)
 		
-		branch_str = f"{params.PARAM_BRANCH[params.LONG_VERSION]} {target_branch}" if target_branch else ""
+		branch_str = (
+			f"{params.PARAMS[params.PARAM_BRANCH][params.LONG_VERSION]} {target_branch}"
+			if target_branch else ""
+		)
 		return shell_handler.run_shell_command(f"git clone{branch_str} {source_repo}.git", cwd=paths.SOURCES_PATH)
 	
 	def __get_source(self, source_name: str) -> Tuple[int, str]:
