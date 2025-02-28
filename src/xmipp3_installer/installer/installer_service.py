@@ -48,7 +48,7 @@ class InstallationManager:
       logger.log_error(output, ret_code=ret_code, add_portal_link=ret_code != errors.INTERRUPTED_ERROR)
     if (
       self.mode_executor.sends_installation_info and 
-      self.context.get(variables.SEND_INSTALLATION_STATISTICS, False)
+      self.context[variables.SEND_INSTALLATION_STATISTICS]
     ):
       logger("Sending anonymous installation info...")
       api_client.send_installation_attempt(
