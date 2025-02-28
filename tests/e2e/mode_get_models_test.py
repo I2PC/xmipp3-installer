@@ -22,10 +22,10 @@ from .. import (
 @pytest.mark.parametrize(
 	"__mock_sync_program_path,__mock_os_path_isdir,expected_message",
 	[
-		pytest.param(False, False, mode_sync.NO_PROGRAM),
-		 pytest.param(False, True, mode_sync.NO_PROGRAM),
-		pytest.param(True, False, mode_get_models.DOWNLOAD),
-		pytest.param(True, True, mode_get_models.UPDATE)
+		pytest.param(False, False, mode_sync.NO_PROGRAM, id="Non-existing program download"),
+		pytest.param(False, True, mode_sync.NO_PROGRAM, id="Non-existing program update"),
+		pytest.param(True, False, mode_get_models.DOWNLOAD, id="Existing program download"),
+		pytest.param(True, True, mode_get_models.UPDATE, id="Existing program update")
 	],
 	indirect=["__mock_sync_program_path", "__mock_os_path_isdir"]
 )
