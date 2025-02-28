@@ -14,7 +14,7 @@ __ARGS = {
 	'command': __GIT_COMMAND_PARAMS
 }
 __RETURN_VALUES_STR = "return values"
-__SOURCES = [constants.XMIPP, constants.XMIPP_CORE]
+__SOURCES = [constants.XMIPP, *constants.XMIPP_SOURCES]
 
 def test_implements_interface_mode_executor():
 	executor = ModeGitExecutor(__ARGS.copy())
