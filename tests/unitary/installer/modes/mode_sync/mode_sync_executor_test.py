@@ -39,16 +39,18 @@ def test_does_not_override_parent_config_values(
 ):
 	base_executor = __dummy_test_mode_executor({})
 	base_executor.run() # To cover dummy implementation execution
-	models_executor = DummySyncExecutor({})
+	mode_sync_executor = DummySyncExecutor({})
 	base_config = (
 		base_executor.logs_to_file,
 		base_executor.prints_with_substitution,
-		base_executor.prints_banner_on_exit
+		base_executor.prints_banner_on_exit,
+		base_executor.sends_installation_info
 	)
 	inherited_config = (
-		models_executor.logs_to_file,
-		models_executor.prints_with_substitution,
-		models_executor.prints_banner_on_exit
+		mode_sync_executor.logs_to_file,
+		mode_sync_executor.prints_with_substitution,
+		mode_sync_executor.prints_banner_on_exit,
+		mode_sync_executor.sends_installation_info
 	)
 	assert (
 		inherited_config == base_config

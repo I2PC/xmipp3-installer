@@ -46,6 +46,26 @@ def test_implements_interface_mode_executor():
 		executor.__class__.__bases__[0].__name__
 	)
 
+def test_overrides_expected_parent_config_values(__dummy_test_mode_executor):
+	base_executor = __dummy_test_mode_executor(__CONTEXT.copy())
+	base_executor.run()  # To cover dummy implementation execution
+	config_executor = ModeGetSourcesExecutor(__CONTEXT.copy())
+	base_config = (
+		base_executor.logs_to_file,
+		not base_executor.prints_with_substitution,
+		base_executor.prints_banner_on_exit,
+		base_executor.sends_installation_info
+	)
+	inherited_config = (
+		config_executor.logs_to_file,
+		config_executor.prints_with_substitution,
+		config_executor.prints_banner_on_exit,
+		config_executor.sends_installation_info
+	)
+	assert (
+		inherited_config == base_config
+	), get_assertion_message("config values", base_config, inherited_config)
+
 def test_stores_expected_values_when_initializing():
 	executor = ModeGetSourcesExecutor(__CONTEXT.copy())
 	values = (
@@ -428,6 +448,13 @@ def test_returns_expected_result_when_running_executor(
 	assert (
 		result == expected_result
 	), get_assertion_message("executor result", expected_result, result)
+
+@pytest.fixture
+def __dummy_test_mode_executor():
+	class TestExecutor(ModeExecutor):
+		def run(self):
+			return (0, "")
+	return TestExecutor
 
 @pytest.fixture(params=[__BRANCH_NAME])
 def __mock_get_current_branch(request):
