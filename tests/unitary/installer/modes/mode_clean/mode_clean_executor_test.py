@@ -33,7 +33,7 @@ def test_does_not_override_parent_config_values(
 ):
 	base_executor = __dummy_test_mode_executor({})
 	base_executor.run()  # To cover dummy implementation execution
-	config_executor = __dummy_test_mode_clean_executor({})
+	clean_executor = __dummy_test_mode_clean_executor({})
 	base_config = (
 		base_executor.logs_to_file,
 		base_executor.prints_with_substitution,
@@ -41,10 +41,10 @@ def test_does_not_override_parent_config_values(
 		base_executor.sends_installation_info
 	)
 	inherited_config = (
-		config_executor.logs_to_file,
-		config_executor.prints_with_substitution,
-		config_executor.prints_banner_on_exit,
-		config_executor.sends_installation_info
+		clean_executor.logs_to_file,
+		clean_executor.prints_with_substitution,
+		clean_executor.prints_banner_on_exit,
+		clean_executor.sends_installation_info
 	)
 	assert (
 		inherited_config == base_config
