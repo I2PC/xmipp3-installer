@@ -2,10 +2,10 @@ from unittest.mock import patch, MagicMock, call
 
 import pytest
 
-from xmipp3_installer.installer.modes.mode_config_executor import ModeConfigExecutor
-from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
+from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
+from xmipp3_installer.installer.modes.mode_config_executor import ModeConfigExecutor
 from xmipp3_installer.repository import config
 
 from .... import get_assertion_message
