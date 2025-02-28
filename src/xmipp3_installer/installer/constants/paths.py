@@ -7,7 +7,6 @@ SOURCES_PATH = "src"
 BUILD_PATH = "build"
 INSTALL_PATH = "dist"
 BINARIES_PATH = os.path.join(INSTALL_PATH, "bin")
-#BUILD_TYPE = "Release"
 #CMAKE_CACHE_PATH = os.path.join(BUILD_PATH, 'CMakeCache.txt')
 SCIPION_SOFTWARE_EM = os.path.join("scipionfiles", "downloads", "scipion", "software", "em")
 
