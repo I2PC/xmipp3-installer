@@ -127,12 +127,13 @@ def __setup_evironment(request):
 
 @pytest.fixture(autouse=True, params=[[]])
 def __mock_sys_argv(request):
-	params = [
+	args = [
 		arguments.XMIPP_PROGRAM_NAME,
 		modes.MODE_GET_SOURCES,
+		params.PARAMS[params.PARAM_KEEP_OUTPUT][params.LONG_VERSION],
 		*request.param
 	]
-	with patch.object(sys, 'argv', params) as mock_object:
+	with patch.object(sys, 'argv', args) as mock_object:
 		yield mock_object
 
 @pytest.fixture
