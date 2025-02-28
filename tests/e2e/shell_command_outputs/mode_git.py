@@ -24,42 +24,20 @@ def __get_existing_source_message(source_name):
     __GIT_COMMAND_OUTPUT
   ])
 
-def get_git_command_no_xmipp_no_xmipp_core():
-  return '\n'.join([
+def get_git_command(exists_xmipp: bool, exists_xmippcore:bool, exists_xmippviz: bool):
+  message_lines = [
     __INITIAL_MESSAGE,
-    "",
-    __get_non_existing_source_message(constants.XMIPP),
-    "",
-    __get_non_existing_source_message(constants.XMIPP_CORE),
     ""
-  ])
+  ]
+  for exists, source in [
+    (exists_xmipp, constants.XMIPP),
+    (exists_xmippcore, constants.XMIPP_CORE),
+    (exists_xmippviz, constants.XMIPP_VIZ)
+  ]:
+    if exists:
+      message_lines.append(__get_existing_source_message(source))
+    else:
+      message_lines.append(__get_non_existing_source_message(source))
+    message_lines.append("")
 
-def get_git_command_no_xmipp_with_xmipp_core():
-  return '\n'.join([
-    __INITIAL_MESSAGE,
-    "",
-    __get_non_existing_source_message(constants.XMIPP),
-    "",
-    __get_existing_source_message(constants.XMIPP_CORE),
-    ""
-  ])
-
-def get_git_command_with_xmipp_no_xmipp_core():
-  return '\n'.join([
-    __INITIAL_MESSAGE,
-    "",
-    __get_existing_source_message(constants.XMIPP),
-    "",
-    __get_non_existing_source_message(constants.XMIPP_CORE),
-    ""
-  ])
-
-def get_git_command_with_xmipp_with_xmipp_core():
-  return '\n'.join([
-    __INITIAL_MESSAGE,
-    "",
-    __get_existing_source_message(constants.XMIPP),
-    "",
-    __get_existing_source_message(constants.XMIPP_CORE),
-    ""
-  ])
+  return "\n".join(message_lines)
