@@ -10,7 +10,7 @@ from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import git_handler, versions_manager, shell_handler
 
 class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
-	def __init__(self, context: Dict, substitute: bool=False):
+	def __init__(self, context: Dict):
 		"""
 		### Constructor.
 		
@@ -19,7 +19,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 		- substitute (bool): Optional. If True, printed text will be substituted with the next message.
 		"""
 		super().__init__(context)
-		self.substitute = substitute
+		self.substitute = not context[params.PARAM_KEEP_OUTPUT]
 		self.target_branch = context.pop(params.PARAM_BRANCH)
 		versions: versions_manager.VersionsManager = context[constants.VERSIONS_CONTEXT_KEY]
 		self.xmipp_tag_name = versions.xmipp_version_name

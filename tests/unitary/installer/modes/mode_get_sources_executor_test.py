@@ -16,9 +16,11 @@ from .... import (
 )
 
 __PARAM_BRANCH = "branch_param"
+__PARAM_KEEP_OUTPUT = "keep_output"
 __CONTEXT = {
 	__PARAM_BRANCH: constants.DEVEL_BRANCHNAME,
-	constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager()
+	constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager(),
+	__PARAM_KEEP_OUTPUT: False
 }
 __BRANCH_NAME = "devel"
 __REPO_URL = "repourl"
@@ -47,11 +49,13 @@ def test_implements_interface_mode_executor():
 def test_stores_expected_values_when_initializing():
 	executor = ModeGetSourcesExecutor(__CONTEXT.copy())
 	values = (
+		executor.substitute,
 		executor.target_branch,
 		executor.xmipp_tag_name,
 		executor.source_versions
 	)
 	expected_values = (
+		True,
 		constants.DEVEL_BRANCHNAME,
 		JSON_XMIPP_VERSION_NAME,
 		{
@@ -65,7 +69,11 @@ def test_stores_expected_values_when_initializing():
 
 @pytest.mark.parametrize(
 	"variable_key",
-	[pytest.param(__PARAM_BRANCH), pytest.param(constants.VERSIONS_CONTEXT_KEY)]
+	[
+		pytest.param(__PARAM_KEEP_OUTPUT),
+		pytest.param(__PARAM_BRANCH),
+		pytest.param(constants.VERSIONS_CONTEXT_KEY)
+	]
 )
 def test_raises_key_error_if_variable_not_present_in_context_when_initializing(
 	variable_key
@@ -74,19 +82,6 @@ def test_raises_key_error_if_variable_not_present_in_context_when_initializing(
 	del context[variable_key]
 	with pytest.raises(KeyError):
 		ModeGetSourcesExecutor(context)
-
-def test_sets_substitute_to_false_when_not_provided():
-	executor = ModeGetSourcesExecutor(__CONTEXT.copy())
-	assert (
-		not executor.substitute
-	), get_assertion_message("substitute default value", False, executor.substitute)
-
-@pytest.mark.parametrize("expected_value", [pytest.param(False), pytest.param(True)])
-def test_sets_substitute_value_when_provided(expected_value):
-	executor = ModeGetSourcesExecutor(__CONTEXT.copy(), substitute=expected_value)
-	assert (
-		executor.substitute == expected_value
-	), get_assertion_message("substitute value", expected_value, executor.substitute)
 
 def test_calls_get_current_branch_when_selecting_ref_to_clone(
 	__mock_get_current_branch
@@ -289,7 +284,7 @@ def test_calls_logger_when_getting_source(
 	__mock_i2pc_repo_url
 ):
 	ModeGetSourcesExecutor(
-		{**__CONTEXT, __PARAM_BRANCH: target_branch}, substitute=substitute
+		{**__CONTEXT, __PARAM_BRANCH: target_branch, __PARAM_KEEP_OUTPUT: not substitute},
 	)._ModeGetSourcesExecutor__get_source(source_name)
 	expected_calls = [
 		call(f"Cloning {source_name}...", substitute=substitute),
@@ -471,6 +466,13 @@ def __mock_run_shell_command(request):
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_param_keep_output():
+	with patch.object(
+		params, "PARAM_KEEP_OUTPUT", __PARAM_KEEP_OUTPUT
+	) as mock_object:
+		yield mock_object
 
 @pytest.fixture(autouse=True)
 def __mock_param_branch():
