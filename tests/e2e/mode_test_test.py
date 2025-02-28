@@ -25,22 +25,70 @@ __MULTIPLE_TESTS = f"{__INDIVIDUAL_TEST} test2 test3"
 @pytest.mark.parametrize(
 	"__mock_sync_program_path,__mock_dataset_path,__mock_sys_argv,show,expected_message",
 	[
-		pytest.param(False, False, __INDIVIDUAL_TEST, False, mode_sync.NO_PROGRAM),
-		pytest.param(False, False, __INDIVIDUAL_TEST, True, mode_sync.NO_PROGRAM),
-		pytest.param(False, False, __MULTIPLE_TESTS, False, mode_sync.NO_PROGRAM),
-		pytest.param(False, False, __MULTIPLE_TESTS, True, mode_sync.NO_PROGRAM),
-		pytest.param(False, True, __INDIVIDUAL_TEST, False, mode_sync.NO_PROGRAM),
-		pytest.param(False, True, __INDIVIDUAL_TEST, True, mode_sync.NO_PROGRAM),
-		pytest.param(False, True, __MULTIPLE_TESTS, False, mode_sync.NO_PROGRAM),
-		pytest.param(False, True, __MULTIPLE_TESTS, True, mode_sync.NO_PROGRAM),
-		pytest.param(True, False, __INDIVIDUAL_TEST, False, mode_test.get_download_message(__INDIVIDUAL_TEST)),
-		pytest.param(True, False, __INDIVIDUAL_TEST, True, mode_test.get_download_message(__INDIVIDUAL_TEST)),
-		pytest.param(True, False, __MULTIPLE_TESTS, False, mode_test.get_download_message(__MULTIPLE_TESTS)),
-		pytest.param(True, False, __MULTIPLE_TESTS, True, mode_test.get_download_message(__MULTIPLE_TESTS)),
-		pytest.param(True, True, __INDIVIDUAL_TEST, False, mode_test.get_update_message(__INDIVIDUAL_TEST)),
-		pytest.param(True, True, __INDIVIDUAL_TEST, True, mode_test.get_update_message(__INDIVIDUAL_TEST)),
-		pytest.param(True, True, __MULTIPLE_TESTS, False, mode_test.get_update_message(__MULTIPLE_TESTS)),
-		pytest.param(True, True, __MULTIPLE_TESTS, True, mode_test.get_update_message(__MULTIPLE_TESTS))
+		pytest.param(
+			False, False, __INDIVIDUAL_TEST, False, mode_sync.NO_PROGRAM,
+			id="Non-existing program, no dataset, individual test, no show"
+		),
+		pytest.param(
+			False, False, __INDIVIDUAL_TEST, True, mode_sync.NO_PROGRAM,
+			id="Non-existing program, no dataset, individual test, show"
+		),
+		pytest.param(
+			False, False, __MULTIPLE_TESTS, False, mode_sync.NO_PROGRAM,
+			id="Non-existing program, no dataset, multiple tests, no show"
+		),
+		pytest.param(
+			False, False, __MULTIPLE_TESTS, True, mode_sync.NO_PROGRAM,
+			id="Non-existing program, no dataset, multiple tests, show"
+		),
+		pytest.param(
+			False, True, __INDIVIDUAL_TEST, False, mode_sync.NO_PROGRAM,
+			id="Non-existing program, existing dataset, individual test, no show"
+		),
+		pytest.param(
+			False, True, __INDIVIDUAL_TEST, True, mode_sync.NO_PROGRAM,
+			id="Non-existing program, existing dataset, individual test, show"
+		),
+		pytest.param(
+			False, True, __MULTIPLE_TESTS, False, mode_sync.NO_PROGRAM,
+			id="Non-existing program, existing dataset, multiple tests, no show"
+		),
+		pytest.param(
+			False, True, __MULTIPLE_TESTS, True, mode_sync.NO_PROGRAM,
+			id="Non-existing program, existing dataset, multiple tests, show"
+		),
+		pytest.param(
+			True, False, __INDIVIDUAL_TEST, False, mode_test.get_download_message(__INDIVIDUAL_TEST),
+			id="Existing program, no dataset, individual test, no show"
+		),
+		pytest.param(
+			True, False, __INDIVIDUAL_TEST, True, mode_test.get_download_message(__INDIVIDUAL_TEST),
+			id="Existing program, no dataset, individual test, show"
+		),
+		pytest.param(
+			True, False, __MULTIPLE_TESTS, False, mode_test.get_download_message(__MULTIPLE_TESTS),
+			id="Existing program, no dataset, multiple tests, no show"
+		),
+		pytest.param(
+			True, False, __MULTIPLE_TESTS, True, mode_test.get_download_message(__MULTIPLE_TESTS),
+			id="Existing program, no dataset, multiple tests, show"
+		),
+		pytest.param(
+			True, True, __INDIVIDUAL_TEST, False, mode_test.get_update_message(__INDIVIDUAL_TEST),
+			id="Existing program, existing dataset, individual test, no show"
+		),
+		pytest.param(
+			True, True, __INDIVIDUAL_TEST, True, mode_test.get_update_message(__INDIVIDUAL_TEST),
+			id="Existing program, existing dataset, individual test, show"
+		),
+		pytest.param(
+			True, True, __MULTIPLE_TESTS, False, mode_test.get_update_message(__MULTIPLE_TESTS),
+			id="Existing program, existing dataset, multiple tests, no show"
+		),
+		pytest.param(
+			True, True, __MULTIPLE_TESTS, True, mode_test.get_update_message(__MULTIPLE_TESTS),
+			id="Existing program, existing dataset, multiple tests, show"
+		)
 	],
 	indirect=["__mock_sync_program_path", "__mock_dataset_path", "__mock_sys_argv"]
 )

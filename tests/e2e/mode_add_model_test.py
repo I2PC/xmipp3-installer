@@ -25,14 +25,38 @@ __MODEL_PATH = os.path.join(TEST_FILES_DIR, mode_add_model.MODEL_NAME)
 	"__mock_sys_argv,__mock_sync_program_path,update,"
 	"__mock_sys_stdin,expected_message",
 	[
-		pytest.param(mode_add_model.NON_EXISTING_MODEL_PATH, False, False, False, mode_sync.NO_PROGRAM),
-		pytest.param(mode_add_model.NON_EXISTING_MODEL_PATH, True, True, True, mode_add_model.NO_MODEL),
-		pytest.param(__MODEL_PATH, False, False, False, mode_sync.NO_PROGRAM),
-		pytest.param(__MODEL_PATH, False, True, True, mode_sync.NO_PROGRAM),
-		pytest.param(__MODEL_PATH, True, False, False, mode_add_model.CANCELLED),
-		pytest.param(__MODEL_PATH, True, True, False, mode_add_model.CANCELLED),
-		pytest.param(__MODEL_PATH, True, False, True, mode_add_model.UPLOADED),
-		pytest.param(__MODEL_PATH, True, True, True, mode_add_model.UPLOADED)
+		pytest.param(
+			mode_add_model.NON_EXISTING_MODEL_PATH, False, False, False, mode_sync.NO_PROGRAM,
+			id="Non-existing model path, non-existing sync program, no update, no confirmation"
+		),
+		pytest.param(
+			mode_add_model.NON_EXISTING_MODEL_PATH, True, True, True, mode_add_model.NO_MODEL,
+			id="Non-existing model path, existing sync program, update, with confirmation"
+		),
+		pytest.param(
+			__MODEL_PATH, False, False, False, mode_sync.NO_PROGRAM,
+			id="Existing model path, non-existing sync program, no update, no confirmation"
+		),
+		pytest.param(
+			__MODEL_PATH, False, True, True, mode_sync.NO_PROGRAM,
+			id="Existing model path, non-existing sync program, update, with confirmation"
+		),
+		pytest.param(
+			__MODEL_PATH, True, False, False, mode_add_model.CANCELLED,
+			id="Existing model path, existing sync program, no update, no confirmation"
+		),
+		pytest.param(
+			__MODEL_PATH, True, True, False, mode_add_model.CANCELLED,
+			id="Existing model path, existing sync program, update, no confirmation"
+		),
+		pytest.param(
+			__MODEL_PATH, True, False, True, mode_add_model.UPLOADED,
+			id="Existing model path, existing sync program, no update, with confirmation"
+		),
+		pytest.param(
+			__MODEL_PATH, True, True, True, mode_add_model.UPLOADED,
+			id="Existing model path, existing sync program, update, with confirmation"
+		)
 	],
 	indirect=["__mock_sys_argv", "__mock_sync_program_path", "__mock_sys_stdin"]
 )
