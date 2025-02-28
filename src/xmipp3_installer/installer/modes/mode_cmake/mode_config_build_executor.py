@@ -1,0 +1,52 @@
+from typing import Tuple, List
+
+from xmipp3_installer.application.logger import errors
+from xmipp3_installer.application.logger import predefined_messages
+from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer import constants
+from xmipp3_installer.installer.constants import paths
+from xmipp3_installer.installer.handlers import shell_handler
+from xmipp3_installer.installer.modes.mode_cmake import mode_cmake_executor
+from xmipp3_installer.repository.config_vars import variables
+
+class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
+	def _run_cmake_mode(self, cmake: str) -> Tuple[int, str]:
+		"""
+		### Runs the CMake config with the appropiate params.
+
+		#### Params:
+		- cmake (str): Path to CMake executable.
+
+		#### Returns:
+		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
+		"""
+		logger(predefined_messages.get_section_message("Configuring with CMake"))
+		cmd = f"{cmake} -S . -B {paths.BUILD_PATH} -DCMAKE_BUILD_TYPE={constants.BUILD_TYPE} {self.__get_cmake_vars()}"
+		if shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute):
+			return errors.CMAKE_CONFIGURE_ERROR, ""
+		return 0, ""
+	
+	def __get_cmake_vars(self) -> str:
+		"""
+		### Returns the CMake variables required for the configuration step.
+
+		#### Returns:
+		- (str): String containing all required CMake variables
+		"""
+		return " ".join([
+			f"-D{variable_key}={self.context[variable_key]}" for variable_key
+			in self.__get_config_vars() if self.context[variable_key]
+		])
+	
+	def __get_config_vars(self) -> List[str]:
+		"""
+		### Returns all non-internal config variable keys.
+
+		#### Returns:
+		- (list(str)): A list containing all non-internal config variable keys.
+		"""
+		all_config_var_keys = [
+			config_var for variable_section in variables.CONFIG_VARIABLES.values()
+			for config_var in variable_section
+		]
+		return list(set(all_config_var_keys) - set(variables.INTERNAL_LOGIC_VARS))
