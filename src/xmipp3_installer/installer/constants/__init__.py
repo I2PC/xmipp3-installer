@@ -11,6 +11,7 @@ DEVEL_BRANCHNAME = 'devel'
 MASTER_BRANCHNAME = 'master'
 
 # Context
+BUILD_TYPE = "Release"
 VERSIONS_CONTEXT_KEY = "versions"
 
 # Others
