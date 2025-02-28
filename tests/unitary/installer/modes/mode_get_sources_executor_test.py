@@ -16,7 +16,7 @@ from .... import (
 )
 
 __PARAM_BRANCH = "branch_param"
-__PARAM_KEEP_OUTPUT = "keep_output"
+__PARAM_KEEP_OUTPUT = "keep-output"
 __CONTEXT = {
 	__PARAM_BRANCH: constants.DEVEL_BRANCHNAME,
 	constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager(),
