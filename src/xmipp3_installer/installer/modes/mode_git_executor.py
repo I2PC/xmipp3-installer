@@ -30,7 +30,7 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		"""
 		logger(f"Running command '{self.command}' for all xmipp sources...")
 
-		for source in [constants.XMIPP, constants.XMIPP_CORE]:
+		for source in [constants.XMIPP, *constants.XMIPP_SOURCES]:
 			logger("")
 			ret_code, output = self.__execute_git_command_for_source(source)
 			if ret_code:
