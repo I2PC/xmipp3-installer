@@ -19,7 +19,7 @@ PARAM_LOGIN = 'login'
 PARAM_MODEL_PATH = 'modelPath'
 PARAM_UPDATE = 'update'
 PARAM_OVERWRITE = 'overwrite'
-PARAM_KEEP_OUTPUT = "keep-output"
+PARAM_KEEP_OUTPUT = "keep_output"
 PARAMS = {
 	PARAM_SHORT: {
 		LONG_VERSION: "--short",
