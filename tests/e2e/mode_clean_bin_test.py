@@ -29,10 +29,10 @@ __PYCACHE_ROOT = "pycache_root"
 @pytest.mark.parametrize(
   "confirmation_text",
   [
-    pytest.param(""),
-    pytest.param("no"),
-    pytest.param("Y"),
-    pytest.param("y")
+    pytest.param("", id="No confirmation"),
+    pytest.param("no", id="Cancelled confirmation"),
+    pytest.param("Y", id="Wrong confirmation"),
+    pytest.param("y", id="Correct confirmation")
   ]
 )
 def test_deletes_expected_files(__setup_environment, confirmation_text):

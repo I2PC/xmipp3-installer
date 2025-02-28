@@ -12,10 +12,10 @@ from .. import get_assertion_message, create_versions_json_file
 @pytest.mark.parametrize(
   "confirmation_text",
   [
-    pytest.param(""),
-    pytest.param("no"),
-    pytest.param("Yes"),
-    pytest.param("YeS")
+    pytest.param("", id="No confirmation"),
+    pytest.param("no", id="Cancelled confirmation"),
+    pytest.param("Yes", id="Wrong confirmation"),
+    pytest.param("YeS", id="Correct confirmation")
   ]
 )
 def test_deletes_expected_files(__setup_environment, confirmation_text):

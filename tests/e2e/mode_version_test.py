@@ -25,10 +25,10 @@ def test_returns_short_version(__setup_evironment):
 @pytest.mark.parametrize(
 	"__setup_evironment,expected_output_function",
 	[
-		pytest.param((False, False), mode_version.get_full_info_before_config),
-		pytest.param((False, True), mode_version.get_full_info_before_config_with_sources),
-		pytest.param((True, False), mode_version.get_full_info_after_config_without_sources),
-		pytest.param((True, True), mode_version.get_full_info_after_config_with_sources)
+		pytest.param((False, False), mode_version.get_full_info_before_config, id="Before config without sources"),
+		pytest.param((False, True), mode_version.get_full_info_before_config_with_sources, id="Before config with sources"),
+		pytest.param((True, False), mode_version.get_full_info_after_config_without_sources, id="After config without sources"),
+		pytest.param((True, True), mode_version.get_full_info_after_config_with_sources, id="After config with sources")
 	],
 	indirect=["__setup_evironment"]
 )
