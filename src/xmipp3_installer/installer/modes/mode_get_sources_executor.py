@@ -39,6 +39,13 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 				return errors.SOURCE_CLONE_ERROR, output
 		return 0, ""
 	
+	def _set_executor_config(self):
+		"""
+		### Sets the specific executor params for this mode.
+		"""
+		super()._set_executor_config()
+		self.prints_with_substitution = True
+	
 	def __select_ref_to_clone(self, source_name: str, source_repo: str) -> str:
 		"""
 		### Selects the reference to clone from the source.
