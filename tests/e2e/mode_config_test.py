@@ -20,14 +20,14 @@ __DATE = "10-12-2024 17:26.33"
 @pytest.mark.parametrize(
 	"__setup_config_evironment,expected_file,overwrite",
 	[
-		pytest.param((False, "default.conf"), "default.conf", False),
-		pytest.param((True, "default.conf"), "default.conf", False),
-		pytest.param((True, "modified.conf"), "modified.conf", False),
-		pytest.param((True, "unknown.conf"), "unknown.conf", False),
-		pytest.param((False, "default.conf"), "default.conf", True),
-		pytest.param((True, "default.conf"), "default.conf", True),
-		pytest.param((True, "modified.conf"), "default.conf", True),
-		pytest.param((True, "unknown.conf"), "default.conf", True)
+		pytest.param((False, "default.conf"), "default.conf", False, id="New file without overwrite"),
+		pytest.param((True, "default.conf"), "default.conf", False, id="Existing default file without overwrite"),
+		pytest.param((True, "modified.conf"), "modified.conf", False, id="Existing modified file without overwrite"),
+		pytest.param((True, "unknown.conf"), "unknown.conf", False, id="Existing unknown variables file without overwrite"),
+		pytest.param((False, "default.conf"), "default.conf", True, id="New file with overwrite"),
+		pytest.param((True, "default.conf"), "default.conf", True, id="Existing default file with overwrite"),
+		pytest.param((True, "modified.conf"), "default.conf", True, id="Existing modified file with overwrite"),
+		pytest.param((True, "unknown.conf"), "default.conf", True, id="Existing unknown variables file with overwrite")
 	],
 	indirect=["__setup_config_evironment"]
 )

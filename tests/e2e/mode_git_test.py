@@ -16,10 +16,22 @@ __XMIPP_PATH = paths.get_source_path(constants.XMIPP)
 @pytest.mark.parametrize(
 	"__setup_evironment,expected_output_function",
 	[
-		pytest.param((False, False), mode_git.get_git_command_no_xmipp_no_xmipp_core),
-		pytest.param((False, True), mode_git.get_git_command_no_xmipp_with_xmipp_core),
-		pytest.param((True, False), mode_git.get_git_command_with_xmipp_no_xmipp_core),
-		pytest.param((True, True), mode_git.get_git_command_with_xmipp_with_xmipp_core)
+		pytest.param(
+			(False, False), mode_git.get_git_command_no_xmipp_no_xmipp_core,
+			id="Without xmipp, without xmippCore"
+		),
+		pytest.param(
+			(False, True), mode_git.get_git_command_no_xmipp_with_xmipp_core,
+			id="Without xmipp, with xmippCore"
+		),
+		pytest.param(
+			(True, False), mode_git.get_git_command_with_xmipp_no_xmipp_core,
+			id="With xmipp, without xmippCore"
+		),
+		pytest.param(
+			(True, True), mode_git.get_git_command_with_xmipp_with_xmipp_core,
+			id="With xmipp, with xmippCore"
+		)
 	],
 	indirect=["__setup_evironment"]
 )
