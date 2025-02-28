@@ -1,14 +1,6 @@
-import os
-
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.constants import paths
 
-from .. import mode_sync
 from ....test_files import xmipp_sync_data, test
-
-REAL_MODELS_DIR = os.path.join(paths.SOURCES_PATH, constants.XMIPP, "models")
-FAKE_SYNC_PROGRAM_FULL_PATH = os.path.join(".", "tests", "e2e", "test_files", mode_sync.SYNC_PROGRAM_NAME)
 
 def get_test_messages_section(test_names: str) -> str:
   test_names_str = ' '.join(test_names)
