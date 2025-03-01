@@ -38,7 +38,6 @@ def test_overrides_expected_parent_config_values(
 	__dummy_test_mode_executor
 ):
 	base_executor = __dummy_test_mode_executor({})
-	base_executor.run()  # To cover dummy implementation execution
 	cmake_executor = __dummy_test_mode_cmake_executor(__CONTEXT.copy())
 	base_config = (
 		not base_executor.logs_to_file,

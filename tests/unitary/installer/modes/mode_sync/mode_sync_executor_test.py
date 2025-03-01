@@ -38,7 +38,6 @@ def test_does_not_override_parent_config_values(
 	__dummy_test_mode_executor
 ):
 	base_executor = __dummy_test_mode_executor({})
-	base_executor.run() # To cover dummy implementation execution
 	mode_sync_executor = DummySyncExecutor({})
 	base_config = (
 		base_executor.logs_to_file,
@@ -113,7 +112,9 @@ def test_returns_execute_model_operation_result_when_sync_program_exists(
 def __dummy_test_mode_executor():
 	class TestExecutor(mode_executor.ModeExecutor):
 		def run(self):
-			return (0, "")
+			return 0, ""
+	# For coverage
+	TestExecutor({}).run()
 	return TestExecutor
 
 @pytest.fixture(autouse=True)

@@ -10,9 +10,6 @@ from ..... import get_assertion_message
 
 def test_is_instance_of_mode_executor(__dummy_test_mode_clean_executor):
 	executor = __dummy_test_mode_clean_executor({})
-	executor._get_paths_to_delete() # To cover dummy implementation execution
-	executor._get_confirmation_message() # To cover dummy implementation execution
-	executor._get_confirmation_keyword() # To cover dummy implementation execution
 	assert (
 		isinstance(executor, ModeExecutor)
 	), get_assertion_message(
@@ -32,7 +29,6 @@ def test_does_not_override_parent_config_values(
 	__dummy_test_mode_executor
 ):
 	base_executor = __dummy_test_mode_executor({})
-	base_executor.run()  # To cover dummy implementation execution
 	clean_executor = __dummy_test_mode_clean_executor({})
 	base_config = (
 		base_executor.logs_to_file,
@@ -178,6 +174,11 @@ def __dummy_test_mode_clean_executor():
 			return ""
 		def _get_confirmation_keyword(self):
 			return ""
+	# For coverage
+	executor = TestExecutor({})
+	executor._get_paths_to_delete()
+	executor._get_confirmation_message()
+	executor._get_confirmation_keyword()
 	return TestExecutor
 
 @pytest.fixture

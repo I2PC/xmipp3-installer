@@ -48,8 +48,7 @@ def test_implements_interface_mode_executor():
 
 def test_overrides_expected_parent_config_values(__dummy_test_mode_executor):
 	base_executor = __dummy_test_mode_executor(__CONTEXT.copy())
-	base_executor.run()  # To cover dummy implementation execution
-	config_executor = ModeGetSourcesExecutor(__CONTEXT.copy())
+	get_sources_executor = ModeGetSourcesExecutor(__CONTEXT.copy())
 	base_config = (
 		base_executor.logs_to_file,
 		not base_executor.prints_with_substitution,
@@ -57,10 +56,10 @@ def test_overrides_expected_parent_config_values(__dummy_test_mode_executor):
 		base_executor.sends_installation_info
 	)
 	inherited_config = (
-		config_executor.logs_to_file,
-		config_executor.prints_with_substitution,
-		config_executor.prints_banner_on_exit,
-		config_executor.sends_installation_info
+		get_sources_executor.logs_to_file,
+		get_sources_executor.prints_with_substitution,
+		get_sources_executor.prints_banner_on_exit,
+		get_sources_executor.sends_installation_info
 	)
 	assert (
 		inherited_config == base_config
@@ -453,7 +452,8 @@ def test_returns_expected_result_when_running_executor(
 def __dummy_test_mode_executor():
 	class TestExecutor(ModeExecutor):
 		def run(self):
-			return (0, "")
+			return 0, ""
+	TestExecutor(__CONTEXT.copy()).run() # For coverage
 	return TestExecutor
 
 @pytest.fixture(params=[__BRANCH_NAME])
