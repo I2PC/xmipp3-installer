@@ -186,6 +186,7 @@ def __dummy_test_mode_executor():
 	class TestExecutor(ModeExecutor):
 		def run(self):
 			return 0, ""
+	TestExecutor({}).run() # For coverage
 	return TestExecutor
 
 @pytest.fixture(autouse=True)
