@@ -1,5 +1,6 @@
 """### Functions that interact with CMake."""
 
+import os
 import shutil
 from typing import Dict, Any
 
@@ -41,6 +42,9 @@ def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
 	#### Returns:
 	- (dict(str, any)): Dictionary containing all the library versions in the file.
 	"""
+	if not os.path.exists(path):
+		return {}
+	
 	result = {}
 	with open(path, 'r') as versions_file:
 		for line in versions_file.readlines():
