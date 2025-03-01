@@ -81,9 +81,17 @@ def test_gets_expected_library_version_from_line(line, expected_library_version)
     library_version == expected_library_version
   ), get_assertion_message("library version", expected_library_version, library_version)
 
-def test_calls_open_when_getting_library_versions_from_cmake_file(__mock_open):
+def test_calls_open_if_library_version_file_exists_when_getting_library_versions_from_cmake_file(__mock_open):
   cmake_handler.get_library_versions_from_cmake_file(__FILE_PATH)
   __mock_open.assert_called_once_with(__FILE_PATH, 'r')
+
+def test_does_not_call_open_if_library_version_file_does_not_exist_when_getting_library_versions_from_cmake_file(
+  __mock_open,
+  __mock_os_path_exists
+):
+  __mock_os_path_exists.return_value = False
+  cmake_handler.get_library_versions_from_cmake_file(__FILE_PATH)
+  __mock_open.assert_not_called()
 
 def test_calls_get_library_version_from_line_when_getting_library_versions_from_cmake_file(
   __mock_open,
@@ -96,11 +104,20 @@ def test_calls_get_library_version_from_line_when_getting_library_versions_from_
     call(__STREAM_READLINES[2])
   ])
 
-def test_returns_expected_library_versions_from_cmake_file(__mock_open):
+@pytest.mark.parametrize(
+  "__mock_os_path_exists,expected_versions",
+  [pytest.param(False, {}), pytest.param(True, __VERSIONS)],
+  indirect=["__mock_os_path_exists"]
+)
+def test_returns_expected_library_versions_from_cmake_file(
+  __mock_os_path_exists,
+  expected_versions,
+  __mock_open
+):
   library_versions = cmake_handler.get_library_versions_from_cmake_file(__FILE_PATH)
   assert (
-    library_versions == __VERSIONS
-  ), get_assertion_message("library versions", __VERSIONS, library_versions)
+    library_versions == expected_versions
+  ), get_assertion_message("library versions", expected_versions, library_versions)
 
 @pytest.mark.parametrize(
   "config_dict,__mock_internal_logic_vars,expected_cmake_vars",
@@ -147,3 +164,9 @@ def __mock_get_library_version_from_line():
 def __mock_internal_logic_vars(request):
   with patch.object(variables, "INTERNAL_LOGIC_VARS", request.param):
     yield
+
+@pytest.fixture(params=[True], autouse=True)
+def __mock_os_path_exists(request):
+	with patch("os.path.exists") as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
