@@ -43,7 +43,7 @@ def test_overrides_expected_parent_config_values(
 		not base_executor.logs_to_file,
 		not base_executor.prints_with_substitution,
 		base_executor.prints_banner_on_exit,
-		not base_executor.sends_installation_info
+		base_executor.sends_installation_info
 	)
 	inherited_config = (
 		cmake_executor.logs_to_file,
