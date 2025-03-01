@@ -168,6 +168,7 @@ def __dummy_test_mode_cmake_executor():
 	class TestExecutor(ModeCMakeExecutor):
 		def _run_cmake_mode(self, _):
 			return 0, ""
+	TestExecutor(__CONTEXT.copy())._run_cmake_mode("") # For coverage
 	return TestExecutor
 
 @pytest.fixture
