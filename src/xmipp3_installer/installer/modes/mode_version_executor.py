@@ -131,11 +131,10 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (str): Libraries with their version.
 		"""
-		if not os.path.exists(paths.LIBRARY_VERSIONS_FILE):
-			return ""
 		version_lines = [] 
-		versions = cmake_handler.get_library_versions_from_cmake_file(paths.LIBRARY_VERSIONS_FILE)
-		for library, version in versions.items():
+		for library, version in cmake_handler.get_library_versions_from_cmake_file(
+			paths.LIBRARY_VERSIONS_FILE
+		).items():
 			library_left_text = self.__add_padding_spaces(f"{library}: ")
 			version_lines.append(f"{library_left_text}{version}")
 		return '\n'.join(version_lines)

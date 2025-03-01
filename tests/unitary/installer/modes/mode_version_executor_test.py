@@ -529,7 +529,6 @@ def test_calls_os_path_exists_when_getting_library_versions_section(
 	__mock_exists.assert_called_with(paths.LIBRARY_VERSIONS_FILE)
 
 def test_calls_get_library_versions_from_cmake_file_when_getting_library_versions_section(
-	__mock_exists_library_versions,
 	__mock_get_library_versions_from_cmake_file
 ):
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
@@ -537,7 +536,6 @@ def test_calls_get_library_versions_from_cmake_file_when_getting_library_version
 	__mock_get_library_versions_from_cmake_file.assert_called_with(paths.LIBRARY_VERSIONS_FILE)
 
 def test_calls_add_padding_spaces_when_getting_library_versions_section(
-	__mock_exists_library_versions,
 	__mock_get_library_versions_from_cmake_file,
 	__mock_add_padding_spaces
 ):
@@ -548,23 +546,18 @@ def test_calls_add_padding_spaces_when_getting_library_versions_section(
 	])
 
 @pytest.mark.parametrize(
-	"exists_file",
+	"__mock_get_library_versions_from_cmake_file,expected_versions_section",
 	[
-		pytest.param(False),
-		pytest.param(True)
-	]
+		pytest.param({}, ""),
+		pytest.param(__LIBRARIES_WITH_VERSIONS, __LIBRARIES_WITH_VERSION_SECTION)
+	],
+	indirect=["__mock_get_library_versions_from_cmake_file"]
 )
 def test_returns_expected_library_versions_section(
-	exists_file,
-	__mock_exists_library_versions,
 	__mock_get_library_versions_from_cmake_file,
+	expected_versions_section,
 	__mock_add_padding_spaces
 ):
-	if not exists_file:
-		__mock_exists_library_versions.side_effect = lambda _: False
-		expected_versions_section = ""
-	else:
-		expected_versions_section = __LIBRARIES_WITH_VERSION_SECTION
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	versions_section = version_executor._ModeVersionExecutor__get_library_versions_section()
 	assert (
@@ -603,18 +596,6 @@ def __mock_exists_init(request, __mock_exists):
 			return config_file_exists
 		elif path == paths.LIBRARY_VERSIONS_FILE:
 			return lib_file_exists
-		else:
-			return False
-	_ = __side_effect("non-existent") # To cover system case
-	__mock_exists.side_effect = __side_effect
-	yield __mock_exists
-
-@pytest.fixture(params=[True])
-def __mock_exists_library_versions(request, __mock_exists):
-	def __side_effect(path):
-		library_version_file_exists = request.param
-		if path == paths.LIBRARY_VERSIONS_FILE:
-			return library_version_file_exists
 		else:
 			return False
 	_ = __side_effect("non-existent") # To cover system case
@@ -751,12 +732,12 @@ def __mock_get_os_release_name():
 		mock_method.return_value = __RELEASE_NAME
 		yield mock_method
 
-@pytest.fixture
-def __mock_get_library_versions_from_cmake_file():
+@pytest.fixture(params=[__LIBRARIES_WITH_VERSIONS])
+def __mock_get_library_versions_from_cmake_file(request):
 	with patch(
 		"xmipp3_installer.installer.handlers.cmake.cmake_handler.get_library_versions_from_cmake_file"
 	) as mock_method:
-		mock_method.return_value = __LIBRARIES_WITH_VERSIONS
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture
