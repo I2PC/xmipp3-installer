@@ -37,7 +37,6 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
 		super()._set_executor_config()
 		self.logs_to_file = True
 		self.prints_with_substitution = True
-		self.sends_installation_info = True
 	
 	def __get_cmake_executable(self) -> Optional[str]:
 		"""
