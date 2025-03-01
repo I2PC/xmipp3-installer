@@ -54,7 +54,6 @@ def test_sets_config_values_empty_when_initializing():
 
 def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
 	base_executor = __dummy_test_mode_executor(__CONTEXT.copy())
-	base_executor.run()  # To cover dummy implementation execution
 	config_executor = ModeConfigExecutor(__CONTEXT.copy())
 	base_config = (
 		base_executor.logs_to_file,
@@ -185,7 +184,8 @@ def test_returns_expected_values_when_running_executor(
 def __dummy_test_mode_executor():
 	class TestExecutor(ModeExecutor):
 		def run(self):
-			return (0, "")
+			return 0, ""
+	TestExecutor(__CONTEXT.copy()).run() # For coverage
 	return TestExecutor
 
 @pytest.fixture(params=[False])

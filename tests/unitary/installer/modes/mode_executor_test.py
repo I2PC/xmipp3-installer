@@ -10,7 +10,6 @@ from .... import get_assertion_message
 
 def test_is_instance_of_abstract_class(__dummy_test_mode_executor):
   executor = __dummy_test_mode_executor({})
-  executor.run() # To cover dummy implementation execution
   assert (
     isinstance(executor, ABC)
   ), get_assertion_message(
@@ -150,7 +149,8 @@ def __no_implementation_child():
 def __dummy_test_mode_executor():
   class TestExecutor(ModeExecutor):
     def run(self):
-      return (0, "")
+      return 0, ""
+  TestExecutor({}).run() # For coverage
   return TestExecutor
 
 @pytest.fixture(params=[(False, False, False, False)])

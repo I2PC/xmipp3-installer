@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 import pytest
 
-from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_executor import ModeCleanExecutor
 from xmipp3_installer.installer.modes.mode_clean.mode_clean_all_executor import ModeCleanAllExecutor
@@ -21,19 +20,18 @@ def test_implements_interface_mode_clean_executor():
 
 def test_does_not_override_parent_config_values(__dummy_test_mode_clean_executor):
 	base_executor = __dummy_test_mode_clean_executor({})
-	base_executor._get_paths_to_delete() # To cover dummy implementation execution
-	base_executor._get_confirmation_message() # To cover dummy implementation execution
-	base_executor._get_confirmation_keyword() # To cover dummy implementation execution
-	config_executor = ModeCleanAllExecutor({})
+	clean_all_executor = ModeCleanAllExecutor({})
 	base_config = (
 		base_executor.logs_to_file,
 		base_executor.prints_with_substitution,
-		base_executor.prints_banner_on_exit
+		base_executor.prints_banner_on_exit,
+		base_executor.sends_installation_info
 	)
 	inherited_config = (
-		config_executor.logs_to_file,
-		config_executor.prints_with_substitution,
-		config_executor.prints_banner_on_exit
+		clean_all_executor.logs_to_file,
+		clean_all_executor.prints_with_substitution,
+		clean_all_executor.prints_banner_on_exit,
+		clean_all_executor.sends_installation_info
 	)
 	assert (
 		inherited_config == base_config
@@ -88,6 +86,11 @@ def __dummy_test_mode_clean_executor():
 			return ""
 		def _get_confirmation_keyword(self):
 			return ""
+	# For coverage
+	executor = TestExecutor({})
+	executor._get_paths_to_delete()
+	executor._get_confirmation_message()
+	executor._get_confirmation_keyword()
 	return TestExecutor
 
 @pytest.fixture

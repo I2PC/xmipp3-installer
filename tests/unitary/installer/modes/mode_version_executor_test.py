@@ -130,7 +130,6 @@ def test_sets_version_values_as_expected_when_initializing():
 
 def test_does_not_override_parent_config_values(__dummy_test_mode_executor):
 	base_executor = __dummy_test_mode_executor(__CONTEXT.copy())
-	base_executor.run()  # To cover dummy implementation execution
 	version_executor = ModeVersionExecutor(__CONTEXT.copy())
 	base_config = (
 		base_executor.logs_to_file,
@@ -660,7 +659,8 @@ def __mock_exists(request):
 def __dummy_test_mode_executor():
 	class TestExecutor(ModeExecutor):
 		def run(self):
-			return (0, "")
+			return 0, ""
+	TestExecutor(__CONTEXT.copy()).run() # For coverage
 	return TestExecutor
 
 @pytest.fixture
