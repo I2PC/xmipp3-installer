@@ -143,7 +143,7 @@ def test_calls_logger_log_error_when_running_installer_with_non_zero_ret_code(
 	)
 
 @pytest.mark.parametrize("prints_message", [pytest.param(False), pytest.param(True)])
-def test_calls_get_success_message_when_running_executor_with_zero_exit_code_deppending_on_attribute(
+def test_calls_get_success_message_when_running_installer_with_zero_exit_code_deppending_on_attribute(
 	prints_message,
 	__mock_mode_executors,
 	__mock_get_success_message,
@@ -170,7 +170,7 @@ def test_calls_get_success_message_when_running_executor_with_zero_exit_code_dep
 		pytest.param(1, True, True)
 	]
 )
-def test_calls_get_installation_info_when_running_executor_deppending_on_attributes(
+def test_calls_get_installation_info_when_running_installer_deppending_on_attributes(
 	__mock_mode_executors,
 	ret_code,
 	sends_installation_info,
@@ -206,7 +206,7 @@ def test_calls_get_installation_info_when_running_executor_deppending_on_attribu
 		pytest.param(True, True)
 	]
 )
-def test_calls_send_installation_attempt_when_running_executor_deppending_on_attribute(
+def test_calls_send_installation_attempt_when_running_installer_deppending_on_attribute(
 	sends_info,
 	config_sends_info,
 	__mock_mode_executors,
@@ -235,7 +235,7 @@ def test_calls_send_installation_attempt_when_running_executor_deppending_on_att
 		pytest.param(True, True)
 	]
 )
-def test_calls_logger_when_running_executor_deppending_on_attribute(
+def test_calls_logger_when_running_installer_deppending_on_attribute(
 	sends_info,
 	config_sends_info,
 	__mock_mode_executors,
@@ -255,6 +255,13 @@ def test_calls_logger_when_running_executor_deppending_on_attribute(
 		__mock_logger.assert_called_once_with("Sending anonymous installation info...")
 	else:
 		__mock_logger.assert_not_called()
+
+def test_calls_logger_close_when_running_installer(
+	__mock_mode_executors,
+	__mock_logger_close
+):
+	installer_service.InstallationManager({}).run_installer()
+	__mock_logger_close.assert_called_once_with()
 
 @pytest.mark.parametrize(
 	"__mock_mode_executors",
@@ -388,3 +395,10 @@ def __mock_versions_manager():
 		mock_class.return_value.xmipp_release_date = __XMIP_RELEASE_DATE
 		mock_class.return_value.xmipp_core_min_version = __XMIPP_CORE_MIN_VERSION
 		yield mock_class
+
+@pytest.fixture(autouse=True)
+def __mock_logger_close():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.close"
+	) as mock_method:
+		yield mock_method
