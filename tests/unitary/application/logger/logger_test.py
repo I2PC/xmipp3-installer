@@ -1,5 +1,5 @@
 from io import BytesIO
-from unittest.mock import patch, Mock, call
+from unittest.mock import patch, Mock, call, MagicMock
 
 import pytest
 
@@ -106,6 +106,19 @@ def test_starts_log_file(__mock_open):
 	assert (
 		log_file is __DUMMY_FILE
 	), get_assertion_message("log file", __DUMMY_FILE, log_file)
+
+def test_calls_close_on_open_log_file_if_it_has_been_set():
+	mock_file = MagicMock()
+	logger = Logger()
+	logger._Logger__log_file = mock_file
+	logger.close()
+	mock_file.close.assert_called_once_with()
+
+def test_does_not_call_close_on_open_log_file_if_it_has_not_been_set():
+	mock_file = MagicMock()
+	logger = Logger()
+	logger.close()
+	mock_file.close.assert_not_called()
 
 @pytest.mark.parametrize(
 	"expected_allow_substitution",

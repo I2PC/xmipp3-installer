@@ -103,6 +103,13 @@ class Logger(Singleton):
 		if self.__log_file is None:
 			self.__log_file = open(log_path, 'w')
 
+	def close(self):
+		"""
+		### Closes the log file.
+		"""
+		if self.__log_file:
+			self.__log_file.close()
+
 	def set_allow_substitution(self, allow_substitution: bool):
 		"""
 		### Modifies console output behaviour, allowing or disallowing substitutions.
@@ -215,7 +222,7 @@ class Logger(Singleton):
 		"""
 		substitution_chars = [f'{self.__UP}{self.__REMOVE_LINE}' for _ in range(self.__get_n_last_lines())]
 		return f"{''.join(substitution_chars)}{text}"
-
+	
 """
 ### Global logger.
 """
