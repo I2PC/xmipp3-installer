@@ -97,7 +97,7 @@ def get_test_file(file_path: str):
 		file_path
 	)
 
-def create_versions_json_file():
+def create_versions_json_file(output_path: str="."):
 	"""
 	### Generates a valid JSON versions file.
 	"""
@@ -108,5 +108,8 @@ def create_versions_json_file():
 				"valid.json"
 			)
 		),
-		paths.VERSION_INFO_FILE
+		os.path.join(
+			output_path,
+			paths.VERSION_INFO_FILE
+		)
 	)
