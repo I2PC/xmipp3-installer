@@ -61,5 +61,6 @@ class InstallationManager:
       logger(predefined_messages.get_success_message(
         self.context[constants.VERSIONS_CONTEXT_KEY].xmipp_version_number
       ))
+    logger.close()
     return ret_code
   
