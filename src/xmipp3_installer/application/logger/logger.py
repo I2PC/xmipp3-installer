@@ -109,6 +109,7 @@ class Logger(Singleton):
 		"""
 		if self.__log_file:
 			self.__log_file.close()
+			self.__log_file = None
 
 	def set_allow_substitution(self, allow_substitution: bool):
 		"""
