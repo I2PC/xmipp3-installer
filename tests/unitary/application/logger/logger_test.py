@@ -107,6 +107,15 @@ def test_starts_log_file(__mock_open):
 		log_file is __DUMMY_FILE
 	), get_assertion_message("log file", __DUMMY_FILE, log_file)
 
+def test_sets_file_to_none_after_closing():
+	mock_file = MagicMock()
+	logger = Logger()
+	logger._Logger__log_file = mock_file
+	logger.close()
+	assert (
+		logger._Logger__log_file is None
+	), get_assertion_message("logger file", None, logger._Logger__log_file)
+
 def test_calls_close_on_open_log_file_if_it_has_been_set():
 	mock_file = MagicMock()
 	logger = Logger()
