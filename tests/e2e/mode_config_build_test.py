@@ -18,6 +18,13 @@ import sys
 from io import StringIO
 from unittest.mock import patch
 from xmipp3_installer.application.cli import arguments, cli
+def check_every_line(received, expected):
+	received_split = received.split("\n")
+	expected_split = expected.split("\n")
+	equals = []
+	for received_line, expected_line in zip(received_split, expected_split):
+		equals.append(received_line == expected_line)
+	return equals
 @pytest.mark.parametrize(
 	"__setup_evironment,expected_output",
 	[
