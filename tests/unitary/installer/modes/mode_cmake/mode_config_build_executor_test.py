@@ -76,6 +76,23 @@ def test_does_not_override_parent_config_values(__dummy_test_mode_cmake_executor
 		inherited_config == base_config
 	), get_assertion_message("config values", base_config, inherited_config)
 
+@pytest.mark.parametrize(
+	"input_value,expected_is_empty",
+	[
+		pytest.param("", True),
+		pytest.param(None, True),
+		pytest.param(False, False),
+		pytest.param("something", False)
+	]
+)
+def test_returns_expected_is_empty_value(input_value, expected_is_empty):
+	is_empty = ModeConfigBuildExecutor(
+		__CONTEXT.copy()
+	)._ModeConfigBuildExecutor__is_empty(input_value)
+	assert (
+		is_empty == expected_is_empty
+  ), get_assertion_message("is empty value", expected_is_empty, is_empty)
+
 def test_returns_expected_config_vars():
 	config_vars = ModeConfigBuildExecutor(__CONTEXT.copy())._ModeConfigBuildExecutor__get_config_vars()
 	config_vars.sort()

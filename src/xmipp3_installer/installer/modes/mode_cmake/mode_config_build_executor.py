@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Optional, Union
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger import predefined_messages
@@ -35,7 +35,7 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
 		"""
 		return " ".join([
 			f"-D{variable_key}={self.context[variable_key]}" for variable_key
-			in self.__get_config_vars() if self.context[variable_key]
+			in self.__get_config_vars() if not self.__is_empty(self.context[variable_key])
 		])
 	
 	def __get_config_vars(self) -> List[str]:
@@ -50,3 +50,15 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
 			for config_var in variable_section
 		]
 		return list(set(all_config_var_keys) - set(variables.INTERNAL_LOGIC_VARS))
+
+	def __is_empty(self, value: Optional[Union[bool, str]]) -> bool:
+		"""
+		### Checks if the given config value is empty.
+
+		#### Params:
+		- value (bool | str | None): Value to be checked.
+
+		#### Returns:
+		- (bool): True if it is empty, False otherwise.
+		"""
+		return value is None or value == ""
