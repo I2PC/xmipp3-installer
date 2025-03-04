@@ -1,6 +1,6 @@
 import os
 
-from .. import TEST_FILES_DIR
+from .. import get_test_file
 
 def get_cmake_project_path(project_name: str) -> str:
   """
@@ -13,9 +13,10 @@ def get_cmake_project_path(project_name: str) -> str:
   - (str): CMake project path.
   """
   return os.path.abspath(
-    os.path.join(
-      TEST_FILES_DIR,
-      "cmake-cases",
-      project_name
+    get_test_file(
+      os.path.join(
+        "cmake-cases",
+        project_name
+      )
     )
   )

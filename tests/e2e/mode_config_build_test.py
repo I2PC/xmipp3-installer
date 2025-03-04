@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 
 import pytest
@@ -14,17 +15,6 @@ from .. import (
 	copy_file_from_reference, get_test_file
 )
 
-import sys
-from io import StringIO
-from unittest.mock import patch
-from xmipp3_installer.application.cli import arguments, cli
-def check_every_line(received, expected):
-	received_split = received.split("\n")
-	expected_split = expected.split("\n")
-	equals = []
-	for received_line, expected_line in zip(received_split, expected_split):
-		equals.append(received_line == expected_line)
-	return equals
 @pytest.mark.parametrize(
 	"__setup_evironment,expected_output",
 	[
@@ -35,38 +25,46 @@ def check_every_line(received, expected):
 )
 def test_returns_expected_config_build_output(
 	__setup_evironment,
-	expected_output,
-	__mock_sys_argv,
-	__mock_stdout_stderr
+	expected_output
 ):
-	stdout, _ = __mock_stdout_stderr
-	cwd = os.getcwd()
-	os.chdir(__setup_evironment)
-	with pytest.raises(SystemExit):
-		cli.main()
-	os.chdir(cwd)
-	stdout = __normalize_cmake_executable(stdout.getvalue())
+	command_words = [
+		"xmipp3_installer",
+		modes.MODE_CONFIG_BUILD,
+		params.PARAMS[params.PARAM_KEEP_OUTPUT][params.LONG_VERSION]
+	]
+	result = subprocess.run(
+		command_words,
+		capture_output=True,
+		text=True,
+		cwd=__setup_evironment,
+		env={**os.environ, "CMAKE_GENERATOR": "Ninja"}
+	)
+	result = __normalize_paths(
+		__normalize_execution_times(
+			__normalize_cmake_executable(result.stdout)
+		)
+	)
 	assert (
-		stdout == expected_output
-	), get_assertion_message("config build output", expected_output, stdout)
-	#command_words = [
-	#	"xmipp3_installer",
-	#	modes.MODE_CONFIG_BUILD,
-	#	params.PARAMS[params.PARAM_KEEP_OUTPUT][params.LONG_VERSION]
-	#]
-	#result = subprocess.run(
-	#	command_words, capture_output=True, text=True, cwd=__setup_evironment
-	#)
-	#result = __normalize_cmake_executable(result.stdout)
-	#assert (
-	#	result == expected_output
-	#), get_assertion_message("config build output", expected_output, result)
+		result == expected_output
+	), get_assertion_message("config build output", expected_output, result)
 
-def __normalize_cmake_executable(raw_output: str) -> str:
+def __normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends on user's installation
 	first_flag_index = raw_output.find(" -S")
 	text_up_to_cmake_exec = raw_output[:first_flag_index]
 	splitted_first_lines = text_up_to_cmake_exec.split("\n")
 	return "\n".join([splitted_first_lines[0], mode_config_build.CMAKE_EXECUTABLE]) + raw_output[first_flag_index:]
+
+def __normalize_execution_times(raw_output: str) -> str: # Execution times vary from one execution to another
+	return re.sub(r'\(\d+\.\ds\)', f"({mode_config_build.EXECUTION_TIME}s)", raw_output)
+
+def __normalize_paths(raw_output: str) -> str: # Absolute paths are different per user and OS
+	raw_output_lines = raw_output.split("\n")
+	new_lines = []
+	for line in raw_output_lines:
+		if line.startswith(mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START):
+			line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.VALID_PATH}"
+		new_lines.append(line)
+	return "\n".join(new_lines)
 
 @pytest.fixture(params=[True])
 def __setup_evironment(request):
@@ -88,19 +86,3 @@ def __setup_evironment(request):
 				paths.LOG_FILE
 			]
 		])
-
-@pytest.fixture(autouse=True)
-def __mock_sys_argv():
-	args = [
-		arguments.XMIPP_PROGRAM_NAME,
-		modes.MODE_CONFIG_BUILD,
-		params.PARAMS[params.PARAM_KEEP_OUTPUT][params.LONG_VERSION]
-	]
-	with patch.object(sys, 'argv', args) as mock_object:
-		yield mock_object
-
-@pytest.fixture
-def __mock_stdout_stderr():
-	new_stdout, new_stderr = StringIO(), StringIO()
-	with patch('sys.stdout', new=new_stdout), patch('sys.stderr', new=new_stderr):
-		yield new_stdout, new_stderr
