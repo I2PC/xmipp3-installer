@@ -355,7 +355,7 @@ def __mock_run_shell_command_in_streaming(request):
 	with patch(
 		"xmipp3_installer.installer.handlers.shell_handler.run_shell_command_in_streaming"
   ) as mock_method:
-		if len(request.param) == 1:
+		if isinstance(request.param, int) == 1:
 			mock_method.return_value = request.param
 		else:
 			mock_method.side_effect = request.param
