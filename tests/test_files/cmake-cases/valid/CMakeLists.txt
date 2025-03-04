@@ -5,7 +5,7 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-project(valid)
+project(valid NONE)
 
 add_custom_target(
     valid_target ALL
