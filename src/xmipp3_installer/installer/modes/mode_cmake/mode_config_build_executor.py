@@ -1,7 +1,6 @@
 from typing import Tuple, List, Optional, Union
 
-from xmipp3_installer.application.logger import errors
-from xmipp3_installer.application.logger import predefined_messages
+from xmipp3_installer.application.logger import predefined_messages, errors
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
