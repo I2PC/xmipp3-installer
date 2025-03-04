@@ -2,8 +2,8 @@ import shutil
 from abc import abstractmethod
 from typing import Dict, Tuple, Optional
 
-from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository.config_vars import variables
 
