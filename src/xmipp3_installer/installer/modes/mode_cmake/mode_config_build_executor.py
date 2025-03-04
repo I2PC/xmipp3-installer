@@ -49,7 +49,9 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
 			config_var for variable_section in variables.CONFIG_VARIABLES.values()
 			for config_var in variable_section
 		]
-		return list(set(all_config_var_keys) - set(variables.INTERNAL_LOGIC_VARS))
+		non_internal_keys = list(set(all_config_var_keys) - set(variables.INTERNAL_LOGIC_VARS))
+		non_internal_keys.sort() # To keep order consistency
+		return non_internal_keys
 
 	def __is_empty(self, value: Optional[Union[bool, str]]) -> bool:
 		"""
