@@ -5,6 +5,6 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-project(install_error)
+project(install_error NONE)
 
 install(CODE "message(FATAL_ERROR \"This is expected to fail here\")")
