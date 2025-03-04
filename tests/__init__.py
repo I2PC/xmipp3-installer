@@ -97,10 +97,14 @@ def get_test_file(file_path: str):
 		file_path
 	)
 
-def create_versions_json_file(output_path: str="."):
+def create_versions_json_file(output_path: str=None):
 	"""
 	### Generates a valid JSON versions file.
 	"""
+	full_output_path = os.path.join(
+		output_path,
+		paths.VERSION_INFO_FILE
+	) if output_path else paths.VERSION_INFO_FILE
 	copy_file_from_reference(
 		get_test_file(
 			os.path.join(
@@ -108,8 +112,5 @@ def create_versions_json_file(output_path: str="."):
 				"valid.json"
 			)
 		),
-		os.path.join(
-			output_path,
-			paths.VERSION_INFO_FILE
-		)
+		full_output_path
 	)
