@@ -19,3 +19,4 @@ def get_cmake_project_path(project_name: str) -> str:
       project_name
     )
   )
+get_cmake_project_path("") # TODO: Remove
