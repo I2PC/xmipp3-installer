@@ -18,11 +18,8 @@ __COMPILATION_SUCCESS = f"""
 
 BUILD_FAILURE = f"""{__COMMON_SECTION}
 [1/1] This command is expected to fail:
-
 {ERROR_TARGET_MESSAGE_START}{get_project_abs_subpath(BUILD_ERROR_PROJECT, BUILD_ERROR_TARGET_SUBPATH)}
-
 ninja: build stopped: subcommand failed.
-
 {get_predefined_error(5, "compiling")}
 """
 

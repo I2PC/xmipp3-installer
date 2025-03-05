@@ -51,9 +51,13 @@ def test_returns_expected_compile_and_install_output(
 	)
 	result = __normalize_cmake_executable(result.stdout)
 	if os.path.basename(__setup_evironment) == mode_cmake.BUILD_ERROR_PROJECT:
-		result = __remove_detailed_command_error_line(
-			__normalize_error_path(__setup_evironment, result)
+		result = __normalize_line_breaks(
+			__remove_detailed_command_error_line(
+				__normalize_error_path(__setup_evironment, result)
+			),
+			2, 1
 		)
+	result = __normalize_line_breaks(result, 3, 2)
 	assert (
 		result == expected_output
 	), get_assertion_message("compile and install output", expected_output, result)
@@ -86,6 +90,16 @@ def __remove_detailed_command_error_line(raw_output: str) -> str: # Error line c
 		if splitted[line_index].startswith(mode_compile_and_install.ERROR_TARGET_MESSAGE_START):
 			skip_up_to_index = line_index + 3
 	return ''.join(new_output_lines)
+
+def __normalize_line_breaks(
+	raw_output: str,
+	original_number: int,
+	new_number: int
+) -> str: # The number of line breaks in CMake is OS dependant
+	original_line_breaks = "".join(["\n" for _ in range(original_number)])
+	new_line_breaks = "".join(["\n" for _ in range(new_number)])
+	new_output = raw_output.replace(original_line_breaks, new_line_breaks)
+	return new_output
 
 @pytest.fixture(params=[(True, True)])
 def __setup_evironment(request):
