@@ -54,7 +54,6 @@ def test_returns_expected_compile_and_install_output(
 		result = __remove_detailed_command_error_line(
 			__normalize_error_path(__setup_evironment, result)
 		)
-	test = ""
 	assert (
 		result == expected_output
 	), get_assertion_message("compile and install output", expected_output, result)
