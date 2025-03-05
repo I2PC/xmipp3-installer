@@ -1,14 +1,11 @@
-import os
-
 from xmipp3_installer.application.logger.logger import logger
 
-from . import CMAKE_EXECUTABLE, VALID_PROJECT
+from . import CMAKE_EXECUTABLE, VALID_PROJECT, get_project_abs_subpath
 from .. import XMIPP_DOCS
-from ... import get_cmake_project_path
 
 EXECUTION_TIME = "X.Y"
 BUILD_FILES_WRITTEN_MESSAGE_START = "-- Build files have been written to: "
-VALID_PATH = os.path.abspath(get_cmake_project_path(os.path.join(VALID_PROJECT, "build")))
+VALID_PATH = get_project_abs_subpath(VALID_PROJECT, "build")
 GENERATOR_LINE = "-- Building for: Ninja\n"
 
 __CONFIGURE_ERROR = logger.red("\n".join([
