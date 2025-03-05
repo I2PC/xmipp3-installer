@@ -25,7 +25,7 @@ from .. import (
 	],
 	indirect=["__setup_evironment"]
 )
-def test_returns_expected_config_build_output(
+def test_returns_expected_compile_and_install_output(
 	__setup_evironment,
 	expected_output
 ):
@@ -57,7 +57,7 @@ def test_returns_expected_config_build_output(
 	test = ""
 	assert (
 		result == expected_output
-	), get_assertion_message("config build output", expected_output, result)
+	), get_assertion_message("compile and install output", expected_output, result)
 
 def __normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends on user's installation
 	first_flag_index = raw_output.find(" --build")
