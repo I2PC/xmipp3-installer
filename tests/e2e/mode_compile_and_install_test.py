@@ -49,11 +49,16 @@ def test_returns_expected_compile_and_install_output(
 		cwd=__setup_evironment,
 		env=mode_cmake.ENV
 	)
-	result = __normalize_cmake_executable(result.stdout)
+	result = __remove_ninja_output(
+		__normalize_cmake_executable(result.stdout)
+	)
 	if os.path.basename(__setup_evironment) == mode_cmake.BUILD_ERROR_PROJECT:
 		result = __normalize_line_breaks(
-			__remove_detailed_command_error_line(
-				__normalize_error_path(__setup_evironment, result)
+			__normalize_line_breaks(
+				__remove_detailed_command_error_line(
+					__normalize_error_path(__setup_evironment, result)
+				),
+				3, 1
 			),
 			2, 1
 		)
@@ -100,6 +105,15 @@ def __normalize_line_breaks(
 	new_line_breaks = "".join(["\n" for _ in range(new_number)])
 	new_output = raw_output.replace(original_line_breaks, new_line_breaks)
 	return new_output
+
+def __remove_ninja_output(raw_output: str) -> str: # Ninja output is printed or not depending on OS
+	new_lines = []
+	for line in raw_output.splitlines(keepends=True):
+		line_without_ends = line.replace("\n", "").replace("\r", "")
+		if line_without_ends in mode_compile_and_install.NINJA_OUTPUTS:
+			continue
+		new_lines.append(line)
+	return "".join(new_lines)
 
 @pytest.fixture(params=[(True, True)])
 def __setup_evironment(request):
