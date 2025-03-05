@@ -38,7 +38,7 @@ def test_returns_expected_config_build_output(
 		capture_output=True,
 		text=True,
 		cwd=__setup_evironment,
-		env={**os.environ, "CMAKE_GENERATOR": "Ninja"}
+		env=mode_cmake.ENV
 	)
 	result = __normalize_paths(
 		__normalize_execution_times(
