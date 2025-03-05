@@ -69,11 +69,11 @@ def __normalize_error_path(project_path: str, raw_output: str) -> str: # Absolut
 	path_index = raw_output.find(mode_compile_and_install.ERROR_TARGET_MESSAGE_START) + len(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)
 	text_up_to_path = raw_output[:path_index]
 	next_line_index = raw_output.find("\n", path_index)
-	return f"{text_up_to_path}{
-		os.path.join(
-			project_path,
-			mode_compile_and_install.BUILD_ERROR_TARGET_SUBPATH
-		)}{raw_output[next_line_index:]}"
+	build_error_target_path = os.path.join(
+		project_path,
+		mode_compile_and_install.BUILD_ERROR_TARGET_SUBPATH
+	)
+	return f"{text_up_to_path}{build_error_target_path}{raw_output[next_line_index:]}"
 
 def __remove_detailed_command_error_line(raw_output: str) -> str: # Error line containing system-specific details
 	splitted = raw_output.splitlines(keepends=True)
