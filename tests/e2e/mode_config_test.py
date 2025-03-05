@@ -75,11 +75,11 @@ def __change_config_file_date():
 def __change_config_cmake_path():
 	content = get_file_content(paths.CONFIG_FILE)
 	new_content_lines = []
-	for line in content.split("\n"):
+	for line in content.splitlines(keepends=True):
 		if line.startswith(variables.PREFIX_PATH):
-			line = f"{variables.PREFIX_PATH}="
+			line = f"{variables.PREFIX_PATH}=\n"
 		new_content_lines.append(line)
-	content = "\n".join(new_content_lines)
+	content = "".join(new_content_lines)
 	with open(paths.CONFIG_FILE, 'w') as config_file:
 		config_file.write(content)
 

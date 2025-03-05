@@ -5,7 +5,6 @@ from unittest.mock import patch, Mock
 
 import pytest
 
-from xmipp3_installer.installer import constants
 from xmipp3_installer.repository.config_vars import variables
 from xmipp3_installer.repository.config import ConfigurationFileHandler
 
@@ -22,7 +21,7 @@ def test_writes_default_config_when_there_is_no_config_file(
 	config_handler.write_config()
 	config_file_content = ''.join(
 		config_handler._ConfigurationFileHandler__get_file_content()
-	).split("\n")
+	).splitlines()
 	config_file_content = __change_config_cmake_path(config_file_content)
 	assert (
 		config_file_content == file_content.DEFAULT_FILE_LINES
@@ -43,13 +42,13 @@ def test_writes_unkown_variables_to_config_when_unkown_variables_are_added_to_va
 	config_handler.write_config()
 	config_file_content = ''.join(
 		config_handler._ConfigurationFileHandler__get_file_content()
-	).split("\n")
+	).splitlines()
 	expected_file_content = [
 		*file_content.MANDATORY_SECTIONS_LINES,
 		*file_content.UNKNOWN_VARIABLES_HEADER,
 		f"{unknown_key}={unknown_value}",
 		"",
-		*file_content.LAST_MODIFIED_LINES
+		file_content.LAST_MODIFIED_LINE
 	]
 	config_file_content = __change_config_cmake_path(config_file_content)
 	assert (
@@ -70,10 +69,10 @@ def test_writes_modified_variables_to_config_when_some_variable_values_are_chang
 	config_handler.write_config()
 	config_file_content = ''.join(
 		config_handler._ConfigurationFileHandler__get_file_content()
-	).split("\n")
+	).splitlines()
 	expected_file_content = '\n'.join(
 		file_content.DEFAULT_FILE_LINES
-	).replace(f"{modified_key}=ON", f"{modified_key}=OFF").split("\n")
+	).replace(f"{modified_key}=ON", f"{modified_key}=OFF").splitlines()
 	config_file_content = __change_config_cmake_path(config_file_content)
 	assert (
 		config_file_content == expected_file_content

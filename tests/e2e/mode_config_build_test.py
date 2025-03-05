@@ -54,7 +54,7 @@ def test_returns_expected_config_build_output(
 def __normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends on user's installation
 	first_flag_index = raw_output.find(" -S")
 	text_up_to_cmake_exec = raw_output[:first_flag_index]
-	splitted_first_lines = text_up_to_cmake_exec.split("\n")
+	splitted_first_lines = text_up_to_cmake_exec.splitlines()
 	return "\n".join([splitted_first_lines[0], mode_cmake.CMAKE_EXECUTABLE]) + raw_output[first_flag_index:]
 
 def __normalize_generator_line(raw_output: str) -> str: # Generator used is sometimes printed, others not
@@ -64,13 +64,13 @@ def __normalize_execution_times(raw_output: str) -> str: # Execution times vary 
 	return re.sub(r'\(\d+\.\ds\)', f"({mode_config_build.EXECUTION_TIME}s)", raw_output)
 
 def __normalize_paths(raw_output: str) -> str: # Absolute paths are different per user and OS
-	raw_output_lines = raw_output.split("\n")
+	raw_output_lines = raw_output.splitlines(keepends=True)
 	new_lines = []
 	for line in raw_output_lines:
 		if line.startswith(mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START):
-			line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.VALID_PATH}"
+			line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.VALID_PATH}\n"
 		new_lines.append(line)
-	return "\n".join(new_lines)
+	return "".join(new_lines)
 
 @pytest.fixture(params=[True])
 def __setup_evironment(request):
