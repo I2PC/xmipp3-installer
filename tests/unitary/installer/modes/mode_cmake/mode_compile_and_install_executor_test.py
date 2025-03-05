@@ -219,7 +219,7 @@ def test_calls_logger_twice_if_first_command_succeeds_when_running_cmake_mode(
 	ModeCompileAndInstallExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
 	expected_calls = [
 		call(__mock_get_section_message("Compiling with CMake")),
-		call(__mock_get_section_message("Installing with CMake"))
+		call("\n" + __mock_get_section_message("Installing with CMake"))
 	]
 	__mock_logger.assert_has_calls(expected_calls)
 	assert (

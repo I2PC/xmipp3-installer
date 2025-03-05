@@ -50,7 +50,8 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
 		if shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute):
 			return errors.CMAKE_COMPILE_ERROR, ""
 		
-		logger(predefined_messages.get_section_message("Installing with CMake"))
+		installation_section_message = predefined_messages.get_section_message("Installing with CMake")
+		logger(f"\n{installation_section_message}")
 		cmd = f"{cmake} --install {paths.BUILD_PATH} --config {constants.BUILD_TYPE}"
 		if shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute):
 			return errors.CMAKE_INSTALL_ERROR, ""
