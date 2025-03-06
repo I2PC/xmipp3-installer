@@ -620,9 +620,9 @@ def __mock_exist_config_and_library_versions(__mock_exists, request):
 def __mock_exists_sources(request, __mock_exists):
 	def __side_effect(path):
 		core_exists, viz_exists = request.param
-		if path == os.path.join(paths.SOURCES_PATH, constants.XMIPP_CORE):
+		if path == paths.get_source_path(constants.XMIPP_CORE):
 			return core_exists
-		elif path == os.path.join(paths.SOURCES_PATH, constants.XMIPP_VIZ):
+		elif path == paths.get_source_path(constants.XMIPP_VIZ):
 			return viz_exists
 		else:
 			return False
