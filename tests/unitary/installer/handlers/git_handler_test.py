@@ -16,6 +16,9 @@ __BRANCH_NAME = "devel"
 __REF_TAG_NAME = "v1.0.0"
 __GIT_LS_REMOTE_OUTPUT_BRANCH = f"4fb11a33809108b5f4550ac2657cb7cac448253f\trefs/heads/{__BRANCH_NAME}"
 __GIT_LS_REMOTE_OUTPUT_TAG = f"4fb11a33809108b5f4550ac2657cb7cac448253f\trefs/tags/{__REF_TAG_NAME}"
+__GIT_COMMAND = "git command"
+__SOURCE = "source"
+__SOURCE_PATH = "/path/to/source"
 
 def test_calls_run_shell_command_when_getting_current_branch(
 	__mock_run_shell_command
@@ -369,6 +372,72 @@ def test_returns_expected_clonable_branch(
 		clonable_branch
 	)
 
+def test_calls_get_source_path_when_executing_git_command_for_source(
+	__mock_get_path_source,
+	__mock_run_shell_command
+):
+	git_handler.execute_git_command_for_source(__GIT_COMMAND, __SOURCE)
+	__mock_get_path_source.assert_called_once_with(__SOURCE)
+
+def test_calls_logger_if_source_path_does_not_exist_when_executing_git_command_for_source(
+	__mock_os_path_exists,
+	__mock_get_path_source,
+	__mock_logger,
+	__mock_logger_yellow
+):
+	__mock_os_path_exists.return_value = False
+	git_handler.execute_git_command_for_source(__GIT_COMMAND, __SOURCE)
+	__mock_logger.assert_called_once_with(__mock_logger_yellow(
+		f"WARNING: Source {__SOURCE} does not exist in path {__mock_get_path_source(__SOURCE)}. Skipping."
+	))
+
+def test_does_not_call_logger_if_source_path_exists_when_executing_git_command_for_source(
+	__mock_logger,
+	__mock_run_shell_command
+):
+	git_handler.execute_git_command_for_source(__GIT_COMMAND, __SOURCE)
+	__mock_logger.assert_not_called()
+
+def test_calls_run_shell_command_if_source_path_exists_when_executing_git_command_for_source(
+	__mock_get_path_source,
+	__mock_run_shell_command
+):
+	git_handler.execute_git_command_for_source(__GIT_COMMAND, __SOURCE)
+	__mock_run_shell_command.assert_called_once_with(
+		f"git {__GIT_COMMAND}",
+		cwd=__mock_get_path_source(__SOURCE),
+		show_output=True,
+		show_error=True
+	)
+
+def test_does_not_call_run_shell_command_if_source_path_does_not_exist_when_executing_git_command_for_source(
+	__mock_os_path_exists,
+	__mock_run_shell_command
+):
+	__mock_os_path_exists.return_value = False
+	git_handler.execute_git_command_for_source(__GIT_COMMAND, __SOURCE)
+	__mock_run_shell_command.assert_not_called()
+
+@pytest.mark.parametrize(
+	"__mock_os_path_exists,__mock_run_shell_command,expected_result",
+	[
+		pytest.param(False, (1, "error"), (0, "")),
+		pytest.param(False, (0, "success"), (0, "")),
+		pytest.param(True, (1, "error"), (1, "error")),
+		pytest.param(True, (0, "success"), (0, "success"))
+	],
+	indirect=["__mock_os_path_exists", "__mock_run_shell_command"]
+)
+def test_returns_expected_result_when_executing_git_command_for_source(
+	__mock_os_path_exists,
+	__mock_run_shell_command,
+	expected_result
+):
+	result = git_handler.execute_git_command_for_source(__GIT_COMMAND, __SOURCE)
+	assert (
+		result == expected_result
+	), get_assertion_message("git command on source result", expected_result, result)
+
 def __return_unchanged(value):
 	return value
 
@@ -410,4 +479,33 @@ def __mock_tag_exists_in_repo(request):
 		"xmipp3_installer.installer.handlers.git_handler.tag_exists_in_repo"
 	) as mock_method:
 		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_get_path_source():
+	with patch(
+		"xmipp3_installer.installer.constants.paths.get_source_path"
+	) as mock_method:
+		mock_method.return_value = __SOURCE_PATH
+		yield mock_method
+
+@pytest.fixture(params=[True], autouse=True)
+def __mock_os_path_exists(request):
+	with patch("os.path.exists") as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_logger():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.__call__"
+	) as mock_method:
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_logger_yellow():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.yellow"
+	) as mock_method:
+		mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
 		yield mock_method
