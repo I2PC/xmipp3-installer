@@ -62,7 +62,7 @@ def test_calls_logger_when_running_executor(
 	executor = ModeGitExecutor(__CONTEXT.copy())
 	executor.run()
 	expected_calls = [
-		call(f"Running command '{__GIT_COMMAND}' for all xmipp sources..."),
+		call(f"Running command 'git {__GIT_COMMAND}' for all xmipp sources..."),
 		*[
 			call(
 				"\n" + __mock_logger_blue(f"Running command for {source} in path {__mock_get_path_source(source)}...")
