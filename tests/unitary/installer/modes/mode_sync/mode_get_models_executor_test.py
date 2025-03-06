@@ -14,6 +14,8 @@ __ARGS = {
 }
 __SYNC_PROGRAM_PATH = "/path/to/sync/program"
 __SYNC_PROGRAM_NAME = "sync_name"
+__SOURCES_PATH = "sources_path"
+__XMIPP_NAME = "test_xmipp"
 
 def test_implements_interface_mode_sync_executor():
 	executor = ModeGetModelsExecutor(__ARGS.copy())
@@ -26,12 +28,11 @@ def test_implements_interface_mode_sync_executor():
 	)
 
 def test_sets_dist_path_when_initializing(
-	__mock_sources_path,
 	__mock_xmipp_name,
-	__mock_os_path_join
+	__mock_get_source_path
 ):
 	executor = ModeGetModelsExecutor(__ARGS.copy())
-	expected_dist_path = __mock_os_path_join(__mock_sources_path, __mock_xmipp_name)
+	expected_dist_path = __mock_get_source_path(__mock_xmipp_name)
 	assert (
 		executor.dist_path == expected_dist_path
 	), get_assertion_message("dist path", expected_dist_path, executor.dist_path)
@@ -41,8 +42,8 @@ def test_sets_dist_path_when_initializing(
 	[
 		pytest.param("some-directory", "some-directory"),
 		pytest.param(
-			f"{paths.SOURCES_PATH}/{constants.XMIPP}",
-			f"{paths.SOURCES_PATH}/{constants.XMIPP}/models"
+			f"{__SOURCES_PATH}/{__XMIPP_NAME}",
+			f"{__SOURCES_PATH}/{__XMIPP_NAME}/models"
 		)
 	]
 )
@@ -161,17 +162,17 @@ def __mock_run_shell_command(request):
 		mock_method.return_value = request.param
 		yield mock_method
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def __mock_sources_path():
 	with patch.object(
-		paths, "SOURCES_PATH", "sources_path"
+		paths, "SOURCES_PATH", __SOURCES_PATH
 	) as mock_object:
 		yield mock_object
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def __mock_xmipp_name():
 	with patch.object(
-		constants, "XMIPP", "test_xmipp"
+		constants, "XMIPP", __XMIPP_NAME
 	) as mock_object:
 		yield mock_object
 
@@ -181,7 +182,7 @@ def __mock_os_path_join():
 		mock_method.side_effect = lambda *args: '/'.join([*args])
 		yield mock_method
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def __mock_logger_green():
   with patch(
     "xmipp3_installer.application.logger.logger.Logger.green"
@@ -206,3 +207,11 @@ def __mock_sync_program_name():
 		__SYNC_PROGRAM_NAME
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_get_source_path():
+	with patch(
+		"xmipp3_installer.installer.constants.paths.get_source_path"
+	) as mock_method:
+		mock_method.side_effect = lambda source: f"{__SOURCES_PATH}/{source}"
+		yield mock_method
