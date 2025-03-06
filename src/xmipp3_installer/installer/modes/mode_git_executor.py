@@ -26,7 +26,7 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
 		"""
-		logger(f"Running command '{self.command}' for all xmipp sources...")
+		logger(f"Running command 'git {self.command}' for all xmipp sources...")
 
 		for source in [constants.XMIPP, *constants.XMIPP_SOURCES]:
 			logger("\n" + logger.blue(
