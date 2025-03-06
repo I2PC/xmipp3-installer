@@ -27,6 +27,6 @@ def get_source_path(source: str) -> str:
   #### Returns:
   - (str): Path to the source.
   """
-  return os.path.join(SOURCES_PATH, source)
+  return os.path.abspath(os.path.join(SOURCES_PATH, source))
 XMIPP_CORE_PATH = get_source_path(constants.XMIPP_CORE)
 XMIPP_SOURCE_PATHS = [get_source_path(source) for source in constants.XMIPP_SOURCES]
