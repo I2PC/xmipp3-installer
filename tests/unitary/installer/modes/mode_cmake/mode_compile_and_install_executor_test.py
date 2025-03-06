@@ -4,7 +4,7 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor import ModeCMakeExecutor
 from xmipp3_installer.installer.modes.mode_cmake.mode_compile_and_install_executor import ModeCompileAndInstallExecutor
@@ -26,6 +26,7 @@ __CONTEXT = {
 	__PARAM_KEEP_OUTPUT: False,
 	__PARAM_JOBS: __N_JOBS
 }
+__CALL_COUNT_ASSERTION_MESSAGE = "call count"
 
 def test_implements_interface_mode_cmake_executor():
 	executor = ModeCompileAndInstallExecutor(__CONTEXT.copy())
@@ -83,62 +84,131 @@ def test_stores_expected_context_values_when_initializing(branch, jobs):
 		stored_values == expected_values
 	), get_assertion_message("stored values", expected_values, stored_values)
 
-def test_instantiates_mode_git_executor_if_target_branch_provided_when_initializing(
-	__mock_mode_git_executor
-):
-	new_context = {**__CONTEXT, __PARAM_BRANCH: constants.DEVEL_BRANCHNAME}
-	ModeCompileAndInstallExecutor(new_context)
-	__mock_mode_git_executor.assert_called_once_with(
-		{**new_context, __PARAM_GIT_COMMAND: ["checkout", constants.DEVEL_BRANCHNAME]}
-	)
-
-def test_does_not_instantiate_mode_git_executor_if_target_branch_not_provided_when_initializing(
-	__mock_mode_git_executor
-):
-	ModeCompileAndInstallExecutor(__CONTEXT.copy())
-	__mock_mode_git_executor.assert_not_called()
-
-def test_stores_mode_git_executor_if_instantiated_when_initializing(__mock_mode_git_executor):
-	executor = ModeCompileAndInstallExecutor(
-		{**__CONTEXT, __PARAM_BRANCH: constants.DEVEL_BRANCHNAME}
-	)
-	assert (
-		executor.git_executor == __mock_mode_git_executor()
-	), get_assertion_message(
-		"stored git executor",
-		__mock_mode_git_executor(),
-		executor.git_executor
-	)
-
-def test_calls_git_executor_run_if_target_branch_provided_when_switching_branches(
-	__mock_mode_git_executor
+def test_calls_branch_exists_in_repo_if_target_branch_provided_when_switching_branches(
+	__mock_branch_exists_in_repo
 ):
 	ModeCompileAndInstallExecutor(
 		{**__CONTEXT, __PARAM_BRANCH: constants.DEVEL_BRANCHNAME}
 	)._ModeCompileAndInstallExecutor__switch_branches()
-	__mock_mode_git_executor().run.assert_called_once_with()
+	expected_calls = [
+		call(f"{urls.I2PC_REPOSITORY_URL}{source}.git", constants.DEVEL_BRANCHNAME)
+		for source in constants.XMIPP_SOURCES
+	]
+	__mock_branch_exists_in_repo.assert_has_calls(expected_calls)
+	assert (
+		__mock_branch_exists_in_repo.call_count == len(expected_calls)
+	), get_assertion_message(
+		__CALL_COUNT_ASSERTION_MESSAGE,
+		len(expected_calls),
+		__mock_branch_exists_in_repo.call_count
+	)
 
-def test_does_not_call_git_executor_run_if_target_branch_not_provided_when_switching_branches(
-	__mock_mode_git_executor
+def test_does_not_call_branch_exists_in_repo_if_target_branch_not_provided_when_switching_branches(
+	__mock_branch_exists_in_repo
 ):
 	ModeCompileAndInstallExecutor(
 		__CONTEXT.copy()
 	)._ModeCompileAndInstallExecutor__switch_branches()
-	__mock_mode_git_executor().run.assert_not_called()
+	__mock_branch_exists_in_repo.assert_not_called()
 
 @pytest.mark.parametrize(
-	"branch,__mock_mode_git_executor,expected_result",
+	"branch_exists_in_repo",
 	[
-		pytest.param(None, (1, "error"), (0, "")),
-		pytest.param(None, (0, "success"), (0, "")),
-		pytest.param(constants.DEVEL_BRANCHNAME, (1, "error"), (1, "error")),
-		pytest.param(constants.DEVEL_BRANCHNAME, (0, "success"), (0, "success"))
+		pytest.param((False, False, False)),
+		pytest.param((False, False, True)),
+		pytest.param((False, True, False)),
+		pytest.param((False, True, True)),
+		pytest.param((True, False, False)),
+		pytest.param((True, False, True)),
+		pytest.param((True, True, False)),
+		pytest.param((True, True, True))
+	]
+)
+def test_calls_logger_if_branch_does_not_exist_in_repo_when_switching_branches(
+	branch_exists_in_repo,
+	__mock_branch_exists_in_repo,
+	__mock_logger_yellow,
+	__mock_logger
+):
+	__mock_branch_exists_in_repo.side_effect = branch_exists_in_repo
+	ModeCompileAndInstallExecutor(
+		{**__CONTEXT, __PARAM_BRANCH: constants.DEVEL_BRANCHNAME}
+	)._ModeCompileAndInstallExecutor__switch_branches()
+	expected_calls = [
+		call(__mock_logger_yellow(
+			f"WARNING: Branch {constants.DEVEL_BRANCHNAME} does not exist in source {source}. Skipping."
+		))
+		for exists, source in zip(branch_exists_in_repo, constants.XMIPP_SOURCES) if not exists
+	]
+	__mock_logger.assert_has_calls(expected_calls)
+	assert (
+		__mock_logger.call_count == len(expected_calls)
+	), get_assertion_message(
+		__CALL_COUNT_ASSERTION_MESSAGE,
+		len(expected_calls),
+		__mock_logger.call_count
+	)
+
+def test_calls_execute_git_command_for_source_if_target_branch_provided_and_exists_when_switching_branches(
+	__mock_execute_git_command_for_source
+):
+	ModeCompileAndInstallExecutor(
+		{**__CONTEXT, __PARAM_BRANCH: constants.DEVEL_BRANCHNAME}
+	)._ModeCompileAndInstallExecutor__switch_branches()
+	expected_calls = [
+		call(f"checkout {constants.DEVEL_BRANCHNAME}", source)
+		for source in constants.XMIPP_SOURCES
+	]
+	__mock_execute_git_command_for_source.assert_has_calls(expected_calls)
+	assert (
+		__mock_execute_git_command_for_source.call_count == len(expected_calls)
+	), get_assertion_message(
+		__CALL_COUNT_ASSERTION_MESSAGE,
+		len(expected_calls),
+		__mock_execute_git_command_for_source.call_count
+	)
+
+@pytest.mark.parametrize(
+	"branch,__mock_branch_exists_in_repo",
+	[
+		pytest.param(None, False),
+		pytest.param(None, True),
+		pytest.param(constants.DEVEL_BRANCHNAME, False)
 	],
-	indirect=["__mock_mode_git_executor"]
+	indirect=["__mock_branch_exists_in_repo"]
+)
+def test_does_not_call_execute_git_command_for_source_if_target_branch_not_provided_or_not_exists_when_switching_branches(
+	branch,
+	__mock_branch_exists_in_repo,
+	__mock_execute_git_command_for_source
+):
+	ModeCompileAndInstallExecutor(
+		{**__CONTEXT, __PARAM_BRANCH: branch}
+	)._ModeCompileAndInstallExecutor__switch_branches()
+	__mock_execute_git_command_for_source.assert_not_called()
+
+@pytest.mark.parametrize(
+	"branch,__mock_branch_exists_in_repo,"
+	"__mock_execute_git_command_for_source,expected_result",
+	[
+		pytest.param(None, False, (1, "error"), (0, "")),
+		pytest.param(None, False, (0, "success"), (0, "")),
+		pytest.param(None, True, (1, "error"), (0, "")),
+		pytest.param(None, True, (0, "success"), (0, "")),
+		pytest.param(constants.DEVEL_BRANCHNAME, False, (1, "error"), (0, "")),
+		pytest.param(constants.DEVEL_BRANCHNAME, False, (0, "success"), (0, "")),
+		pytest.param(constants.DEVEL_BRANCHNAME, True, (1, "error"), (1, "error")),
+		pytest.param(constants.DEVEL_BRANCHNAME, True, (0, "success"), (0, ""))
+	],
+	indirect=[
+		"__mock_branch_exists_in_repo",
+		"__mock_execute_git_command_for_source"
+	]
 )
 def test_returns_expected_value_when_switching_branches(
 	branch,
-	__mock_mode_git_executor,
+	__mock_branch_exists_in_repo,
+	__mock_execute_git_command_for_source,
 	expected_result
 ):
 	result = ModeCompileAndInstallExecutor(
@@ -210,7 +280,11 @@ def test_calls_get_section_message_twice_if_first_command_succeeds_when_running_
 	__mock_get_section_message.assert_has_calls(expected_calls)
 	assert (
 		__mock_get_section_message.call_count == len(expected_calls)
-	), get_assertion_message("call count", len(expected_calls), __mock_get_section_message.call_count)
+	), get_assertion_message(
+		__CALL_COUNT_ASSERTION_MESSAGE,
+		len(expected_calls),
+		__mock_get_section_message.call_count
+	)
 
 def test_calls_logger_twice_if_first_command_succeeds_when_running_cmake_mode(
 	__mock_get_section_message,
@@ -224,7 +298,11 @@ def test_calls_logger_twice_if_first_command_succeeds_when_running_cmake_mode(
 	__mock_logger.assert_has_calls(expected_calls)
 	assert (
 		__mock_logger.call_count == len(expected_calls)
-	), get_assertion_message("call count", len(expected_calls), __mock_logger.call_count)
+	), get_assertion_message(
+		__CALL_COUNT_ASSERTION_MESSAGE,
+		len(expected_calls),
+		__mock_logger.call_count
+	)
 
 @pytest.mark.parametrize(
 	"keep_output", [pytest.param(False), pytest.param(True)]
@@ -254,7 +332,7 @@ def test_calls_run_shell_command_in_streaming_twice_if_first_command_succeeds_wh
 	assert (
 		__mock_run_shell_command_in_streaming.call_count == len(expected_calls)
 	), get_assertion_message(
-		"call count",
+		__CALL_COUNT_ASSERTION_MESSAGE,
 		len(expected_calls),
 		__mock_run_shell_command_in_streaming.call_count
 	)
@@ -374,3 +452,30 @@ def __mock_build_type():
 		constants, "BUILD_TYPE", __BUILD_TYPE
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture(params=[True], autouse=True)
+def __mock_branch_exists_in_repo(request):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.branch_exists_in_repo"
+	) as mock_method:
+		if isinstance(request.param, bool):
+			mock_method.return_value = request.param
+		else:
+			mock_method.side_effect = request.param
+		yield mock_method
+
+@pytest.fixture(params=[(0, "")], autouse=True)
+def __mock_execute_git_command_for_source(request):
+	with patch(
+		"xmipp3_installer.installer.handlers.git_handler.execute_git_command_for_source"
+	) as mock_method:
+		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_logger_yellow():
+  with patch(
+    "xmipp3_installer.application.logger.logger.Logger.yellow"
+  ) as mock_method:
+    mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
+    yield mock_method
