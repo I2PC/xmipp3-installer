@@ -39,11 +39,11 @@ def test_returns_expected_config_build_output(
 		text=True,
 		cwd=__setup_evironment,
 		env=mode_cmake.ENV
-	)
+	).stdout
 	result = __normalize_paths(
 		__normalize_execution_times(
 			__normalize_generator_line(
-				__normalize_cmake_executable(result.stdout)
+				__normalize_cmake_executable(result)
 			)
 		)
 	)

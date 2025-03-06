@@ -16,11 +16,11 @@ from .. import (
 
 def test_returns_short_version(__setup_evironment):
 	command_words = ["xmipp3_installer", modes.MODE_VERSION, "--short"]
-	result = subprocess.run(command_words, capture_output=True, text=True)
+	result = subprocess.run(command_words, capture_output=True, text=True).stdout
 	expected_version = f"{JSON_XMIPP_VERSION_NAME}\n"
 	assert (
-		result.stdout == expected_version
-	), get_assertion_message("short version", expected_version, result.stdout)
+		result == expected_version
+	), get_assertion_message("short version", expected_version, result)
 
 @pytest.mark.parametrize(
 	"__setup_evironment,expected_output_function",
@@ -37,11 +37,11 @@ def test_returns_full_version(
 	expected_output_function
 ):
 	command_words = ["xmipp3_installer", modes.MODE_VERSION]
-	result = subprocess.run(command_words, capture_output=True, text=True)
+	result = subprocess.run(command_words, capture_output=True, text=True).stdout
 	expected_output = expected_output_function()
 	assert (
-		result.stdout == expected_output
-	), get_assertion_message("full version", expected_output, result.stdout)
+		result == expected_output
+	), get_assertion_message("full version", expected_output, result)
 
 def __delete_library_versions_file():
 	file_operations.delete_paths(

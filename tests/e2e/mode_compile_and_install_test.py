@@ -48,9 +48,9 @@ def test_returns_expected_compile_and_install_output(
 		text=True,
 		cwd=__setup_evironment,
 		env=mode_cmake.ENV
-	)
+	).stdout
 	result = __remove_ninja_output(
-		__normalize_cmake_executable(result.stdout)
+		__normalize_cmake_executable(result)
 	)
 	if os.path.basename(__setup_evironment) == mode_cmake.BUILD_ERROR_PROJECT:
 		result = __normalize_line_breaks(
