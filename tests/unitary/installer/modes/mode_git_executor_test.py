@@ -2,7 +2,6 @@ import pytest
 from unittest.mock import patch, call
 
 from xmipp3_installer.installer import constants
-from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_git_executor import ModeGitExecutor
 
