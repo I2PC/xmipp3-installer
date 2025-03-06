@@ -72,7 +72,7 @@ jobs:
         run: |
           python -m coverage combine ./conf/coverage
           python -m coverage xml
-          zip reports.zip coverage.xml reports.xml
+          zip reports.zip coverage.xml report.xml
       
       - uses: actions/upload-artifact@v4
         if: matrix.python-version == '3.13'
