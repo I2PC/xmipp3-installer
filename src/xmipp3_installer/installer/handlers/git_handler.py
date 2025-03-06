@@ -1,7 +1,10 @@
 """### Functions that interact with Git via shell."""
 
-from typing import Optional
+import os
+from typing import Optional, Tuple
 
+from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 
 def get_current_branch(dir: str='./') -> str:
@@ -135,6 +138,31 @@ def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str) -
 	if viable_tag and tag_exists_in_repo(repo_url, viable_tag):
 		return viable_tag
 	return None
+
+def execute_git_command_for_source(command: str, source: str) -> Tuple[int, str]:
+	"""
+	### Executes the git command for a specific source.
+
+	#### Params:
+	- command (str): Command to execute on the source.
+	- source (str): The source repository name.
+
+	#### Returns:
+	- (tuple(int, str)): Tuple containing the return code and output message.
+	"""
+	source_path = paths.get_source_path(source)
+	if not os.path.exists(source_path):
+		logger(logger.yellow(
+			f"WARNING: Source {source} does not exist in path {source_path}. Skipping."
+		))
+		return 0, ""
+	
+	return shell_handler.run_shell_command(
+		f"git {command}",
+		cwd=source_path,
+		show_output=True,
+		show_error=True
+	)
 
 def __ref_exists_in_repo(repo_url: str, ref: str, is_branch: bool) -> bool:
 	"""
