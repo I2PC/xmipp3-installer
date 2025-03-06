@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-project(build_error)
+project(build_error NONE)
 
 add_custom_target(
     build_error_target ALL

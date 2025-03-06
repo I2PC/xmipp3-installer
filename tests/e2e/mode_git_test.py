@@ -55,11 +55,11 @@ def test_returns_returns_xpected_git_command_output(
 	__setup_evironment,
 ):
 	command_words = ["xmipp3_installer", modes.MODE_GIT, "branch"]
-	result = subprocess.run(command_words, capture_output=True, text=True)
+	result = subprocess.run(command_words, capture_output=True, text=True).stdout
 	expected_output = mode_git.get_git_command(*__setup_evironment)
 	assert (
-		result.stdout == expected_output
-	), get_assertion_message("git command output", expected_output, result.stdout)
+		result == expected_output
+	), get_assertion_message("git command output", expected_output, result)
 
 @pytest.fixture(params=[False, False, False])
 def __setup_evironment(request):

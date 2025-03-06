@@ -9,6 +9,7 @@ from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes import mode_selector
 from xmipp3_installer.repository.config_vars import variables
 
+from .. import DummyVersionsManager
 from ... import get_assertion_message
 
 __MODE_NAME = "mode1"
@@ -31,6 +32,7 @@ __XMIP_VERSION_NUMBER = "3.X.Y"
 __XMIP_VERSION_NAME = "v3.X.Y-TBD"
 __XMIP_RELEASE_DATE = "18-02-2025 15:35.00"
 __XMIPP_CORE_MIN_VERSION = "3.Y.Z"
+__VERSION_CONTEXT_KEY = "version_key"
 
 @pytest.mark.parametrize(
 	"expected_mode",
@@ -235,7 +237,7 @@ def test_calls_send_installation_attempt_when_running_installer_deppending_on_at
 		pytest.param(True, True)
 	]
 )
-def test_calls_logger_when_running_installer_deppending_on_attribute(
+def test_calls_logger_to_send_installation_info_deppending_on_attribute_when_running_installer(
 	sends_info,
 	config_sends_info,
 	__mock_mode_executors,
@@ -253,6 +255,38 @@ def test_calls_logger_when_running_installer_deppending_on_attribute(
 	installation_manager.run_installer()
 	if sends_info and config_sends_info:
 		__mock_logger.assert_called_once_with("Sending anonymous installation info...")
+	else:
+		__mock_logger.assert_not_called()
+
+@pytest.mark.parametrize(
+	"shows_message,__mock_mode_executors",
+	[
+		pytest.param(False, (1, 1)),
+		pytest.param(False, (1, 1)),
+		pytest.param(True, (1, 1)),
+		pytest.param(True, (0, 0))
+	],
+	indirect=["__mock_mode_executors"]
+)
+def test_calls_logger_after_success_deppending_on_attribute_when_running_installer(
+	shows_message,
+	__mock_mode_executors,
+	__mock_logger,
+	__mock_versions_context_key,
+	__mock_get_success_message,
+	__mock_logger_log_error
+):
+	executor = __mock_mode_executors['all'](None)
+	executor.prints_banner_on_exit = shows_message
+	installation_manager = installer_service.InstallationManager({})
+	versions_manager = DummyVersionsManager()
+	installation_manager.context = {
+		**installation_manager.context,
+		__mock_versions_context_key: versions_manager
+	}
+	installation_manager.run_installer()
+	if not executor.run()[0] and shows_message:
+		__mock_logger.assert_called_once_with(__mock_get_success_message())
 	else:
 		__mock_logger.assert_not_called()
 
@@ -374,8 +408,8 @@ def __mock_variable_send_installation_info():
 		variables,
 		"SEND_INSTALLATION_STATISTICS",
 		__SEND_INSTALLATION_INFO_KEY
-	):
-		yield __SEND_INSTALLATION_INFO_KEY
+	) as mock_object:
+		yield mock_object
 
 @pytest.fixture
 def __mock_mode_executors_interrupted(
@@ -402,3 +436,12 @@ def __mock_logger_close():
 		"xmipp3_installer.application.logger.logger.Logger.close"
 	) as mock_method:
 		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_versions_context_key():
+	with patch.object(
+		constants,
+		"VERSIONS_CONTEXT_KEY",
+		__VERSION_CONTEXT_KEY
+	) as mock_object:
+		yield mock_object
