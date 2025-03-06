@@ -68,6 +68,7 @@ jobs:
           $SCRIPT_PATH e2e
       
       - name: Generate report files
+        if: matrix.python-version == '3.13'
         run: |
           python -m coverage combine ./conf/coverage
           python -m coverage xml
