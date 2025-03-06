@@ -48,21 +48,17 @@ def test_returns_expected_compile_and_install_output(
 		text=True,
 		cwd=__setup_evironment,
 		env=mode_cmake.ENV
-	)
-	result = __remove_ninja_output(
-		__normalize_cmake_executable(result.stdout)
-	)
-	if os.path.basename(__setup_evironment) == mode_cmake.BUILD_ERROR_PROJECT:
-		result = __normalize_line_breaks(
-			__normalize_line_breaks(
-				__remove_detailed_command_error_line(
-					__normalize_error_path(__setup_evironment, result)
-				),
-				3, 1
-			),
-			2, 1
+	).stdout
+	result = __normalize_line_breaks(
+		__remove_detailed_command_error_line(
+			__normalize_error_path(
+				__setup_evironment,
+				__remove_ninja_output(
+					__normalize_cmake_executable(result)
+				)
+			)
 		)
-	result = __normalize_line_breaks(result, 3, 2)
+	)
 	assert (
 		result == expected_output
 	), get_assertion_message("compile and install output", expected_output, result)
@@ -74,7 +70,10 @@ def __normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends 
 	return raw_output.replace(cmake_path, mode_cmake.CMAKE_EXECUTABLE)
 
 def __normalize_error_path(project_path: str, raw_output: str) -> str: # Absolute path changes per user and OS
-	path_index = raw_output.find(mode_compile_and_install.ERROR_TARGET_MESSAGE_START) + len(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)
+	path_index = raw_output.find(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)
+	if path_index == -1:
+		return raw_output
+	path_index += len(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)
 	text_up_to_path = raw_output[:path_index]
 	next_line_index = raw_output.find("\n", path_index)
 	build_error_target_path = os.path.join(
@@ -86,25 +85,28 @@ def __normalize_error_path(project_path: str, raw_output: str) -> str: # Absolut
 def __remove_detailed_command_error_line(raw_output: str) -> str: # Error line containing system-specific details
 	splitted = raw_output.splitlines(keepends=True)
 	new_output_lines = []
-	skip_up_to_index = 0
-	# Skip two lines after the one specified
-	for line_index in range(len(splitted)):
-		if line_index < skip_up_to_index:
+	for line in splitted:
+		if "cd " in line: # It's the only line containig a directory change
 			continue
-		new_output_lines.append(splitted[line_index])
-		if splitted[line_index].startswith(mode_compile_and_install.ERROR_TARGET_MESSAGE_START):
-			skip_up_to_index = line_index + 3
+		new_output_lines.append(line)
 	return ''.join(new_output_lines)
 
-def __normalize_line_breaks(
-	raw_output: str,
-	original_number: int,
-	new_number: int
-) -> str: # The number of line breaks in CMake is OS dependant
-	original_line_breaks = "".join(["\n" for _ in range(original_number)])
-	new_line_breaks = "".join(["\n" for _ in range(new_number)])
-	new_output = raw_output.replace(original_line_breaks, new_line_breaks)
-	return new_output
+def __normalize_line_breaks(raw_output: str) -> str: # The number of line breaks in CMake is OS dependant
+	splitted = raw_output.splitlines()
+	previous_line = None
+	new_lines = []
+	for line in splitted:
+		if not line:
+			previous_line = line
+			continue
+		if (
+			line == mode_compile_and_install.INSTALLING_MESSAGE_LINE or
+			(line.startswith("**") and previous_line == "")
+		):
+			line = f"\n{line}"
+		previous_line = line
+		new_lines.append(line)
+	return "\n".join([*new_lines, ""])
 
 def __remove_ninja_output(raw_output: str) -> str: # Ninja output is printed or not depending on OS
 	new_lines = []

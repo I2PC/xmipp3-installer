@@ -13,11 +13,12 @@ NINJA_OUTPUTS = [
   "ninja: build stopped: subcommand failed.",
   "ninja: no work to do."
 ]
+INSTALLING_MESSAGE_LINE = "------------------- Installing with CMake ------------------"
 
 __COMMON_SECTION = f"""------------------- Compiling with CMake -------------------
 {CMAKE_EXECUTABLE} --build build --config Release -j 1"""
 __COMPILATION_SUCCESS = f"""
-------------------- Installing with CMake ------------------
+{INSTALLING_MESSAGE_LINE}
 {CMAKE_EXECUTABLE} --install build --config Release"""
 
 BUILD_FAILURE = f"""{__COMMON_SECTION}
