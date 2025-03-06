@@ -458,10 +458,7 @@ def __mock_branch_exists_in_repo(request):
 	with patch(
 		"xmipp3_installer.installer.handlers.git_handler.branch_exists_in_repo"
 	) as mock_method:
-		if isinstance(request.param, bool):
-			mock_method.return_value = request.param
-		else:
-			mock_method.side_effect = request.param
+		mock_method.return_value = request.param
 		yield mock_method
 
 @pytest.fixture(params=[(0, "")], autouse=True)
