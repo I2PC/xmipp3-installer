@@ -9,12 +9,14 @@ from xmipp3_installer.installer.modes.mode_git_executor import ModeGitExecutor
 from .... import get_assertion_message
 
 __GIT_COMMAND_PARAMS = ["status", "-s"]
-__GIT_COMMAND = "git status -s"
+__GIT_COMMAND = "status -s"
 __CONTEXT = {
 	'command': __GIT_COMMAND_PARAMS
 }
 __RETURN_VALUES_STR = "return values"
 __SOURCES = [constants.XMIPP, *constants.XMIPP_SOURCES]
+__SOURCE_PATH = "source_path"
+__CALL_COUNT_ASSERTION_MESSAGE = "call count"
 
 def test_implements_interface_mode_executor():
 	executor = ModeGitExecutor(__CONTEXT.copy())
@@ -53,158 +55,65 @@ def test_does_not_override_parent_config_values(
 		inherited_config == base_config
 	), get_assertion_message("config values", base_config, inherited_config)
 
-def test_calls_logger_when_running_executor(__mock_logger):
-	executor = ModeGitExecutor(__CONTEXT.copy())
-	executor.run()
-	__mock_logger.assert_has_calls([
-		call(f"Running command '{__GIT_COMMAND}' for all xmipp sources..."),
-		call("")
-	])
-
-def test_calls_os_path_abspath_for_each_source(__mock_os_path_abspath):
-	executor = ModeGitExecutor(__CONTEXT.copy())
-	executor.run()
-	calls = []
-	for source in __SOURCES:
-		source_path = f"{paths.SOURCES_PATH}/{source}"
-		calls.append(call(source_path))
-	__mock_os_path_abspath.assert_has_calls(calls)
-	assert (
-		__mock_os_path_abspath.call_count == len(calls)
-	), get_assertion_message("call count", len(calls), __mock_os_path_abspath.call_count)
-
-def test_calls_os_path_exists_for_each_source(
-	__mock_os_path_exists,
-	__mock_run_shell_command
-):
-	ModeGitExecutor(__CONTEXT.copy()).run()
-	calls = []
-	for source in __SOURCES:
-		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
-		calls.append(call(source_path))
-	__mock_os_path_exists.assert_has_calls(calls)
-	assert (
-		__mock_os_path_exists.call_count == len(calls)
-	), get_assertion_message("call count", len(calls), __mock_os_path_exists.call_count)
-
-def test_calls_logger_when_source_does_not_exist(
-	__mock_logger,
-	__mock_logger_yellow,
-	__mock_os_path_exists
-):
-	__mock_os_path_exists.return_value = False
-	executor = ModeGitExecutor(__CONTEXT.copy())
-	executor.run()
-	calls = [call(f"Running command '{__GIT_COMMAND}' for all xmipp sources...")]
-	for source in __SOURCES:
-		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
-		calls.extend([
-			call(""),
-			call(__mock_logger_yellow(
-				f"WARNING: Source {source} does not exist in path {source_path}. Skipping."
-			))
-		])
-	__mock_logger.assert_has_calls(calls)
-
-def test_calls_logger_when_source_exists(
-	__mock_os_path_exists,
+def test_calls_logger_when_running_executor(
 	__mock_logger,
 	__mock_logger_blue,
-	__mock_run_shell_command
+	__mock_get_path_source
 ):
 	executor = ModeGitExecutor(__CONTEXT.copy())
 	executor.run()
-	calls = [call(f"Running command '{__GIT_COMMAND}' for all xmipp sources...")]
-	for source in __SOURCES:
-		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
-		calls.extend([
-			call(""),
-			call(__mock_logger_blue(
-				f"Running command for {source} in path {source_path}..."
-			))
-		])
-	__mock_logger.assert_has_calls(calls)
+	expected_calls = [
+		call(f"Running command '{__GIT_COMMAND}' for all xmipp sources..."),
+		*[
+			call(
+				"\n" + __mock_logger_blue(f"Running command for {source} in path {__mock_get_path_source(source)}...")
+			) for source in __SOURCES
+		]
+	]
+	__mock_logger.assert_has_calls(expected_calls)
+	assert (
+		__mock_logger.call_count == len(expected_calls)
+	), get_assertion_message(
+		__CALL_COUNT_ASSERTION_MESSAGE,
+		len(expected_calls),
+		__mock_logger.call_count
+	)
 
-def test_calls_run_shell_command_for_each_existing_source(
-	__mock_os_path_exists,
-	__mock_run_shell_command
+def test_calls_execute_git_command_for_source_for_each_existing_source(
+	__mock_execute_git_command_for_source
 ):
 	ModeGitExecutor(__CONTEXT.copy()).run()
-	calls = []
-	for source in __SOURCES:
-		source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
-		calls.append(call(
-			__GIT_COMMAND,
-			cwd=source_path,
-			show_output=True,
-			show_error=True
-		))
-	__mock_run_shell_command.assert_has_calls(calls)
+	expected_calls = [
+		call(__GIT_COMMAND, source)
+		for source in __SOURCES
+	]
+	__mock_execute_git_command_for_source.assert_has_calls(expected_calls)
+	assert (
+		__mock_execute_git_command_for_source.call_count == len(expected_calls)
+	), get_assertion_message(
+		__CALL_COUNT_ASSERTION_MESSAGE,
+		len(expected_calls),
+		__mock_execute_git_command_for_source.call_count
+	)
 
 @pytest.mark.parametrize(
-	"__mock_run_shell_command,expected_return_values",
+	"__mock_execute_git_command_for_source,expected_return_values",
 	[
 		pytest.param((0, ""), (0, "")),
+		pytest.param((0, "success"), (0, "")),
 		pytest.param((1, "error"), (1, "error"))
 	],
-	indirect=["__mock_run_shell_command"]
+	indirect=["__mock_execute_git_command_for_source"]
 )
 def test_returns_expected_values_when_running_executor(
-	__mock_run_shell_command,
-	expected_return_values,
-	__mock_os_path_exists
+	__mock_execute_git_command_for_source,
+	expected_return_values
 ):
 	executor = ModeGitExecutor(__CONTEXT.copy())
 	return_values = executor.run()
 	assert (
 		return_values == expected_return_values
 	), get_assertion_message(__RETURN_VALUES_STR, expected_return_values, return_values)
-
-def test_execute_git_command_for_source_when_source_does_not_exist(
-	__mock_os_path_exists,
-	__mock_logger,
-	__mock_logger_yellow
-):
-	__mock_os_path_exists.return_value = False
-	executor = ModeGitExecutor(__CONTEXT.copy())
-	source = __SOURCES[0]
-	ret_code, output = executor._ModeGitExecutor__execute_git_command_for_source(
-		source
-	)
-	
-	source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
-	__mock_logger.assert_called_once_with(__mock_logger_yellow(
-		f"WARNING: Source {source} does not exist in path {source_path}. Skipping."
-	))
-	assert ret_code == 0
-	assert output == ""
-
-def test_execute_git_command_for_source_when_source_exists(
-	__mock_os_path_exists,
-	__mock_logger,
-	__mock_logger_blue,
-	__mock_run_shell_command
-):
-	executor = ModeGitExecutor(__CONTEXT.copy())
-	source = __SOURCES[0]
-	expected_return = (0, "success")
-	__mock_run_shell_command.return_value = expected_return
-	
-	ret_code, output = executor._ModeGitExecutor__execute_git_command_for_source(
-		source
-	)
-	
-	source_path = f"abs-{paths.SOURCES_PATH}/{source}-abs"
-	__mock_logger.assert_called_once_with(__mock_logger_blue(
-		f"Running command for {source} in path {source_path}..."
-	))
-	__mock_run_shell_command.assert_called_once_with(
-		__GIT_COMMAND,
-		cwd=source_path,
-		show_output=True,
-		show_error=True
-	)
-	assert (ret_code, output) == expected_return
 
 @pytest.fixture
 def __dummy_test_mode_executor():
@@ -222,14 +131,6 @@ def __mock_logger():
 		yield mock_method
 
 @pytest.fixture(autouse=True)
-def __mock_logger_yellow():
-	with patch(
-		"xmipp3_installer.application.logger.logger.Logger.yellow"
-	) as mock_method:
-		mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
-		yield mock_method
-
-@pytest.fixture(autouse=True)
 def __mock_logger_blue():
 	with patch(
 		"xmipp3_installer.application.logger.logger.Logger.blue"
@@ -237,28 +138,18 @@ def __mock_logger_blue():
 		mock_method.side_effect = lambda text: f"blue-{text}-blue"
 		yield mock_method
 
-@pytest.fixture(autouse=True)
-def __mock_os_path_join():
-	with patch("os.path.join") as mock_method:
-		mock_method.side_effect = lambda *args: '/'.join([*args])
-		yield mock_method
-
-@pytest.fixture(autouse=True)
-def __mock_os_path_abspath():
-	with patch("os.path.abspath") as mock_method:
-		mock_method.side_effect = lambda path: f"abs-{path}-abs"
-		yield mock_method
-
-@pytest.fixture(params=[True])
-def __mock_os_path_exists(request):
-	with patch("os.path.exists") as mock_method:
-		mock_method.return_value = request.param
-		yield mock_method
-
-@pytest.fixture(params=[(0, "")])
-def __mock_run_shell_command(request):
+@pytest.fixture(params=[(0, "")], autouse=True)
+def __mock_execute_git_command_for_source(request):
 	with patch(
-		"xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
+		"xmipp3_installer.installer.handlers.git_handler.execute_git_command_for_source"
 	) as mock_method:
 		mock_method.return_value = request.param
+		yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_get_path_source():
+	with patch(
+		"xmipp3_installer.installer.constants.paths.get_source_path"
+	) as mock_method:
+		mock_method.return_value = __SOURCE_PATH
 		yield mock_method
