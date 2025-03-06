@@ -3,10 +3,9 @@ from typing import Tuple, Dict
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import predefined_messages, errors
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
+from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes import mode_git_executor
+from xmipp3_installer.installer.handlers import shell_handler, git_handler
 from xmipp3_installer.installer.modes.mode_cmake import mode_cmake_executor
 
 class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
@@ -17,11 +16,8 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
 		#### Params:
 		- context (dict): Dictionary containing the installation context variables.
 		"""
-		self.target_branch = context[params.PARAM_BRANCH]
-		self.git_executor = mode_git_executor.ModeGitExecutor(
-			{**context, params.PARAM_GIT_COMMAND: ["checkout", self.target_branch]}
-		) if self.target_branch else None
 		super().__init__(context)
+		self.target_branch = context[params.PARAM_BRANCH]
 		self.jobs = context[params.PARAM_JOBS]
 
 	def _set_executor_config(self):
@@ -64,5 +60,19 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error.
 		"""
-		ret_code, output = self.git_executor.run() if self.target_branch else (0, "")
-		return ret_code, output
+		if not self.target_branch:
+			return 0, ""
+		
+		for source in constants.XMIPP_SOURCES:
+			repo_url = f"{urls.I2PC_REPOSITORY_URL}{source}.git"
+			if not git_handler.branch_exists_in_repo(repo_url, self.target_branch):
+				logger(logger.yellow(
+					f"WARNING: Branch {self.target_branch} does not exist in source {source}. Skipping."
+				))
+				continue
+			ret_code, output = git_handler.execute_git_command_for_source(
+				f"checkout {self.target_branch}", source
+			)
+			if ret_code:
+				return ret_code, output
+		return 0, ""
