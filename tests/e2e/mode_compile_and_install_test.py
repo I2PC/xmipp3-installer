@@ -55,7 +55,7 @@ def test_returns_expected_compile_and_install_output(
 			__normalize_error_path(
 				__setup_evironment,
 				__remove_ninja_output(
-					__normalize_cmake_executable(result)
+					mode_cmake.normalize_cmake_executable(result)
 				)
 			)
 		)
@@ -63,9 +63,6 @@ def test_returns_expected_compile_and_install_output(
 	assert (
 		result == expected_output
 	), get_assertion_message("compile and install output", expected_output, result)
-
-def __normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends on user's installation
-	return raw_output.replace(shutil.which("cmake"), mode_cmake.CMAKE_EXECUTABLE)
 
 def __normalize_error_path(project_path: str, raw_output: str) -> str: # Absolute path changes per user and OS
 	path_index = raw_output.find(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)

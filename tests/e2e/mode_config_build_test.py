@@ -43,19 +43,13 @@ def test_returns_expected_config_build_output(
 	result = __normalize_paths(
 		__normalize_execution_times(
 			__normalize_generator_line(
-				__normalize_cmake_executable(result)
+				mode_cmake.normalize_cmake_executable(result)
 			)
 		)
 	)
 	assert (
 		result == expected_output
 	), get_assertion_message("config build output", expected_output, result)
-
-def __normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends on user's installation
-	first_flag_index = raw_output.find(" -S")
-	text_up_to_cmake_exec = raw_output[:first_flag_index]
-	splitted_first_lines = text_up_to_cmake_exec.splitlines()
-	return "\n".join([splitted_first_lines[0], mode_cmake.CMAKE_EXECUTABLE]) + raw_output[first_flag_index:]
 
 def __normalize_generator_line(raw_output: str) -> str: # Generator used is sometimes printed, others not
 	return raw_output.replace(mode_config_build.GENERATOR_LINE, "")
