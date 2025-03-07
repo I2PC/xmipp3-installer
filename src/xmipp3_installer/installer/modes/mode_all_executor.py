@@ -14,8 +14,6 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
 		#### Params:
 		- context (dict): Dictionary containing the installation context variables.
 		"""
-		self.target_branch = context[params.PARAM_BRANCH]
-		self.jobs = context[params.PARAM_JOBS]
 		self.get_sources_executor = mode_get_sources_executor.ModeGetSourcesExecutor(
 			context
 		)
