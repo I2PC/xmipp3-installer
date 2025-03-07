@@ -41,7 +41,7 @@ def test_returns_expected_config_build_output(
 		env=mode_cmake.ENV
 	).stdout
 	result = __normalize_paths(
-		__normalize_execution_times(
+		mode_config_build.normalize_execution_times(
 			__normalize_generator_line(
 				mode_cmake.normalize_cmake_executable(result)
 			)
@@ -53,9 +53,6 @@ def test_returns_expected_config_build_output(
 
 def __normalize_generator_line(raw_output: str) -> str: # Generator used is sometimes printed, others not
 	return raw_output.replace(mode_config_build.GENERATOR_LINE, "")
-
-def __normalize_execution_times(raw_output: str) -> str: # Execution times vary from one execution to another
-	return re.sub(r'\(\d+\.\ds\)', f"({mode_cmake.EXECUTION_TIME}s)", raw_output)
 
 def __normalize_paths(raw_output: str) -> str: # Absolute paths are different per user and OS
 	raw_output_lines = raw_output.splitlines(keepends=True)

@@ -14,7 +14,6 @@ CONFIG_ERROR_PROJECT = "config_error"
 BUILD_ERROR_PROJECT = "build_error"
 INSTALL_ERROR_PROJECT = "install_error"
 ENV = {**os.environ, "CMAKE_GENERATOR": "Ninja"}
-EXECUTION_TIME = "X.Y"
 
 def get_project_abs_subpath(project_name: str, *subpaths: str) -> str:
   """
