@@ -14,7 +14,7 @@ Usage: xmipp [options]
     # General #
 
     version [--short]                              Returns the version information. Add '--short' to print only the version number.
-    compileAndInstall [-j] [-b] [--keep-output]    Compiles and installs Xmipp based on already obtained sources.
+    compileAndInstall [-j] [--keep-output]         Compiles and installs Xmipp based on already obtained sources.
     all [-j] [-b] [--keep-output]                  Default param. Runs config, configBuild, and compileAndInstall.
     configBuild [--keep-output]                    Configures the project with CMake.
     ---------------------------------------------
@@ -54,7 +54,7 @@ Usage: xmipp [options]
                                                    information. Add
                                                    \'--short\' to print only
                                                    the version number.
-    compileAndInstall [-j] [-b] [--keep-output]    Compiles and installs
+    compileAndInstall [-j] [--keep-output]         Compiles and installs
                                                    Xmipp based on already
                                                    obtained sources.
     all [-j] [-b] [--keep-output]                  Default param. Runs
