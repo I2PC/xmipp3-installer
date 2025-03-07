@@ -303,11 +303,3 @@ def __mock_execute_git_command_for_source(request):
 	) as mock_method:
 		mock_method.return_value = request.param
 		yield mock_method
-
-@pytest.fixture(autouse=True)
-def __mock_logger_yellow():
-  with patch(
-    "xmipp3_installer.application.logger.logger.Logger.yellow"
-  ) as mock_method:
-    mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
-    yield mock_method
