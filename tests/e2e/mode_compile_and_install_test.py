@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 
 import pytest
@@ -64,10 +65,7 @@ def test_returns_expected_compile_and_install_output(
 	), get_assertion_message("compile and install output", expected_output, result)
 
 def __normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends on user's installation
-	first_flag_index = raw_output.find(" --build")
-	text_up_to_cmake_exec = raw_output[:first_flag_index]
-	cmake_path = text_up_to_cmake_exec.splitlines()[-1]
-	return raw_output.replace(cmake_path, mode_cmake.CMAKE_EXECUTABLE)
+	return raw_output.replace(shutil.which("cmake"), mode_cmake.CMAKE_EXECUTABLE)
 
 def __normalize_error_path(project_path: str, raw_output: str) -> str: # Absolute path changes per user and OS
 	path_index = raw_output.find(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)
