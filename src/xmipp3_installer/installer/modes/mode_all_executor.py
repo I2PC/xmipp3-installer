@@ -1,7 +1,9 @@
 from typing import Tuple, Dict
 
 from xmipp3_installer.application.cli.arguments import params
-from xmipp3_installer.installer.modes import mode_executor, mode_get_sources_executor
+from xmipp3_installer.installer.modes import (
+	mode_executor, mode_config_executor, mode_get_sources_executor
+)
 from xmipp3_installer.installer.modes.mode_cmake import (
 	mode_config_build_executor, mode_compile_and_install_executor
 )
@@ -14,6 +16,9 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
 		#### Params:
 		- context (dict): Dictionary containing the installation context variables.
 		"""
+		self.config_executor = mode_config_executor.ModeConfigExecutor(
+			{**context, params.PARAM_OVERWRITE: False}
+		)
 		self.get_sources_executor = mode_get_sources_executor.ModeGetSourcesExecutor(
 			context
 		)
@@ -43,6 +48,7 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
 		"""
 		for executor in [
+			self.config_executor,
 			self.get_sources_executor,
 			self.config_build_executor,
 			self.compile_and_install_executor
