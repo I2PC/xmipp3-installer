@@ -22,6 +22,8 @@ from .. import (
 		pytest.param((False, False, False), mode_all.CONFIG_BUILD_FAILURE, id="All fail"),
 		pytest.param((False, True, True), mode_all.CONFIG_BUILD_FAILURE, id="Build config error"),
 		pytest.param((True, False, True), mode_all.BUILD_FAILURE, id="Build error"),
+		pytest.param((True, True, False), mode_all.INSTALL_FAILURE, id="Install error"),
+		pytest.param((True, True, True), mode_all.SUCCESS, id="Success"),
 	],
 	indirect=["__setup_evironment"]
 )
@@ -43,24 +45,35 @@ def test_returns_expected_full_installation_output(
 		cwd=__setup_evironment,
 		env=mode_cmake.ENV
 	).stdout
-	result = mode_compile_and_install.normalize_line_breaks(
-		mode_compile_and_install.normalize_error_path(
-			__setup_evironment,
-			mode_compile_and_install.remove_command_error_line(
-				mode_compile_and_install.remove_ninja_output(
-					mode_config_build.normalize_execution_times(
-						mode_config_build.remove_generator_line(
-							mode_cmake.normalize_cmake_executable(result)
+	result = __normalize_build_path(
+		__setup_evironment,
+		mode_compile_and_install.normalize_line_breaks(
+			mode_compile_and_install.normalize_error_path(
+				__setup_evironment,
+				mode_compile_and_install.remove_command_error_line(
+					mode_compile_and_install.remove_ninja_output(
+						mode_config_build.normalize_execution_times(
+							mode_config_build.remove_generator_line(
+								mode_cmake.normalize_cmake_executable(result)
+							)
 						)
 					)
 				)
 			)
 		)
 	)
-	test = ""
 	assert (
 		result == expected_output
 	), get_assertion_message("full installation output", expected_output, result)
+
+def __normalize_build_path(project_path: str, raw_output: str) -> str: # Build output is obtained from a static variable with a fixed path
+	new_lines = []
+	for line in raw_output.splitlines(keepends=True):
+		if line.startswith(mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START):
+			new_path = os.path.join(project_path, "build")
+			line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{new_path}\n"
+		new_lines.append(line)
+	return "".join(new_lines)
 
 @pytest.fixture(params=[(True, True, True)])
 def __setup_evironment(request):
@@ -84,7 +97,7 @@ def __setup_evironment(request):
 		os.makedirs(src_path, exist_ok=True)
 		for source in constants.XMIPP_SOURCES:
 			os.makedirs(os.path.join(src_path, source), exist_ok=True)
-		yield get_cmake_project_path(cmake_project_name)
+		yield project_path
 	finally:
 		file_operations.delete_paths([
 			os.path.join(project_path, file_name) for file_name in [
