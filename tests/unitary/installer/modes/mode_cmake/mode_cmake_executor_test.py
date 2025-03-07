@@ -11,9 +11,11 @@ from xmipp3_installer.repository.config_vars import variables
 from ..... import get_assertion_message
 
 __CMAKE = "/path/to/cmake"
+__BUILD_TYPE = "build_type"
 __CONTEXT = {
 	params.PARAM_KEEP_OUTPUT: False,
-	variables.CMAKE: __CMAKE
+	variables.CMAKE: __CMAKE,
+	variables.BUILD_TYPE: __BUILD_TYPE
 }
 __CMAKE_ERROR_MESSAGE = "CMake installation not found."
 
@@ -56,28 +58,41 @@ def test_overrides_expected_parent_config_values(
 	), get_assertion_message("config values", base_config, inherited_config)
 
 @pytest.mark.parametrize(
+	"variable_name",
+	[pytest.param(variables.CMAKE), pytest.param(variables.BUILD_TYPE)]
+)
+def test_raises_key_error_if_variable_not_present_in_context_when_initializing(
+	variable_name,
+	__dummy_test_mode_cmake_executor
+):
+	new_context = __CONTEXT.copy()
+	del new_context[variable_name]
+	with pytest.raises(KeyError):
+		__dummy_test_mode_cmake_executor(new_context)
+
+@pytest.mark.parametrize(
 	"keep_output", [pytest.param(False), pytest.param(True)]
 )
-def test_stores_expected_substitute_value_when_initializing(
+def test_stores_expected_values_when_initializing(
 	__dummy_test_mode_cmake_executor,
 	keep_output
 ):
 	executor = __dummy_test_mode_cmake_executor(
 		{**__CONTEXT, params.PARAM_KEEP_OUTPUT: keep_output}
 	)
+	values = (
+		executor.substitute,
+		executor.cmake,
+		executor.build_type
+	)
+	expected_values = (
+		not keep_output,
+		__CMAKE,
+		__BUILD_TYPE
+	)
 	assert (
-		executor.substitute != keep_output
-	), get_assertion_message("substitute value", not keep_output, executor.substitute)
-
-def test_raises_key_error_if_variable_cmake_not_present_in_context_when_getting_cmake_executable(
-	__dummy_test_mode_cmake_executor
-):
-	new_context = __CONTEXT.copy()
-	del new_context[variables.CMAKE]
-	with pytest.raises(KeyError):
-		__dummy_test_mode_cmake_executor(
-			new_context
-		)._ModeCMakeExecutor__get_cmake_executable()
+		values == expected_values
+	), get_assertion_message("stored values", expected_values, values)
 
 def test_calls_shutil_which_if_cmake_in_context_not_valid_when_getting_cmake_executable(
 	__dummy_test_mode_cmake_executor,
