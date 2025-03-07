@@ -31,6 +31,7 @@ __CONTEXT = {
 	__CMAKE_KEY: "/path/to/cmake"
 }
 __CALL_COUNT_ASSERTION_MESSAGE = "call count"
+__COMPILING_MESSAGE = "Compiling with CMake"
 
 def test_implements_interface_mode_cmake_executor():
 	executor = ModeCompileAndInstallExecutor(__CONTEXT.copy())
@@ -85,7 +86,7 @@ def test_calls_get_section_message_once_if_compilation_fails_when_running_cmake_
 ):
 	__mock_run_shell_command_in_streaming.return_value = 1
 	ModeCompileAndInstallExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
-	__mock_get_section_message.assert_called_once_with("Compiling with CMake")
+	__mock_get_section_message.assert_called_once_with(__COMPILING_MESSAGE)
 
 def test_calls_logger_once_if_compilation_fails(
 	__mock_get_section_message,
@@ -94,7 +95,7 @@ def test_calls_logger_once_if_compilation_fails(
 ):
 	__mock_run_shell_command_in_streaming.return_value = 1
 	ModeCompileAndInstallExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
-	__mock_logger.assert_called_once_with(__mock_get_section_message("Compiling with CMake"))
+	__mock_logger.assert_called_once_with(__mock_get_section_message(__COMPILING_MESSAGE))
 
 @pytest.mark.parametrize(
 	"keep_output", [pytest.param(False), pytest.param(True)]
@@ -120,7 +121,7 @@ def test_calls_get_section_message_twice_if_first_command_succeeds_when_running_
 ):
 	ModeCompileAndInstallExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
 	expected_calls = [
-		call("Compiling with CMake"),
+		call(__COMPILING_MESSAGE),
 		call("Installing with CMake")
 	]
 	__mock_get_section_message.assert_has_calls(expected_calls)
@@ -138,7 +139,7 @@ def test_calls_logger_twice_if_first_command_succeeds_when_running_cmake_mode(
 ):
 	ModeCompileAndInstallExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
 	expected_calls = [
-		call(__mock_get_section_message("Compiling with CMake")),
+		call(__mock_get_section_message(__COMPILING_MESSAGE)),
 		call("\n" + __mock_get_section_message("Installing with CMake"))
 	]
 	__mock_logger.assert_has_calls(expected_calls)
