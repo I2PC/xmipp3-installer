@@ -50,9 +50,9 @@ def test_returns_expected_compile_and_install_output(
 		cwd=__setup_evironment,
 		env=mode_cmake.ENV
 	).stdout
-	result = __normalize_line_breaks(
-		__remove_detailed_command_error_line(
-			__normalize_error_path(
+	result = mode_compile_and_install.normalize_line_breaks(
+		mode_compile_and_install.remove_command_error_line(
+			mode_compile_and_install.normalize_error_path(
 				__setup_evironment,
 				mode_compile_and_install.remove_ninja_output(
 					mode_cmake.normalize_cmake_executable(result)
@@ -63,45 +63,6 @@ def test_returns_expected_compile_and_install_output(
 	assert (
 		result == expected_output
 	), get_assertion_message("compile and install output", expected_output, result)
-
-def __normalize_error_path(project_path: str, raw_output: str) -> str: # Absolute path changes per user and OS
-	path_index = raw_output.find(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)
-	if path_index == -1:
-		return raw_output
-	path_index += len(mode_compile_and_install.ERROR_TARGET_MESSAGE_START)
-	text_up_to_path = raw_output[:path_index]
-	next_line_index = raw_output.find("\n", path_index)
-	build_error_target_path = os.path.join(
-		project_path,
-		mode_compile_and_install.BUILD_ERROR_TARGET_SUBPATH
-	)
-	return f"{text_up_to_path}{build_error_target_path}{raw_output[next_line_index:]}"
-
-def __remove_detailed_command_error_line(raw_output: str) -> str: # Error line containing system-specific details
-	splitted = raw_output.splitlines(keepends=True)
-	new_output_lines = []
-	for line in splitted:
-		if "cd " in line: # It's the only line containig a directory change
-			continue
-		new_output_lines.append(line)
-	return ''.join(new_output_lines)
-
-def __normalize_line_breaks(raw_output: str) -> str: # The number of line breaks in CMake is OS dependant
-	splitted = raw_output.splitlines()
-	previous_line = None
-	new_lines = []
-	for line in splitted:
-		if not line:
-			previous_line = line
-			continue
-		if (
-			line == mode_compile_and_install.INSTALLING_MESSAGE_LINE or
-			(line.startswith("**") and previous_line == "")
-		):
-			line = f"\n{line}"
-		previous_line = line
-		new_lines.append(line)
-	return "\n".join([*new_lines, ""])
 
 @pytest.fixture(params=[(True, True)])
 def __setup_evironment(request):
