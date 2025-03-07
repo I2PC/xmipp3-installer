@@ -16,18 +16,24 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
 		#### Params:
 		- context (dict): Dictionary containing the installation context variables.
 		"""
-		self.config_executor = mode_config_executor.ModeConfigExecutor(
+		config_executor = mode_config_executor.ModeConfigExecutor(
 			{**context, params.PARAM_OVERWRITE: False}
 		)
-		self.get_sources_executor = mode_get_sources_executor.ModeGetSourcesExecutor(
+		get_sources_executor = mode_get_sources_executor.ModeGetSourcesExecutor(
 			context
 		)
-		self.config_build_executor = mode_config_build_executor.ModeConfigBuildExecutor(
+		config_build_executor = mode_config_build_executor.ModeConfigBuildExecutor(
 			context
     )
-		self.compile_and_install_executor = mode_compile_and_install_executor.ModeCompileAndInstallExecutor(
+		compile_and_install_executor = mode_compile_and_install_executor.ModeCompileAndInstallExecutor(
 			{**context, params.PARAM_BRANCH: None}
     )
+		self.executors = [
+			config_executor,
+			get_sources_executor,
+			config_build_executor,
+			compile_and_install_executor
+		]
 		super().__init__(context)
 
 	def _set_executor_config(self):
@@ -47,12 +53,7 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
 		"""
-		for executor in [
-			self.config_executor,
-			self.get_sources_executor,
-			self.config_build_executor,
-			self.compile_and_install_executor
-		]:
+		for executor in self.executors:
 			ret_code, output = executor.run()
 			if ret_code:
 				return ret_code, output
