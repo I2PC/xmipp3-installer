@@ -33,19 +33,22 @@ __CONFIG_VARIABLES = {
 }
 __INTERNAL_VARIABLES = [__INTERNAL_VARIABLE1, __INTERNAL_VARIABLE2]
 __NON_INTERNAL_VARIABLES = [__VAR1_KEY, __VAR2_KEY, __VAR3_KEY]
+__CMAKE = "cmake_executable"
+__SECTION_MESSAGE = "section message"
+__CMAKE_VARS = f"-D{__VAR1_KEY}={__VAR1_VALUE} -D{__VAR2_KEY}={__VAR2_VALUE} -D{__VAR3_KEY}={__VAR3_VALUE}"
+__BUILD_PATH = "build_path"
+__BUILD_TYPE = "build_type"
+__CMAKE = "cmake_key"
 __CONTEXT = {
 	__PARAM_BRANCH: constants.DEVEL_BRANCHNAME,
 	constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager(),
 	__PARAM_KEEP_OUTPUT: False,
 	__VAR1_KEY: __VAR1_VALUE,
 	__VAR2_KEY: __VAR2_VALUE,
-	__VAR3_KEY: __VAR3_VALUE
+	__VAR3_KEY: __VAR3_VALUE,
+	__BUILD_TYPE: "Release",
+	__CMAKE: "/path/to/cmake"
 }
-__CMAKE = "cmake_executable"
-__SECTION_MESSAGE = "section message"
-__CMAKE_VARS = f"-D{__VAR1_KEY}={__VAR1_VALUE} -D{__VAR2_KEY}={__VAR2_VALUE} -D{__VAR3_KEY}={__VAR3_VALUE}"
-__BUILD_PATH = "build_path"
-__BUILD_TYPE = "build_type"
 
 def test_implements_interface_mode_cmake_executor():
 	executor = ModeConfigBuildExecutor(__CONTEXT.copy())
@@ -151,7 +154,7 @@ def test_calls_run_shell_command_in_streaming_when_running_cmake_mode(
 		{**__CONTEXT, __PARAM_KEEP_OUTPUT: keep_output}
   )._run_cmake_mode(__CMAKE)
 	__mock_run_shell_command_in_streaming.assert_called_once_with(
-		f"{__CMAKE} -S . -B {__mock_build_path} -DCMAKE_BUILD_TYPE={__mock_build_type} {__mock_get_cmake_vars()}",
+		f"{__CMAKE} -S . -B {__mock_build_path} -DCMAKE_BUILD_TYPE={__CONTEXT[__mock_build_type]} {__mock_get_cmake_vars()}",
 		show_output=True,
 		substitute=not keep_output
   )
@@ -259,6 +262,13 @@ def __mock_build_path():
 @pytest.fixture(autouse=True)
 def __mock_build_type():
 	with patch.object(
-		constants, "BUILD_TYPE", __BUILD_TYPE
+		variables, "BUILD_TYPE", __BUILD_TYPE
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_cmake():
+	with patch.object(
+		variables, "CMAKE", __CMAKE
 	) as mock_object:
 		yield mock_object

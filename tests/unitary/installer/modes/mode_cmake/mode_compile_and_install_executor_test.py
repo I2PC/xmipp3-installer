@@ -8,6 +8,7 @@ from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor import ModeCMakeExecutor
 from xmipp3_installer.installer.modes.mode_cmake.mode_compile_and_install_executor import ModeCompileAndInstallExecutor
+from xmipp3_installer.repository.config_vars import variables
 
 from .... import DummyVersionsManager
 from ..... import get_assertion_message
@@ -19,12 +20,15 @@ __PARAM_JOBS = "param_jobs"
 __PARAM_GIT_COMMAND = "git_command"
 __BUILD_PATH = "build_path"
 __BUILD_TYPE = "build_type"
+__CMAKE_KEY = "cmake_key"
 __N_JOBS = 5
 __CONTEXT = {
 	__PARAM_BRANCH: None,
 	constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager(),
 	__PARAM_KEEP_OUTPUT: False,
-	__PARAM_JOBS: __N_JOBS
+	__PARAM_JOBS: __N_JOBS,
+	__BUILD_TYPE: "Release",
+	__CMAKE_KEY: "/path/to/cmake"
 }
 __CALL_COUNT_ASSERTION_MESSAGE = "call count"
 
@@ -264,7 +268,7 @@ def test_calls_run_shell_command_in_streaming_once_if_first_command_fails_when_r
 		{**__CONTEXT, __PARAM_KEEP_OUTPUT: keep_output}
 	)._run_cmake_mode(__CMAKE)
 	__mock_run_shell_command_in_streaming.assert_called_once_with(
-		f"{__CMAKE} --build {__mock_build_path} --config {__mock_build_type} -j {__N_JOBS}",
+		f"{__CMAKE} --build {__mock_build_path} --config {__CONTEXT[__mock_build_type]} -j {__N_JOBS}",
 		show_output=True,
 		substitute=not keep_output
 	)
@@ -318,12 +322,12 @@ def test_calls_run_shell_command_in_streaming_twice_if_first_command_succeeds_wh
 	)._run_cmake_mode(__CMAKE)
 	expected_calls = [
 		call(
-			f"{__CMAKE} --build {__mock_build_path} --config {__mock_build_type} -j {__N_JOBS}",
+			f"{__CMAKE} --build {__mock_build_path} --config {__CONTEXT[__mock_build_type]} -j {__N_JOBS}",
 			show_output=True,
 			substitute=not keep_output
 		),
 		call(
-			f"{__CMAKE} --install {__mock_build_path} --config {__mock_build_type}",
+			f"{__CMAKE} --install {__mock_build_path} --config {__CONTEXT[__mock_build_type]}",
 			show_output=True,
 			substitute=not keep_output
 		)
@@ -449,7 +453,14 @@ def __mock_build_path():
 @pytest.fixture(autouse=True)
 def __mock_build_type():
 	with patch.object(
-		constants, "BUILD_TYPE", __BUILD_TYPE
+		variables, "BUILD_TYPE", __BUILD_TYPE
+	) as mock_object:
+		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_cmake():
+	with patch.object(
+		variables, "CMAKE", __CMAKE_KEY
 	) as mock_object:
 		yield mock_object
 

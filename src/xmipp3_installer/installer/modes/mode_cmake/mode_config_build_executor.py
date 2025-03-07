@@ -2,7 +2,6 @@ from typing import Tuple, List, Optional, Union
 
 from xmipp3_installer.application.logger import predefined_messages, errors
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_cmake import mode_cmake_executor
@@ -20,7 +19,7 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
 		"""
 		logger(predefined_messages.get_section_message("Configuring with CMake"))
-		cmd = f"{cmake} -S . -B {paths.BUILD_PATH} -DCMAKE_BUILD_TYPE={constants.BUILD_TYPE} {self.__get_cmake_vars()}"
+		cmd = f"{cmake} -S . -B {paths.BUILD_PATH} -DCMAKE_BUILD_TYPE={self.build_type} {self.__get_cmake_vars()}"
 		if shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute):
 			return errors.CMAKE_CONFIGURE_ERROR, ""
 		return 0, ""
