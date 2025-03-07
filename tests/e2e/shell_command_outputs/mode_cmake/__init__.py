@@ -1,10 +1,20 @@
 import os
+import shutil
 
 from xmipp3_installer.application.logger.logger import logger
 
 from .. import XMIPP_DOCS
 from ... import get_cmake_project_path
 from .... import get_test_file
+
+CMAKE_EXECUTABLE = "cmake"
+TEST_CONFIG_FILE_PATH = get_test_file(os.path.join("conf-files", "input", "all-off.conf"))
+VALID_PROJECT = "valid"
+CONFIG_ERROR_PROJECT = "config_error"
+BUILD_ERROR_PROJECT = "build_error"
+INSTALL_ERROR_PROJECT = "install_error"
+ENV = {**os.environ, "CMAKE_GENERATOR": "Ninja"}
+EXECUTION_TIME = "X.Y"
 
 def get_project_abs_subpath(project_name: str, *subpaths: str) -> str:
   """
@@ -43,11 +53,5 @@ def get_predefined_error(code: int, action: str) -> str:
     XMIPP_DOCS
   ]))
 
-CMAKE_EXECUTABLE = "cmake"
-TEST_CONFIG_FILE_PATH = get_test_file(os.path.join("conf-files", "input", "all-off.conf"))
-VALID_PROJECT = "valid"
-CONFIG_ERROR_PROJECT = "config_error"
-BUILD_ERROR_PROJECT = "build_error"
-INSTALL_ERROR_PROJECT = "install_error"
-ENV = {**os.environ, "CMAKE_GENERATOR": "Ninja"}
-EXECUTION_TIME = "X.Y"
+def normalize_cmake_executable(raw_output: str) -> str: # CMake used deppends on user's installation
+	return raw_output.replace(shutil.which("cmake"), CMAKE_EXECUTABLE)
