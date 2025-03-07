@@ -1,9 +1,11 @@
+import re
+
 from . import (
   CMAKE_EXECUTABLE, VALID_PROJECT,
-  get_project_abs_subpath, get_predefined_error,
-  EXECUTION_TIME
+  get_project_abs_subpath, get_predefined_error
 )
 
+EXECUTION_TIME = "X.Y"
 BUILD_FILES_WRITTEN_MESSAGE_START = "-- Build files have been written to: "
 VALID_PATH = get_project_abs_subpath(VALID_PROJECT, "build")
 GENERATOR_LINE = "-- Building for: Ninja\n"
@@ -21,3 +23,6 @@ FAILURE = f"""{__COMMON_SECTION}
 -- Configuring incomplete, errors occurred!
 {get_predefined_error(4, "configuring")}
 """
+
+def normalize_execution_times(raw_output: str) -> str: # Execution times vary from one execution to another
+	return re.sub(r'\(\d+\.\ds\)', f"({EXECUTION_TIME}s)", raw_output)
