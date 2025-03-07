@@ -43,6 +43,7 @@ __COMPILATION_FLAGS_SECTION_LINES = [
 	"# We recommend not modifying this variables unless you know what you are doing.",
 	"CMAKE_C_FLAGS=-mtune=native",
 	"CMAKE_CXX_FLAGS=-mtune=native",
+  "BUILD_TYPE=Release",
 	""
 ]
 
