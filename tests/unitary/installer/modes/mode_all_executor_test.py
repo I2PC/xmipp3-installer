@@ -66,24 +66,21 @@ def test_calls_compile_and_install_executor_when_initializing(__mock_compile_and
 	)
 
 def test_instantiates_expected_executors_when_initializing(
+	__mock_config_executor,
 	__mock_get_sources_executor,
 	__mock_config_build_executor,
 	__mock_compile_and_install_executor
 ):
 	executor = ModeAllExecutor({})
-	executors = (
-		executor.get_sources_executor,
-		executor.config_build_executor,
-		executor.compile_and_install_executor
-	)
-	expected_executors = (
+	expected_executors = [
+		__mock_config_executor(),
 		__mock_get_sources_executor(),
 		__mock_config_build_executor(),
 		__mock_compile_and_install_executor()
-	)
+	]
 	assert (
-		executors == expected_executors
-	), get_assertion_message("stored executors", expected_executors, executors)
+		executor.executors == expected_executors
+	), get_assertion_message("stored executors", expected_executors, executor.executors)
 
 def test_calls_config_executor_run_when_running_executor(
 	__mock_config_executor
