@@ -120,12 +120,12 @@ def __remove_ninja_output(raw_output: str) -> str: # Ninja output is printed or 
 @pytest.fixture(params=[(True, True)])
 def __setup_evironment(request):
 	build, install = request.param
-	if build and install:
-		cmake_project_name = mode_cmake.VALID_PROJECT
-	elif build and not install:
+	if not build:
+		cmake_project_name = mode_cmake.BUILD_ERROR_PROJECT
+	elif not install:
 		cmake_project_name = mode_cmake.INSTALL_ERROR_PROJECT
 	else:
-		cmake_project_name = mode_cmake.BUILD_ERROR_PROJECT
+		cmake_project_name = mode_cmake.VALID_PROJECT
 	project_path = get_cmake_project_path(cmake_project_name)
 	try:
 		create_versions_json_file(output_path=project_path)
