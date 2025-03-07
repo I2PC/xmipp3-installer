@@ -61,7 +61,7 @@ def __normalize_generator_line(raw_output: str) -> str: # Generator used is some
 	return raw_output.replace(mode_config_build.GENERATOR_LINE, "")
 
 def __normalize_execution_times(raw_output: str) -> str: # Execution times vary from one execution to another
-	return re.sub(r'\(\d+\.\ds\)', f"({mode_config_build.EXECUTION_TIME}s)", raw_output)
+	return re.sub(r'\(\d+\.\ds\)', f"({mode_cmake.EXECUTION_TIME}s)", raw_output)
 
 def __normalize_paths(raw_output: str) -> str: # Absolute paths are different per user and OS
 	raw_output_lines = raw_output.splitlines(keepends=True)

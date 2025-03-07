@@ -1,9 +1,9 @@
 from . import (
   CMAKE_EXECUTABLE, VALID_PROJECT,
-  get_project_abs_subpath, get_predefined_error
+  get_project_abs_subpath, get_predefined_error,
+  EXECUTION_TIME
 )
 
-EXECUTION_TIME = "X.Y"
 BUILD_FILES_WRITTEN_MESSAGE_START = "-- Build files have been written to: "
 VALID_PATH = get_project_abs_subpath(VALID_PROJECT, "build")
 GENERATOR_LINE = "-- Building for: Ninja\n"
