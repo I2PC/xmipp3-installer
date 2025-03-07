@@ -42,7 +42,7 @@ def test_returns_expected_config_build_output(
 	).stdout
 	result = __normalize_paths(
 		mode_config_build.normalize_execution_times(
-			__normalize_generator_line(
+			mode_config_build.remove_generator_line(
 				mode_cmake.normalize_cmake_executable(result)
 			)
 		)
@@ -50,9 +50,6 @@ def test_returns_expected_config_build_output(
 	assert (
 		result == expected_output
 	), get_assertion_message("config build output", expected_output, result)
-
-def __normalize_generator_line(raw_output: str) -> str: # Generator used is sometimes printed, others not
-	return raw_output.replace(mode_config_build.GENERATOR_LINE, "")
 
 def __normalize_paths(raw_output: str) -> str: # Absolute paths are different per user and OS
 	raw_output_lines = raw_output.splitlines(keepends=True)
