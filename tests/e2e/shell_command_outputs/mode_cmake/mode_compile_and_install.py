@@ -9,7 +9,7 @@ from . import (
 
 ERROR_TARGET_MESSAGE_START = "FAILED: CMakeFiles/build_error_target "
 __INSTALLING_MESSAGE_LINE = "------------------- Installing with CMake ------------------"
-__BUILD_ERROR_TARGET_SUBPATH = os.path.join("build", "CMakeFiles", "build_error_target")
+BUILD_ERROR_TARGET_SUBPATH = os.path.join("build", "CMakeFiles", "build_error_target")
 
 __COMMON_SECTION = f"""------------------- Compiling with CMake -------------------
 {CMAKE_EXECUTABLE} --build build --config Release -j 1"""
@@ -19,7 +19,7 @@ __COMPILATION_SUCCESS = f"""
 
 BUILD_FAILURE = f"""{__COMMON_SECTION}
 [1/1] This command is expected to fail:
-{ERROR_TARGET_MESSAGE_START}{get_project_abs_subpath(BUILD_ERROR_PROJECT, __BUILD_ERROR_TARGET_SUBPATH)}
+{ERROR_TARGET_MESSAGE_START}{get_project_abs_subpath(BUILD_ERROR_PROJECT, BUILD_ERROR_TARGET_SUBPATH)}
 {get_predefined_error(5, "compiling")}
 """
 
@@ -64,7 +64,7 @@ def normalize_error_path(project_path: str, raw_output: str) -> str: # Absolute 
 	next_line_index = raw_output.find("\n", path_index)
 	build_error_target_path = os.path.join(
 		project_path,
-		__BUILD_ERROR_TARGET_SUBPATH
+		BUILD_ERROR_TARGET_SUBPATH
 	)
 	return f"{text_up_to_path}{build_error_target_path}{raw_output[next_line_index:]}"
 
