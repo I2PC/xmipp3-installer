@@ -9,10 +9,6 @@ from . import (
 
 ERROR_TARGET_MESSAGE_START = "FAILED: CMakeFiles/build_error_target "
 BUILD_ERROR_TARGET_SUBPATH = os.path.join("build", "CMakeFiles", "build_error_target")
-NINJA_OUTPUTS = [
-  "ninja: build stopped: subcommand failed.",
-  "ninja: no work to do."
-]
 INSTALLING_MESSAGE_LINE = "------------------- Installing with CMake ------------------"
 
 __COMMON_SECTION = f"""------------------- Compiling with CMake -------------------
@@ -37,3 +33,15 @@ SUCCESS = f"""{__COMMON_SECTION}
 {__COMPILATION_SUCCESS}
 {predefined_messages.get_success_message("")}
 """
+
+def remove_ninja_output(raw_output: str) -> str: # Ninja output is printed or not depending on OS
+	new_lines = []
+	for line in raw_output.splitlines(keepends=True):
+		line_without_ends = line.replace("\n", "").replace("\r", "")
+		if line_without_ends in [
+      "ninja: build stopped: subcommand failed.",
+      "ninja: no work to do."
+    ]:
+			continue
+		new_lines.append(line)
+	return "".join(new_lines)

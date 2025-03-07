@@ -54,7 +54,7 @@ def test_returns_expected_compile_and_install_output(
 		__remove_detailed_command_error_line(
 			__normalize_error_path(
 				__setup_evironment,
-				__remove_ninja_output(
+				mode_compile_and_install.remove_ninja_output(
 					mode_cmake.normalize_cmake_executable(result)
 				)
 			)
@@ -102,15 +102,6 @@ def __normalize_line_breaks(raw_output: str) -> str: # The number of line breaks
 		previous_line = line
 		new_lines.append(line)
 	return "\n".join([*new_lines, ""])
-
-def __remove_ninja_output(raw_output: str) -> str: # Ninja output is printed or not depending on OS
-	new_lines = []
-	for line in raw_output.splitlines(keepends=True):
-		line_without_ends = line.replace("\n", "").replace("\r", "")
-		if line_without_ends in mode_compile_and_install.NINJA_OUTPUTS:
-			continue
-		new_lines.append(line)
-	return "".join(new_lines)
 
 @pytest.fixture(params=[(True, True)])
 def __setup_evironment(request):
