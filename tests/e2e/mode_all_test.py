@@ -43,22 +43,21 @@ def test_returns_expected_full_installation_output(
 		cwd=__setup_evironment,
 		env=mode_cmake.ENV
 	).stdout
-	result = mode_compile_and_install.remove_ninja_output(
-		mode_config_build.normalize_execution_times(
-			mode_config_build.remove_generator_line(
-				mode_cmake.normalize_cmake_executable(result)
+	result = mode_compile_and_install.normalize_line_breaks(
+		mode_compile_and_install.normalize_error_path(
+			__setup_evironment,
+			mode_compile_and_install.remove_command_error_line(
+				mode_compile_and_install.remove_ninja_output(
+					mode_config_build.normalize_execution_times(
+						mode_config_build.remove_generator_line(
+							mode_cmake.normalize_cmake_executable(result)
+						)
+					)
+				)
 			)
 		)
 	)
 	test = ""
-	#result = __normalize_line_breaks(
-	#	__remove_detailed_command_error_line(
-	#		__normalize_error_path(
-	#			__setup_evironment,
-	#     result
-	#		)
-	#	)
-	#)
 	assert (
 		result == expected_output
 	), get_assertion_message("full installation output", expected_output, result)
