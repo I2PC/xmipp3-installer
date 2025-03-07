@@ -1,4 +1,4 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
 import pytest
 
@@ -154,6 +154,50 @@ def test_does_not_call_compile_and_install_executor_run_if_any_of_other_executor
 	__mock_compile_and_install_executor().run.assert_not_called()
 
 @pytest.mark.parametrize(
+	"__mock_config_executor,__mock_get_sources_executor,"
+	"__mock_config_build_executor,__mock_compile_and_install_executor,"
+	"expected_call_number",
+	[
+		pytest.param((1, "error"), (1, "error"), (1, "error"), (1, "error"), 0),
+		pytest.param((1, "error"), (1, "error"), (1, "error"), (0, ""), 0),
+		pytest.param((1, "error"), (1, "error"), (0, ""), (1, "error"), 0),
+		pytest.param((1, "error"), (1, "error"), (0, ""), (0, ""), 0),
+		pytest.param((1, "error"), (0, ""), (1, "error"), (1, "error"), 0),
+		pytest.param((1, "error"), (0, ""), (1, "error"), (0, ""), 0),
+		pytest.param((1, "error"), (0, ""), (0, ""), (1, "error"), 0),
+		pytest.param((1, "error"), (0, ""), (0, ""), (0, ""), 0),
+		pytest.param((0, ""), (1, "error"), (1, "error"), (1, "error"), 1),
+		pytest.param((0, ""), (1, "error"), (1, "error"), (0, ""), 1),
+		pytest.param((0, ""), (1, "error"), (0, ""), (1, "error"), 1),
+		pytest.param((0, ""), (1, "error"), (0, ""), (0, ""), 1),
+		pytest.param((0, ""), (0, ""), (1, "error"), (1, "error"), 2),
+		pytest.param((0, ""), (0, ""), (1, "error"), (0, ""), 2),
+		pytest.param((0, ""), (0, ""), (0, ""), (1, "error"), 3),
+		pytest.param((0, ""), (0, ""), (0, ""), (0, ""), 3)
+	],
+	indirect=[
+		"__mock_config_executor",
+		"__mock_get_sources_executor",
+		"__mock_config_build_executor",
+		"__mock_compile_and_install_executor"
+	]
+)
+def test_calls_logger_expected_amount_of_times_when_running_executor(
+	__mock_config_executor,
+	__mock_get_sources_executor,
+	__mock_config_build_executor,
+	__mock_compile_and_install_executor,
+	expected_call_number,
+	__mock_logger
+):
+	ModeAllExecutor({}).run()
+	expected_calls = [call("") for _ in range(expected_call_number)]
+	__mock_logger.assert_has_calls(expected_calls)
+	assert (
+		__mock_logger.call_count == expected_call_number
+	), get_assertion_message("call count", expected_call_number, __mock_logger.call_count)
+
+@pytest.mark.parametrize(
 	"__mock_config_executor,__mock_get_sources_executor,__mock_config_build_executor,"
 	"__mock_compile_and_install_executor,expected_result",
 	[
@@ -254,3 +298,10 @@ def __mock_param_branch():
 		params, "PARAM_BRANCH", __PARAM_BRANCH
 	) as mock_object:
 		yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_logger():
+	with patch(
+		"xmipp3_installer.application.logger.logger.Logger.__call__"
+	) as mock_method:
+		yield mock_method

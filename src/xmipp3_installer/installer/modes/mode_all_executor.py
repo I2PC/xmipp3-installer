@@ -1,6 +1,7 @@
 from typing import Tuple, Dict
 
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.modes import (
 	mode_executor, mode_config_executor, mode_get_sources_executor
 )
@@ -53,8 +54,10 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
 		"""
-		for executor in self.executors:
-			ret_code, output = executor.run()
+		for executor_index in range(len(self.executors)):
+			if executor_index != 0:
+				logger("")
+			ret_code, output = self.executors[executor_index].run()
 			if ret_code:
 				return ret_code, output
 		return 0, ""
