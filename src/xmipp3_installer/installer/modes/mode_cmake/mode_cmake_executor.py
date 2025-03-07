@@ -17,6 +17,8 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
 		"""
 		super().__init__(context)
 		self.substitute = not context[params.PARAM_KEEP_OUTPUT]
+		self.cmake = context[variables.CMAKE]
+		self.build_type = context[variables.BUILD_TYPE]
 
 	def run(self) -> Tuple[int, str]:
 		"""
@@ -45,8 +47,7 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
 		#### Returns:
 		- (str | None): Path to the CMake executable. None if it was not found.
 		"""
-		cmake = self.context[variables.CMAKE]
-		return cmake if cmake else shutil.which("cmake")
+		return self.cmake or shutil.which("cmake")
 	
 	@abstractmethod
 	def _run_cmake_mode(self, cmake: str) -> Tuple[int, str]:
