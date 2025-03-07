@@ -31,5 +31,6 @@ CONFIG_DEFAULT_VALUES = {
 	variables.MATLAB: ON,
 	variables.LINK_SCIPION: ON,
 	variables.BUILD_TESTING: ON,
- 	variables.SKIP_RPATH: ON
+ 	variables.SKIP_RPATH: ON,
+	variables.BUILD_TYPE: "Release"
 }
