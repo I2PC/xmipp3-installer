@@ -80,7 +80,7 @@ def __setup_evironment(request):
 			mode_cmake.TEST_CONFIG_FILE_PATH,
 			os.path.join(project_path, paths.CONFIG_FILE)
 		) 
-		yield get_cmake_project_path(cmake_project_name)
+		yield project_path
 	finally:
 		file_operations.delete_paths([
 			os.path.join(project_path, file_name) for file_name in [
