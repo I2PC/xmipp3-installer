@@ -27,7 +27,7 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
 			context
     )
 		compile_and_install_executor = mode_compile_and_install_executor.ModeCompileAndInstallExecutor(
-			{**context, params.PARAM_BRANCH: None}
+			context
     )
 		self.executors = [
 			config_executor,
