@@ -62,7 +62,7 @@ def test_calls_config_build_executor_when_initializing(__mock_config_build_execu
 def test_calls_compile_and_install_executor_when_initializing(__mock_compile_and_install_executor):
 	ModeAllExecutor(__DUMMY_CONTEXT)
 	__mock_compile_and_install_executor.assert_called_once_with(
-		{**__DUMMY_CONTEXT, __PARAM_BRANCH: None}
+		__DUMMY_CONTEXT
 	)
 
 def test_instantiates_expected_executors_when_initializing(
