@@ -13,7 +13,6 @@ from xmipp3_installer.installer.modes.mode_cmake.mode_compile_and_install_execut
 from .... import get_assertion_message
 
 __PARAM_OVERWRITE = "param_overwrite"
-__PARAM_BRANCH = "param_branch"
 __DUMMY_CONTEXT = {"key": "value"}
 
 def test_implements_interface_mode_cmake_executor():
@@ -289,13 +288,6 @@ def __mock_compile_and_install_executor(request):
 def __mock_param_overwrite():
 	with patch.object(
 		params, "PARAM_OVERWRITE", __PARAM_OVERWRITE
-	) as mock_object:
-		yield mock_object
-
-@pytest.fixture(autouse=True)
-def __mock_param_branch():
-	with patch.object(
-		params, "PARAM_BRANCH", __PARAM_BRANCH
 	) as mock_object:
 		yield mock_object
 
