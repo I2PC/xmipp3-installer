@@ -120,10 +120,10 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
 
 		clone_branch = self.__select_ref_to_clone(source_name, repo_url)
 		if self.target_branch and not clone_branch:
-			warning_message = logger.yellow("\n".join([
-				f"Warning: branch \'{self.target_branch}\' does not exist for repository with url {repo_url}.",
-				"Falling back to repository's default branch."
-			]))
+			warning_message = "\n".join([
+				logger.yellow(f"Warning: branch \'{self.target_branch}\' does not exist for repository with url {repo_url}"),
+				logger.yellow("Falling back to repository's default branch.")
+			])
 			logger(warning_message, substitute=self.substitute)
 		
 		ret_code, output = self.__run_source_command(source_name, repo_url, clone_branch)
