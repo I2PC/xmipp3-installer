@@ -311,10 +311,11 @@ def test_calls_logger_when_getting_source(
 	]
 	if target_branch and not __mock_select_ref_to_clone():
 		expected_calls.append(
-			call(__mock_logger_yellow(
-					f"Warning: branch \'{target_branch}\' does not exist for repository with url {__mock_i2pc_repo_url}{source_name}.\n"
-					"Falling back to repository's default branch."
-				),
+			call(
+				"\n".join([
+					__mock_logger_yellow(f"Warning: branch \'{target_branch}\' does not exist for repository with url {__mock_i2pc_repo_url}{source_name}"),
+					__mock_logger_yellow("Falling back to repository's default branch.")
+				]),
 				substitute=substitute
 			)
 		)

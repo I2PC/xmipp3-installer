@@ -11,10 +11,10 @@ __CLONING_XMIPP_VIZ = f"Cloning {constants.XMIPP_VIZ}..."
 
 BRANCH_NAME = "branch_name"
 def __get_branch_not_found_warning(source_name: str) -> str:
-  return logger.yellow("\n".join([
-    f"Warning: branch \'{BRANCH_NAME}\' does not exist for repository with url https://github.com/i2pc/{source_name}.",
-    "Falling back to repository's default branch."
-  ]))
+  return "\n".join([
+    logger.yellow(f"Warning: branch \'{BRANCH_NAME}\' does not exist for repository with url https://github.com/i2pc/{source_name}"),
+    logger.yellow("Falling back to repository's default branch.")
+  ])
 
 GIT_COMMAND_FAILURE_MESSAGE = "failure message"
 __FAILURE_COMPLETE_MESSAGE = logger.red(f"""{GIT_COMMAND_FAILURE_MESSAGE}
