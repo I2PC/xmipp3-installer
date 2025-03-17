@@ -12,6 +12,7 @@ class Logger(Singleton):
 	"""
 	### Logger class for keeping track of installation messages.
 	"""
+
 	__UP = "\x1B[1A\r"
 	__REMOVE_LINE = '\033[K'
 	__BOLD = "\033[1m"

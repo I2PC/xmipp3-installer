@@ -12,6 +12,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
 	"""
 	### Overrides the default help formatter to display a custom help message deppending on the mode selected.
 	"""
+
 	def format_help(self):
 		"""
 		### This method prints the help message of the argument parser.

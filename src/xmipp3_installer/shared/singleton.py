@@ -6,6 +6,7 @@ class Singleton:
 	"""
 	### Generic singleton class.
 	"""
+
 	__instance = None
 
 	def __new__(cls, *args, **kwrgs) -> Self:

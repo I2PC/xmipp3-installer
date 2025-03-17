@@ -8,13 +8,14 @@ class ModeExecutor(ABC):
   """
   ### Base executor interface for installer modes.
   """
+
   def __init__(self, context: Dict):
     """
-		### Constructor.
+    ### Constructor.
 		
-		#### Params:
-		- context (dict): Dictionary containing the installation context variables.
-		"""
+    #### Params:
+    - context (dict): Dictionary containing the installation context variables.
+    """
     super().__init__()
     self.context = context
     self._set_executor_config()

@@ -15,6 +15,7 @@ class ConfigurationFileHandler(Singleton):
 	"""
 	### Configuration file class for loading and storing the installation configuration.
 	"""
+
 	__COMMENT_ESCAPE = '#'
 	__ASSIGNMENT_SEPARATOR = '='
 	__LAST_MODIFIED_TEXT = "Config file automatically generated on"
@@ -109,7 +110,7 @@ class ConfigurationFileHandler(Singleton):
 		if not os.path.exists(self.__path):
 			return []
 		lines = []
-		with open(self.__path, "r") as config_file:
+		with open(self.__path) as config_file:
 			lines = config_file.readlines()
 		return lines
 

@@ -9,6 +9,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
 	"""
 	### Overrides the default help formatter to display a custom help message.
 	"""
+
 	def format_help(self):
 		"""
 		### Prints the help message of the argument parser.
