@@ -11,6 +11,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
 	"""
 	### Extendes the available functions of the generic help formatter.
 	"""
+
 	__SECTION_N_DASH = 45
 	__SECTION_SPACE_MODE_HELP = 2
 	__SECTION_HELP_START = format.TAB_SIZE + __SECTION_N_DASH + __SECTION_SPACE_MODE_HELP

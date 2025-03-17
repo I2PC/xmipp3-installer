@@ -11,6 +11,7 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
 	Overrides the error function of the standard argument parser
 	to display better error messages.
 	"""
+
 	def error(self, message):
 		"""
 		### Prints through stderr the error message and exits with specific return code.

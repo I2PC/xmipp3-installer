@@ -17,11 +17,11 @@ from xmipp3_installer.repository.config_vars import variables
 class InstallationManager:
   def __init__(self, args: Dict):
     """
-		### Constructor.
+    ### Constructor.
 		
-		#### Params:
-		- args (dict): Dictionary containing all parsed command-line arguments.
-		"""
+    #### Params:
+    - args (dict): Dictionary containing all parsed command-line arguments.
+    """
     self.mode = args.pop(modes.MODE, modes.MODE_ALL)
     config_handler = config.ConfigurationFileHandler(path=paths.CONFIG_FILE, show_errors=False)
     self.context = {
