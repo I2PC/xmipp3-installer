@@ -1,6 +1,19 @@
 # xmipp3-installer
 Python package that handles the installation of xmipp3
 
+## Installation
+To install the package, simply run:
+```
+pip install xmipp3-installer
+```
+
+## Usage
+This package has a CLI built-in, with help messages that explain how to use it.
+To run such help, once the package is installed, run:
+```
+xmipp3_installer -h
+```
+
 ## Testing the code
 The automatic tests for this package can be run using `./scripts/run-tests.sh` in bash, or `.\scripts\run-tests.ps1` in PowerShell.
 If you intend to run this tests from within VSCode, you will need extension `Test Adapter Converter`, and a local `.vscode` folder with a file named `settings.json` inside with the following content:

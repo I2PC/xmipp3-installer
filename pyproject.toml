@@ -27,5 +27,9 @@ test = [
   "ninja>=1.11.1.3"
 ]
 
+[project.urls]
+Homepage = "https://github.com/I2PC/xmipp3-installer"
+Issues = "https://github.com/I2PC/xmipp3-installer/issues"
+
 [project.scripts]
 xmipp3_installer = "xmipp3_installer.__main__:main"
