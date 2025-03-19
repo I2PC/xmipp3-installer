@@ -235,8 +235,8 @@ class ConfigurationFileHandler(Singleton):
     - (list(str)): Config file lines created from the dictionary variables.
     """
     lines = []
-    for variable in config_variables.keys():
+    for variable_name, value in config_variables.items():
       lines.append(
-        f"{self.__make_config_line(variable, config_variables[variable], '')}\n"
+        f"{self.__make_config_line(variable_name, value, '')}\n"
       )
     return lines
