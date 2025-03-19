@@ -1,3 +1,9 @@
+"""
+### Mode Get Models Executor Module.
+
+This module contains the class to download deep learning models.
+"""
+
 import os
 from typing import Dict, Tuple
 
@@ -9,6 +15,12 @@ from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 
 class ModeGetModelsExecutor(ModeSyncExecutor):
+  """
+  ### Mode Get Models Executor.
+
+  Downloads deep learning models for the installation.
+  """
+  
   def __init__(self, context: Dict):
     """
     ### Constructor.
