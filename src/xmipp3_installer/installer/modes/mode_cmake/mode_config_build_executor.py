@@ -33,7 +33,7 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     """
     return " ".join([
       f"-D{variable_key}={self.context[variable_key]}" for variable_key
-      in self.__get_config_vars() if not self.__is_empty(self.context[variable_key])
+      in self.__get_config_vars() if not _is_empty(self.context[variable_key])
     ])
   
   def __get_config_vars(self) -> List[str]:
@@ -51,14 +51,14 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     non_internal_keys.sort() # To keep order consistency
     return non_internal_keys
 
-  def __is_empty(self, value: Optional[Union[bool, str]]) -> bool:
-    """
-    ### Checks if the given config value is empty.
+def _is_empty(value: Optional[Union[bool, str]]) -> bool:
+  """
+  ### Checks if the given config value is empty.
 
-    #### Params:
-    - value (bool | str | None): Value to be checked.
+  #### Params:
+  - value (bool | str | None): Value to be checked.
 
-    #### Returns:
-    - (bool): True if it is empty, False otherwise.
-    """
-    return not isinstance(value, bool) and not value
+  #### Returns:
+  - (bool): True if it is empty, False otherwise.
+  """
+  return not isinstance(value, bool) and not value
