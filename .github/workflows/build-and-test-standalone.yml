@@ -40,9 +40,9 @@ jobs:
       - name: Use CLI as Python module
         run: python -m ${{ vars.MODULE_NAME }} -h
         
-    #- name: Check source code with Ruff
-    #  run: python -m ruff check --config ./conf/ruff-src.toml
-    #
+      - name: Check source code with Ruff
+        run: python -m ruff check --config ./conf/ruff-src.toml
+    
     #- name: Check tests code with Ruff
     #  run: python -m ruff check --config ./conf/ruff-tests.toml
 
