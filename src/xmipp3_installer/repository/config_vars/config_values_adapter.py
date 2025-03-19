@@ -83,7 +83,7 @@ def __get_boolean_value_from_string(key: str, value: str, show_warning: bool) ->
   #### Returns:
   - (bool): Boolean representation of the toggle value.
   """
-  if value != default_values.ON and value != default_values.OFF:
+  if value not in {default_values.ON, default_values.OFF}:
     default_value = default_values.CONFIG_DEFAULT_VALUES[key]
     if show_warning:
       logger(logger.yellow(
