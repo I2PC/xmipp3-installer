@@ -61,4 +61,4 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     #### Returns:
     - (bool): True if it is empty, False otherwise.
     """
-    return value is None or value == ""
+    return not isinstance(value, bool) and not value
