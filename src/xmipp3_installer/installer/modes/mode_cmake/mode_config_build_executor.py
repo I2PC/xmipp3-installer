@@ -1,3 +1,9 @@
+"""
+### Mode Config Build Executor Module.
+
+This module contains the class to configure the build using CMake.
+"""
+
 from typing import Tuple, List, Optional, Union
 
 from xmipp3_installer.application.logger import predefined_messages, errors
@@ -8,6 +14,12 @@ from xmipp3_installer.installer.modes.mode_cmake import mode_cmake_executor
 from xmipp3_installer.repository.config_vars import variables
 
 class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
+  """
+  ### Mode Config Build Executor.
+
+  Configures the build using CMake with the appropriate parameters.
+  """
+  
   def _run_cmake_mode(self, cmake: str) -> Tuple[int, str]:
     """
     ### Runs the CMake config with the appropiate params.
