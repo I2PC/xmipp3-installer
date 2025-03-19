@@ -1,3 +1,9 @@
+"""
+### Mode Executor Module.
+
+This module contains the base executor interface for installer modes.
+"""
+
 from abc import ABC, abstractmethod
 from typing import Dict, Tuple
 
@@ -5,9 +11,7 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
 
 class ModeExecutor(ABC):
-  """
-  ### Base executor interface for installer modes.
-  """
+  """### Base executor interface for installer modes."""
 
   def __init__(self, context: Dict):
     """
@@ -22,9 +26,7 @@ class ModeExecutor(ABC):
     self.__configure_logger()
   
   def _set_executor_config(self):
-    """
-    ### Sets the specific executor params for this mode.
-    """
+    """### Sets the specific executor params for this mode."""
     self.logs_to_file = False
     self.prints_with_substitution = False
     self.prints_banner_on_exit = False
