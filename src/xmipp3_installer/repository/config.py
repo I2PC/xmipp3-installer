@@ -86,7 +86,7 @@ class ConfigurationFileHandler(Singleton):
       lines.extend(self.__get_unkown_variable_lines(values))
 
     lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {self.last_modified}\n")
-    with open(self.__path, 'w') as config_file:
+    with open(self.__path, 'w', encoding="utf-8") as config_file:
       config_file.writelines(lines)
 
   def get_config_date(self) -> str:
@@ -110,7 +110,7 @@ class ConfigurationFileHandler(Singleton):
     if not os.path.exists(self.__path):
       return []
     lines = []
-    with open(self.__path) as config_file:
+    with open(self.__path, encoding="utf-8") as config_file:
       lines = config_file.readlines()
     return lines
 
