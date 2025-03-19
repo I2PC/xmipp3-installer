@@ -168,12 +168,13 @@ class ConfigurationFileHandler(Singleton):
     #### Raises:
     - RuntimeError: Raised when a line has an invalid format and cannot be parsed.
     """
+    N_TOKENS = 2
     line_without_comments = line.split(self.__COMMENT_ESCAPE, maxsplit=2)[0].strip()
     if not line_without_comments:
       return None
     
     tokens = line_without_comments.split(self.__ASSIGNMENT_SEPARATOR, maxsplit=1)
-    if len(tokens) != 2:
+    if len(tokens) != N_TOKENS:
       raise InvalidConfigLineError(
         InvalidConfigLineError.generate_error_message(
           paths.CONFIG_FILE,
