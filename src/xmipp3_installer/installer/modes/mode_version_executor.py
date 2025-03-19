@@ -1,3 +1,8 @@
+"""
+### Mode Version Executor Module.
+
+This module contains the class to collect and display version information.
+"""
 import os
 from typing import Dict, Tuple
 
@@ -12,6 +17,12 @@ from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.repository.config_vars import variables
 
 class ModeVersionExecutor(mode_executor.ModeExecutor):
+  """
+  ### Mode Version Executor.
+
+  Collects and displays version information for the installation.
+  """
+  
   __LEFT_TEXT_LEN = 25
 
   def __init__(self, context: Dict):
