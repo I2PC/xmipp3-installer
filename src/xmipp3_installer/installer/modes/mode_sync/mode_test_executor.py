@@ -1,3 +1,8 @@
+"""
+### Mode Test Executor Module.
+
+This module contains the class to execute Xmipp tests.
+"""
 import os
 from typing import Dict, Tuple
 
