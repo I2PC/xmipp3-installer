@@ -12,9 +12,7 @@ from xmipp3_installer.repository.config_vars import default_values, variables, c
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
 
 class ConfigurationFileHandler(Singleton):
-  """
-  ### Configuration file class for loading and storing the installation configuration.
-  """
+  """### Configuration file class for loading and storing the installation configuration."""
 
   __COMMENT_ESCAPE = '#'
   __ASSIGNMENT_SEPARATOR = '='
@@ -34,9 +32,7 @@ class ConfigurationFileHandler(Singleton):
     self.last_modified = self.__read_config_date()
 
   def read_config(self):
-    """
-    ### Reads the config file and stores a dictionary with all the parsed variables.
-    """
+    """### Reads the config file and stores a dictionary with all the parsed variables."""
     file_lines = self.__get_file_content()
     result = {}
     for line_number, line in enumerate(file_lines):
