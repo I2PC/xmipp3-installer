@@ -1,3 +1,9 @@
+"""
+### Configuration Values Adapter Module.
+
+This module contains functions to convert configuration values between file format and context format.
+"""
+
 from typing import Dict, Union
 
 from xmipp3_installer.application.logger.logger import logger
