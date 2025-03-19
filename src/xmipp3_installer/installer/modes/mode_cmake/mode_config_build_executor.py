@@ -33,23 +33,23 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     """
     return " ".join([
       f"-D{variable_key}={self.context[variable_key]}" for variable_key
-      in self.__get_config_vars() if not _is_empty(self.context[variable_key])
+      in _get_config_vars() if not _is_empty(self.context[variable_key])
     ])
   
-  def __get_config_vars(self) -> List[str]:
-    """
-    ### Returns all non-internal config variable keys.
+def _get_config_vars() -> List[str]:
+  """
+  ### Returns all non-internal config variable keys.
 
-    #### Returns:
-    - (list(str)): A list containing all non-internal config variable keys.
-    """
-    all_config_var_keys = [
-      config_var for variable_section in variables.CONFIG_VARIABLES.values()
-      for config_var in variable_section
-    ]
-    non_internal_keys = list(set(all_config_var_keys) - set(variables.INTERNAL_LOGIC_VARS))
-    non_internal_keys.sort() # To keep order consistency
-    return non_internal_keys
+  #### Returns:
+  - (list(str)): A list containing all non-internal config variable keys.
+  """
+  all_config_var_keys = [
+    config_var for variable_section in variables.CONFIG_VARIABLES.values()
+    for config_var in variable_section
+  ]
+  non_internal_keys = list(set(all_config_var_keys) - set(variables.INTERNAL_LOGIC_VARS))
+  non_internal_keys.sort() # To keep order consistency
+  return non_internal_keys
 
 def _is_empty(value: Optional[Union[bool, str]]) -> bool:
   """
