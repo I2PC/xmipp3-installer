@@ -71,7 +71,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     if self.version_file_exists:
       installation_info_lines.append(f"\n{self.__get_library_versions_section()}")
     if not self.is_configured or not self.__are_all_sources_present():
-      installation_info_lines.append(f"\n{self.__get_configuration_warning_message()}")
+      installation_info_lines.append(f"\n{_get_configuration_warning_message()}")
     return '\n'.join(installation_info_lines)
 
   def __get_dates_section(self) -> str:
@@ -162,14 +162,14 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
         return False
     return True
 
-  def __get_configuration_warning_message(self) -> str:
-    """
-    ### Returns a message indicating configuration is not complete.
+def _get_configuration_warning_message() -> str:
+  """
+  ### Returns a message indicating configuration is not complete.
 
-    #### Returns:
-    - (str): 
-    """
-    return '\n'.join([
-      logger.yellow("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
-      logger.yellow("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")
-    ])
+  #### Returns:
+  - (str): 
+  """
+  return '\n'.join([
+    logger.yellow("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
+    logger.yellow("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")
+  ])

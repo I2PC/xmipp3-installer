@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch, call
 
 import pytest
@@ -7,6 +6,7 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
+from xmipp3_installer.installer.modes import mode_version_executor
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_version_executor import ModeVersionExecutor
 from xmipp3_installer.repository.config_vars import variables
@@ -567,8 +567,7 @@ def test_returns_expected_library_versions_section(
 def test_calls_logger_yellow_when_getting_configuration_warning_message(
   __mock_logger_yellow
 ):
-  version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_configuration_warning_message()
+  mode_version_executor._get_configuration_warning_message()
   __mock_logger_yellow.assert_has_calls([
     call("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
     call("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")
@@ -577,8 +576,7 @@ def test_calls_logger_yellow_when_getting_configuration_warning_message(
 def test_returns_expected_configuration_warning_message(
   __mock_logger_yellow
 ):
-  version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  warning_message = version_executor._ModeVersionExecutor__get_configuration_warning_message()
+  warning_message = mode_version_executor._get_configuration_warning_message()
   expected_warning_message = '\n'.join([
     __mock_logger_yellow("This project has not yet been configured, so some detectable dependencies have not been properly detected."),
     __mock_logger_yellow("Run mode 'getSources' and then 'configBuild' to be able to show all detectable ones.")
@@ -767,7 +765,7 @@ def __mock_are_all_sources_present(request):
 @pytest.fixture
 def __mock_get_configuration_warning_message():
   with patch(
-    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_configuration_warning_message"
+    "xmipp3_installer.installer.modes.mode_version_executor._get_configuration_warning_message"
   ) as mock_method:
     mock_method.return_value = "Warning message"
     yield mock_method
