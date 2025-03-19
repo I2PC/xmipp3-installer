@@ -1,3 +1,9 @@
+"""
+### Mode Selector Module.
+
+This module maps command-line modes to their corresponding executor classes.
+"""
+
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.modes import (
   mode_config_executor, mode_version_executor, mode_git_executor,
