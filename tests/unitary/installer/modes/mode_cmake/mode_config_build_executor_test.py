@@ -96,7 +96,7 @@ def test_returns_expected_is_empty_value(input_value, expected_is_empty):
   ), get_assertion_message("is empty value", expected_is_empty, is_empty)
 
 def test_returns_expected_config_vars():
-  config_vars = ModeConfigBuildExecutor(__CONTEXT.copy())._ModeConfigBuildExecutor__get_config_vars()
+  config_vars = mode_config_build_executor._get_config_vars()
   config_vars.sort()
   expected_config_vars = __NON_INTERNAL_VARIABLES
   expected_config_vars.sort()
@@ -215,7 +215,7 @@ def __mock_internal_logic_vars():
 @pytest.fixture(params=[__NON_INTERNAL_VARIABLES])
 def __mock_get_config_vars(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.ModeConfigBuildExecutor._ModeConfigBuildExecutor__get_config_vars"
+    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.mode_config_build_executor._get_config_vars"
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method
