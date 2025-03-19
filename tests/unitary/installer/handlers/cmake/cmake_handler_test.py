@@ -83,7 +83,7 @@ def test_gets_expected_library_version_from_line(line, expected_library_version)
 
 def test_calls_open_if_library_version_file_exists_when_getting_library_versions_from_cmake_file(__mock_open):
   cmake_handler.get_library_versions_from_cmake_file(__FILE_PATH)
-  __mock_open.assert_called_once_with(__FILE_PATH, 'r')
+  __mock_open.assert_called_once_with(__FILE_PATH)
 
 def test_does_not_call_open_if_library_version_file_does_not_exist_when_getting_library_versions_from_cmake_file(
   __mock_open,
