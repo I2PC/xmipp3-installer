@@ -723,7 +723,8 @@ def test_calls_open_when_writing_config(
   config_handler.write_config()
   __mock_open.assert_called_once_with(
     config_handler._ConfigurationFileHandler__path,
-    'w'
+    'w',
+    encoding="utf-8"
   )
 
 def test_does_not_call_get_unkown_variable_lines_when_writing_config_with_no_unkown_variables(
