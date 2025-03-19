@@ -1,3 +1,9 @@
+"""
+### Mode Add Model Executor Module.
+
+This module contains the class to upload models to the remote server.
+"""
+
 import os
 import tarfile
 from typing import Dict, Tuple
@@ -11,6 +17,12 @@ from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 
 class ModeAddModelExecutor(ModeSyncExecutor):
+  """
+  ### Mode Add Model Executor.
+
+  Uploads models to the remote server.
+  """
+
   def __init__(self, context: Dict):
     """
     ### Constructor.
