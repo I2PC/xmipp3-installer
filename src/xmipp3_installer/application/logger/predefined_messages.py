@@ -22,45 +22,45 @@ def get_working_message() -> str:
   return logger.yellow("Working...")
 
 def get_section_message(text: str) -> str:
-	"""
-	### Returns the given text as a section header.
+  """
+  ### Returns the given text as a section header.
 
-	#### Params:
-	- text (str): Title of the section.
+  #### Params:
+  - text (str): Title of the section.
 
-	#### Returns:
-	- (str): Formatted section header.
-	"""
-	text_len = len(text)
-	remaining_len = __SECTION_MESSAGE_LEN - text_len
-	if remaining_len < 4:
-		return text
-	
-	n_dashes = remaining_len - 2
-	n_final_dashes = int(n_dashes / 2)
-	n_initial_dashes = n_dashes - n_final_dashes
-	final_dashes = ''.join(['-' for _ in range(n_final_dashes)])
-	initial_dashes = ''.join(['-' for _ in range(n_initial_dashes)])
-	return f"{initial_dashes} {text} {final_dashes}"
+  #### Returns:
+  - (str): Formatted section header.
+  """
+  text_len = len(text)
+  remaining_len = __SECTION_MESSAGE_LEN - text_len
+  if remaining_len < 4:
+    return text
+  
+  n_dashes = remaining_len - 2
+  n_final_dashes = int(n_dashes / 2)
+  n_initial_dashes = n_dashes - n_final_dashes
+  final_dashes = ''.join(['-' for _ in range(n_final_dashes)])
+  initial_dashes = ''.join(['-' for _ in range(n_initial_dashes)])
+  return f"{initial_dashes} {text} {final_dashes}"
 
 def get_success_message(tag_version: str) -> str:
-	"""
-	### Returns the message shown when Xmipp is compiled successfully.
+  """
+  ### Returns the message shown when Xmipp is compiled successfully.
 
-	#### Params:
-	- tag_version (str): Version number of the latest release.
-	
-	#### Returms:
-	- (str): Success message.
-	"""
-	release_name = tag_version if git_handler.is_tag() else git_handler.get_current_branch()
+  #### Params:
+  - tag_version (str): Version number of the latest release.
+  
+  #### Returms:
+  - (str): Success message.
+  """
+  release_name = tag_version if git_handler.is_tag() else git_handler.get_current_branch()
 
-	box_wrapper = '*  *'
-	half_len_box_wrapper = int(len(box_wrapper) / 2)
-	release_message = f'Xmipp {release_name} has been successfully installed, enjoy it!'
-	total_len = len(release_message) + len(box_wrapper)
-	release_message = f'{box_wrapper[:half_len_box_wrapper]}{logger.green(release_message)}{box_wrapper[half_len_box_wrapper:]}'
-	margin_line = f"*{' ' * (total_len - 2)}*"
-	box_border = '*' * total_len
+  box_wrapper = '*  *'
+  half_len_box_wrapper = int(len(box_wrapper) / 2)
+  release_message = f'Xmipp {release_name} has been successfully installed, enjoy it!'
+  total_len = len(release_message) + len(box_wrapper)
+  release_message = f'{box_wrapper[:half_len_box_wrapper]}{logger.green(release_message)}{box_wrapper[half_len_box_wrapper:]}'
+  margin_line = f"*{' ' * (total_len - 2)}*"
+  box_border = '*' * total_len
 
-	return '\n'.join(["", box_border, margin_line, release_message, margin_line, box_border])
+  return '\n'.join(["", box_border, margin_line, release_message, margin_line, box_border])

@@ -12,17 +12,17 @@ REAL_MODELS_DIR = os.path.join(paths.SOURCES_PATH, constants.XMIPP, "models")
 FAKE_SYNC_PROGRAM_FULL_PATH = os.path.join(TEST_FILES_DIR, mode_sync.SYNC_PROGRAM_NAME)
 
 DOWNLOAD = '\n'.join([
-	"Downloading Deep Learning models (in background)",
-	logger.blue(f"{FAKE_SYNC_PROGRAM_FULL_PATH} download {REAL_MODELS_DIR} {urls.MODELS_URL} DLmodels"),
+  "Downloading Deep Learning models (in background)",
+  logger.blue(f"{FAKE_SYNC_PROGRAM_FULL_PATH} download {REAL_MODELS_DIR} {urls.MODELS_URL} DLmodels"),
   xmipp_sync_data.MESSAGE,
-	logger.green("Models successfully downloaded!"),
-	""
+  logger.green("Models successfully downloaded!"),
+  ""
 ])
 
 UPDATE = '\n'.join([
-	"Updating Deep Learning models (in background)",
-	logger.blue(f"{FAKE_SYNC_PROGRAM_FULL_PATH} update {REAL_MODELS_DIR} {urls.MODELS_URL} DLmodels"),
+  "Updating Deep Learning models (in background)",
+  logger.blue(f"{FAKE_SYNC_PROGRAM_FULL_PATH} update {REAL_MODELS_DIR} {urls.MODELS_URL} DLmodels"),
   xmipp_sync_data.MESSAGE,
-	logger.green("Models successfully updated!"),
-	""
+  logger.green("Models successfully updated!"),
+  ""
 ])

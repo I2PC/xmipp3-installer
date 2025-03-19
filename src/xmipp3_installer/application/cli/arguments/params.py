@@ -21,56 +21,56 @@ PARAM_UPDATE = 'update'
 PARAM_OVERWRITE = 'overwrite'
 PARAM_KEEP_OUTPUT = "keep_output"
 PARAMS = {
-	PARAM_SHORT: {
-		LONG_VERSION: "--short",
-		DESCRIPTION: "If set, only version number is shown."
-	},
-	PARAM_JOBS: {
-		SHORT_VERSION: "-j",
-		LONG_VERSION: "--jobs",
-		DESCRIPTION: "Number of jobs. Defaults to all available."
-	},
-	PARAM_BRANCH: {
-		SHORT_VERSION: "-b",
-		LONG_VERSION: "--branch",
-		DESCRIPTION: "Branch for the source repositories."
-	},
-	PARAM_MODELS_DIRECTORY: {
-		SHORT_VERSION: "-d",
-		LONG_VERSION: "--directory",
-		DESCRIPTION: f"Directory where models will be saved. Default is \"{DEFAULT_BUILD_DIR}\"."
-	},
-	PARAM_TEST_NAMES: {
-		SHORT_VERSION: PARAM_TEST_NAMES,
-		DESCRIPTION: "Name of the tests to run. If combined with --show, greps the test names from the test list."
-	},
-	PARAM_SHOW_TESTS: {
-		LONG_VERSION: "--show",
-		DESCRIPTION: "Shows the tests available and how to invoke those."
-	},
-	PARAM_GIT_COMMAND: {
-		SHORT_VERSION: PARAM_GIT_COMMAND,
-		DESCRIPTION: "Git command to run on all source repositories."
-	},
-	PARAM_LOGIN: {
-		SHORT_VERSION: "login",
-		DESCRIPTION: "Login (usr@server) for remote host to upload the model with. Must have write permisions to such machine."
-	},
-	PARAM_MODEL_PATH: {
-		SHORT_VERSION: PARAM_MODEL_PATH,
-		DESCRIPTION: "Path to the model to upload to remote host."
-	},
-	PARAM_UPDATE: {
-		LONG_VERSION: "--update",
-		DESCRIPTION: "Flag to update an existing model"
-	},
-	PARAM_OVERWRITE: {
-		SHORT_VERSION: "-o",
-		LONG_VERSION: "--overwrite",
-		DESCRIPTION: "If set, current config file will be overwritten with a new one."
-	},
-	PARAM_KEEP_OUTPUT: {
-		LONG_VERSION: "--keep-output",
-		DESCRIPTION: "If set, output sent through the terminal won't substitute lines, looking more like the log."
-	}
+  PARAM_SHORT: {
+    LONG_VERSION: "--short",
+    DESCRIPTION: "If set, only version number is shown."
+  },
+  PARAM_JOBS: {
+    SHORT_VERSION: "-j",
+    LONG_VERSION: "--jobs",
+    DESCRIPTION: "Number of jobs. Defaults to all available."
+  },
+  PARAM_BRANCH: {
+    SHORT_VERSION: "-b",
+    LONG_VERSION: "--branch",
+    DESCRIPTION: "Branch for the source repositories."
+  },
+  PARAM_MODELS_DIRECTORY: {
+    SHORT_VERSION: "-d",
+    LONG_VERSION: "--directory",
+    DESCRIPTION: f"Directory where models will be saved. Default is \"{DEFAULT_BUILD_DIR}\"."
+  },
+  PARAM_TEST_NAMES: {
+    SHORT_VERSION: PARAM_TEST_NAMES,
+    DESCRIPTION: "Name of the tests to run. If combined with --show, greps the test names from the test list."
+  },
+  PARAM_SHOW_TESTS: {
+    LONG_VERSION: "--show",
+    DESCRIPTION: "Shows the tests available and how to invoke those."
+  },
+  PARAM_GIT_COMMAND: {
+    SHORT_VERSION: PARAM_GIT_COMMAND,
+    DESCRIPTION: "Git command to run on all source repositories."
+  },
+  PARAM_LOGIN: {
+    SHORT_VERSION: "login",
+    DESCRIPTION: "Login (usr@server) for remote host to upload the model with. Must have write permisions to such machine."
+  },
+  PARAM_MODEL_PATH: {
+    SHORT_VERSION: PARAM_MODEL_PATH,
+    DESCRIPTION: "Path to the model to upload to remote host."
+  },
+  PARAM_UPDATE: {
+    LONG_VERSION: "--update",
+    DESCRIPTION: "Flag to update an existing model"
+  },
+  PARAM_OVERWRITE: {
+    SHORT_VERSION: "-o",
+    LONG_VERSION: "--overwrite",
+    DESCRIPTION: "If set, current config file will be overwritten with a new one."
+  },
+  PARAM_KEEP_OUTPUT: {
+    LONG_VERSION: "--keep-output",
+    DESCRIPTION: "If set, output sent through the terminal won't substitute lines, looking more like the log."
+  }
 }
