@@ -52,9 +52,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     return 0, ""
   
   def _set_executor_config(self):
-    """
-    ### Sets the specific executor params for this mode.
-    """
+    """### Sets the specific executor params for this mode."""
     super()._set_executor_config()
     self.prints_with_substitution = True
   
