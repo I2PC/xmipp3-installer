@@ -6,6 +6,7 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
+from xmipp3_installer.installer.modes.mode_cmake import mode_config_build_executor
 from xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor import ModeCMakeExecutor
 from xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor import ModeConfigBuildExecutor
 from xmipp3_installer.repository.config_vars import variables
@@ -89,9 +90,7 @@ def test_does_not_override_parent_config_values(__dummy_test_mode_cmake_executor
   ]
 )
 def test_returns_expected_is_empty_value(input_value, expected_is_empty):
-  is_empty = ModeConfigBuildExecutor(
-    __CONTEXT.copy()
-  )._ModeConfigBuildExecutor__is_empty(input_value)
+  is_empty = mode_config_build_executor._is_empty(input_value)
   assert (
     is_empty == expected_is_empty
   ), get_assertion_message("is empty value", expected_is_empty, is_empty)
