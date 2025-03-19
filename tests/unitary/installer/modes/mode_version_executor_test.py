@@ -317,8 +317,7 @@ def test_returns_expected_value_when_checking_if_all_sources_are_present(
   __mock_exists_sources,
   expected_result
 ):
-  version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  result = version_executor._ModeVersionExecutor__are_all_sources_present()
+  result = mode_version_executor._are_all_sources_present()
   assert (
     result == expected_result
   ), get_assertion_message("are all sources present value", expected_result, result)
@@ -757,7 +756,7 @@ def __mock_logger_yellow():
 @pytest.fixture(params=[False])
 def __mock_are_all_sources_present(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__are_all_sources_present"
+    "xmipp3_installer.installer.modes.mode_version_executor._are_all_sources_present"
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method

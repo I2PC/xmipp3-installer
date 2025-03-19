@@ -70,7 +70,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     installation_info_lines.append(self.__get_sources_info())
     if self.version_file_exists:
       installation_info_lines.append(f"\n{self.__get_library_versions_section()}")
-    if not self.is_configured or not self.__are_all_sources_present():
+    if not self.is_configured or not _are_all_sources_present():
       installation_info_lines.append(f"\n{_get_configuration_warning_message()}")
     return '\n'.join(installation_info_lines)
 
@@ -150,17 +150,17 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
       version_lines.append(f"{library_left_text}{version}")
     return '\n'.join(version_lines)
   
-  def __are_all_sources_present(self) -> bool:
-    """
-    ### Check if all required source packages are present.
+def _are_all_sources_present() -> bool:
+  """
+  ### Check if all required source packages are present.
 
-    #### Returns:
-    - (bool): True if all source packages are present, False otherwise.
-    """
-    for source_package in paths.XMIPP_SOURCE_PATHS:
-      if not os.path.exists(source_package):
-        return False
-    return True
+  #### Returns:
+  - (bool): True if all source packages are present, False otherwise.
+  """
+  for source_package in paths.XMIPP_SOURCE_PATHS:
+    if not os.path.exists(source_package):
+      return False
+  return True
 
 def _get_configuration_warning_message() -> str:
   """
