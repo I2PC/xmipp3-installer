@@ -73,8 +73,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     tag_name = None
     if (
       not current_branch or
-      current_branch == constants.MASTER_BRANCHNAME or
-      current_branch == self.xmipp_tag_name
+      current_branch in {constants.MASTER_BRANCHNAME, self.xmipp_tag_name}
     ):
       tag_name = self.source_versions.get(source_name)
     return git_handler.get_clonable_branch(source_repo, self.target_branch, tag_name)
