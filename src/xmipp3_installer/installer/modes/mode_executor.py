@@ -31,9 +31,7 @@ class ModeExecutor(ABC):
     self.sends_installation_info = False
   
   def __configure_logger(self):
-    """
-    ### Configures the logger according to the specified config.
-    """
+    """### Configures the logger according to the specified config."""
     if self.logs_to_file:
       logger.start_log_file(paths.LOG_FILE)
     if self.prints_with_substitution:
