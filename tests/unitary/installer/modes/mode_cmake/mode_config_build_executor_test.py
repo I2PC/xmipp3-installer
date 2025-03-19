@@ -215,7 +215,7 @@ def __mock_internal_logic_vars():
 @pytest.fixture(params=[__NON_INTERNAL_VARIABLES])
 def __mock_get_config_vars(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.mode_config_build_executor._get_config_vars"
+    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor._get_config_vars"
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method
