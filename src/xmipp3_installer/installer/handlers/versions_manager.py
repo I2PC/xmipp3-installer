@@ -74,12 +74,13 @@ class VersionsManager(singleton.Singleton):
     - ValueError: If any version number doesn't follow the required format.
     """
     parts = self.xmipp_version_number.split('.')
-    if not self.__is_valid_semver(parts):
+    if not VersionsManager.__is_valid_semver(parts):
       raise ValueError(
         f"Version number '{self.xmipp_version_number}' is invalid. Must be three numbers separated by dots (x.y.z)."
       )
 
-  def __is_valid_semver(self, version_parts: List[str]) -> bool:
+  @staticmethod
+  def __is_valid_semver(version_parts: List[str]) -> bool:
     """
     ### Checks if version parts constitute a valid semantic version.
     
