@@ -1,3 +1,9 @@
+"""
+### Predefined Messages Module.
+
+This module contains functions to generate standard log messages.
+"""
+
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.handlers import git_handler
 
@@ -31,9 +37,10 @@ def get_section_message(text: str) -> str:
   #### Returns:
   - (str): Formatted section header.
   """
+  minimum_remaining_len = len("-  -")
   text_len = len(text)
   remaining_len = __SECTION_MESSAGE_LEN - text_len
-  if remaining_len < 4:
+  if remaining_len < minimum_remaining_len:
     return text
   
   n_dashes = remaining_len - 2
