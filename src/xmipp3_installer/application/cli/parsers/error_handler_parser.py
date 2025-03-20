@@ -7,10 +7,7 @@ from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.logger.logger import logger
 
 class ErrorHandlerArgumentParser(argparse.ArgumentParser):
-  """
-  Overrides the error function of the standard argument parser
-  to display better error messages.
-  """
+  """### Overrides the error function of the standard argument parser to display better error messages."""
 
   def error(self, message):
     """
@@ -20,9 +17,9 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     - message (str): Error message.
     """
     args = self.__get_args()
-    mode = self.__get_mode(args)
+    mode = ErrorHandlerArgumentParser.__get_mode(args)
 
-    if self.__is_mode_generic(args):
+    if ErrorHandlerArgumentParser.__is_mode_generic(args):
       args = ' '.join(args[:-1])
       extra_line_break = '\n'
     else:
@@ -44,7 +41,8 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     """
     return self.prog.split(' ')
   
-  def __get_mode(self, args: List[str]) -> str:
+  @staticmethod
+  def __get_mode(args: List[str]) -> str:
     """
     ### Obtains the usage mode from the received args.
 
@@ -56,7 +54,8 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     """
     return args[-1]
   
-  def __is_mode_generic(self, args: List[str]) -> bool:
+  @staticmethod
+  def __is_mode_generic(args: List[str]) -> bool:
     """
     ### Returns True if the usage mode selected is the generic one.
 
