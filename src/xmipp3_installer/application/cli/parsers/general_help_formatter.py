@@ -6,19 +6,15 @@ from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHel
 from xmipp3_installer.application.logger.logger import logger
 
 class GeneralHelpFormatter(BaseHelpFormatter):
-  """
-  ### Overrides the default help formatter to display a custom help message.
-  """
+  """### Overrides the default help formatter to display a custom help message."""
 
   def format_help(self):
-    """
-    ### Prints the help message of the argument parser.
-    """
+    """### Prints the help message of the argument parser."""
     help_message = "Run Xmipp's installer script\n\nUsage: xmipp [options]\n"
     for section in list(modes.MODES.keys()):
       help_message += self.__get_section_message(section)
-    help_message += f"\n{self.__get_epilog()}"
-    help_message += self.__get_note()
+    help_message += f"\n{GeneralHelpFormatter.__get_epilog()}"
+    help_message += GeneralHelpFormatter.__get_note()
     return format.get_formatting_tabs(help_message)
   
   def __get_mode_args_str(self, mode: str) -> str:
@@ -55,7 +51,8 @@ class GeneralHelpFormatter(BaseHelpFormatter):
       self._get_mode_help(mode)
     )
 
-  def __get_epilog(self) -> str:
+  @staticmethod
+  def __get_epilog() -> str:
     """
     ### Returns the epilogue.
 
@@ -66,7 +63,8 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     epilogue += "Example 2: ./xmipp compileAndInstall -j 4\n"
     return epilogue
   
-  def __get_note(self) -> str:
+  @staticmethod
+  def __get_note() -> str:
     """
     ### Returns the additional note message.
 
