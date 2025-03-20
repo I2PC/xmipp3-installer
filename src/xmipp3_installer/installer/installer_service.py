@@ -1,3 +1,9 @@
+"""
+### Installer Service Module.
+
+This module contains the class to manage the installation process.
+"""
+
 from typing import Dict
 
 from xmipp3_installer.api_client import api_client
@@ -15,6 +21,12 @@ from xmipp3_installer.repository import config
 from xmipp3_installer.repository.config_vars import variables
 
 class InstallationManager:
+  """
+  ### Installation Manager.
+
+  Manages the installation process by executing the appropriate mode based on the given arguments.
+  """
+  
   def __init__(self, args: Dict):
     """
     ### Constructor.
@@ -63,4 +75,3 @@ class InstallationManager:
       ))
     logger.close()
     return ret_code
-  
