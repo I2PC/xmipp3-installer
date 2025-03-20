@@ -156,7 +156,7 @@ def test_calls_formatting_tabs_when_getting_expected_text_len(
   __setup_parser
 ):
   test_text = "my text"
-  __setup_parser._get_text_length(test_text)
+  __setup_parser._BaseHelpFormatter__get_text_length(test_text)
   __mock_get_formatting_tabs.assert_called_once_with(test_text)
 
 @pytest.mark.parametrize(
@@ -176,7 +176,7 @@ def test_gets_expected_text_len(
   expected_length,
   __setup_parser
 ):
-  text_length = __setup_parser._get_text_length(text)
+  text_length = __setup_parser._BaseHelpFormatter__get_text_length(text)
   assert (
     text_length == expected_length
   ), get_assertion_message("text length", expected_length, text_length)
