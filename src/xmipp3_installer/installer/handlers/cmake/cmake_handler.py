@@ -61,9 +61,10 @@ def __get_library_version_from_line(version_line: str) -> Dict[str, Any]:
   #### Returns:
   - (dict(str, any)): Dictionary where the key is the name and the value is the version.
   """
+  TOKEN_NUMBER = 2 # Two tokens separated by an =
   library_with_version = {}
   name_and_version = version_line.replace("\n", "").split('=')
-  if len(name_and_version) == 2:
+  if len(name_and_version) == TOKEN_NUMBER:
     version = name_and_version[1] if name_and_version[1] else None
     library_with_version[name_and_version[0]] = version
   return library_with_version
