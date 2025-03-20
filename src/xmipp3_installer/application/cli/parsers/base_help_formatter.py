@@ -76,7 +76,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     )
     return f"{previous_text}{fill_in_space}{formatted_help}\n"
 
-  def _get_text_length(self, text: str) -> int:
+  @staticmethod
+  def __get_text_length(text: str) -> int:
     """
     ### Returns the length of a text that might contain tabs.
 
@@ -217,7 +218,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
       # If text exceeds size limit, it means that section space for modes and params 
       # is too low and should be set to a higher number, but for now we need to print anyways, 
       # so we reduce space from the one reserved for mode help and add minimum fill-in space
-      remaining_space = self.__get_line_size() - self._get_text_length(start_section_text)
+      remaining_space = self.__get_line_size() - BaseHelpFormatter.__get_text_length(start_section_text)
       fill_in_space = ' '
     else:
       remaining_space = self.__get_line_size() - self.__SECTION_HELP_START
@@ -235,7 +236,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     - (str): The required number of spaces to generate the start section's fill-in.
     """
     return ''.join(
-      [' ' for _ in range(self.__SECTION_HELP_START - self._get_text_length(text))]
+      [' ' for _ in range(self.__SECTION_HELP_START - BaseHelpFormatter.__get_text_length(text))]
     )
   
   def __is_start_section_text_exceeding_size_limit(self, start_section_text: str) -> bool:
@@ -248,4 +249,4 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     #### Returns:
     - (bool): True if the text exceedes allowed size limit.
     """
-    return self._get_text_length(start_section_text) >= self.__SECTION_HELP_START
+    return BaseHelpFormatter.__get_text_length(start_section_text) >= self.__SECTION_HELP_START
