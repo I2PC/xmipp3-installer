@@ -39,7 +39,7 @@ def test_writes_expected_config_file(
   command_words = ["xmipp3_installer", modes.MODE_CONFIG]
   if overwrite:
     command_words.append("-o")
-  subprocess.run(command_words, stdout=subprocess.PIPE)
+  subprocess.run(command_words, stdout=subprocess.PIPE, check=False)
   __change_config_file_date()
   __change_config_cmake_path()
   copy_file_from_reference(

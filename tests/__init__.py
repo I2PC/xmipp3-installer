@@ -45,7 +45,7 @@ def get_file_content(file_path: str) -> str:
   #### Returns:
   - (str): Content of the file.
   """
-  with open(file_path, "r") as config_file:
+  with open(file_path) as config_file:
     return config_file.read()
 
 def normalize_text_line_endings(text: str) -> str:

@@ -4,7 +4,7 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
-from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor import ModeCMakeExecutor
 from xmipp3_installer.installer.modes.mode_cmake.mode_compile_and_install_executor import ModeCompileAndInstallExecutor

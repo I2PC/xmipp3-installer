@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-import pytest
-
 from xmipp3_installer.shared.singleton import Singleton
 
 from ... import get_assertion_message
