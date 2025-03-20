@@ -8,9 +8,7 @@ from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
 
 class BaseHelpFormatter(argparse.HelpFormatter):
-  """
-  ### Extendes the available functions of the generic help formatter.
-  """
+  """### Extendes the available functions of the generic help formatter."""
 
   __SECTION_N_DASH = 45
   __SECTION_SPACE_MODE_HELP = 2
