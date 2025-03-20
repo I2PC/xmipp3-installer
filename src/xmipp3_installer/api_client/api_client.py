@@ -38,6 +38,7 @@ def send_installation_attempt(installation_info: Dict):
 def __get_https_connection(parsed_url: ParseResult, timeout_seconds: int) -> http.client.HTTPSConnection:
   """
   ### Establishes the connection needed to send the API call.
+  
   Separated to enable integration & E2E tests.
 
   #### Params:
