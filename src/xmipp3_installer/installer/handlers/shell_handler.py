@@ -11,11 +11,11 @@ from xmipp3_installer.application.logger import errors
 
 def run_shell_command(
   cmd: str,
+  *,
   cwd: str='./',
   show_command: bool=False,
   show_output: bool=False,
-  show_error: bool=False,
-  substitute: bool=False
+  show_error: bool=False
 ) -> Tuple[int, str]:
   """
   ### This function runs the given command.
@@ -26,18 +26,17 @@ def run_shell_command(
   - show_output (bool): Optional. If True, output is printed.
   - show_error (bool): Optional. If True, errors are printed.
   - show_command (bool): Optional. If True, command is printed in blue.
-  - substitute (bool): Optional. If True, output will replace previous line.
 
   #### Returns:
   - (int): Return code.
   - (str): Output of the command, regardless of if it is an error or regular output.
   """
   if show_command:
-    logger(logger.blue(cmd), substitute=substitute)
+    logger(logger.blue(cmd))
   ret_code, output_str = __run_command(cmd, cwd=cwd)
 
   if not ret_code and show_output:
-    logger(output_str, substitute=substitute)
+    logger(output_str)
   
   if ret_code and show_error:
     logger.log_error(output_str, ret_code=ret_code)
