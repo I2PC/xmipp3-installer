@@ -31,7 +31,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     for group in list(modes.MODES.keys()):
       if mode in list(modes.MODES[group].keys()):
         messages = modes.MODES[group][mode]
-        return self.__get_message_from_list(messages, general)
+        return BaseHelpFormatter.__get_message_from_list(messages, general)
     return ''
   
   def _get_param_first_name(self, param_key: str) -> str:
@@ -69,7 +69,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     - (str): Formatted text.
     """
     remaining_space, fill_in_space = self.__get_spaces(previous_text)
-    formatted_help = self.__multi_line_help_text(
+    formatted_help = BaseHelpFormatter.__multi_line_help_text(
       text,
       remaining_space,
       self.__get_start_section_fill_in_space('')
@@ -88,7 +88,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     """
     return len(format.get_formatting_tabs(text))
 
-  def __get_message_from_list(self, messages: List[str], only_general: bool) -> str:
+  @staticmethod
+  def __get_message_from_list(messages: List[str], only_general: bool) -> str:
     """
     ### Return the appropiate message given a list of them and a condition.
 
@@ -111,7 +112,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     size = shutil.get_terminal_size().columns
     return self.__LINE_SIZE_LOWER_LIMIT if size < self.__LINE_SIZE_LOWER_LIMIT else size
 
-  def __multi_line_help_text(self, text: str, size_limit: int, left_fill: str) -> str:
+  @staticmethod
+  def __multi_line_help_text(text: str, size_limit: int, left_fill: str) -> str:
     """
     ### This function returns the given text, formatted in several lines so that it does not exceed the given character limit.
 
@@ -126,10 +128,11 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return (
       text
       if len(text) <= size_limit else
-      self.__format_text_in_lines(text, size_limit, left_fill)
+      BaseHelpFormatter.__format_text_in_lines(text, size_limit, left_fill)
     )
 
-  def __fit_words_in_line(self, words: List[str], size_limit: int) -> Tuple[str, List[str]]:
+  @staticmethod
+  def __fit_words_in_line(words: List[str], size_limit: int) -> Tuple[str, List[str]]:
     """
     ### Returns a tuple containig a line with the words from the given list that could fit given the size limit, and the list with the remaining words.
 
@@ -144,13 +147,14 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     line = ''
     remaining_words = words
     for word in words:
-      if self.__word_fits_in_line(line, word, size_limit):
-        line, remaining_words = self.__add_word_to_line(line, word, remaining_words)
+      if BaseHelpFormatter.__word_fits_in_line(line, word, size_limit):
+        line, remaining_words = BaseHelpFormatter.__add_word_to_line(line, word, remaining_words)
       else:
         break
     return line, remaining_words
-        
-  def __word_fits_in_line(self, line: str, word: str, size_limit: int) -> bool:
+
+  @staticmethod
+  def __word_fits_in_line(line: str, word: str, size_limit: int) -> bool:
     """
     ### Checks if a word can fit in the current line without exceeding the size limit.
 
@@ -166,7 +170,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
       return len(f"{line} {word}") <= size_limit
     return len(word) <= size_limit
 
-  def __add_word_to_line(self, line: str, word: str, remaining_words: List[str]) -> Tuple[str, List[str]]:
+  @staticmethod
+  def __add_word_to_line(line: str, word: str, remaining_words: List[str]) -> Tuple[str, List[str]]:
     """
     ### Adds a word to the current line and updates the list of remaining words.
 
@@ -185,7 +190,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
       line = word
     return line, remaining_words[1:]
 
-  def __format_text_in_lines(self, text: str, size_limit: int, left_fill: str):
+  @staticmethod
+  def __format_text_in_lines(text: str, size_limit: int, left_fill: str):
     """
     ### Returns the text formatted into size-limited lines.
 
@@ -201,7 +207,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     lines = []
     while words:
       iteration_size_limit = size_limit if size_limit >= len(words[0]) else len(words[0])
-      line, words = self.__fit_words_in_line(words, iteration_size_limit)
+      line, words = BaseHelpFormatter.__fit_words_in_line(words, iteration_size_limit)
       line = left_fill + line if lines else line
       lines.append(line)
     return '\n'.join(lines)
