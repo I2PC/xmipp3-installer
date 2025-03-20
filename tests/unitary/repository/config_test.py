@@ -113,7 +113,7 @@ def test_sets_show_errors_variable_when_constructing_configuration_file_with_def
 ):
   config_handler = ConfigurationFileHandler()
   assert (
-    config_handler.show_errors == True
+    config_handler.show_errors
   ), get_assertion_message(
     "config file show errors variable",
     config_handler.show_errors,
@@ -505,7 +505,7 @@ def test_calls_make_config_line_when_getting_toggle_lines(
   __mock_make_config_line
 ):
   config_handler = ConfigurationFileHandler()
-  for section in __CONFIG_VARIABLES.keys():
+  for section, section_variables in __CONFIG_VARIABLES.items():
     config_handler._ConfigurationFileHandler__get_section_lines(
       section,
       __CONFIG_VALUES.copy()
@@ -516,7 +516,7 @@ def test_calls_make_config_line_when_getting_toggle_lines(
         __CONFIG_VALUES.get(section_variable),
         __DEFAULT_CONFIG_VALUES[section_variable]
       )
-      for section_variable in __CONFIG_VARIABLES[section]
+      for section_variable in section_variables
     ])
 
 def test_removes_keys_from_dictionary_when_getting_toggle_lines(
@@ -526,12 +526,12 @@ def test_removes_keys_from_dictionary_when_getting_toggle_lines(
 ):
   config_handler = ConfigurationFileHandler()
   config_values = __CONFIG_VALUES.copy()
-  for section in __CONFIG_VARIABLES.keys():
+  for section, section_variables in __CONFIG_VARIABLES.items():
     config_handler._ConfigurationFileHandler__get_section_lines(
       section,
       config_values
     )
-    for section_variable in __CONFIG_VARIABLES[section]:
+    for section_variable in section_variables:
       assert (
         config_values.get(section_variable) is None
       ), f"Item {section_variable} not deleted from dictionary {config_values}"
@@ -542,7 +542,7 @@ def test_returns_expected_lines_when_getting_toggle_lines(
   __mock_make_config_line
 ):
   config_handler = ConfigurationFileHandler()
-  for section in __CONFIG_VARIABLES.keys():
+  for section, section_variables in __CONFIG_VARIABLES.items():
     section_lines = config_handler._ConfigurationFileHandler__get_section_lines(
       section,
       __CONFIG_VALUES.copy()
@@ -556,7 +556,7 @@ def test_returns_expected_lines_when_getting_toggle_lines(
         ),
         "\n"
       ])
-      for section_variable in __CONFIG_VARIABLES[section]
+      for section_variable in section_variables
     ]
     assert (
       section_lines == expected_lines
@@ -874,7 +874,8 @@ def __mock_re_search(request):
 
 @pytest.fixture
 def __mock_generate_invalid_config_line_error_message():
-  side_effect = lambda conf_file, line_number, line: f"{conf_file} - {line_number} - {line}"
+  def side_effect(conf_file, line_number, line):
+    return f"{conf_file} - {line_number} - {line}"
   with patch(
     "xmipp3_installer.repository.invalid_config_line.InvalidConfigLineError.generate_error_message"
   ) as mock_method:
@@ -908,7 +909,8 @@ def __mock_config_variables():
 
 @pytest.fixture
 def __mock_make_config_line():
-  side_effect = lambda key, value, default_value: f"{key}-{value}-{default_value}"
+  def side_effect(key, value, default_value):
+    return f"{key}-{value}-{default_value}"
   with patch(
     "xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__make_config_line"
   ) as mock_method:
@@ -959,7 +961,8 @@ def __mock_datetime_strftime():
 
 @pytest.fixture
 def __mock_get_unkown_variable_lines():
-  side_effect = lambda values: [f"{key}-{value}" for key, value in values.items()]
+  def side_effect(values):
+    return [f"{key}-{value}" for key, value in values.items()]
   with patch(
     "xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_unkown_variable_lines"
   ) as mock_method:
