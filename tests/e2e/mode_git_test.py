@@ -55,7 +55,12 @@ def test_returns_returns_xpected_git_command_output(
   __setup_evironment,
 ):
   command_words = ["xmipp3_installer", modes.MODE_GIT, "branch"]
-  result = subprocess.run(command_words, capture_output=True, text=True).stdout
+  result = subprocess.run(
+    command_words,
+    capture_output=True,
+    text=True,
+    check=False
+  ).stdout
   expected_output = mode_git.get_git_command(*__setup_evironment)
   assert (
     result == expected_output

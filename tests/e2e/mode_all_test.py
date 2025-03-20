@@ -43,7 +43,8 @@ def test_returns_expected_full_installation_output(
     capture_output=True,
     text=True,
     cwd=__setup_evironment,
-    env=mode_cmake.ENV
+    env=mode_cmake.ENV,
+    check=False
   ).stdout
   result = __normalize_build_path(
     __setup_evironment,

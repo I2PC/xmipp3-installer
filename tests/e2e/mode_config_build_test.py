@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 
 import pytest
@@ -38,7 +37,8 @@ def test_returns_expected_config_build_output(
     capture_output=True,
     text=True,
     cwd=__setup_evironment,
-    env=mode_cmake.ENV
+    env=mode_cmake.ENV,
+    check=False
   ).stdout
   result = __normalize_paths(
     mode_config_build.normalize_execution_times(

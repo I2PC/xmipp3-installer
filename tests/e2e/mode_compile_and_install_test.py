@@ -1,5 +1,4 @@
 import os
-import shutil
 import subprocess
 
 import pytest
@@ -41,14 +40,16 @@ def test_returns_expected_compile_and_install_output(
     ["cmake", ".", "-B", f"{paths.BUILD_PATH}/"],
     cwd=__setup_evironment,
     env=mode_cmake.ENV,
-    stdout=subprocess.PIPE
+    stdout=subprocess.PIPE,
+    check=False
   )
   result = subprocess.run(
     command_words,
     capture_output=True,
     text=True,
     cwd=__setup_evironment,
-    env=mode_cmake.ENV
+    env=mode_cmake.ENV,
+    check=False
   ).stdout
   result = mode_compile_and_install.normalize_line_breaks(
     mode_compile_and_install.remove_command_error_line(

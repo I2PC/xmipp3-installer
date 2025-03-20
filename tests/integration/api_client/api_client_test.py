@@ -36,7 +36,7 @@ def test_records_api_call_when_sending_installation_attempt(
   ), get_assertion_message("request method", "POST", __mock_server.requests[0].method)
 
 def __get_version_manager():
-  class DummyVersionManager():
+  class DummyVersionManager:
     def __init__(self):
       self.xmipp_version_number = JSON_XMIPP_VERSION_NUMBER
   return DummyVersionManager()

@@ -25,7 +25,8 @@ def test_deletes_expected_files(__setup_environment, confirmation_text):
     command_words,
     capture_output=True,
     text=True,
-    input=confirmation_text
+    input=confirmation_text,
+    check=False
   )
   
   for remaining_path in [
