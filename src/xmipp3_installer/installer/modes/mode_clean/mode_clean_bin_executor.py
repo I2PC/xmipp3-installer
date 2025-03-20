@@ -23,7 +23,8 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 
   confirmation_keyword = "y"
   
-  def _get_paths_to_delete(self) -> List[str]:
+  @staticmethod
+  def _get_paths_to_delete() -> List[str]:
     """
     ### Returns a list of all the paths to be deleted.
 

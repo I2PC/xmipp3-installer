@@ -211,13 +211,14 @@ def test_returns_expected_paths_to_delete(
 def __dummy_test_mode_clean_executor():
   class TestExecutor(ModeCleanExecutor):
     confirmation_keyword = ""
-    def _get_paths_to_delete(self):
+    @staticmethod
+    def _get_paths_to_delete():
       return []
     def _get_confirmation_message(self):
       return ""
   # For coverage
   executor = TestExecutor({})
-  executor._get_paths_to_delete()
+  TestExecutor._get_paths_to_delete()
   executor._get_confirmation_message()
   return TestExecutor
 
