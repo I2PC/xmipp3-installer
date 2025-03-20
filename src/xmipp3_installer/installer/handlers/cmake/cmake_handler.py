@@ -46,7 +46,7 @@ def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
     return {}
   
   result = {}
-  with open(path) as versions_file:
+  with open(path, encoding="utf-8") as versions_file:
     for line in versions_file.readlines():
       result.update(__get_library_version_from_line(line))
   return result
