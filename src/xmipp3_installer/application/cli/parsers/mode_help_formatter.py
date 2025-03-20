@@ -9,14 +9,10 @@ from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHel
 from xmipp3_installer.application.logger.logger import logger
 
 class ModeHelpFormatter(BaseHelpFormatter):
-  """
-  ### Overrides the default help formatter to display a custom help message deppending on the mode selected.
-  """
+  """### Overrides the default help formatter to display a custom help message deppending on the mode selected."""
 
   def format_help(self):
-    """
-    ### This method prints the help message of the argument parser.
-    """
+    """### This method prints the help message of the argument parser."""
     mode = self.__get_mode()
     help_message = f"{self._get_mode_help(mode, general=False)}\n\n"
     help_message += self.__get_args_message(mode)
@@ -52,7 +48,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     
     if len(args) > 0:
       arg_names = [self._get_param_first_name(arg_name) for arg_name in args]
-      if self.__args_contain_optional(arg_names):
+      if ModeHelpFormatter.__args_contain_optional(arg_names):
         help_message += logger.yellow("Note: only params starting with '-' are optional. The rest are required.\n")
       options_str = ' [options]'
       separator = self._get_help_separator() + '\t# Options #\n\n'
@@ -61,7 +57,8 @@ class ModeHelpFormatter(BaseHelpFormatter):
     help_message += self.__get_args_info(args)
     return help_message
 
-  def __args_contain_optional(self, arg_names: List[str]) -> bool:
+  @staticmethod
+  def __args_contain_optional(arg_names: List[str]) -> bool:
     """
     ### Returns True if the param name list contains at least one optional param.
 
