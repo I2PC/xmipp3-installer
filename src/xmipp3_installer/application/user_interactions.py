@@ -1,3 +1,9 @@
+"""
+### User Interactions Module.
+
+This module contains functions to handle user interactions.
+"""
+
 def get_user_confirmation(confirmation_text: str, case_sensitive: bool=True) -> bool:
   """
   ### Receives confirmation from user input.
