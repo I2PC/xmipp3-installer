@@ -1,3 +1,9 @@
+"""
+### Versions Manager Module.
+
+This module contains the class to manage version information.
+"""
+
 import json
 from datetime import datetime
 from typing import Dict, List
@@ -6,6 +12,12 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.shared import singleton
 
 class VersionsManager(singleton.Singleton):
+  """
+  ### Versions Manager.
+
+  Manages version information by reading and validating version data from a JSON file.
+  """
+
   def __init__(self, version_file_path: str):
     """
     ### Constructor.
