@@ -89,7 +89,7 @@ def __add_params(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 def __add_params_mode_add_model(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "addModel"
+  ### Adds params for mode "addModel".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -100,7 +100,7 @@ def __add_params_mode_add_model(subparser: argparse.ArgumentParser):
 
 def __add_params_mode_all(subparser: argparse.ArgumentParser, default_jobs: int):
   """
-  ### Adds params for mode "all"
+  ### Adds params for mode "all".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -112,7 +112,7 @@ def __add_params_mode_all(subparser: argparse.ArgumentParser, default_jobs: int)
 
 def __add_params_mode_compile_and_install(subparser: argparse.ArgumentParser, default_jobs: int):
   """
-  ### Adds params for mode "compileAndInstall"
+  ### Adds params for mode "compileAndInstall".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -124,7 +124,7 @@ def __add_params_mode_compile_and_install(subparser: argparse.ArgumentParser, de
 
 def __add_params_mode_config_build(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "configBuild"
+  ### Adds params for mode "configBuild".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -133,7 +133,7 @@ def __add_params_mode_config_build(subparser: argparse.ArgumentParser):
 
 def __add_params_mode_config(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "config"
+  ### Adds params for mode "config".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -142,7 +142,7 @@ def __add_params_mode_config(subparser: argparse.ArgumentParser):
 
 def __add_params_mode_get_models(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "getModels"
+  ### Adds params for mode "getModels".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -154,7 +154,7 @@ def __add_params_mode_get_models(subparser: argparse.ArgumentParser):
 
 def __add_params_mode_get_sources(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "getSources"
+  ### Adds params for mode "getSources".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -164,7 +164,7 @@ def __add_params_mode_get_sources(subparser: argparse.ArgumentParser):
 
 def __add_params_mode_git(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "git"
+  ### Adds params for mode "git".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -173,7 +173,7 @@ def __add_params_mode_git(subparser: argparse.ArgumentParser):
 
 def __add_params_mode_test(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "test"
+  ### Adds params for mode "test".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -183,7 +183,7 @@ def __add_params_mode_test(subparser: argparse.ArgumentParser):
 
 def __add_params_mode_version(subparser: argparse.ArgumentParser):
   """
-  ### Adds params for mode "version"
+  ### Adds params for mode "version".
 
   #### Params:
   - subparser (ArgumentParser): Subparser to add the params to.
@@ -193,6 +193,7 @@ def __add_params_mode_version(subparser: argparse.ArgumentParser):
 def __get_default_job_number() -> int:
   """
   ### Gets the default number of jobs to be used by parallelizable tasks.
+
   Returned number will be 120% of CPU cores, due to not all jobs taking 
   100% of CPU time continuously.
 
@@ -223,9 +224,7 @@ def __get_project_root_dir() -> str:
   return os.path.dirname(os.path.abspath(__file__))
 
 def __add_default_usage_mode():
-  """
-  ### Sets the usage mode as the default one when a mode has not been specifically provided.
-  """
+  """### Sets the usage mode as the default one when a mode has not been specifically provided."""
   no_args_provided = len(sys.argv) == 1
   args_provided = len(sys.argv) > 1
   if no_args_provided or (
