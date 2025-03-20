@@ -20,7 +20,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     mode = self.__get_mode()
     help_message = f"{self._get_mode_help(mode, general=False)}\n\n"
     help_message += self.__get_args_message(mode)
-    help_message += self.__get_examples_message(mode)
+    help_message += ModeHelpFormatter.__get_examples_message(mode)
     return format.get_formatting_tabs(help_message)
 
   def __get_mode(self):
@@ -94,7 +94,8 @@ class ModeHelpFormatter(BaseHelpFormatter):
       )
     return help_message
 
-  def __get_examples_message(self, mode: str) -> str:
+  @staticmethod
+  def __get_examples_message(mode: str) -> str:
     """
     ### Returns the message section containig usage examples.
 
