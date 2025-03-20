@@ -46,7 +46,7 @@ class VersionsManager(singleton.Singleton):
     #### Returns:
     - (dict(str, str)): Dictionary containing the parsed values.
     """
-    with open(self.version_file_path) as json_data:
+    with open(self.version_file_path, encoding="utf-8") as json_data:
       version_info = json.load(json_data)
     return version_info
   

@@ -95,7 +95,7 @@ def test_calls_open_when_getting_version_info(
   __mock_open
 ):
   VersionsManager(__FILE_PATH)._VersionsManager__get_version_info()
-  __mock_open.assert_called_once_with(__FILE_PATH)
+  __mock_open.assert_called_once_with(__FILE_PATH, encoding="utf-8")
 
 def test_calls_json_load_when_getting_version_info(
   __mock_init,
