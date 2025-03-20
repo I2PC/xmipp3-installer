@@ -1,3 +1,9 @@
+"""
+### Paths Module.
+
+This module defines various paths used throughout the application.
+"""
+
 import os
 
 from xmipp3_installer.installer import constants
