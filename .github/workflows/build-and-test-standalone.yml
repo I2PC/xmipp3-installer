@@ -43,8 +43,8 @@ jobs:
       - name: Check source code with Ruff
         run: python -m ruff check --config ./conf/ruff-src.toml
     
-    #- name: Check tests code with Ruff
-    #  run: python -m ruff check --config ./conf/ruff-tests.toml
+      - name: Check tests code with Ruff
+        run: python -m ruff check --config ./conf/ruff-tests.toml
 
       - name: Run unitary tests
         env:
