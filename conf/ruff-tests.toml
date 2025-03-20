@@ -9,7 +9,10 @@ extend-select = [
   "UP",  # pyupgrade
   "PL",  # pylint
 ]
-ignore = ["PLC0414"]
+ignore = [
+  "PLC0414", # Useless import alias
+  "PLR0913" # Too many arguments in function definition
+]
 
 [lint.pydocstyle]
 convention = "pep257"
