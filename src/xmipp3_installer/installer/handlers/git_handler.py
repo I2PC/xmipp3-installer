@@ -61,7 +61,7 @@ def is_branch_up_to_date(dir: str='./') -> bool:
 
 def get_current_commit(dir: str="./") -> str:
   """
-  ### Rreturns the current commit short hash of a given repository:
+  ### Returns the current commit short hash of a given repository.
 
   #### Params:
   - dir (str): Optional. Directory of repository.
