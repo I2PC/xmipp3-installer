@@ -15,7 +15,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
   __SECTION_HELP_START = format.TAB_SIZE + __SECTION_N_DASH + __SECTION_SPACE_MODE_HELP
   __LINE_SIZE_LOWER_LIMIT = int(__SECTION_HELP_START * 1.5)
 
-  def _get_mode_help(self, mode: str, general: bool=True) -> str:
+  @staticmethod
+  def _get_mode_help(mode: str, general: bool=True) -> str:
     """
     ### Returns the help message of a given mode.
 
@@ -31,8 +32,9 @@ class BaseHelpFormatter(argparse.HelpFormatter):
         messages = modes.MODES[group][mode]
         return BaseHelpFormatter.__get_message_from_list(messages, general)
     return ''
-  
-  def _get_param_first_name(self, param_key: str) -> str:
+
+  @staticmethod
+  def _get_param_first_name(param_key: str) -> str:
     """
     ### Returns the first name of the given param key. Short name has priority over long name.
 
