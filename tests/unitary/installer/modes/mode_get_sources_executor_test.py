@@ -6,6 +6,7 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
+from xmipp3_installer.installer.modes import mode_get_sources_executor
 from xmipp3_installer.installer.modes.mode_executor import ModeExecutor
 from xmipp3_installer.installer.modes.mode_get_sources_executor import ModeGetSourcesExecutor
 
@@ -153,7 +154,7 @@ def test_returns_expected_ref_to_clone(__mock_get_clonable_branch):
 def test_calls_get_source_path_when_running_source_command(
   __mock_get_source_path
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__run_source_command(
+  mode_get_sources_executor._run_source_command(
     constants.XMIPP_VIZ, __REPO_URL, __BRANCH_NAME
   )
   __mock_get_source_path.assert_called_once_with(constants.XMIPP_VIZ)
@@ -162,7 +163,7 @@ def test_calls_os_path_exists_when_running_source_command(
   __mock_get_source_path,
   __mock_os_path_exists
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__run_source_command(
+  mode_get_sources_executor._run_source_command(
     constants.XMIPP_CORE, __REPO_URL, __BRANCH_NAME
   )
   __mock_os_path_exists.assert_called_once_with(
@@ -172,7 +173,7 @@ def test_calls_os_path_exists_when_running_source_command(
 def test_does_not_call_run_shell_command_if_source_exists_and_target_branch_does_not_when_running_source_command(
   __mock_run_shell_command
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__run_source_command(
+  mode_get_sources_executor._run_source_command(
     constants.XMIPP_CORE, __REPO_URL, None
   )
   __mock_run_shell_command.assert_not_called()
@@ -192,7 +193,7 @@ def test_calls_run_shell_command_if_source_and_target_branch_exist_when_running_
   __mock_get_source_path,
   __mock_run_shell_command
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__run_source_command(
+  mode_get_sources_executor._run_source_command(
     source, __REPO_URL, target_branch
   )
   __mock_run_shell_command.assert_called_once_with(
@@ -215,7 +216,7 @@ def test_calls_run_shell_command_if_source_does_not_exist_when_running_source_co
   __mock_sources_path
 ):
   __mock_os_path_exists.return_value = False
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__run_source_command(
+  mode_get_sources_executor._run_source_command(
     constants.XMIPP_CORE, __REPO_URL, target_branch
   )
   __mock_run_shell_command.assert_called_once_with(
@@ -244,7 +245,7 @@ def test_returns_expected_result_when_running_source_command(
   __mock_run_shell_command,
   expected_result
 ):
-  result = ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__run_source_command(
+  result = mode_get_sources_executor._run_source_command(
     constants.XMIPP_CORE, __REPO_URL, target_branch
   )
   assert (
@@ -572,7 +573,7 @@ def __mock_select_ref_to_clone(request):
 @pytest.fixture(params=[(0, "")])
 def __mock_run_source_command(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__run_source_command"
+    "xmipp3_installer.installer.modes.mode_get_sources_executor._run_source_command"
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method
