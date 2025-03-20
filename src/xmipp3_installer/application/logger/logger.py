@@ -9,9 +9,7 @@ from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import urls
 
 class Logger(Singleton):
-  """
-  ### Logger class for keeping track of installation messages.
-  """
+  """### Logger class for keeping track of installation messages."""
 
   __UP = "\x1B[1A\r"
   __REMOVE_LINE = '\033[K'
@@ -102,12 +100,10 @@ class Logger(Singleton):
     - log_path (str): Path to the log file.
     """
     if self.__log_file is None:
-      self.__log_file = open(log_path, 'w')
+      self.__log_file = open(log_path, 'w', encoding="utf-8")
 
   def close(self):
-    """
-    ### Closes the log file.
-    """
+    """### Closes the log file."""
     if self.__log_file:
       self.__log_file.close()
       self.__log_file = None

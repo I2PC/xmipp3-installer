@@ -88,7 +88,7 @@ def test_calls_open_when_starting_log_file_and_log_file_is_not_open(
   log_file_name = "test_log_file"
   logger = Logger()
   logger.start_log_file(log_file_name)
-  __mock_open.assert_called_once_with(log_file_name, 'w')
+  __mock_open.assert_called_once_with(log_file_name, 'w', encoding="utf-8")
 
 def test_does_not_call_open_when_starting_log_file_and_log_file_is_open(
   __mock_open
