@@ -68,14 +68,6 @@ def test_calls_logger_when_getting_confirmation(
   __dummy_test_mode_clean_executor({})._ModeCleanExecutor__get_confirmation()
   __mock_logger.assert_called_once_with(__mock_get_confirmation_message())
 
-def test_calls_get_confirmation_keyword_when_getting_confirmation(
-  __dummy_test_mode_clean_executor,
-  __mock_get_confirmation_message,
-  __mock_get_confirmation_keyword
-):
-  __dummy_test_mode_clean_executor({})._ModeCleanExecutor__get_confirmation()
-  __mock_get_confirmation_keyword.assert_called_once_with()
-
 @pytest.mark.parametrize(
   "__mock_get_confirmation_keyword",
   [pytest.param("keyword 1"), pytest.param("keyword 2")],
@@ -88,7 +80,7 @@ def test_calls_get_user_confirmation_when_getting_confirmation(
   __mock_get_user_confirmation
 ):
   __dummy_test_mode_clean_executor({})._ModeCleanExecutor__get_confirmation()
-  __mock_get_user_confirmation.assert_called_once_with(__mock_get_confirmation_keyword())
+  __mock_get_user_confirmation.assert_called_once_with(__mock_get_confirmation_keyword)
 
 @pytest.mark.parametrize(
   "__mock_get_user_confirmation",
@@ -168,17 +160,15 @@ def __no_implementation_child():
 @pytest.fixture
 def __dummy_test_mode_clean_executor():
   class TestExecutor(ModeCleanExecutor):
+    confirmation_keyword = ""
     def _get_paths_to_delete(self):
       return []
     def _get_confirmation_message(self):
-      return ""
-    def _get_confirmation_keyword(self):
       return ""
   # For coverage
   executor = TestExecutor({})
   executor._get_paths_to_delete()
   executor._get_confirmation_message()
-  executor._get_confirmation_keyword()
   return TestExecutor
 
 @pytest.fixture
@@ -212,9 +202,11 @@ def __mock_get_user_confirmation(request):
 
 @pytest.fixture(params=["YES"])
 def __mock_get_confirmation_keyword(__dummy_test_mode_clean_executor, request):
-  with patch.object(__dummy_test_mode_clean_executor, "_get_confirmation_keyword") as mock_method:
-    mock_method.return_value = request.param
-    yield mock_method
+  with patch.object(
+    __dummy_test_mode_clean_executor,
+    "confirmation_keyword",
+    request.param) as mock_object:
+    yield mock_object
 
 @pytest.fixture(params=[True])
 def __mock_get_confirmation(request):

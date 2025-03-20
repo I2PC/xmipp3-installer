@@ -20,6 +20,8 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 
   Cleans compiled binaries and related files.
   """
+
+  confirmation_keyword = "y"
   
   def _get_paths_to_delete(self) -> List[str]:
     """
@@ -39,15 +41,6 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
       *ModeCleanBinExecutor.__get_pycache_dirs(),
       paths.BUILD_PATH
     ]
-
-  def _get_confirmation_keyword(self) -> str:
-    """
-    ### Returns the keyword needed to be introduced by the user to confirm an operation.
-
-    #### Returns:
-    - (str): Confirmation keyword.
-    """
-    return "y"
   
   def _get_confirmation_message(self) -> str:
     """
@@ -58,7 +51,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     """
     return '\n'.join([
       logger.yellow(f"WARNING: This will DELETE from {paths.SOURCES_PATH} all *.so, *.os and *.o files. Also the *.pyc and *.dblite files"),
-      logger.yellow(f"If you are sure you want to do this, type '{self._get_confirmation_keyword()}' (case sensitive):")
+      logger.yellow(f"If you are sure you want to do this, type '{self.confirmation_keyword}' (case sensitive):")
     ])
   
   @staticmethod
