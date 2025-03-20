@@ -12,41 +12,32 @@ from .... import get_assertion_message
 __COMMAND = "echo Hi"
 __RET_CODE_TEXT = "return code"
 
-@pytest.mark.parametrize("substitute", [pytest.param(False), pytest.param(True)])
 def test_calls_logger_to_show_command_when_running_shell_command(
-  substitute,
   __mock_logger,
   __mock_run_command
 ):
   shell_handler.run_shell_command(
     __COMMAND,
-    show_command=True,
-    substitute=substitute
+    show_command=True
   )
   __mock_logger.assert_called_once_with(
-    logger.blue(__COMMAND),
-    substitute=substitute
+    logger.blue(__COMMAND)
   )
 
-@pytest.mark.parametrize("substitute", [pytest.param(False), pytest.param(True)])
 def test_calls_logger_to_show_output_when_running_shell_command(
-  substitute,
   __mock_logger,
   __mock_run_command
 ):
   shell_handler.run_shell_command(
     __COMMAND,
-    show_output=True,
-    substitute=substitute
+    show_output=True
   )
   __mock_logger.assert_called_once_with(
-    __mock_run_command()[1],
-    substitute=substitute
+    __mock_run_command()[1]
   )
 
-@pytest.mark.parametrize("substitute,ret_code", [pytest.param(False, 1), pytest.param(True, 2)])
+@pytest.mark.parametrize("ret_code", [pytest.param(1), pytest.param(2)])
 def test_calls_logger_to_show_error_when_running_shell_command(
-  substitute,
   ret_code,
   __mock_logger_error,
   __mock_run_command
@@ -54,8 +45,7 @@ def test_calls_logger_to_show_error_when_running_shell_command(
   __mock_run_command.return_value = (ret_code, 'test_error_message')
   shell_handler.run_shell_command(
     __COMMAND,
-    show_error=True,
-    substitute=substitute
+    show_error=True
   )
   __mock_logger_error.assert_called_once_with(
     __mock_run_command()[1],
