@@ -129,14 +129,19 @@ def test_calls_glob_when_getting_compilation_files(
   files = ["file1", "file2", "file3"]
   __mock_os_walk.return_value = [("root", [], files)]
   ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
-  __mock_fnmatch_filter.assert_has_calls([
+  expected_calls = [
     call(files, '*.so'),
     call(files, '*.os'),
     call(files, '*.o')
-  ])
+  ]
+  __mock_fnmatch_filter.assert_has_calls(expected_calls)
   assert (
-    __mock_fnmatch_filter.call_count == 3
-  ), get_assertion_message("call count", 3, __mock_fnmatch_filter.call_count)
+    __mock_fnmatch_filter.call_count == len(expected_calls)
+  ), get_assertion_message(
+    "call count",
+    len(expected_calls),
+    __mock_fnmatch_filter.call_count
+  )
 
 def test_returns_expected_compilation_files(
   __mock_fnmatch_filter,

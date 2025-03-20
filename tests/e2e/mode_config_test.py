@@ -76,9 +76,10 @@ def __change_config_cmake_path():
   content = get_file_content(paths.CONFIG_FILE)
   new_content_lines = []
   for line in content.splitlines(keepends=True):
+    new_line = line
     if line.startswith(variables.PREFIX_PATH):
-      line = f"{variables.PREFIX_PATH}=\n"
-    new_content_lines.append(line)
+      new_line = f"{variables.PREFIX_PATH}=\n"
+    new_content_lines.append(new_line)
   content = "".join(new_content_lines)
   with open(paths.CONFIG_FILE, 'w') as config_file:
     config_file.write(content)

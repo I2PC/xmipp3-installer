@@ -55,9 +55,10 @@ def __normalize_paths(raw_output: str) -> str: # Absolute paths are different pe
   raw_output_lines = raw_output.splitlines(keepends=True)
   new_lines = []
   for line in raw_output_lines:
+    new_line = line
     if line.startswith(mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START):
-      line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.VALID_PATH}\n"
-    new_lines.append(line)
+      new_line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.VALID_PATH}\n"
+    new_lines.append(new_line)
   return "".join(new_lines)
 
 @pytest.fixture(params=[True])

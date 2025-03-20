@@ -113,9 +113,10 @@ def test_returns_file_stored_last_modification_date_when_there_is_no_value_store
 def __change_config_cmake_path(content_lines: List[str]):
   new_lines = []
   for line in content_lines:
+    new_line = line
     if line.startswith(variables.PREFIX_PATH):
-      line = f"{variables.PREFIX_PATH}="
-    new_lines.append(line)
+      new_line = f"{variables.PREFIX_PATH}="
+    new_lines.append(new_line)
   return new_lines
 
 @pytest.fixture
