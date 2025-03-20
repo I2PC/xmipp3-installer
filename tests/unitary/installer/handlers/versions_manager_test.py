@@ -153,9 +153,7 @@ def test_validates_version_numbers_successfully(__mock_init):
   ]
 )
 def test_returns_expected_semver_validation(__mock_init, version_number, valid):
-  assert VersionsManager(
-    __FILE_PATH
-  )._VersionsManager__is_valid_semver(version_number.split('.')) == valid
+  assert VersionsManager._VersionsManager__is_valid_semver(version_number.split('.')) == valid
 
 def test_calls_datetime_strptime_when_validatingrelease_date(
   __mock_init,
