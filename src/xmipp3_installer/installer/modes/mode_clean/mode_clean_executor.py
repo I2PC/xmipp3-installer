@@ -30,7 +30,7 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
     """
     if not self.__get_confirmation():
       return errors.INTERRUPTED_ERROR, ""
-    file_operations.delete_paths(self._get_paths_to_delete())
+    file_operations.delete_paths(self.__class__._get_paths_to_delete())
     logger(predefined_messages.get_done_message())
     return 0, ""
   
@@ -50,7 +50,7 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
     """### Confirmation keyword propery to be defined by inheriting classes."""
 
   @abstractmethod
-  def _get_paths_to_delete(self) -> List[str]:
+  def _get_paths_to_delete(cls) -> List[str]:
     """Get paths to delete method to be implemented by the inheriting classes."""
   
   @abstractmethod
