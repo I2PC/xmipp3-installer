@@ -42,8 +42,13 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
     - (bool): True if the user confirms, False otherwise.
     """
     logger(self._get_confirmation_message())
-    return user_interactions.get_user_confirmation(self._get_confirmation_keyword())
+    return user_interactions.get_user_confirmation(self.confirmation_keyword)
   
+  @property
+  @abstractmethod
+  def confirmation_keyword(self):
+    """### Confirmation keyword propery to be defined by inheriting classes."""
+
   @abstractmethod
   def _get_paths_to_delete(self) -> List[str]:
     """Get paths to delete method to be implemented by the inheriting classes."""
@@ -51,7 +56,3 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
   @abstractmethod
   def _get_confirmation_message(self) -> str:
     """Get confirmation message method to be implemented by the inheriting classes."""
-  
-  @abstractmethod
-  def _get_confirmation_keyword(self) -> str:
-    """Get confirmation keyword method to be implemented by the inheriting classes."""

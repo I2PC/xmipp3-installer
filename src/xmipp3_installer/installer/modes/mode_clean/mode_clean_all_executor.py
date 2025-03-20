@@ -6,39 +6,32 @@ from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
 
 class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
-	def _get_paths_to_delete(self) -> List[str]:
-		"""
-		### Returns a list of all the paths to be deleted.
+  confirmation_keyword = "YeS"
 
-		#### Returns:
-		- (list(str)): List containing all the paths to delete.
-		"""
-		return [
-			*[paths.get_source_path(source) for source in constants.XMIPP_SOURCES],
-			paths.INSTALL_PATH,
-			paths.BUILD_PATH,
-			paths.CONFIG_FILE
-		]
-	
-	def _get_confirmation_keyword(self) -> str:
-		"""
-		### Returns the keyword needed to be introduced by the user to confirm an operation.
+  def _get_paths_to_delete(self) -> List[str]:
+    """
+    ### Returns a list of all the paths to be deleted.
 
-		#### Returns:
-		- (str): Confirmation keyword.
-		"""
-		return "YeS"
+    #### Returns:
+    - (list(str)): List containing all the paths to delete.
+    """
+    return [
+      *[paths.get_source_path(source) for source in constants.XMIPP_SOURCES],
+      paths.INSTALL_PATH,
+      paths.BUILD_PATH,
+      paths.CONFIG_FILE
+    ]
 
-	def _get_confirmation_message(self) -> str:
-		"""
-		### Returns message to be printed when asking for user confirmation.
+  def _get_confirmation_message(self) -> str:
+    """
+    ### Returns message to be printed when asking for user confirmation.
 
-		#### Returns:
-		- (str): Confirmation message.
-		"""
-		return '\n'.join([
-			logger.yellow("WARNING: This will DELETE ALL content from src and build, and also the xmipp.conf file."),
-			logger.yellow("\tNotice that if you have unpushed changes, they will be deleted."),
-			logger.yellow(f"\nIf you are sure you want to do this, type '{self._get_confirmation_keyword()}' (case sensitive):")
-		])
-	
+    #### Returns:
+    - (str): Confirmation message.
+    """
+    return '\n'.join([
+      logger.yellow("WARNING: This will DELETE ALL content from src and build, and also the xmipp.conf file."),
+      logger.yellow("\tNotice that if you have unpushed changes, they will be deleted."),
+      logger.yellow(f"\nIf you are sure you want to do this, type '{self.confirmation_keyword}' (case sensitive):")
+    ])
+  
