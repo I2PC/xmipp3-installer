@@ -70,10 +70,11 @@ def test_returns_expected_full_installation_output(
 def __normalize_build_path(project_path: str, raw_output: str) -> str: # Build output is obtained from a static variable with a fixed path
   new_lines = []
   for line in raw_output.splitlines(keepends=True):
+    new_line = line
     if line.startswith(mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START):
       new_path = os.path.join(project_path, "build")
-      line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{new_path}\n"
-    new_lines.append(line)
+      new_line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{new_path}\n"
+    new_lines.append(new_line)
   return "".join(new_lines)
 
 @pytest.fixture(params=[(True, True, True)])
