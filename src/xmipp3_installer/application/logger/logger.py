@@ -171,10 +171,10 @@ class Logger(Singleton):
       print("")
     
     for line in iter(stream.readline, b''):
-      line = line.decode().replace("\n", "")
+      calling_line = line.decode().replace("\n", "")
       if err:
-        line = self.red(line)
-      self.__call__(line, show_in_terminal=show_in_terminal, substitute=substitute)
+        calling_line = self.red(line)
+      self.__call__(calling_line, show_in_terminal=show_in_terminal, substitute=substitute)
 
   def __remove_non_printable(self, text: str) -> str:
     """
