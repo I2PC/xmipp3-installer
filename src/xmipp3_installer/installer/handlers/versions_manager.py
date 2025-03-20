@@ -89,7 +89,8 @@ class VersionsManager(singleton.Singleton):
     #### Returns:
     - (bool): True if version follows semver format, False otherwise.
     """
-    return len(version_parts) == 3 and all(part.isdigit() for part in version_parts)
+    SEMVER_N_NUMBERS = 3 # 3 numbers separated by dots: X.Y.Z
+    return len(version_parts) == SEMVER_N_NUMBERS and all(part.isdigit() for part in version_parts)
 
   def __validate_release_date(self):
     """
