@@ -13,11 +13,15 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Install project & dependencies
+      - name: Install project
         working-directory: ${{ github.workspace }}
+        run: pip install .
+      
+      - name: Install dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y libfftw3-dev libopenmpi-dev libhdf5-dev libtiff5-dev libsqlite3-dev default-jdk git cmake openmpi-bin gcc g++
           pip install numpy
-          pip install .
       
       - name: Clone xmipp
         working-directory: ${{ github.workspace }}/../
