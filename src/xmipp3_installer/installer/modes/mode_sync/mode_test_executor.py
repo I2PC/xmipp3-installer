@@ -13,10 +13,11 @@ from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 from xmipp3_installer.repository.config_vars import variables
+from xmipp3_installer.installer.constants import paths
 
 _DATASET_NAME = "xmipp_programs"
 _PYTHON_TEST_SCRIPT_NAME = "test.py"
-_PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.BINARIES_PATH, "tests")
+_PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.SOURCES_PATH, "xmipp", "tests")
 _DEFAULT_PYTHON_HOME = "python3"
 _DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
 
@@ -56,6 +57,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     #### Returns:
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
+    print(f'_DATASET_PATH: {_DATASET_PATH}')
     if os.path.isdir(_DATASET_PATH):
       task_message = "Updating"
       task = "update"
@@ -87,7 +89,8 @@ class ModeTestExecutor(ModeSyncExecutor):
     no_cuda_str = "--noCuda" if not self.cuda else ""
     show_str = "--show" if self.show else ""
     logger(f" Tests to run: {', '.join(self.test_names)}")
-    
+    print('###########\nCommand to test: ')
+    print( f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}")
     return shell_handler.run_shell_command(
       f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}",
       cwd=_PYTHON_TEST_SCRIPT_PATH,
