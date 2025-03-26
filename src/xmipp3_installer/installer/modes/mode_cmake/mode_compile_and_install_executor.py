@@ -47,12 +47,14 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
     """
     logger(predefined_messages.get_section_message("Compiling with CMake"))
     cmd = f"{cmake} --build {paths.BUILD_PATH} --config {self.build_type} -j {self.jobs}"
-    if shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute):
-      return errors.CMAKE_COMPILE_ERROR, ""
+    ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
+    if ret_code:
+      return self._get_error_code(ret_code, errors.CMAKE_COMPILE_ERROR), ""
     
     installation_section_message = predefined_messages.get_section_message("Installing with CMake")
     logger(f"\n{installation_section_message}")
     cmd = f"{cmake} --install {paths.BUILD_PATH} --config {self.build_type}"
-    if shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute):
-      return errors.CMAKE_INSTALL_ERROR, ""
+    ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
+    if ret_code:
+      return self._get_error_code(ret_code, errors.CMAKE_INSTALL_ERROR), ""
     return 0, ""
