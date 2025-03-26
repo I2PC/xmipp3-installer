@@ -57,7 +57,6 @@ class ModeTestExecutor(ModeSyncExecutor):
     #### Returns:
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
-    print(f'_DATASET_PATH: {_DATASET_PATH}')
     if os.path.isdir(_DATASET_PATH):
       task_message = "Updating"
       task = "update"
@@ -90,7 +89,6 @@ class ModeTestExecutor(ModeSyncExecutor):
     show_str = "--show" if self.show else ""
     logger(f" Tests to run: {', '.join(self.test_names)}")
     print('###########\nCommand to test: ')
-    print( f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}")
     return shell_handler.run_shell_command(
       f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}",
       cwd=_PYTHON_TEST_SCRIPT_PATH,
