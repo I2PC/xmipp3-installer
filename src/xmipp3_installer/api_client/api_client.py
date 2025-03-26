@@ -22,7 +22,7 @@ def send_installation_attempt(installation_info: Dict):
   parsed_url = urlparse(urls.API_URL)
   conn = None
   try:
-    conn = __get_https_connection(parsed_url, 2)
+    conn = __get_https_connection(parsed_url, 6)
     conn.request("POST", parsed_url.path, body=params, headers=headers)
     conn.getresponse()
   except TimeoutError:
