@@ -14,6 +14,8 @@ PARAM_BRANCH = 'branch'
 PARAM_MODELS_DIRECTORY = 'directory'
 PARAM_TEST_NAMES = 'testNames'
 PARAM_SHOW_TESTS = 'show'
+PARAM_RUN_PROGRAMS_TESTS = 'allPrograms'
+PARAM_RUN_FUNCTIONS_TESTS = 'allFuncs'
 PARAM_GIT_COMMAND = 'command'
 PARAM_LOGIN = 'login'
 PARAM_MODEL_PATH = 'modelPath'
@@ -48,6 +50,14 @@ PARAMS = {
     LONG_VERSION: "--show",
     DESCRIPTION: "Shows the tests available and how to invoke those."
   },
+  PARAM_RUN_PROGRAMS_TESTS: {
+		LONG_VERSION: "--allPrograms",
+		DESCRIPTION: "Run the test for all programs."
+	},
+  PARAM_RUN_FUNCTIONS_TESTS: {
+		LONG_VERSION: "--allFuncs",
+		DESCRIPTION: "Run the test for all functions."
+	},
   PARAM_GIT_COMMAND: {
     SHORT_VERSION: PARAM_GIT_COMMAND,
     DESCRIPTION: "Git command to run on all source repositories."

@@ -90,6 +90,9 @@ Usage: xmipp [options]
     # Test #
 
     test [testNames] [--show]                      Runs a given test.
+    test [--allPrograms]                           Runs all programs test.
+    test [--allFuncs]                              Runs all function test.
+
     ---------------------------------------------
     # Developers #
 
