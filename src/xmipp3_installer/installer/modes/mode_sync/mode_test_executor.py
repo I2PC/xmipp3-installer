@@ -13,7 +13,6 @@ from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 from xmipp3_installer.repository.config_vars import variables
-from xmipp3_installer.installer.constants import paths
 
 _DATASET_NAME = "xmipp_programs"
 _PYTHON_TEST_SCRIPT_NAME = "test.py"
