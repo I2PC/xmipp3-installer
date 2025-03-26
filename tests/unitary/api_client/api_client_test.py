@@ -24,7 +24,7 @@ def test_calls_httpsconnection_when_sending_installation_attempt(
   __mock_httpsconnection.assert_called_once_with(
     __PARSED_URL.hostname,
     __PARSED_URL.port,
-    timeout=2
+    timeout=6
   )
 
 def test_calls_connection_request_when_sending_installation_attempt(
