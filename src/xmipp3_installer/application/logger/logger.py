@@ -1,6 +1,5 @@
 """### Provides a global logger."""
 
-import math
 import shutil
 from io import BufferedReader
 
@@ -29,7 +28,7 @@ class Logger(Singleton):
     - ouputToConsoloe (bool): Print messages to console.
     """
     self.__log_file = None
-    self.__len_last_printed_elem = 0
+    self.__last_printed_elem = None
     self.__allow_substitution = True
   
   def green(self, text: str) -> str:
@@ -132,8 +131,9 @@ class Logger(Singleton):
     if show_in_terminal:
       text = self.__substitute_lines(text) if self.__allow_substitution and substitute else text
       print(text, flush=True)
-      # Store length of printed string for next substitution calculation
-      self.__len_last_printed_elem = len(self.__remove_non_printable(text))
+    
+    # Store printed string for next substitution calculation
+    self.__last_printed_elem = self.__remove_non_printable(text) if self.__allow_substitution and substitute else None
    
   def log_error(self, error_msg: str, ret_code: int=1, add_portal_link: bool=True):
     """
@@ -163,9 +163,6 @@ class Logger(Singleton):
     - substitute (bool): Optional. If True, output will replace previous line. Only used when show is True.
     - err (bool): Optional. If True, the stream contains an error. Otherwise, it is regular output.
     """
-    if show_in_terminal and self.__allow_substitution and substitute:
-      print("")
-    
     for line in iter(stream.readline, b''):
       calling_line = line.decode().replace("\n", "")
       if err:
@@ -193,7 +190,16 @@ class Logger(Singleton):
     #### Returns:
     - (int): Number of lines of the last print. 
     """
-    return math.ceil(self.__len_last_printed_elem / shutil.get_terminal_size().columns)
+    if self.__last_printed_elem is None:
+      return 0
+    
+    terminal_width = shutil.get_terminal_size().columns
+    # At least one line break exists, as prints end with line break
+    n_line_breaks = self.__last_printed_elem.count("\n") + 1
+    text_lines = self.__last_printed_elem.split("\n")
+    for line in text_lines:
+      n_line_breaks += int(len(line) / (terminal_width + 1)) # Equal does not count, it needs to exceed
+    return n_line_breaks
   
   def __format_text(self, text: str, format_code: str) -> str:
     """

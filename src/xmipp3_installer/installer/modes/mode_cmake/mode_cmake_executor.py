@@ -59,6 +59,10 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
     """
     return self.cmake or shutil.which("cmake")
   
+  @staticmethod
+  def _get_error_code(ret_code, mode_error_code):
+    return ret_code if ret_code == errors.INTERRUPTED_ERROR else mode_error_code
+  
   @abstractmethod
   def _run_cmake_mode(self, cmake: str) -> Tuple[int, str]:
     """Run CMake mode method to be implemented by inheriting classes."""

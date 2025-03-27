@@ -79,14 +79,19 @@ def test_returns_expected_ret_code_and_message_when_running_command(
     return_values == (ret_code, expected_message)
   ), get_assertion_message("return values", (ret_code, expected_message), return_values)
 
+@pytest.mark.parametrize(
+  "substitute",
+  [pytest.param(False), pytest.param(True)]
+)
 def test_calls_logger_when_running_shell_command_in_streaming(
+  substitute,
   __mock_popen,
   __mock_thread,
   __mock_logger,
   __mock_log_in_streaming
 ):
-  shell_handler.run_shell_command_in_streaming(__COMMAND)
-  __mock_logger.assert_called_once_with(__COMMAND)
+  shell_handler.run_shell_command_in_streaming(__COMMAND, substitute=substitute)
+  __mock_logger.assert_called_once_with(__COMMAND, substitute=substitute)
 
 def test_calls_popen_when_running_shell_command_in_streaming(
   __mock_popen,

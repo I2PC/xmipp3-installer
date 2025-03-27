@@ -204,32 +204,32 @@ def test_returns_expected_text_when_removing_non_printable_characters():
   ), get_assertion_message("text without printable characters", printable_text, modified_text)
 
 @pytest.mark.parametrize(
-  "__mock_get_terminal_column_size,len_last_printed_element,expected_n_last_lines",
+  "__mock_get_terminal_column_size,last_printed_element,expected_n_last_lines",
   [
-    pytest.param(2, 1, 1),
-    pytest.param(2, 3, 2),
-    pytest.param(2, 2, 1)
+    pytest.param(10, None, 0),
+    pytest.param(0, None, 0),
+    pytest.param(2, "a", 1),
+    pytest.param(2, "aaa", 2),
+    pytest.param(2, "aa", 1),
+    pytest.param(5, "a\n", 2),
+    pytest.param(3, "a\naaaa", 3),
+    pytest.param(3, "aaaa\naaaa", 4),
+    pytest.param(3, "", 1),
+    pytest.param(3, "\n", 2)
   ],
   indirect=["__mock_get_terminal_column_size"]
 )
 def test_returns_expected_n_last_lines(
   __mock_get_terminal_column_size,
-  len_last_printed_element,
+  last_printed_element,
   expected_n_last_lines
 ):
   logger = Logger()
-  with patch.object(logger, "_Logger__len_last_printed_elem", len_last_printed_element):
+  with patch.object(logger, "_Logger__last_printed_elem", last_printed_element):
     n_last_lines = logger._Logger__get_n_last_lines()
   assert (
     n_last_lines == expected_n_last_lines
   ), get_assertion_message("number of lines from last print", expected_n_last_lines, n_last_lines)
-
-def test_raises_division_by_zero_exception_if_terminal_size_is_zero(
-  __mock_get_terminal_column_size
-):
-  logger = Logger()
-  with pytest.raises(ZeroDivisionError):
-    logger._Logger__get_n_last_lines()
 
 @pytest.mark.parametrize(
   "__mock_get_n_last_lines",
@@ -296,26 +296,29 @@ def test_calls_print_when_calling_logger_without_file_and_without_substitution(
   )
 
 @pytest.mark.parametrize(
-  "show_in_terminal,substitute",
+  "allow_substitution,substitute, stores",
   [
-    pytest.param(True, False),
-    pytest.param(True, True)
+    pytest.param(False, False, False),
+    pytest.param(False, True, False),
+    pytest.param(True, False, False),
+    pytest.param(True, True, True)
   ],
 )
-def test_sets_expected_len_for_last_printed_element_when_calling_logger(
-  show_in_terminal,
+def test_sets_expected_last_printed_element_when_calling_logger(
+  allow_substitution,
   substitute,
+  stores,
   __mock_remove_non_printable,
   __mock_print
 ):
   logger = Logger()
-  logger.set_allow_substitution(False)
-  logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
-  last_printed_elem_len = logger._Logger__len_last_printed_elem
-  expected_len = len(__mock_remove_non_printable(__SAMPLE_TEXT))
+  logger.set_allow_substitution(allow_substitution)
+  logger(__SAMPLE_TEXT, show_in_terminal=False, substitute=substitute)
+  last_printed_elem = logger._Logger__last_printed_elem
+  expected_len = __mock_remove_non_printable(__SAMPLE_TEXT) if stores else None
   assert (
-    last_printed_elem_len == expected_len
-  ), get_assertion_message("stored length for last printed element", expected_len, last_printed_elem_len)
+    last_printed_elem == expected_len
+  ), get_assertion_message("stored last printed element", expected_len, last_printed_elem)
 
 @pytest.mark.parametrize(
   "show_in_terminal,substitute",
@@ -346,16 +349,6 @@ def test_calls_print_when_calling_logger_with_file(
     file=__mock_open(),
     flush=True
   )
-
-def test_calls_print_when_substitution_enabled_when_logging_in_streaming(
-  __mock_print,
-  __mock_stream
-):
-  __mock_stream.readline.side_effect = []
-  logger = Logger()
-  logger.set_allow_substitution(True)
-  logger.log_in_streaming(__mock_stream, show_in_terminal=True, substitute=True)
-  __mock_print.assert_called_once_with("")
 
 def test_calls_stream_readline_when_logging_in_streaming(__mock_stream):
   __mock_stream.readline.side_effect = []
