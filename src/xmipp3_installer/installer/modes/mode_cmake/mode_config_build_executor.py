@@ -35,6 +35,7 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
     if ret_code:
       return self._get_error_code(ret_code, errors.CMAKE_CONFIGURE_ERROR), ""
+    logger(predefined_messages.get_done_message(), substitute=self.substitute)
     return 0, ""
   
   def __get_cmake_vars(self) -> str:
