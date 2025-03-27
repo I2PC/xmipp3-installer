@@ -13,7 +13,8 @@ BUILD_ERROR_TARGET_SUBPATH = os.path.join("build", "CMakeFiles", "build_error_ta
 
 __COMMON_SECTION = f"""------------------- Compiling with CMake -------------------
 {CMAKE_EXECUTABLE} --build build --config Release -j 1"""
-__COMPILATION_SUCCESS = f"""
+__COMPILATION_SUCCESS = f"""{predefined_messages.get_done_message()}
+
 {__INSTALLING_MESSAGE_LINE}
 {CMAKE_EXECUTABLE} --install build --config Release"""
 
@@ -31,6 +32,7 @@ INSTALL_FAILURE = f"""{__COMMON_SECTION}
 SUCCESS = f"""{__COMMON_SECTION}
 [1/1] This command is expected to succeed
 {__COMPILATION_SUCCESS}
+{predefined_messages.get_done_message()}
 {predefined_messages.get_success_message("")}
 """
 

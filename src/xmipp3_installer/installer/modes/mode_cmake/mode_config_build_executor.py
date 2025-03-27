@@ -32,8 +32,10 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     """
     logger(predefined_messages.get_section_message("Configuring with CMake"))
     cmd = f"{cmake} -S . -B {paths.BUILD_PATH} -DCMAKE_BUILD_TYPE={self.build_type} {self.__get_cmake_vars()}"
-    if shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute):
-      return errors.CMAKE_CONFIGURE_ERROR, ""
+    ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
+    if ret_code:
+      return self._get_error_code(ret_code, errors.CMAKE_CONFIGURE_ERROR), ""
+    logger(predefined_messages.get_done_message(), substitute=self.substitute)
     return 0, ""
   
   def __get_cmake_vars(self) -> str:

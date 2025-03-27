@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 import pytest
 
@@ -131,13 +131,42 @@ def test_calls_get_section_message_when_running_cmake_mode(
   ModeConfigBuildExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
   __mock_get_section_message.assert_called_once_with("Configuring with CMake")
 
-def test_calls_logger_when_running_cmake_mode(
+def test_calls_logger_once_if_command_fails_when_running_cmake_mode(
   __mock_logger,
   __mock_get_section_message,
-  __mock_get_cmake_vars
+  __mock_get_cmake_vars,
+  __mock_run_shell_command_in_streaming
 ):
+  __mock_run_shell_command_in_streaming.return_value = 1
   ModeConfigBuildExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
   __mock_logger.assert_called_once_with(__mock_get_section_message())
+
+@pytest.mark.parametrize(
+  "substitute",
+  [pytest.param(False), pytest.param(True)]
+)
+def test_calls_logger_twice_if_command_succeeds_when_running_cmake_mode(
+  substitute,
+  __mock_logger,
+  __mock_get_section_message,
+  __mock_get_done_message,
+  __mock_get_cmake_vars
+):
+  executor = ModeConfigBuildExecutor(__CONTEXT.copy())
+  executor.substitute = substitute
+  executor._run_cmake_mode(__CMAKE)
+  expected_calls = [
+    call(__mock_get_section_message()),
+    call(__mock_get_done_message(), substitute=substitute)
+  ]
+  __mock_logger.assert_has_calls(expected_calls)
+  assert (
+    __mock_logger.call_count == len(expected_calls)
+  ), get_assertion_message(
+    "call count",
+    len(expected_calls),
+    __mock_logger.call_count
+  )
 
 @pytest.mark.parametrize(
   "keep_output", [pytest.param(False), pytest.param(True)]
@@ -159,15 +188,46 @@ def test_calls_run_shell_command_in_streaming_when_running_cmake_mode(
   )
 
 @pytest.mark.parametrize(
-  "__mock_run_shell_command_in_streaming,expected_output",
-  [
-    pytest.param(1, (errors.CMAKE_CONFIGURE_ERROR, "")),
-    pytest.param(0, (0, ""))
-  ],
+  "__mock_run_shell_command_in_streaming",
+  [pytest.param(1), pytest.param(2)],
   indirect=["__mock_run_shell_command_in_streaming"]
+)
+def test_calls_get_error_code_if_command_fails_when_running_cmake_mode(
+  __mock_run_shell_command_in_streaming,
+  __mock_get_error_code
+):
+  ModeConfigBuildExecutor(
+    __CONTEXT.copy()
+  )._run_cmake_mode(__CMAKE)
+  __mock_get_error_code.assert_called_once_with(
+    __mock_run_shell_command_in_streaming(),
+    errors.CMAKE_CONFIGURE_ERROR
+  )
+
+def test_does_not_call_get_error_code_if_command_succeeds_when_running_cmake_mode(
+  __mock_get_error_code
+):
+  ModeConfigBuildExecutor(
+    __CONTEXT.copy()
+  )._run_cmake_mode(__CMAKE)
+  __mock_get_error_code.assert_not_called()
+
+@pytest.mark.parametrize(
+  "__mock_run_shell_command_in_streaming,__mock_get_error_code,expected_output",
+  [
+    pytest.param(1, 5, (5, "")),
+    pytest.param(1, 1, (1, "")),
+    pytest.param(0, 5, (0, "")),
+    pytest.param(0, 1, (0, ""))
+  ],
+  indirect=[
+    "__mock_run_shell_command_in_streaming",
+    "__mock_get_error_code"
+  ]
 )
 def test_reurns_expected_result_when_running_cmake_mode(
   __mock_run_shell_command_in_streaming,
+  __mock_get_error_code,
   expected_output,
   __mock_get_cmake_vars
 ):
@@ -235,6 +295,14 @@ def __mock_get_section_message():
     mock_method.return_value = __SECTION_MESSAGE
     yield mock_method
 
+@pytest.fixture
+def __mock_get_done_message():
+  with patch(
+    "xmipp3_installer.application.logger.predefined_messages.get_done_message"
+  ) as mock_method:
+    mock_method.return_value = "done message"
+    yield mock_method
+
 @pytest.fixture(params=[0], autouse=True)
 def __mock_run_shell_command_in_streaming(request):
   with patch(
@@ -271,3 +339,11 @@ def __mock_cmake():
     variables, "CMAKE", __CMAKE
   ) as mock_object:
     yield mock_object
+
+@pytest.fixture(params=[1])
+def __mock_get_error_code(request):
+  with patch(
+    "xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor.ModeCMakeExecutor._get_error_code"
+  ) as mock_method:
+    mock_method.return_value = request.param
+    yield mock_method
