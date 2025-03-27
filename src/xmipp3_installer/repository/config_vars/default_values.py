@@ -30,7 +30,7 @@ CONFIG_DEFAULT_VALUES = {
   variables.CUDA_CXX: None,
   variables.MATLAB: ON,
   variables.LINK_SCIPION: ON,
-  variables.BUILD_TESTING: ON,
-   variables.SKIP_RPATH: ON,
+  variables.BUILD_TESTING: OFF,
+  variables.SKIP_RPATH: ON,
   variables.BUILD_TYPE: "Release"
 }

@@ -59,7 +59,7 @@ class ConfigurationFileHandler(Singleton):
     - overwrite (bool): Optional. If True, default values are written, overwriting the existing file.
     """
     if overwrite:
-      self.values = default_values.CONFIG_DEFAULT_VALUES
+      self.values = config_values_adapter.get_context_values_from_file_values(default_values.CONFIG_DEFAULT_VALUES)
     values = config_values_adapter.get_file_values_from_context_values(self.values.copy())
     self.last_modified = datetime.today().strftime('%d-%m-%Y %H:%M.%S')
     
