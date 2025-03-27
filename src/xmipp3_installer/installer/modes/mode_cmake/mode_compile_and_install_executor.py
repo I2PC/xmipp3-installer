@@ -50,6 +50,7 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
     ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
     if ret_code:
       return self._get_error_code(ret_code, errors.CMAKE_COMPILE_ERROR), ""
+    logger(predefined_messages.get_done_message(), substitute=self.substitute)
     
     installation_section_message = predefined_messages.get_section_message("Installing with CMake")
     logger(f"\n{installation_section_message}")
@@ -57,4 +58,5 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
     ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
     if ret_code:
       return self._get_error_code(ret_code, errors.CMAKE_INSTALL_ERROR), ""
+    logger(predefined_messages.get_done_message(), substitute=self.substitute)
     return 0, ""
