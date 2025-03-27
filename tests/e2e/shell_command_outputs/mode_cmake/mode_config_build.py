@@ -1,5 +1,7 @@
 import re
 
+from xmipp3_installer.application.logger import predefined_messages
+
 from . import (
   CMAKE_EXECUTABLE, VALID_PROJECT,
   get_project_abs_subpath, get_predefined_error
@@ -16,6 +18,7 @@ SUCCESS = f"""{__COMMON_SECTION}
 -- Configuring done ({EXECUTION_TIME}s)
 -- Generating done ({EXECUTION_TIME}s)
 {BUILD_FILES_WRITTEN_MESSAGE_START}{VALID_PATH}
+{predefined_messages.get_done_message()}
 """
 
 FAILURE = f"""{__COMMON_SECTION}
