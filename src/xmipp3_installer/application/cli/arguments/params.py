@@ -54,7 +54,7 @@ PARAMS = {
   },
   PARAM_LOGIN: {
     SHORT_VERSION: "login",
-    DESCRIPTION: "Login (usr@server) for remote host to upload the model with. Must have write permisions to such machine."
+    DESCRIPTION: "Login (usr@server) for remote host to upload the model with. Must have write permissions to such machine."
   },
   PARAM_MODEL_PATH: {
     SHORT_VERSION: PARAM_MODEL_PATH,
