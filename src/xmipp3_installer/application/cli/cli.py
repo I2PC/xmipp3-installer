@@ -149,7 +149,7 @@ def __add_params_mode_get_models(subparser: argparse.ArgumentParser):
   """
   subparser.add_argument(
     *format.get_param_names(params.PARAM_MODELS_DIRECTORY),
-    default=__get_project_root_subpath(arguments.DEFAULT_MODELS_DIR)
+    default=os.path.abspath(arguments.DEFAULT_MODELS_DIR)
   )
 
 def __add_params_mode_get_sources(subparser: argparse.ArgumentParser):
@@ -201,27 +201,6 @@ def __get_default_job_number() -> int:
   - (int): Default number of jobs.
   """
   return multiprocessing.cpu_count() + int(multiprocessing.cpu_count() * 0.2)
-
-def __get_project_root_subpath(subpath: str) -> str:
-  """
-  ### Returns a subpath of Xmipp's root directory.
-
-  #### Params:
-  - subpath (str): Subpath inside the root directory.
-
-  #### Returns:
-  - (str): Absolute path to given subpath.
-  """
-  return os.path.join(__get_project_root_dir(), subpath)
-
-def __get_project_root_dir() -> str:
-  """
-  ### Returns the root directory of Xmipp.
-
-  #### Returns:
-  - (str): Absolute path to Xmipp's root directory.
-  """
-  return os.path.dirname(os.path.abspath(__file__))
 
 def __add_default_usage_mode():
   """### Sets the usage mode as the default one when a mode has not been specifically provided."""
