@@ -24,7 +24,7 @@ Usage: xmipp [options]
     ---------------------------------------------
     # Downloads #
 
-    getModels [-d]                                 Download the DeepLearning Models at dir/models (build by default).
+    getModels [-d]                                 Downloads the Deep Learning Models required by the DLTK tools at dir/models (dist by default).
     getSources [-b] [--keep-output]                Clone all Xmipp's sources.
     ---------------------------------------------
     # Clean #
@@ -71,9 +71,11 @@ Usage: xmipp [options]
     ---------------------------------------------
     # Downloads #
 
-    getModels [-d]                                 Download the DeepLearning
-                                                   Models at dir/models
-                                                   (build by default).
+    getModels [-d]                                 Downloads the Deep
+                                                   Learning Models required
+                                                   by the DLTK tools at
+                                                   dir/models (dist by
+                                                   default).
     getSources [-b] [--keep-output]                Clone all Xmipp\'s
                                                    sources.
     ---------------------------------------------
