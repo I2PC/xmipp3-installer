@@ -196,7 +196,7 @@ def test_returns_expected_mode_config_args(
 @pytest.mark.parametrize(
   "__mock_sys_argv,expected_args",
   [
-    pytest.param(["getModels"], {}),
+    pytest.param(["getModels"], {"directory": os.path.abspath(arguments.DEFAULT_MODELS_DIR)}),
     pytest.param(["getModels", "-d", __DUMMY_PATH], {"directory": __DUMMY_PATH}),
     pytest.param(["getModels", "--directory", __DUMMY_PATH], {"directory": __DUMMY_PATH}),
     pytest.param(["getModels", f"-d={__DUMMY_PATH}"], {"directory": __DUMMY_PATH})
@@ -208,7 +208,6 @@ def test_returns_expected_mode_get_models_args(
   __mock_sys_argv,
   __mock_validate_args,
   __mock_stdout_stderr,
-  __mock_get_project_root_subpath,
   __mock_run_installer,
   __mock_sys_exit
 ):
@@ -413,14 +412,6 @@ def __mock_stdout_stderr():
   with patch('sys.stdout', new_callable=lambda: open(os.devnull, 'w')), \
   patch('sys.stderr', new_callable=lambda: open(os.devnull, 'w')):
     yield
-
-@pytest.fixture
-def __mock_get_project_root_subpath():
-  with patch(
-    "xmipp3_installer.application.cli.cli.__get_project_root_subpath"
-  ) as mock_method:
-    mock_method.return_value = os.path.join(__DUMMY_PATH, "default")
-    yield mock_method
 
 @pytest.fixture
 def __mock_logger_set_allow_substitution():
