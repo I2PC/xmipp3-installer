@@ -1,6 +1,6 @@
 """### Containis all param constants needed for the argument parsing part of Xmipp's installation."""
 
-from xmipp3_installer.application.cli.arguments import DEFAULT_BUILD_DIR
+from xmipp3_installer.application.cli import arguments
 
 # Definition of all params found in the
 SHORT_VERSION = 'short'
@@ -38,7 +38,7 @@ PARAMS = {
   PARAM_MODELS_DIRECTORY: {
     SHORT_VERSION: "-d",
     LONG_VERSION: "--directory",
-    DESCRIPTION: f"Directory where models will be saved. Default is \"{DEFAULT_BUILD_DIR}\"."
+    DESCRIPTION: f"Directory where models will be saved. Default is \"{arguments.DEFAULT_MODELS_DIR}\"."
   },
   PARAM_TEST_NAMES: {
     SHORT_VERSION: PARAM_TEST_NAMES,
