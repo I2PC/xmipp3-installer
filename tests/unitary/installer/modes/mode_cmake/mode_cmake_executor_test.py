@@ -135,6 +135,28 @@ def test_returns_expected_cmake_path(
     cmake_path == expected_cmake_path
   ), get_assertion_message("CMake path", expected_cmake_path, cmake_path)
 
+@pytest.mark.parametrize(
+  "ret_code,mode_error_code,expected_error_code",
+  [
+    pytest.param(errors.INTERRUPTED_ERROR, errors.INTERRUPTED_ERROR, errors.INTERRUPTED_ERROR),
+    pytest.param(errors.INTERRUPTED_ERROR, errors.CMAKE_COMPILE_ERROR, errors.INTERRUPTED_ERROR),
+    pytest.param(errors.CMAKE_COMPILE_ERROR, errors.CMAKE_COMPILE_ERROR, errors.CMAKE_COMPILE_ERROR),
+    pytest.param(errors.CMAKE_COMPILE_ERROR, errors.CMAKE_CONFIGURE_ERROR, errors.CMAKE_CONFIGURE_ERROR)
+  ]
+)
+def test_returns_expected_error_code(
+  ret_code,
+  mode_error_code,
+  expected_error_code,
+  __dummy_test_mode_cmake_executor
+):
+  error_code = __dummy_test_mode_cmake_executor(
+    __CONTEXT.copy()
+  )._get_error_code(ret_code, mode_error_code)
+  assert (
+    error_code == expected_error_code
+  ), get_assertion_message("error code", expected_error_code, error_code)
+
 def test_calls_get_cmake_executable_when_running_executor(
   __dummy_test_mode_cmake_executor,
   __mock_get_cmake_executable

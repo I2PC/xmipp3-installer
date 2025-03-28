@@ -620,6 +620,21 @@ def test_uses_default_values_when_writing_config_with_overwrite(
     config_handler.values
   )
 
+def test_calls_get_context_values_from_file_values_when_writing_config_with_overwrite(
+  __mock_read_config,
+  __mock_read_config_date,
+  __mock_get_toggle_lines,
+  __mock_datetime_today,
+  __mock_open,
+  __mock_get_context_values_from_file_values
+):
+  config_handler = ConfigurationFileHandler()
+  config_handler.values = __CONFIG_VALUES.copy()
+  config_handler.write_config(overwrite=True)
+  __mock_get_context_values_from_file_values.assert_called_once_with(
+    default_values.CONFIG_DEFAULT_VALUES
+  )
+
 def test_calls_get_file_values_from_context_values_when_writing_config(
   __mock_read_config,
   __mock_read_config_date,

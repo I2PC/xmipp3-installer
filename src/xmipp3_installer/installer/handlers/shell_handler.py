@@ -63,7 +63,7 @@ def run_shell_command_in_streaming(
   #### Returns:
   - (int): Return code.
   """
-  logger(cmd)
+  logger(cmd, substitute=substitute)
   process = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
   
   thread_out = threading.Thread(

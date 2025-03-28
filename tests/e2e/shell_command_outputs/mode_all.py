@@ -22,17 +22,20 @@ Cloning xmippViz...
 """
 
 __COMMON_CONFIG_SUCCESS = "\n".join(
-  mode_config_build.SUCCESS.splitlines()[:-1]
+  mode_config_build.SUCCESS.splitlines()[:-2]
 )
 __CONFIG_SUCCESS_BUILD_FAILURE = f"""{__COMMON_CONFIG_SUCCESS}
 {mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{__get_build_project_subpath(mode_cmake.BUILD_ERROR_PROJECT)}
+{predefined_messages.get_done_message()}
 """
 __CONFIG_SUCCESS_INSTALL_FAILURE = f"""{__COMMON_CONFIG_SUCCESS}
 {mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{__get_build_project_subpath(mode_cmake.INSTALL_ERROR_PROJECT)}
+{predefined_messages.get_done_message()}
 """
 
 __CONFIG_SUCCESS = f"""{__COMMON_CONFIG_SUCCESS}
 {mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{__get_build_project_subpath(mode_cmake.VALID_PROJECT)}
+{predefined_messages.get_done_message()}
 """
 
 CONFIG_BUILD_FAILURE = f"""{__COMMON_SECTION}
