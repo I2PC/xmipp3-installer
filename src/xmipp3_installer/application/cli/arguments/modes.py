@@ -6,6 +6,7 @@ from xmipp3_installer.application.cli.arguments.params import (
   PARAM_MODELS_DIRECTORY, PARAM_TEST_NAMES, PARAM_SHOW_TESTS, PARAM_GIT_COMMAND,
   PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE, PARAMS, SHORT_VERSION, LONG_VERSION
 )
+from xmipp3_installer.installer import urls
 
 MODE = "mode"
 
@@ -35,7 +36,10 @@ MODES = {
     MODE_CONFIG: ['Generates a config file template with default values.'],
   },
   'Downloads': {
-    MODE_GET_MODELS: [f'Download the DeepLearning Models at dir/models ({arguments.DEFAULT_MODELS_DIR} by default).'],
+    MODE_GET_MODELS: [
+      f'Downloads the Deep Learning Models required by the DLTK tools at dir/models ({arguments.DEFAULT_MODELS_DIR} by default).',
+      f'Visit {urls.DLTK_DOCS_URL} for more details.'
+    ],
     MODE_GET_SOURCES: ['Clone all Xmipp\'s sources.']
   },
   'Clean': {
