@@ -52,12 +52,13 @@ MODES = {
   'Developers': {
     MODE_GIT: ['Runs the given git action for all source repositories.'],
     MODE_ADD_MODEL: [
-      "Takes a DeepLearning model from the modelPath, makes a tgz of it and uploads the .tgz according to the <login>. ",
-      "This mode is used to upload a model folder to the Scipion/Xmipp server. ",
-      "Usually the model folder contains big files used to fed deep learning procedures "
-      "with pretrained data. All the models stored in the server will be downloads "
-      "using the 'get_models' mode or during the compilation/installation time "
-      "or with scipion3 installb deepLearningToolkit modelsPath must be the absolute path. ",
+      "Takes a DeepLearning model from the modelPath, makes a tgz of it and uploads the .tgz according to the <login>.",
+      "This mode is used to upload a model folder to the Scipion/Xmipp server.",
+      "Usually the model folder contains big files used to feed deep learning procedures "
+      "with pretrained data. All the models stored in the server will be downloaded "
+      "using the 'get_models' mode, during the compilation/installation time, "
+      "or with scipion3 installb deepLearningToolkit.",
+      "Param <modelsPath> must be an absolute path.",
       "",
       "Usage: -> ./xmipp addModel <usr@server> <modelsPath> [--update]",
       "Steps:	0. modelName = basename(modelsPath) <- Please, check the folders name!",
