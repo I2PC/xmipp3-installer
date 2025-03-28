@@ -24,7 +24,7 @@ Usage: xmipp [options]
     ---------------------------------------------
     # Downloads #
 
-    getModels [-d]                                 Download the DeepLearning Models at dir/models (build by default).
+    getModels [-d]                                 Download the DeepLearning Models at dir/models (dist by default).
     getSources [-b] [--keep-output]                Clone all Xmipp's sources.
     ---------------------------------------------
     # Clean #
@@ -73,7 +73,7 @@ Usage: xmipp [options]
 
     getModels [-d]                                 Download the DeepLearning
                                                    Models at dir/models
-                                                   (build by default).
+                                                   (dist by default).
     getSources [-b] [--keep-output]                Clone all Xmipp\'s
                                                    sources.
     ---------------------------------------------
