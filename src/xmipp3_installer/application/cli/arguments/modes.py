@@ -4,8 +4,10 @@ from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments.params import (
   PARAM_SHORT, PARAM_JOBS, PARAM_BRANCH, PARAM_KEEP_OUTPUT, PARAM_OVERWRITE,
   PARAM_MODELS_DIRECTORY, PARAM_TEST_NAMES, PARAM_SHOW_TESTS, PARAM_GIT_COMMAND,
-  PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE, PARAMS, SHORT_VERSION, LONG_VERSION
+  PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE, PARAMS, PARAM_ALL_FUNCTIONS,
+  PARAM_ALL_PROGRAMS, SHORT_VERSION, LONG_VERSION
 )
+from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import urls
 
 MODE = "mode"
@@ -47,7 +49,14 @@ MODES = {
     MODE_CLEAN_ALL: ['Removes all compiled binaries and sources, leaves the repository as if freshly cloned (without pulling).']
   },
   'Test': {
-    MODE_TEST: ['Runs a given test.']
+    MODE_TEST: [
+      'Runs Xmipp\'s tests.',
+      f'If used with \'{PARAMS[PARAM_TEST_NAMES][SHORT_VERSION]}\', only the tests provided will run.',
+      f'If used with \'{PARAMS[PARAM_SHOW_TESTS][LONG_VERSION]}\', a list the tests available and how to invoke them will be shown.',
+      f'If used with \'{PARAMS[PARAM_ALL_FUNCTIONS][LONG_VERSION]}\', all function tests will run.',
+      f'If used with \'{PARAMS[PARAM_ALL_PROGRAMS][LONG_VERSION]}\', all program tests will run.',
+      logger.yellow(f'Important: Params in this mode are mutually exclusive. Only one can be used at a time.')
+    ]
   },
   'Developers': {
     MODE_GIT: ['Runs the given git action for all source repositories.'],
@@ -84,7 +93,7 @@ MODE_ARGS = {
   MODE_GET_SOURCES: [PARAM_BRANCH, PARAM_KEEP_OUTPUT],
   MODE_CLEAN_BIN: [],
   MODE_CLEAN_ALL: [],
-  MODE_TEST: [PARAM_TEST_NAMES, PARAM_SHOW_TESTS],
+  MODE_TEST: [PARAM_TEST_NAMES, PARAM_SHOW_TESTS, PARAM_ALL_FUNCTIONS, PARAM_ALL_PROGRAMS],
   MODE_GIT: [PARAM_GIT_COMMAND],
   MODE_ADD_MODEL: [PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE]
 }
@@ -123,7 +132,9 @@ MODE_EXAMPLES = {
   MODE_CLEAN_ALL: [],
   MODE_TEST: [
     f'./xmipp {MODE_TEST} xmipp_sample_test',
-    f'./xmipp {MODE_TEST} {PARAMS[PARAM_SHORT][LONG_VERSION]}',
+    f'./xmipp {MODE_TEST} {PARAMS[PARAM_SHOW_TESTS][LONG_VERSION]}',
+    f'./xmipp {MODE_TEST} {PARAMS[PARAM_ALL_FUNCTIONS][LONG_VERSION]}',
+    f'./xmipp {MODE_TEST} {PARAMS[PARAM_ALL_PROGRAMS][LONG_VERSION]}'
   ],
   MODE_GIT: [
     f'./xmipp {MODE_GIT} pull',
