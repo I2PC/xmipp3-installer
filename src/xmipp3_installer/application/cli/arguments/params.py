@@ -14,6 +14,8 @@ PARAM_BRANCH = 'branch'
 PARAM_MODELS_DIRECTORY = 'directory'
 PARAM_TEST_NAMES = 'testNames'
 PARAM_SHOW_TESTS = 'show'
+PARAM_ALL_FUNCTIONS = 'all_functions'
+PARAM_ALL_PROGRAMS = 'all_programs'
 PARAM_GIT_COMMAND = 'command'
 PARAM_LOGIN = 'login'
 PARAM_MODEL_PATH = 'modelPath'
@@ -42,11 +44,19 @@ PARAMS = {
   },
   PARAM_TEST_NAMES: {
     SHORT_VERSION: PARAM_TEST_NAMES,
-    DESCRIPTION: "Name of the tests to run. If combined with --show, greps the test names from the test list."
+    DESCRIPTION: "Name of the tests to run."
   },
   PARAM_SHOW_TESTS: {
     LONG_VERSION: "--show",
     DESCRIPTION: "Shows the tests available and how to invoke those."
+  },
+  PARAM_ALL_FUNCTIONS : {
+    LONG_VERSION: "--all-functions",
+    DESCRIPTION: "If set, all function tests will be run."
+  },
+  PARAM_ALL_PROGRAMS : {
+    LONG_VERSION: "--all-programs",
+    DESCRIPTION: "If set, all program tests will be run."
   },
   PARAM_GIT_COMMAND: {
     SHORT_VERSION: PARAM_GIT_COMMAND,
