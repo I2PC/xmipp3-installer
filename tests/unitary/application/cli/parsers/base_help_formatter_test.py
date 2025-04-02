@@ -266,7 +266,7 @@ def test_returns_expected_spaces(
   "args,expected_result",
   [
     pytest.param(["a", "b"], False),
-    pytest.param(["a", 1], True),
+    pytest.param(["a", 1], False),
     pytest.param(["a", ["b"]], True)
   ]
 )

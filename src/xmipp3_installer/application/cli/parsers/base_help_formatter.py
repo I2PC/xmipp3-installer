@@ -87,7 +87,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     ### Returns:
     - (bool): True if all elements in the list are strings, False otherwise.
     """
-    return not all(isinstance(arg, str) for arg in arg_list)
+    return any(isinstance(arg, list) for arg in arg_list)
 
   @staticmethod
   def __get_text_length(text: str) -> int:
