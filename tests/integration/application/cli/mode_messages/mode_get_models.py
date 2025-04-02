@@ -6,10 +6,10 @@ HELP_MESSAGE = {
 Visit https://i2pc.github.io/docs/Installation/Optionals/index.html#deeplearningtoolkit for more details.
 
 {NOTE_MESSAGE}Usage: xmipp getModels [options]
-    ---------------------------------------------
+    --------------------------------------------------------------------
     # Options #
 
-    -d, --directory                                Directory where models will be saved. Default is "dist".
+    -d, --directory                                                       Directory where models will be saved. Default is "dist".
 
 Example 1: ./xmipp getModels
 Example 2: ./xmipp getModels -d /path/to/my/model/directory
@@ -18,12 +18,11 @@ Example 2: ./xmipp getModels -d /path/to/my/model/directory
 Visit https://i2pc.github.io/docs/Installation/Optionals/index.html#deeplearningtoolkit for more details.
 
 {NOTE_MESSAGE}Usage: xmipp getModels [options]
-    ---------------------------------------------
+    --------------------------------------------------------------------
     # Options #
 
-    -d, --directory                                Directory where models
-                                                   will be saved. Default is
-                                                   "dist".
+    -d, --directory                                                       Directory where models will be saved.
+                                                                          Default is "dist".
 
 Example 1: ./xmipp getModels
 Example 2: ./xmipp getModels -d /path/to/my/model/directory
