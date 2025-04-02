@@ -262,6 +262,28 @@ def test_returns_expected_spaces(
     (remaining_space, fill_in_space)
   )
 
+@pytest.mark.parametrize(
+  "args,expected_result",
+  [
+    pytest.param(["a", "b"], False),
+    pytest.param(["a", 1], True),
+    pytest.param(["a", ["b"]], True)
+  ]
+)
+def test_returns_expected_result_when_checking_if_args_have_mutually_exclusive_groups(
+  args,
+  expected_result,
+  __setup_parser
+):
+  result = __setup_parser._has_mutually_exclusive_groups(args)
+  assert (
+    result == expected_result
+  ), get_assertion_message(
+    "has mutually exclusive groups result",
+    expected_result,
+    result
+  )
+
 @pytest.fixture
 def __setup_parser():
   return BaseHelpFormatter("test")
