@@ -55,7 +55,7 @@ MODES = {
       f'If used with \'{PARAMS[PARAM_SHOW_TESTS][LONG_VERSION]}\', a list the tests available and how to invoke them will be shown.',
       f'If used with \'{PARAMS[PARAM_ALL_FUNCTIONS][LONG_VERSION]}\', all function tests will run.',
       f'If used with \'{PARAMS[PARAM_ALL_PROGRAMS][LONG_VERSION]}\', all program tests will run.',
-      logger.yellow(f'Important: Params in this mode are mutually exclusive. Only one can be used at a time.')
+      logger.yellow('Important: Params in this mode are mutually exclusive. Only one can be used at a time.')
     ]
   },
   'Developers': {
