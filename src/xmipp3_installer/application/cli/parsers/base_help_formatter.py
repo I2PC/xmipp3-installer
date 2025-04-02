@@ -10,7 +10,7 @@ from xmipp3_installer.application.cli.parsers import format
 class BaseHelpFormatter(argparse.HelpFormatter):
   """### Extendes the available functions of the generic help formatter."""
 
-  __SECTION_N_DASH = 45
+  __SECTION_N_DASH = 68
   __SECTION_SPACE_MODE_HELP = 2
   __SECTION_HELP_START = format.TAB_SIZE + __SECTION_N_DASH + __SECTION_SPACE_MODE_HELP
   __LINE_SIZE_LOWER_LIMIT = int(__SECTION_HELP_START * 1.5)
@@ -75,6 +75,19 @@ class BaseHelpFormatter(argparse.HelpFormatter):
       self.__get_start_section_fill_in_space('')
     )
     return f"{previous_text}{fill_in_space}{formatted_help}\n"
+
+  @staticmethod
+  def _has_mutually_exclusive_groups(arg_list: List[str | List[str]]) -> bool:
+    """
+    ### Checks if the param list provided contains mutually exclusive groups.
+
+    ### Params:
+    - arg_list (list[str | list[str]]): List of arguments, which can be strings or lists of strings.
+
+    ### Returns:
+    - (bool): True if all elements in the list are strings, False otherwise.
+    """
+    return not all(isinstance(arg, str) for arg in arg_list)
 
   @staticmethod
   def __get_text_length(text: str) -> int:
