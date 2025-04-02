@@ -13,10 +13,27 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     help_message = "Run Xmipp's installer script\n\nUsage: xmipp [options]\n"
     for section in list(modes.MODES.keys()):
       help_message += self.__get_section_message(section)
-    help_message += f"\n{GeneralHelpFormatter.__get_epilog()}"
-    help_message += GeneralHelpFormatter.__get_note()
+    help_message += f"\n{self.__get_epilog()}"
+    help_message += self.__get_note()
     return format.get_formatting_tabs(help_message)
   
+  def __get_mode_arg_group_str(self, args: str) -> str:
+    """
+    ### This method returns the args text for a given arg group.
+
+    ### Params:
+    - args (str): Args to format into a message string.
+
+    ### Returns:
+    - (str): Args text for given mode.
+    """
+    param_names = []
+    for param in args:
+      param_name = self._get_param_first_name(param)
+      if param_name:
+        param_names.append(f'[{param_name}]')
+    return ' '.join(param_names)
+
   def __get_mode_args_str(self, mode: str) -> str:
     """
     ### This method returns the args text for a given mode.
@@ -27,13 +44,15 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     ### Returns:
     - (str): Args text for given mode.
     """
-    arg_list = modes.MODE_ARGS[mode]
-    param_names = []
-    for param in arg_list:
-      param_name = self._get_param_first_name(param)
-      if param_name:
-        param_names.append(f'[{param_name}]')
-    return ' '.join(param_names)
+    args = modes.MODE_ARGS[mode]
+    if not self._has_mutually_exclusive_groups(args):
+      return self.__get_mode_arg_group_str(args)
+    
+    group_strs = [
+      self.__get_mode_arg_group_str(arg_group) for arg_group in args
+    ]
+    exclusive_group_str = " | ".join(group_strs)
+    return f"({exclusive_group_str})"
 
   def __get_mode_args_and_help_str(self, previous_text: str, mode: str) -> str:
     """

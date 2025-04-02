@@ -31,7 +31,8 @@ __MODE_ARGS = {
   "mode2": ["param3", "param1"],
   "mode3": ["param2"],
   "mode4": ["param4"],
-  "mode5": []
+  "mode5": [],
+  "mode6": [["param1"], ["param2", "param3"]]
 }
 __MODES = {
   "section1": {
@@ -86,7 +87,8 @@ def test_calls_logger_yellow_when_getting_note(__setup_formatter, __mock_logger_
     pytest.param("mode2", "[param3-long] [param1-short]"),
     pytest.param("mode3", "[param2-short]"),
     pytest.param("mode4", ""),
-    pytest.param("mode5", "")
+    pytest.param("mode5", ""),
+    pytest.param("mode6", "([param1-short] | [param2-short] [param3-long])")
   ],
 )
 def test_gets_expected_mode_args_str(
