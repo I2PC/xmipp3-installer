@@ -16,7 +16,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     mode = self.__get_mode()
     help_message = f"{self._get_mode_help(mode, general=False)}\n\n"
     help_message += self.__get_args_message(mode)
-    help_message += ModeHelpFormatter.__get_examples_message(mode)
+    help_message += self.__get_examples_message(mode)
     return format.get_formatting_tabs(help_message)
 
   def __get_mode(self):
@@ -48,13 +48,13 @@ class ModeHelpFormatter(BaseHelpFormatter):
     
     if len(args) > 0:
       arg_names = [self._get_param_first_name(arg_name) for arg_name in args]
-      if ModeHelpFormatter.__args_contain_optional(arg_names):
+      if self.__args_contain_optional(arg_names):
         help_message += logger.yellow("Note: only params starting with '-' are optional. The rest are required.\n")
       options_str = ' [options]'
       separator = self._get_help_separator() + '\t# Options #\n\n'
 
     help_message += f'Usage: {arguments.XMIPP_PROGRAM_NAME} {mode}{options_str}\n{separator}'
-    help_message += self.__get_args_info(args)
+    help_message += self.__get_args_group_info(args)
     return help_message
 
   @staticmethod
@@ -73,7 +73,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
         return True
     return False
 
-  def __get_args_info(self, args: List[str]) -> str:
+  def __get_args_group_info(self, args: List[str]) -> str:
     """
     ### Returns the info of each param.
 
