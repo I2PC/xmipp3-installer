@@ -251,7 +251,9 @@ def test_returns_expected_mode_git_args(
   "__mock_sys_argv,expected_args",
   [
     pytest.param(["test", "mytest", "test2"], {"testNames": ["mytest", "test2"]}),
-    pytest.param(["test", "mytest" , "--show"], {"testNames": ["mytest"], "show": True}),
+    pytest.param(["test", "--show"], {"show": True}),
+    pytest.param(["test", "--all-functions"], {"all_functions": True}),
+    pytest.param(["test", "--all-programs"], {"all_programs": True})
   ],
   indirect=["__mock_sys_argv"]
 )
@@ -263,7 +265,32 @@ def test_returns_expected_mode_test_args(
   __mock_run_installer,
   __mock_sys_exit
 ):
-  __test_args_in_mode("test", {"show": False}, expected_args, __mock_run_installer)
+  __test_args_in_mode(
+    "test",
+    {"testNames": [], "show": False, "all_functions": False, "all_programs": False},
+    expected_args,
+    __mock_run_installer
+  )
+
+@pytest.mark.parametrize(
+  "__mock_sys_argv",
+  [
+    pytest.param(["test", "mytest", "--show"]),
+    pytest.param(["test", "mytest", "--all-functions"]),
+    pytest.param(["test", "mytest", "--all-programs"]),
+    pytest.param(["test", "--show", "--all-functions"]),
+    pytest.param(["test", "--show", "--all-programs"]),
+    pytest.param(["test", "--all-functions", "--all-programs"])
+  ],
+  indirect=["__mock_sys_argv"]
+)
+def test_exits_due_to_mixed_use_of_mutually_exclusive_groups_on_mode_test_when_parsing_args(
+  __mock_sys_argv,
+  __mock_stdout_stderr
+):
+  with pytest.raises(SystemExit) as e:
+    cli.main()
+  assert e.value.code != 0
 
 @pytest.mark.parametrize(
   "__mock_sys_argv,expected_args",
