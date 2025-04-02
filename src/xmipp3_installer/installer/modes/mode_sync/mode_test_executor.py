@@ -4,7 +4,7 @@
 This module contains the class to execute Xmipp tests.
 """
 import os
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Any
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
@@ -19,6 +19,12 @@ _PYTHON_TEST_SCRIPT_NAME = "test.py"
 _PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.SOURCES_PATH, "xmipp", "tests")
 _DEFAULT_PYTHON_HOME = "python3"
 _DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
+__TESTS_SEPARATOR = " "
+__PARAM_MAPPER = {
+  params.PARAM_SHOW_TESTS: "--show",
+  params.PARAM_ALL_FUNCTIONS: "--allFuncs",
+  params.PARAM_ALL_PROGRAMS: "--allPrograms"
+}
 
 class ModeTestExecutor(ModeSyncExecutor):
   """Class to execute Xmipp tests."""
@@ -31,9 +37,8 @@ class ModeTestExecutor(ModeSyncExecutor):
     - context (dict): Dictionary containing the installation context variables.
     """
     super().__init__(context)
-    self.test_names = context.pop(params.PARAM_TEST_NAMES)
+    self.param_value = self.__get_selected_param_value(context)
     self.cuda = context.pop(variables.CUDA)
-    self.show = context.pop(params.PARAM_SHOW_TESTS)
     python_home = context.pop(variables.PYTHON_HOME, None)
     self.python_home = python_home if python_home else _DEFAULT_PYTHON_HOME
   
@@ -85,11 +90,31 @@ class ModeTestExecutor(ModeSyncExecutor):
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
     no_cuda_str = "--noCuda" if not self.cuda else ""
-    show_str = "--show" if self.show else ""
-    logger(f" Tests to run: {', '.join(self.test_names)}")
+    if __TESTS_SEPARATOR in self.param_value:
+      test_names = self.param_value.replace(",", "")
+      logger(f" Tests to run: {test_names}")
     return shell_handler.run_shell_command(
-      f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {' '.join(self.test_names)} {no_cuda_str}{show_str}",
+      f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {self.param_value} {no_cuda_str}",
       cwd=_PYTHON_TEST_SCRIPT_PATH,
       show_output=True,
       show_error=True
     )
+
+  def __get_selected_param_value(self, context: Dict[str, Any]) -> str:
+    """
+    ### Returns the value of the param selected to run the test execution.
+
+    #### Params:
+    - context (dict(str, any)): Dictionary containing the installation context variables.
+
+    #### Returns:
+    - (str): The value of the selected variable to use
+    """
+    for variable in {
+      params.PARAM_SHOW_TESTS,
+      params.PARAM_ALL_FUNCTIONS,
+      params.PARAM_ALL_PROGRAMS
+    }:
+      if context[variable]:
+        return __PARAM_MAPPER[variable]
+    return __TESTS_SEPARATOR.join(context.pop(params.PARAM_TEST_NAMES))
