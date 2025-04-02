@@ -7,7 +7,6 @@ from xmipp3_installer.application.cli.arguments.params import (
   PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE, PARAMS, PARAM_ALL_FUNCTIONS,
   PARAM_ALL_PROGRAMS, SHORT_VERSION, LONG_VERSION
 )
-from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import urls
 
 MODE = "mode"
@@ -54,8 +53,7 @@ MODES = {
       f'If used with \'{PARAMS[PARAM_TEST_NAMES][SHORT_VERSION]}\', only the tests provided will run.',
       f'If used with \'{PARAMS[PARAM_SHOW_TESTS][LONG_VERSION]}\', a list the tests available and how to invoke them will be shown.',
       f'If used with \'{PARAMS[PARAM_ALL_FUNCTIONS][LONG_VERSION]}\', all function tests will run.',
-      f'If used with \'{PARAMS[PARAM_ALL_PROGRAMS][LONG_VERSION]}\', all program tests will run.',
-      logger.yellow('Important: Params in this mode are mutually exclusive. Only one can be used at a time.')
+      f'If used with \'{PARAMS[PARAM_ALL_PROGRAMS][LONG_VERSION]}\', all program tests will run.'
     ]
   },
   'Developers': {
@@ -83,6 +81,9 @@ MODES = {
 }
 
 # Arguments of each mode, sorted by group
+# Inside each mode, params are grouped by mutually exclusive groups
+# For example: MYMODE: [[PARAM1, PARAM2], [PARAM3, PARAM4]] would translate to
+# "mymode ([param1] [param2] | [param3] [param4])" in the general help message
 MODE_ARGS = {
   MODE_VERSION: [PARAM_SHORT],
   MODE_COMPILE_AND_INSTALL: [PARAM_JOBS, PARAM_KEEP_OUTPUT],
@@ -93,7 +94,7 @@ MODE_ARGS = {
   MODE_GET_SOURCES: [PARAM_BRANCH, PARAM_KEEP_OUTPUT],
   MODE_CLEAN_BIN: [],
   MODE_CLEAN_ALL: [],
-  MODE_TEST: [PARAM_TEST_NAMES, PARAM_SHOW_TESTS, PARAM_ALL_FUNCTIONS, PARAM_ALL_PROGRAMS],
+  MODE_TEST: [[PARAM_TEST_NAMES], [PARAM_SHOW_TESTS], [PARAM_ALL_FUNCTIONS], [PARAM_ALL_PROGRAMS]],
   MODE_GIT: [PARAM_GIT_COMMAND],
   MODE_ADD_MODEL: [PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE]
 }

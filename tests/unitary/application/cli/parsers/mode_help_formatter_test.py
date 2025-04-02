@@ -12,7 +12,8 @@ __PROGRAM_NAME = "test-program"
 __INNER_KEY = "key"
 __PARAMS = {
   "param1": { __INNER_KEY: "test1" },
-  "param2": { __INNER_KEY: "test2" }
+  "param2": { __INNER_KEY: "test2" },
+  "param3": { __INNER_KEY: "test3" }
 }
 __MODE_EXAMPLES = {
   "mode1": ["mode1-test1", "mode1-test2"],
@@ -21,9 +22,14 @@ __MODE_EXAMPLES = {
 }
 __MODE_ARGS = {
   "mode1": ["mode1-arg1"],
-  "mode2": []
+  "mode2": [],
+  "mode3": [["mode-arg1", "mode-arg2"], ["mode-arg3"]]
 }
 __NOTE_MESSAGE = "Note: only params starting with '-' are optional. The rest are required.\n"
+__MUTUALLY_EXCLUSIVE_GROUPS_MESSAGE = (
+  "Important: In this mode, there are mutually exclusive groups of params. "
+  "You can only use from one of them at a time.\n"
+)
 
 @pytest.mark.parametrize(
   "__mock_formatter_prog,expected_mode",
@@ -68,7 +74,12 @@ def test_checks_if_args_contain_optional(
       ["param1", "param2"],
       "\tparam1-1, param1-2test1\tparam2-1, param2-2test2"
     ),
-    pytest.param([], "")
+    pytest.param([], ""),
+    pytest.param(
+      [["param1"], ["param2", "param3"]],
+      "\tparam1-1, param1-2test1\t---------------\n"
+      "\tparam2-1, param2-2test2\tparam3-1, param3-2test3"
+    )
   ],
 )
 def test_returns_expected_args_info(
@@ -178,11 +189,12 @@ def test_calls_args_contain_optional_when_getting_args_message(
     [__mock_get_param_first_name(__MODE_ARGS[mode][0])]
   )
 
-def test_calls_logger_yellow_when_getting_args_message(
+def test_calls_logger_yellow_if_there_are_optional_params_when_getting_args_message(
   __mock_mode_args,
   __mock_xmipp_program_name,
   __mock_get_param_first_name,
   __mock_args_contain_optional,
+  __mock_has_mutually_exclusive_groups,
   __mock_logger_yellow,
   __mock_get_help_separator,
   __mock_get_args_info,
@@ -193,21 +205,44 @@ def test_calls_logger_yellow_when_getting_args_message(
   __setup_formatter._ModeHelpFormatter__get_args_message(mode)
   __mock_logger_yellow.assert_called_once_with(__NOTE_MESSAGE)
 
+def test_calls_logger_yellow_if_there_are_mutually_exclusive_groups_when_getting_args_message(
+  __mock_mode_args,
+  __mock_xmipp_program_name,
+  __mock_get_param_first_name,
+  __mock_args_contain_optional,
+  __mock_has_mutually_exclusive_groups,
+  __mock_logger_yellow,
+  __mock_get_help_separator,
+  __mock_get_args_info,
+  __setup_formatter
+):
+  mode = "mode3"
+  __mock_has_mutually_exclusive_groups.return_value = True
+  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __mock_logger_yellow.assert_called_once_with(__MUTUALLY_EXCLUSIVE_GROUPS_MESSAGE)
+
 @pytest.mark.parametrize(
-  "mode,__mock_args_contain_optional",
+  "mode,__mock_args_contain_optional,__mock_has_mutually_exclusive_groups",
   [
-    pytest.param("mode1", False),
-    pytest.param("mode2", False),
-    pytest.param("mode2", True)
+    pytest.param("mode1", False, False),
+    pytest.param("mode3", False, False),
+    pytest.param("mode2", False, False),
+    pytest.param("mode2", False, True),
+    pytest.param("mode2", True, False),
+    pytest.param("mode2", True, True)
   ],
-  indirect=["__mock_args_contain_optional"]
+  indirect=[
+    "__mock_args_contain_optional",
+    "__mock_has_mutually_exclusive_groups"
+  ]
 )
-def test_does_not_call_logger_yellow_when_getting_args_message(
+def test_does_not_call_logger_yellow_if_no_optional_params_and_no_exclusive_groups_when_getting_args_message(
   mode,
   __mock_mode_args,
   __mock_xmipp_program_name,
   __mock_get_param_first_name,
   __mock_args_contain_optional,
+  __mock_has_mutually_exclusive_groups,
   __mock_logger_yellow,
   __mock_get_help_separator,
   __mock_get_args_info,
@@ -280,6 +315,22 @@ def test_returns_expected_args_message(
   assert (
     help_message == expected_help_message
   ), get_assertion_message("args help message", expected_help_message, help_message)
+
+@pytest.mark.parametrize(
+  "args,expected_result",
+  [
+    pytest.param([], []),
+    pytest.param(["1"], ["1"]),
+    pytest.param(["1", "2"], ["1", "2"]),
+    pytest.param(["1", ["2"]], ["1", "2"]),
+    pytest.param([["1"], ["2"]], ["1", "2"])
+  ]
+)
+def test_returns_expected_flattened_args(args, expected_result, __setup_formatter):
+  result = __setup_formatter._ModeHelpFormatter__flatten_args(args)
+  assert (
+    result == expected_result
+  ), get_assertion_message("flattened args", expected_result, result)
 
 def test_calls_get_mode_when_formatting_help(
   __mock_get_mode,
@@ -446,10 +497,18 @@ def __mock_get_help_separator():
 
 @pytest.fixture
 def __mock_get_args_info():
+  def side_effect(args):
+    if not any(isinstance(arg, list) for arg in args):
+      formatted_args = args
+    else:
+      formatted_args = [
+        "_".join(group) for group in args
+      ]
+    return f'info-{"*".join(formatted_args)}-info'
   with patch(
     "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_args_info"
   ) as mock_method:
-    mock_method.side_effect = lambda args: f'info-{"_".join(args)}-info'
+    mock_method.side_effect = side_effect
     yield mock_method
 
 @pytest.fixture
@@ -490,4 +549,12 @@ def __mock_get_formatting_tabs():
     "xmipp3_installer.application.cli.parsers.format.get_formatting_tabs"
   ) as mock_method:
     mock_method.side_effect = lambda text: f"format_start - {text} - format_end"
+    yield mock_method
+
+@pytest.fixture(params=[False])
+def __mock_has_mutually_exclusive_groups(request):
+  with patch(
+    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._has_mutually_exclusive_groups"
+  ) as mock_method:
+    mock_method.return_value = request.param
     yield mock_method
