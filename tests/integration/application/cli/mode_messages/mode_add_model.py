@@ -18,12 +18,12 @@ The model name will be the folder name in <modelsPath>
 Must have write permissions to such machine.
 
 {NOTE_MESSAGE}Usage: xmipp addModel [options]
-    ---------------------------------------------
+    --------------------------------------------------------------------
     # Options #
 
-    login                                          Login (usr@server) for remote host to upload the model with. Must have write permissions to such machine.
-    modelPath                                      Path to the model to upload to remote host.
-    --update                                       Flag to update an existing model
+    login                                                                 Login (usr@server) for remote host to upload the model with. Must have write permissions to such machine.
+    modelPath                                                             Path to the model to upload to remote host.
+    --update                                                              Flag to update an existing model
 
 Example: ./xmipp addModel myuser@127.0.0.1 /home/myuser/mymodel
 """,
@@ -43,18 +43,15 @@ The model name will be the folder name in <modelsPath>
 Must have write permissions to such machine.
 
 {NOTE_MESSAGE}Usage: xmipp addModel [options]
-    ---------------------------------------------
+    --------------------------------------------------------------------
     # Options #
 
-    login                                          Login (usr@server) for
-                                                   remote host to upload the
-                                                   model with. Must have
-                                                   write permissions to such
-                                                   machine.
-    modelPath                                      Path to the model to
-                                                   upload to remote host.
-    --update                                       Flag to update an
-                                                   existing model
+    login                                                                 Login (usr@server) for remote host to
+                                                                          upload the model with. Must have
+                                                                          write permissions to such machine.
+    modelPath                                                             Path to the model to upload to remote
+                                                                          host.
+    --update                                                              Flag to update an existing model
 
 Example: ./xmipp addModel myuser@127.0.0.1 /home/myuser/mymodel
 """

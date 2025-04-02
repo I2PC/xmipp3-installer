@@ -7,39 +7,39 @@ __NOTE_MESSAGE = logger.yellow(
 )
 
 HELP_MESSAGE = {
-  terminal_sizes.LARGE_TERMINAL_WIDTH: f"""Run Xmipp's installer script
+  terminal_sizes.LARGE_TERMINAL_WIDTH: f"""Run Xmipp\'s installer script
 
 Usage: xmipp [options]
-    ---------------------------------------------
+    --------------------------------------------------------------------
     # General #
 
-    version [--short]                              Returns the version information. Add '--short' to print only the version number.
-    compileAndInstall [-j] [--keep-output]         Compiles and installs Xmipp based on already obtained sources.
-    all [-j] [-b] [--keep-output]                  Default param. Runs config, configBuild, and compileAndInstall.
-    configBuild [--keep-output]                    Configures the project with CMake.
-    ---------------------------------------------
+    version [--short]                                                     Returns the version information. Add \'--short\' to print only the version number.
+    compileAndInstall [-j] [--keep-output]                                Compiles and installs Xmipp based on already obtained sources.
+    all [-j] [-b] [--keep-output]                                         Default param. Runs config, configBuild, and compileAndInstall.
+    configBuild [--keep-output]                                           Configures the project with CMake.
+    --------------------------------------------------------------------
     # Config #
 
-    config [-o]                                    Generates a config file template with default values.
-    ---------------------------------------------
+    config [-o]                                                           Generates a config file template with default values.
+    --------------------------------------------------------------------
     # Downloads #
 
-    getModels [-d]                                 Downloads the Deep Learning Models required by the DLTK tools at dir/models (dist by default).
-    getSources [-b] [--keep-output]                Clone all Xmipp's sources.
-    ---------------------------------------------
+    getModels [-d]                                                        Downloads the Deep Learning Models required by the DLTK tools at dir/models (dist by default).
+    getSources [-b] [--keep-output]                                       Clone all Xmipp\'s sources.
+    --------------------------------------------------------------------
     # Clean #
 
-    cleanBin                                       Removes all compiled binaries.
-    cleanAll                                       Removes all compiled binaries and sources, leaves the repository as if freshly cloned (without pulling).
-    ---------------------------------------------
+    cleanBin                                                              Removes all compiled binaries.
+    cleanAll                                                              Removes all compiled binaries and sources, leaves the repository as if freshly cloned (without pulling).
+    --------------------------------------------------------------------
     # Test #
 
-    test [testNames] [--show]                      Runs a given test.
-    ---------------------------------------------
+    test ([testNames] | [--show] | [--all-functions] | [--all-programs])  Runs Xmipp\'s tests.
+    --------------------------------------------------------------------
     # Developers #
 
-    git [command]                                  Runs the given git action for all source repositories.
-    addModel [login] [modelPath] [--update]        Takes a DeepLearning model from the modelPath, makes a tgz of it and uploads the .tgz according to the <login>.
+    git [command]                                                         Runs the given git action for all source repositories.
+    addModel [login] [modelPath] [--update]                               Takes a DeepLearning model from the modelPath, makes a tgz of it and uploads the .tgz according to the <login>.
 
 Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
@@ -47,62 +47,49 @@ Example 2: ./xmipp compileAndInstall -j 4
   terminal_sizes.SHORT_TERMINAL_WIDTH: f"""Run Xmipp\'s installer script
 
 Usage: xmipp [options]
-    ---------------------------------------------
+    --------------------------------------------------------------------
     # General #
 
-    version [--short]                              Returns the version
-                                                   information. Add
-                                                   \'--short\' to print only
-                                                   the version number.
-    compileAndInstall [-j] [--keep-output]         Compiles and installs
-                                                   Xmipp based on already
-                                                   obtained sources.
-    all [-j] [-b] [--keep-output]                  Default param. Runs
-                                                   config, configBuild, and
-                                                   compileAndInstall.
-    configBuild [--keep-output]                    Configures the project
-                                                   with CMake.
-    ---------------------------------------------
+    version [--short]                                                     Returns the version information. Add
+                                                                          \'--short\' to print only the version
+                                                                          number.
+    compileAndInstall [-j] [--keep-output]                                Compiles and installs Xmipp based on
+                                                                          already obtained sources.
+    all [-j] [-b] [--keep-output]                                         Default param. Runs config,
+                                                                          configBuild, and compileAndInstall.
+    configBuild [--keep-output]                                           Configures the project with CMake.
+    --------------------------------------------------------------------
     # Config #
 
-    config [-o]                                    Generates a config file
-                                                   template with default
-                                                   values.
-    ---------------------------------------------
+    config [-o]                                                           Generates a config file template with
+                                                                          default values.
+    --------------------------------------------------------------------
     # Downloads #
 
-    getModels [-d]                                 Downloads the Deep
-                                                   Learning Models required
-                                                   by the DLTK tools at
-                                                   dir/models (dist by
-                                                   default).
-    getSources [-b] [--keep-output]                Clone all Xmipp\'s
-                                                   sources.
-    ---------------------------------------------
+    getModels [-d]                                                        Downloads the Deep Learning Models
+                                                                          required by the DLTK tools at
+                                                                          dir/models (dist by default).
+    getSources [-b] [--keep-output]                                       Clone all Xmipp\'s sources.
+    --------------------------------------------------------------------
     # Clean #
 
-    cleanBin                                       Removes all compiled
-                                                   binaries.
-    cleanAll                                       Removes all compiled
-                                                   binaries and sources,
-                                                   leaves the repository as
-                                                   if freshly cloned
-                                                   (without pulling).
-    ---------------------------------------------
+    cleanBin                                                              Removes all compiled binaries.
+    cleanAll                                                              Removes all compiled binaries and
+                                                                          sources, leaves the repository as if
+                                                                          freshly cloned (without pulling).
+    --------------------------------------------------------------------
     # Test #
 
-    test [testNames] [--show]                      Runs a given test.
-    ---------------------------------------------
+    test ([testNames] | [--show] | [--all-functions] | [--all-programs])  Runs Xmipp\'s tests.
+    --------------------------------------------------------------------
     # Developers #
 
-    git [command]                                  Runs the given git action
-                                                   for all source
-                                                   repositories.
-    addModel [login] [modelPath] [--update]        Takes a DeepLearning
-                                                   model from the modelPath,
-                                                   makes a tgz of it and
-                                                   uploads the .tgz
-                                                   according to the <login>.
+    git [command]                                                         Runs the given git action for all
+                                                                          source repositories.
+    addModel [login] [modelPath] [--update]                               Takes a DeepLearning model from the
+                                                                          modelPath, makes a tgz of it and
+                                                                          uploads the .tgz according to the
+                                                                          <login>.
 
 Example 1: ./xmipp
 Example 2: ./xmipp compileAndInstall -j 4
