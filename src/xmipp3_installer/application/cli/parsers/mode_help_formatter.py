@@ -47,14 +47,21 @@ class ModeHelpFormatter(BaseHelpFormatter):
     separator = ''
     
     if len(args) > 0:
-      arg_names = [self._get_param_first_name(arg_name) for arg_name in args]
+      arg_names = [
+        self._get_param_first_name(arg_name) for arg_name in self.__flatten_args(args)
+      ]
+      if self._has_mutually_exclusive_groups(args):
+        help_message += logger.yellow(
+          "Important: In this mode, there are mutually exclusive groups of params. "
+          "You can only use from one of them at a time.\n"
+          )
       if self.__args_contain_optional(arg_names):
         help_message += logger.yellow("Note: only params starting with '-' are optional. The rest are required.\n")
       options_str = ' [options]'
       separator = self._get_help_separator() + '\t# Options #\n\n'
 
     help_message += f'Usage: {arguments.XMIPP_PROGRAM_NAME} {mode}{options_str}\n{separator}'
-    help_message += self.__get_args_group_info(args)
+    help_message += self.__get_args_info(args)
     return help_message
 
   @staticmethod
@@ -73,6 +80,20 @@ class ModeHelpFormatter(BaseHelpFormatter):
         return True
     return False
 
+  def __get_args_info(self, args: List[str | List[str]]) -> str:
+    """
+    ### Returns the info of each param.
+
+    #### Params:
+    - args (list[str]): List of parameters.
+
+    #### Returns:
+    - (str): Info of all parameters.
+    """
+    if not self._has_mutually_exclusive_groups(args):
+      return self.__get_args_group_info(args)
+    return "\t---------------\n".join([self.__get_args_group_info(group) for group in args])
+    
   def __get_args_group_info(self, args: List[str]) -> str:
     """
     ### Returns the info of each param.
@@ -112,3 +133,22 @@ class ModeHelpFormatter(BaseHelpFormatter):
       help_message += '\n'
 
     return help_message
+
+  def __flatten_args(self, args: List[str | List[str]]) -> List[str]:
+    """
+    ### Flattens a list of arguments.
+
+    #### Params:
+    - args (list[str | list[str]]): A list of arguments, which can include nested lists representing mutually exclusive groups.
+
+    #### Returns:
+    - (list[str]): A flattened list of arguments, where nested groups are expanded into a single list.
+    """
+    if not self._has_mutually_exclusive_groups(args):
+      return args
+    
+    return [
+      arg
+      for arg_group in args
+      for arg in arg_group
+    ]
