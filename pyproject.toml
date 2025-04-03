@@ -1,6 +1,6 @@
 [project]
 name = "xmipp3_installer"
-version = "1.0.2"
+version = "1.1.0"
 authors = [
   { name = "Martín Salinas", email = "ssalinasmartin@gmail.com" },
 ]
