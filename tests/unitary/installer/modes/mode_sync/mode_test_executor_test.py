@@ -19,7 +19,9 @@ __MULTIPLE_TESTS = [__SINGLE_TEST, "test2", "test3"]
 __CONTEXT = {
   "testNames": __MULTIPLE_TESTS,
   params.PARAM_SHOW_TESTS: False,
-  variables.CUDA: True
+  variables.CUDA: True,
+  params.PARAM_ALL_FUNCTIONS: False,
+  params.PARAM_ALL_PROGRAMS: False
 }
 __PYHTON_HOME = "/path/to/python"
 __DATASET_PATH = "/path/to/dataset"
@@ -37,17 +39,45 @@ def test_implements_interface_mode_sync_executor():
     executor.__class__.__bases__[0].__name__
   )
 
-def test_sets_expected_values_when_initializing():
-  executor = ModeTestExecutor(__CONTEXT.copy())
+@pytest.mark.parametrize(
+  "python_context,tests,show,all_funcs,"
+  "all_programs,expected_python_home,expected_param",
+  [
+    pytest.param(None, [], True, False, False, "python3", "--show"),
+    pytest.param("", [], True, False, False, "python3", "--show"),
+    pytest.param("whatever", [], True, False, False, "whatever", "--show"),
+    pytest.param(None, [], False, True, False, "python3", "--allFuncs"),
+    pytest.param(None, [], False, False, True, "python3", "--allPrograms"),
+    pytest.param(None, ["test1"], False, False, False, "python3", "test1"),
+    pytest.param(None, ["test1", "test2"], False, False, False, "python3", "test1 test2")
+  ]
+)
+def test_sets_expected_values_when_initializing(
+  python_context,
+  tests,
+  show,
+  all_funcs,
+  all_programs,
+  expected_python_home,
+  expected_param
+):
+  executor = ModeTestExecutor({
+    **__CONTEXT,
+    params.PARAM_TEST_NAMES: tests,
+    params.PARAM_SHOW_TESTS: show,
+    params.PARAM_ALL_FUNCTIONS: all_funcs,
+    params.PARAM_ALL_PROGRAMS: all_programs,
+    variables.PYTHON_HOME: python_context
+  })
   values = (
-    executor.test_names,
     executor.cuda,
-    executor.show
+    executor.python_home,
+    executor.param_value
   )
   expected_values = (
-    __MULTIPLE_TESTS,
     True,
-    False
+    expected_python_home,
+    expected_param
   )
   assert (
     values == expected_values
@@ -89,35 +119,71 @@ def test_raises_key_error_when_param_not_present(missing_key):
   with pytest.raises(KeyError):
     ModeTestExecutor(context)
 
-def test_calls_logger_when_running_tests(
+def test_calls_logger_if_param_is_tests_when_running_tests(
   __mock_logger,
   __mock_run_shell_command
 ):
-  executor = ModeTestExecutor(__CONTEXT.copy())
+  executor = ModeTestExecutor(
+    {**__CONTEXT, params.PARAM_TEST_NAMES: __MULTIPLE_TESTS}
+  )
   executor._ModeTestExecutor__run_tests()
   __mock_logger.assert_called_once_with(
     f" Tests to run: {', '.join(__MULTIPLE_TESTS)}"
   )
 
 @pytest.mark.parametrize(
-  "python_home,cuda,show,expected_no_cuda,expected_show",
+  "show_tests,all_funcs,all_programs",
   [
-    pytest.param(None, False, False, "--noCuda", ""),
-    pytest.param(None, False, True, "--noCuda", "--show"),
-    pytest.param(None, True, False, "", ""),
-    pytest.param(None, True, True, "", "--show"),
-    pytest.param(__PYHTON_HOME, False, False, "--noCuda", ""),
-    pytest.param(__PYHTON_HOME, False, True, "--noCuda", "--show"),
-    pytest.param(__PYHTON_HOME, True, False, "", ""),
-    pytest.param(__PYHTON_HOME, True, True, "", "--show")
+    pytest.param(True, False, False),
+    pytest.param(False, True, False),
+    pytest.param(False, False, True),
+  ]
+)
+def test_does_not_call_logger_if_param_is_not_tests_when_running_tests(
+  show_tests,
+  all_funcs,
+  all_programs,
+  __mock_logger,
+  __mock_run_shell_command
+):
+  executor = ModeTestExecutor(
+    {
+      **__CONTEXT,
+      params.PARAM_TEST_NAMES: [],
+      params.PARAM_SHOW_TESTS: show_tests,
+      params.PARAM_ALL_FUNCTIONS: all_funcs,
+      params.PARAM_ALL_PROGRAMS: all_programs
+    }
+  )
+  executor._ModeTestExecutor__run_tests()
+  __mock_logger.assert_not_called()
+
+@pytest.mark.parametrize(
+  "python_home,cuda,param,expected_no_cuda",
+  [
+    pytest.param(None, False, "--show", "--noCuda"),
+    pytest.param(None, False, "--allFuncs", "--noCuda"),
+    pytest.param(None, False, "--allPrograms", "--noCuda"),
+    pytest.param(None, False, " ".join(__MULTIPLE_TESTS), "--noCuda"),
+    pytest.param(None, True, "--show", ""),
+    pytest.param(None, True, "--allFuncs", ""),
+    pytest.param(None, True, "--allPrograms", ""),
+    pytest.param(None, True, " ".join(__MULTIPLE_TESTS), ""),
+    pytest.param(__PYHTON_HOME, False, "--show", "--noCuda"),
+    pytest.param(__PYHTON_HOME, False, "--allFuncs", "--noCuda"),
+    pytest.param(__PYHTON_HOME, False, "--allPrograms", "--noCuda"),
+    pytest.param(__PYHTON_HOME, False, " ".join(__MULTIPLE_TESTS), "--noCuda"),
+    pytest.param(__PYHTON_HOME, True, "--show", ""),
+    pytest.param(__PYHTON_HOME, True, "--allFuncs", ""),
+    pytest.param(__PYHTON_HOME, True, "--allPrograms", ""),
+    pytest.param(__PYHTON_HOME, True, " ".join(__MULTIPLE_TESTS), "")
   ]
 )
 def test_calls_run_shell_command_when_running_tests(
   python_home,
   cuda,
-  show,
+  param,
   expected_no_cuda,
-  expected_show,
   __mock_run_shell_command,
   __mock_os_path_join,
   __mock_binaries_path,
@@ -127,13 +193,13 @@ def test_calls_run_shell_command_when_running_tests(
   new_context = {
     **__CONTEXT,
     variables.PYTHON_HOME: python_home,
-    variables.CUDA: cuda,
-    params.PARAM_SHOW_TESTS: show
+    variables.CUDA: cuda
   }
   executor = ModeTestExecutor(new_context)
+  executor.param_value = param
   executor._ModeTestExecutor__run_tests()
   __mock_run_shell_command.assert_called_once_with(
-    f"{executor.python_home} {__mock_python_test_script_name} {' '.join(__MULTIPLE_TESTS)} {expected_no_cuda}{expected_show}",
+    f"{executor.python_home} {__mock_python_test_script_name} {param} {expected_no_cuda}",
     cwd=__mock_python_test_script_path,
     show_output=True,
     show_error=True
