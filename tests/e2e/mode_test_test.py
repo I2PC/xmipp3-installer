@@ -21,73 +21,92 @@ from .. import (
 
 __INDIVIDUAL_TEST = "test1"
 __MULTIPLE_TESTS = f"{__INDIVIDUAL_TEST} test2 test3"
+__SHOW_PARAM = "--show"
+__ALL_FUNCTIONS_PARAM = "--all-functions"
+__ALL_PROGRAMS_PARAM = "--all-programs"
 
 @pytest.mark.parametrize(
-  "__mock_sync_program_path,__mock_dataset_path,__mock_sys_argv,show,expected_message",
+  "__mock_sync_program_path,__mock_dataset_path,__mock_sys_argv,expected_message",
   [
     pytest.param(
-      False, False, __INDIVIDUAL_TEST, False, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, individual test, no show"
+      False, False, __INDIVIDUAL_TEST, mode_sync.NO_PROGRAM,
+      id="Non-existing program, no dataset, individual test"
     ),
     pytest.param(
-      False, False, __INDIVIDUAL_TEST, True, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, individual test, show"
+      False, False, __MULTIPLE_TESTS, mode_sync.NO_PROGRAM,
+      id="Non-existing program, no dataset, multiple tests"
     ),
     pytest.param(
-      False, False, __MULTIPLE_TESTS, False, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, multiple tests, no show"
+      False, False, __SHOW_PARAM, mode_sync.NO_PROGRAM,
+      id="Non-existing program, no dataset, show"
     ),
     pytest.param(
-      False, False, __MULTIPLE_TESTS, True, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, multiple tests, show"
+      False, False, __ALL_FUNCTIONS_PARAM, mode_sync.NO_PROGRAM,
+      id="Non-existing program, no dataset, all functions"
     ),
     pytest.param(
-      False, True, __INDIVIDUAL_TEST, False, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, individual test, no show"
+      False, False, __ALL_PROGRAMS_PARAM, mode_sync.NO_PROGRAM,
+      id="Non-existing program, no dataset, all programs"
     ),
     pytest.param(
-      False, True, __INDIVIDUAL_TEST, True, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, individual test, show"
+      False, True, __INDIVIDUAL_TEST, mode_sync.NO_PROGRAM,
+      id="Non-existing program, existing dataset, individual test"
     ),
     pytest.param(
-      False, True, __MULTIPLE_TESTS, False, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, multiple tests, no show"
+      False, True, __MULTIPLE_TESTS, mode_sync.NO_PROGRAM,
+      id="Non-existing program, existing dataset, multiple tests"
     ),
     pytest.param(
-      False, True, __MULTIPLE_TESTS, True, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, multiple tests, show"
+      False, True, __SHOW_PARAM, mode_sync.NO_PROGRAM,
+      id="Non-existing program, existing dataset, show"
     ),
     pytest.param(
-      True, False, __INDIVIDUAL_TEST, False, mode_test.get_download_message(__INDIVIDUAL_TEST),
-      id="Existing program, no dataset, individual test, no show"
+      False, True, __ALL_FUNCTIONS_PARAM, mode_sync.NO_PROGRAM,
+      id="Non-existing program, existing dataset, all functions"
     ),
     pytest.param(
-      True, False, __INDIVIDUAL_TEST, True, mode_test.get_download_message(__INDIVIDUAL_TEST),
-      id="Existing program, no dataset, individual test, show"
+      False, True, __ALL_PROGRAMS_PARAM, mode_sync.NO_PROGRAM,
+      id="Non-existing program, existing dataset, all programs"
     ),
     pytest.param(
-      True, False, __MULTIPLE_TESTS, False, mode_test.get_download_message(__MULTIPLE_TESTS),
-      id="Existing program, no dataset, multiple tests, no show"
+      True, False, __INDIVIDUAL_TEST, mode_test.get_download_message(__INDIVIDUAL_TEST),
+      id="Existing program, no dataset, individual test"
     ),
     pytest.param(
-      True, False, __MULTIPLE_TESTS, True, mode_test.get_download_message(__MULTIPLE_TESTS),
-      id="Existing program, no dataset, multiple tests, show"
+      True, False, __MULTIPLE_TESTS, mode_test.get_download_message(__MULTIPLE_TESTS),
+      id="Existing program, no dataset, multiple tests"
     ),
     pytest.param(
-      True, True, __INDIVIDUAL_TEST, False, mode_test.get_update_message(__INDIVIDUAL_TEST),
-      id="Existing program, existing dataset, individual test, no show"
+      True, False, __SHOW_PARAM, mode_test.get_download_message(""),
+      id="Existing program, no dataset, show"
     ),
     pytest.param(
-      True, True, __INDIVIDUAL_TEST, True, mode_test.get_update_message(__INDIVIDUAL_TEST),
-      id="Existing program, existing dataset, individual test, show"
+      True, False, __ALL_FUNCTIONS_PARAM, mode_test.get_download_message(""),
+      id="Existing program, no dataset, all functions"
     ),
     pytest.param(
-      True, True, __MULTIPLE_TESTS, False, mode_test.get_update_message(__MULTIPLE_TESTS),
-      id="Existing program, existing dataset, multiple tests, no show"
+      True, False, __ALL_PROGRAMS_PARAM, mode_test.get_download_message(""),
+      id="Existing program, no dataset, all programs"
     ),
     pytest.param(
-      True, True, __MULTIPLE_TESTS, True, mode_test.get_update_message(__MULTIPLE_TESTS),
-      id="Existing program, existing dataset, multiple tests, show"
+      True, True, __INDIVIDUAL_TEST, mode_test.get_update_message(__INDIVIDUAL_TEST),
+      id="Existing program, existing dataset, individual test"
+    ),
+    pytest.param(
+      True, True, __MULTIPLE_TESTS, mode_test.get_update_message(__MULTIPLE_TESTS),
+      id="Existing program, existing dataset, multiple tests"
+    ),
+    pytest.param(
+      True, True, __SHOW_PARAM, mode_test.get_update_message(""),
+      id="Existing program, existing dataset, show"
+    ),
+    pytest.param(
+      True, True, __ALL_FUNCTIONS_PARAM, mode_test.get_update_message(""),
+      id="Existing program, existing dataset, all functions"
+    ),
+    pytest.param(
+      True, True, __ALL_PROGRAMS_PARAM, mode_test.get_update_message(""),
+      id="Existing program, existing dataset, all programs"
     )
   ],
   indirect=["__mock_sync_program_path", "__mock_dataset_path", "__mock_sys_argv"]
@@ -95,14 +114,11 @@ __MULTIPLE_TESTS = f"{__INDIVIDUAL_TEST} test2 test3"
 def test_add_model(
   __mock_sync_program_path,
   __mock_sys_argv,
-  show,
   expected_message,
   __mock_stdout_stderr,
   __setup_environment
 ):
   stdout, _ = __mock_stdout_stderr
-  if show:
-    __mock_sys_argv.append(params.PARAMS[params.PARAM_SHOW_TESTS][params.LONG_VERSION])
   with pytest.raises(SystemExit):
     cli.main()
   output = normalize_text_line_endings(stdout.getvalue())
