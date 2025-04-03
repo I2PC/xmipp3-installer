@@ -179,7 +179,7 @@ def __add_params_mode_test(subparser: argparse.ArgumentParser):
   - subparser (ArgumentParser): Subparser to add the params to.
   """
   group = subparser.add_mutually_exclusive_group(required=True)
-  group.add_argument(*format.get_param_names(params.PARAM_TEST_NAMES), nargs='*', default=None)
+  group.add_argument(*format.get_param_names(params.PARAM_TEST_NAMES), nargs='*', default=[])
   group.add_argument(*format.get_param_names(params.PARAM_SHOW_TESTS), action='store_true')
   group.add_argument(*format.get_param_names(params.PARAM_ALL_FUNCTIONS), action='store_true')
   group.add_argument(*format.get_param_names(params.PARAM_ALL_PROGRAMS), action='store_true')
