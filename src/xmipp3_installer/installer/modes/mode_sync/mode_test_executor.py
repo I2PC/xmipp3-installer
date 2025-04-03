@@ -19,8 +19,8 @@ _PYTHON_TEST_SCRIPT_NAME = "test.py"
 _PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.SOURCES_PATH, "xmipp", "tests")
 _DEFAULT_PYTHON_HOME = "python3"
 _DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
-__TESTS_SEPARATOR = " "
-__PARAM_MAPPER = {
+_TESTS_SEPARATOR = " "
+_PARAM_MAPPER = {
   params.PARAM_SHOW_TESTS: "--show",
   params.PARAM_ALL_FUNCTIONS: "--allFuncs",
   params.PARAM_ALL_PROGRAMS: "--allPrograms"
@@ -90,8 +90,8 @@ class ModeTestExecutor(ModeSyncExecutor):
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
     no_cuda_str = "--noCuda" if not self.cuda else ""
-    if __TESTS_SEPARATOR in self.param_value:
-      test_names = self.param_value.replace(",", "")
+    if _TESTS_SEPARATOR in self.param_value:
+      test_names = self.param_value.replace(_TESTS_SEPARATOR, ", ")
       logger(f" Tests to run: {test_names}")
     return shell_handler.run_shell_command(
       f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {self.param_value} {no_cuda_str}",
@@ -116,5 +116,5 @@ class ModeTestExecutor(ModeSyncExecutor):
       params.PARAM_ALL_PROGRAMS
     }:
       if context[variable]:
-        return __PARAM_MAPPER[variable]
-    return __TESTS_SEPARATOR.join(context.pop(params.PARAM_TEST_NAMES))
+        return _PARAM_MAPPER[variable]
+    return _TESTS_SEPARATOR.join(context.pop(params.PARAM_TEST_NAMES))
