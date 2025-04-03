@@ -90,7 +90,11 @@ class ModeTestExecutor(ModeSyncExecutor):
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
     no_cuda_str = "--noCuda" if not self.cuda else ""
-    if _TESTS_SEPARATOR in self.param_value:
+    if self.param_value not in {
+      _PARAM_MAPPER[params.PARAM_SHOW_TESTS],
+      _PARAM_MAPPER[params.PARAM_ALL_FUNCTIONS],
+      _PARAM_MAPPER[params.PARAM_ALL_PROGRAMS]
+    }:
       test_names = self.param_value.replace(_TESTS_SEPARATOR, ", ")
       logger(f" Tests to run: {test_names}")
     return shell_handler.run_shell_command(
