@@ -1,6 +1,6 @@
 """### Help formatter specific for non-generic usage modes."""
 
-from typing import List
+from typing import List, Union
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
@@ -80,7 +80,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
         return True
     return False
 
-  def __get_args_info(self, args: List[str | List[str]]) -> str:
+  def __get_args_info(self, args: List[Union[str, List[str]]]) -> str:
     """
     ### Returns the info of each param.
 
@@ -134,7 +134,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
 
     return help_message
 
-  def __flatten_args(self, args: List[str | List[str]]) -> List[str]:
+  def __flatten_args(self, args: List[Union[str, List[str]]]) -> List[str]:
     """
     ### Flattens a list of arguments.
 
