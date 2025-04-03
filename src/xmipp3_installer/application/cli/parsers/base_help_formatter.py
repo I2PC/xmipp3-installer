@@ -2,7 +2,7 @@
 
 import argparse
 import shutil
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
@@ -77,7 +77,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return f"{previous_text}{fill_in_space}{formatted_help}\n"
 
   @staticmethod
-  def _has_mutually_exclusive_groups(arg_list: List[str | List[str]]) -> bool:
+  def _has_mutually_exclusive_groups(arg_list: List[Union[str, List[str]]]) -> bool:
     """
     ### Checks if the param list provided contains mutually exclusive groups.
 
