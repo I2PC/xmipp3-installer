@@ -104,7 +104,8 @@ class ModeTestExecutor(ModeSyncExecutor):
       show_error=True
     )
 
-  def __get_selected_param_value(self, context: Dict[str, Any]) -> str:
+  @staticmethod
+  def __get_selected_param_value(context: Dict[str, Any]) -> str:
     """
     ### Returns the value of the param selected to run the test execution.
 

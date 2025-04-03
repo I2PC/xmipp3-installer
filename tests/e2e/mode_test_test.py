@@ -6,7 +6,7 @@ import pytest
 
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
-from xmipp3_installer.application.cli.arguments import modes, params
+from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
