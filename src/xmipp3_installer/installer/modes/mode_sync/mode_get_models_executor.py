@@ -30,7 +30,7 @@ class ModeGetModelsExecutor(ModeSyncExecutor):
     """
     super().__init__(context)
     self.models_directory = context.pop(params.PARAM_MODELS_DIRECTORY)
-    if self.models_directory == paths.INSTALL_PATH:
+    if self.models_directory == os.path.abspath(paths.INSTALL_PATH):
       self.models_directory = os.path.join(self.models_directory, 'models')
 
   def _sync_operation(self) -> Tuple[int, str]:
