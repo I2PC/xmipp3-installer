@@ -14,8 +14,8 @@ __ARGS = {
 }
 __SYNC_PROGRAM_PATH = "/path/to/sync/program"
 __SYNC_PROGRAM_NAME = "sync_name"
-__SOURCES_PATH = "sources_path"
 __XMIPP_NAME = "test_xmipp"
+__INSTALL_PATH = "dist_path"
 
 def test_implements_interface_mode_sync_executor():
   executor = ModeGetModelsExecutor(__ARGS.copy())
@@ -27,23 +27,13 @@ def test_implements_interface_mode_sync_executor():
     executor.__class__.__bases__[0].__name__
   )
 
-def test_sets_dist_path_when_initializing(
-  __mock_xmipp_name,
-  __mock_get_source_path
-):
-  executor = ModeGetModelsExecutor(__ARGS.copy())
-  expected_dist_path = __mock_get_source_path(__mock_xmipp_name)
-  assert (
-    executor.dist_path == expected_dist_path
-  ), get_assertion_message("dist path", expected_dist_path, executor.dist_path)
-
 @pytest.mark.parametrize(
   "input_directory,expected_directory",
   [
     pytest.param("some-directory", "some-directory"),
     pytest.param(
-      f"{__SOURCES_PATH}/{__XMIPP_NAME}",
-      f"{__SOURCES_PATH}/{__XMIPP_NAME}/models"
+      f"{__INSTALL_PATH}",
+      f"{__INSTALL_PATH}/models"
     )
   ]
 )
@@ -163,9 +153,9 @@ def __mock_run_shell_command(request):
     yield mock_method
 
 @pytest.fixture(autouse=True)
-def __mock_sources_path():
+def __mock_install_path():
   with patch.object(
-    paths, "SOURCES_PATH", __SOURCES_PATH
+    paths, "INSTALL_PATH", __INSTALL_PATH
   ) as mock_object:
     yield mock_object
 
@@ -207,11 +197,3 @@ def __mock_sync_program_name():
     __SYNC_PROGRAM_NAME
   ) as mock_object:
     yield mock_object
-
-@pytest.fixture(autouse=True)
-def __mock_get_source_path():
-  with patch(
-    "xmipp3_installer.installer.constants.paths.get_source_path"
-  ) as mock_method:
-    mock_method.side_effect = lambda source: f"{__SOURCES_PATH}/{source}"
-    yield mock_method
