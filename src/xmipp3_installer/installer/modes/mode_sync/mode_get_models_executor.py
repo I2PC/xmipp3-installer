@@ -9,7 +9,7 @@ from typing import Dict, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.installer import constants, urls
+from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
@@ -30,8 +30,7 @@ class ModeGetModelsExecutor(ModeSyncExecutor):
     """
     super().__init__(context)
     self.models_directory = context.pop(params.PARAM_MODELS_DIRECTORY)
-    self.dist_path = paths.get_source_path(constants.XMIPP)
-    if self.models_directory == self.dist_path:
+    if self.models_directory == paths.INSTALL_PATH:
       self.models_directory = os.path.join(self.models_directory, 'models')
 
   def _sync_operation(self) -> Tuple[int, str]:
