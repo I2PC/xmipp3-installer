@@ -31,9 +31,10 @@ def test_implements_interface_mode_sync_executor():
   "input_directory,expected_directory",
   [
     pytest.param("some-directory", "some-directory"),
+    pytest.param(f"{__INSTALL_PATH}", f"{__INSTALL_PATH}"),
     pytest.param(
-      f"{__INSTALL_PATH}",
-      f"{__INSTALL_PATH}/models"
+      f"abs-{__INSTALL_PATH}-abs",
+      f"abs-{__INSTALL_PATH}-abs/models"
     )
   ]
 )
@@ -197,3 +198,9 @@ def __mock_sync_program_name():
     __SYNC_PROGRAM_NAME
   ) as mock_object:
     yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_os_path_abspath():
+  with patch("os.path.abspath") as mock_method:
+    mock_method.side_effect = lambda path: f"abs-{path}-abs"
+    yield mock_method
