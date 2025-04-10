@@ -19,6 +19,7 @@ _PYTHON_TEST_SCRIPT_NAME = "test.py"
 _PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.SOURCES_PATH, "xmipp", "tests")
 _DEFAULT_PYTHON_HOME = "python3"
 _DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
+_BASHRC_FILE_PATH = os.path.abspath(os.path.join(paths.INSTALL_PATH, "xmipp.bashrc"))
 _TESTS_SEPARATOR = " "
 _PARAM_MAPPER = {
   params.PARAM_SHOW_TESTS: "--show",
@@ -49,6 +50,10 @@ class ModeTestExecutor(ModeSyncExecutor):
     #### Returns:
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
+    ret_code, output = self.__load_bashrc()
+    if ret_code:
+      return ret_code, output
+    
     ret_code, output = super().run()
     if ret_code:
       return ret_code, output
@@ -81,6 +86,28 @@ class ModeTestExecutor(ModeSyncExecutor):
       cwd=os.path.dirname(self.sync_program_path),
       show_output=show_output
     )
+
+  @staticmethod
+  def __load_bashrc() -> Tuple[int, str]:
+    """
+    ### Loads the bashrc file.
+
+    #### Returns:
+    - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
+    """
+    if not os.path.exists(_BASHRC_FILE_PATH):
+      return 1, f"File {_BASHRC_FILE_PATH} does not exist."
+
+    ret_code, output = shell_handler.run_shell_command(
+      f"bash -c 'source {_BASHRC_FILE_PATH} && env'"
+    )
+    if ret_code:
+      return ret_code, output
+
+    for line in output.splitlines():
+      key, _, value = line.partition("=")
+      os.environ[key] = value
+    return 0, ""
 
   def __run_tests(self) -> Tuple[int, str]:
     """
