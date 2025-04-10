@@ -28,6 +28,15 @@ __DATASET_PATH = "/path/to/dataset"
 __DATASET_NAME = "dataset_name"
 __PYTHON_TEST_SCRIPT_PATH = "/path/to/python_script"
 __PYTHON_TEST_SCRIPT_NAME = "script_name"
+_BASHRC_FILE_PATH = "/path/to/bashrc_file"
+__ENV_VARIABLES_STR = """VAR1=VALUE1
+VAR2=VALUE2
+VAR3=VALUE3"""
+__ENV_VARIABLES = {
+  "VAR1": "VALUE1",
+  "VAR2": "VALUE2",
+  "VAR3": "VALUE3"
+}
 
 def test_implements_interface_mode_sync_executor():
   executor = ModeTestExecutor(__CONTEXT.copy())
@@ -118,6 +127,59 @@ def test_raises_key_error_when_param_not_present(missing_key):
   del context[missing_key]
   with pytest.raises(KeyError):
     ModeTestExecutor(context)
+
+def test_calls_run_shell_command_if_file_exists_when_loading_bashrc(
+  __mock_os_path_exists,
+  __mock_run_shell_command,
+  __mock_bashrc_file_path
+):
+  ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  __mock_run_shell_command.assert_called_once_with(
+    f"bash -c 'source {__mock_bashrc_file_path} && env'"
+  )
+
+def test_does_not_call_run_shell_command_if_file_does_not_exist_when_loading_bashrc(
+  __mock_os_path_exists,
+  __mock_run_shell_command,
+  __mock_bashrc_file_path
+):
+  __mock_os_path_exists.return_value = False
+  ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  __mock_run_shell_command.assert_not_called()
+
+def test_loads_env_variables_when_loading_bashrc(
+  __mock_os_path_exists,
+  __mock_run_shell_command
+):
+  __mock_run_shell_command.return_value = (0, __ENV_VARIABLES_STR)
+  ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  for variable in __ENV_VARIABLES.keys():
+    assert (
+      variable in os.environ
+    ), f"Variable {variable} not found in environment variables."
+    assert (
+      os.environ[variable] == __ENV_VARIABLES[variable]
+    ), get_assertion_message("env variable value", __ENV_VARIABLES[variable], os.environ[variable])
+
+@pytest.mark.parametrize(
+  "__mock_os_path_exists,__mock_run_shell_command,expected_result",
+  [
+    pytest.param(False, (1, "error"), (1, f"File {_BASHRC_FILE_PATH} does not exist.")),
+    pytest.param(False, (0, ""), (1, f"File {_BASHRC_FILE_PATH} does not exist.")),
+    pytest.param(True, (1, "error"), (1, "error")),
+    pytest.param(True, (0, ""), (0, ""))
+  ],
+  indirect=["__mock_os_path_exists", "__mock_run_shell_command"]
+)
+def test_returns_expected_result_when_loading_bashrc(
+  __mock_os_path_exists,
+  __mock_run_shell_command,
+  expected_result
+):
+  result = ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  assert (
+    result == expected_result
+  ), get_assertion_message("load bashrc output", expected_result, result)
 
 def test_calls_logger_if_param_is_tests_when_running_tests(
   __mock_logger,
@@ -282,17 +344,57 @@ def test_calls_run_shell_command_when_running_sync_operation(
       show_output=expected_show_output
   )
 
+def test_calls_load_bashrc_when_running_executor(
+  __mock_load_bashrc,
+  __mock_parent_run,
+  __mock_run_tests
+):
+  ModeTestExecutor(__CONTEXT.copy()).run()
+  __mock_load_bashrc.assert_called_once_with()
+
+def test_calls_run_tests_if_parent_run_and_load_bash_succeed_when_running_executor(
+  __mock_load_bashrc,
+  __mock_parent_run,
+  __mock_run_tests
+):
+  ModeTestExecutor(__CONTEXT.copy()).run()
+  __mock_run_tests.assert_called_once_with()
+
 @pytest.mark.parametrize(
-  "__mock_sync_operation,__mock_run_tests,expected_result",
+  "__mock_load_bashrc,__mock_parent_run",
   [
-    pytest.param((1, "command error"), (2, "test error"), (1, "command error")),
-    pytest.param((1, "command error"), (0, ""), (1, "command error")),
-    pytest.param((0, ""), (2, "test error"), (2, "test error")),
-    pytest.param((0, ""), (0, ""), (0, ""))
+    pytest.param((1, ""), (1, "")),
+    pytest.param((1, ""), (0, "")),
+    pytest.param((0, ""), (1, ""))
   ],
-  indirect=["__mock_sync_operation", "__mock_run_tests"]
+  indirect=["__mock_load_bashrc", "__mock_parent_run"]
+)
+def test_does_not_call_run_tests_if_parent_run_or_load_bash_fail_when_running_executor(
+  __mock_load_bashrc,
+  __mock_parent_run,
+  __mock_run_tests
+):
+  ModeTestExecutor(__CONTEXT.copy()).run()
+  __mock_run_tests.assert_not_called()
+
+@pytest.mark.parametrize(
+  "__mock_load_bashrc,__mock_sync_operation,__mock_run_tests,expected_result",
+  [
+    pytest.param(
+      (1, "source error"), (2, "command error"), (3, "test error"), (1, "source error")
+    ),
+    pytest.param(
+      (1, "source error"), (0, ""), (0, ""), (1, "source error")
+    ),
+    pytest.param((0, ""), (2, "command error"), (3, "test error"), (2, "command error")),
+    pytest.param((0, ""), (2, "command error"), (0, ""), (2, "command error")),
+    pytest.param((0, ""), (0, ""), (3, "test error"), (3, "test error")),
+    pytest.param((0, ""), (0, ""), (0, ""), (0, ""))
+  ],
+  indirect=["__mock_load_bashrc", "__mock_sync_operation", "__mock_run_tests"]
 )
 def test_returns_expected_result(
+  __mock_load_bashrc,
   __mock_sync_operation,
   __mock_run_tests,
   expected_result,
@@ -383,6 +485,15 @@ def __mock_python_test_script_name():
     yield mock_object
 
 @pytest.fixture(autouse=True)
+def __mock_bashrc_file_path():
+  with patch.object(
+    mode_test_executor,
+    "_BASHRC_FILE_PATH",
+    _BASHRC_FILE_PATH
+  ) as mock_object:
+    yield mock_object
+
+@pytest.fixture(autouse=True)
 def __mock_dataset_path():
   with patch.object(
     mode_test_executor,
@@ -391,16 +502,32 @@ def __mock_dataset_path():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture
-def __mock_os_path_exists():
+@pytest.fixture(params=[True])
+def __mock_os_path_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = True
+    mock_method.return_value = request.param
     yield mock_method
 
 @pytest.fixture(params=[(0, "")])
 def __mock_sync_operation(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._sync_operation"
+  ) as mock_method:
+    mock_method.return_value = request.param
+    yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_load_bashrc(request):
+  with patch(
+    "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._ModeTestExecutor__load_bashrc"
+  ) as mock_method:
+    mock_method.return_value = request.param
+    yield mock_method
+
+@pytest.fixture(params=[(0, "")])
+def __mock_parent_run(request):
+  with patch(
+    "xmipp3_installer.installer.modes.mode_sync.mode_sync_executor.ModeSyncExecutor.run"
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method
