@@ -39,7 +39,7 @@ def run_shell_command(
     logger(output_str)
   
   if ret_code and show_error:
-    logger.log_error(output_str, ret_code=ret_code)
+    logger(logger.red(output_str))
   
   return ret_code, output_str
 
