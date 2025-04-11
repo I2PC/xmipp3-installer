@@ -36,20 +36,18 @@ def test_calls_logger_to_show_output_when_running_shell_command(
     __mock_run_command()[1]
   )
 
-@pytest.mark.parametrize("ret_code", [pytest.param(1), pytest.param(2)])
 def test_calls_logger_to_show_error_when_running_shell_command(
-  ret_code,
-  __mock_logger_error,
+  __mock_logger,
+  __mock_logger_red,
   __mock_run_command
 ):
-  __mock_run_command.return_value = (ret_code, 'test_error_message')
+  __mock_run_command.return_value = (1, 'test_error_message')
   shell_handler.run_shell_command(
     __COMMAND,
     show_error=True
   )
-  __mock_logger_error.assert_called_once_with(
-    __mock_run_command()[1],
-    ret_code=ret_code
+  __mock_logger.assert_called_once_with(
+    __mock_logger_red(__mock_run_command()[1])
   )
 
 def test_returns_interrupted_error_if_receives_keyboard_interrupt_when_running_command(
@@ -195,13 +193,6 @@ def __mock_logger():
     yield mock_method
 
 @pytest.fixture
-def __mock_logger_error():
-  with patch(
-    "xmipp3_installer.application.logger.logger.Logger.log_error"
-  ) as mock_method:
-    yield mock_method
-
-@pytest.fixture
 def __mock_stdout():
   mock_stdout = Mock()
   mock_stdout.read.return_value = b"Hi\n"
@@ -251,4 +242,12 @@ def __mock_thread():
     mock_thread.join.return_value = None
 
     mock_method.return_value = mock_thread
+    yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_logger_red():
+  with patch(
+    "xmipp3_installer.application.logger.logger.Logger.red"
+  ) as mock_method:
+    mock_method.side_effect = lambda text: f"red_start-{text}-red_end"
     yield mock_method
