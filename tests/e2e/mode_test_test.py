@@ -198,7 +198,7 @@ __ALL_PROGRAMS_PARAM = "--all-programs"
     "__mock_sys_argv"
   ]
 )
-def test_add_model(
+def test_test(
   __mock_bashrc_path,
   __mock_sync_program_path,
   __mock_sys_argv,
