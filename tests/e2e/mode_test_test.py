@@ -263,12 +263,11 @@ def __mock_python_test_script_path():
     yield mock_object
 
 @pytest.fixture(autouse=True)
-def __mock_python_test_script_name():
-  new_name = os.path.basename(mode_test_executor._PYTHON_TEST_SCRIPT_NAME)
+def __mock_python_test_script_internal_path():
   with patch.object(
     mode_test_executor,
-    "_PYTHON_TEST_SCRIPT_NAME",
-    new_name
+    "_PYTHON_TEST_SCRIPT_INTERNAL_PATH",
+    mode_test_executor._PYTHON_TEST_SCRIPT_NAME
   ) as mock_object:
     yield mock_object
 

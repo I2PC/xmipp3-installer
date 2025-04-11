@@ -28,7 +28,7 @@ __PYHTON_HOME = "/path/to/python"
 __DATASET_PATH = "/path/to/dataset"
 __DATASET_NAME = "dataset_name"
 __PYTHON_TEST_SCRIPT_PATH = "/path/to/python_script"
-__PYTHON_TEST_SCRIPT_NAME = "script_name"
+__PYTHON_TEST_SCRIPT_INTERNAL_PATH = "tests/script_name"
 _BASHRC_FILE_PATH = "/path/to/bashrc_file"
 __ENV_VARIABLES_STR = """VAR1=VALUE1
 VAR2=VALUE2
@@ -250,7 +250,7 @@ def test_calls_run_shell_command_when_running_tests(
   __mock_run_shell_command,
   __mock_os_path_join,
   __mock_binaries_path,
-  __mock_python_test_script_name,
+  __mock_python_test_script_internal_path,
   __mock_python_test_script_path
 ):
   new_context = {
@@ -262,7 +262,7 @@ def test_calls_run_shell_command_when_running_tests(
   executor.param_value = param
   executor._ModeTestExecutor__run_tests()
   __mock_run_shell_command.assert_called_once_with(
-    f"{executor.python_home} {__mock_python_test_script_name} {param} {expected_no_cuda}",
+    f"{executor.python_home} {__mock_python_test_script_internal_path} {param} {expected_no_cuda}",
     cwd=__mock_python_test_script_path,
     show_output=True
   )
@@ -476,11 +476,11 @@ def __mock_python_test_script_path():
     yield mock_object
 
 @pytest.fixture(autouse=True)
-def __mock_python_test_script_name():
+def __mock_python_test_script_internal_path():
   with patch.object(
     mode_test_executor,
-    "_PYTHON_TEST_SCRIPT_NAME",
-    __PYTHON_TEST_SCRIPT_NAME
+    "_PYTHON_TEST_SCRIPT_INTERNAL_PATH",
+    __PYTHON_TEST_SCRIPT_INTERNAL_PATH
   ) as mock_object:
     yield mock_object
 
