@@ -264,8 +264,7 @@ def test_calls_run_shell_command_when_running_tests(
   __mock_run_shell_command.assert_called_once_with(
     f"{executor.python_home} {__mock_python_test_script_name} {param} {expected_no_cuda}",
     cwd=__mock_python_test_script_path,
-    show_output=True,
-    show_error=True
+    show_output=True
   )
 
 @pytest.mark.parametrize(

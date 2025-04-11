@@ -122,8 +122,7 @@ def test_calls_run_shell_command_when_executing_model_operation(
   __mock_run_shell_command.assert_called_once_with(
     f"{sync_program} {expected_task} {__MODELS_DIR} {urls.MODELS_URL} DLmodels",
     show_command=True,
-    show_output=True,
-    show_error=True
+    show_output=True
   )
 
 @pytest.fixture(autouse=True)
