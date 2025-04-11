@@ -53,8 +53,7 @@ class ModeGetModelsExecutor(ModeSyncExecutor):
     ret_code, output = shell_handler.run_shell_command(
       f"{self.sync_program_path} {task} {self.models_directory} {urls.MODELS_URL} DLmodels",
       show_command=True,
-      show_output=True,
-      show_error=True
+      show_output=True
     )
     if not ret_code:
       logger(logger.green(f"Models successfully {completed_task}!"))
