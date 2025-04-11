@@ -154,13 +154,13 @@ def test_loads_env_variables_when_loading_bashrc(
 ):
   __mock_run_shell_command.return_value = (0, __ENV_VARIABLES_STR)
   ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
-  for variable in __ENV_VARIABLES.keys():
+  for variable, value in __ENV_VARIABLES.items():
     assert (
       variable in os.environ
     ), f"Variable {variable} not found in environment variables."
     assert (
-      os.environ[variable] == __ENV_VARIABLES[variable]
-    ), get_assertion_message("env variable value", __ENV_VARIABLES[variable], os.environ[variable])
+      os.environ[variable] == value
+    ), get_assertion_message("env variable value", value, os.environ[variable])
 
 @pytest.mark.parametrize(
   "__mock_os_path_exists,__mock_run_shell_command,expected_result",
