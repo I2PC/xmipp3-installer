@@ -7,7 +7,7 @@ import os
 from typing import Dict, Tuple, Any
 
 from xmipp3_installer.application.cli.arguments import params
-from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.application.logger.logger import logger, errors
 from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
@@ -96,7 +96,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
     if not os.path.exists(_BASHRC_FILE_PATH):
-      return 1, f"File {_BASHRC_FILE_PATH} does not exist."
+      return errors.IO_ERROR, f"File {_BASHRC_FILE_PATH} does not exist."
 
     ret_code, output = shell_handler.run_shell_command(
       f"bash -c 'source {_BASHRC_FILE_PATH} && env'"
