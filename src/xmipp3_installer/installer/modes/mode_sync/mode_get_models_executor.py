@@ -58,4 +58,5 @@ class ModeGetModelsExecutor(ModeSyncExecutor):
     if not ret_code:
       logger(logger.green(f"Models successfully {completed_task}!"))
 
+    ret_code = 1 if ret_code else ret_code
     return ret_code, output

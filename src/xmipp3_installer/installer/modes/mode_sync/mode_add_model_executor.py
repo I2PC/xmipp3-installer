@@ -60,7 +60,9 @@ class ModeAddModelExecutor(ModeSyncExecutor):
     if not self.__get_confirmation():
       return errors.INTERRUPTED_ERROR, ""
     
-    return self.__upload_model()
+    ret_code, output = self.__upload_model()
+    ret_code = 1 if ret_code else ret_code
+    return ret_code, output
 
   def __generate_compressed_file(self) -> Tuple[int, str]:
     """
