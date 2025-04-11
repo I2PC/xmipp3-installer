@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
@@ -164,8 +165,8 @@ def test_loads_env_variables_when_loading_bashrc(
 @pytest.mark.parametrize(
   "__mock_os_path_exists,__mock_run_shell_command,expected_result",
   [
-    pytest.param(False, (1, "error"), (1, f"File {_BASHRC_FILE_PATH} does not exist.")),
-    pytest.param(False, (0, ""), (1, f"File {_BASHRC_FILE_PATH} does not exist.")),
+    pytest.param(False, (1, "error"), (errors.IO_ERROR, f"File {_BASHRC_FILE_PATH} does not exist.")),
+    pytest.param(False, (0, ""), (errors.IO_ERROR, f"File {_BASHRC_FILE_PATH} does not exist.")),
     pytest.param(True, (1, "error"), (1, "error")),
     pytest.param(True, (0, ""), (0, ""))
   ],
