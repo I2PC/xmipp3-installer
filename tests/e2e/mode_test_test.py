@@ -1,3 +1,4 @@
+import os
 import sys
 from io import StringIO
 from unittest.mock import patch
@@ -26,92 +27,179 @@ __ALL_FUNCTIONS_PARAM = "--all-functions"
 __ALL_PROGRAMS_PARAM = "--all-programs"
 
 @pytest.mark.parametrize(
-  "__mock_sync_program_path,__mock_dataset_path,__mock_sys_argv,expected_message",
+  "__mock_bashrc_path,__mock_sync_program_path,"
+  "__mock_dataset_path,__mock_sys_argv,expected_message",
   [
     pytest.param(
-      False, False, __INDIVIDUAL_TEST, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, individual test"
+      False, False, False, __INDIVIDUAL_TEST, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, no dataset, individual test"
     ),
     pytest.param(
-      False, False, __MULTIPLE_TESTS, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, multiple tests"
+      False, False, False, __MULTIPLE_TESTS, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, no dataset, multiple tests"
     ),
     pytest.param(
-      False, False, __SHOW_PARAM, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, show"
+      False, False, False, __SHOW_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, no dataset, show"
     ),
     pytest.param(
-      False, False, __ALL_FUNCTIONS_PARAM, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, all functions"
+      False, False, False, __ALL_FUNCTIONS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, no dataset, all functions"
     ),
     pytest.param(
-      False, False, __ALL_PROGRAMS_PARAM, mode_sync.NO_PROGRAM,
-      id="Non-existing program, no dataset, all programs"
+      False, False, False, __ALL_PROGRAMS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, no dataset, all programs"
     ),
     pytest.param(
-      False, True, __INDIVIDUAL_TEST, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, individual test"
+      False, False, True, __INDIVIDUAL_TEST, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, existing dataset, individual test"
     ),
     pytest.param(
-      False, True, __MULTIPLE_TESTS, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, multiple tests"
+      False, False, True, __MULTIPLE_TESTS, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, existing dataset, multiple tests"
     ),
     pytest.param(
-      False, True, __SHOW_PARAM, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, show"
+      False, False, True, __SHOW_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, existing dataset, show"
     ),
     pytest.param(
-      False, True, __ALL_FUNCTIONS_PARAM, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, all functions"
+      False, False, True, __ALL_FUNCTIONS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, existing dataset, all functions"
     ),
     pytest.param(
-      False, True, __ALL_PROGRAMS_PARAM, mode_sync.NO_PROGRAM,
-      id="Non-existing program, existing dataset, all programs"
+      False, False, True, __ALL_PROGRAMS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, non-existing program, existing dataset, all programs"
     ),
     pytest.param(
-      True, False, __INDIVIDUAL_TEST, mode_test.get_download_message(__INDIVIDUAL_TEST),
-      id="Existing program, no dataset, individual test"
+      False, True, False, __INDIVIDUAL_TEST, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, no dataset, individual test"
     ),
     pytest.param(
-      True, False, __MULTIPLE_TESTS, mode_test.get_download_message(__MULTIPLE_TESTS),
-      id="Existing program, no dataset, multiple tests"
+      False, True, False, __MULTIPLE_TESTS, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, no dataset, multiple tests"
     ),
     pytest.param(
-      True, False, __SHOW_PARAM, mode_test.get_download_message(""),
-      id="Existing program, no dataset, show"
+      False, True, False, __SHOW_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, no dataset, show"
     ),
     pytest.param(
-      True, False, __ALL_FUNCTIONS_PARAM, mode_test.get_download_message(""),
-      id="Existing program, no dataset, all functions"
+      False, True, False, __ALL_FUNCTIONS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, no dataset, all functions"
     ),
     pytest.param(
-      True, False, __ALL_PROGRAMS_PARAM, mode_test.get_download_message(""),
-      id="Existing program, no dataset, all programs"
+      False, True, False, __ALL_PROGRAMS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, no dataset, all programs"
     ),
     pytest.param(
-      True, True, __INDIVIDUAL_TEST, mode_test.get_update_message(__INDIVIDUAL_TEST),
-      id="Existing program, existing dataset, individual test"
+      False, True, True, __INDIVIDUAL_TEST, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, existing dataset, individual test"
     ),
     pytest.param(
-      True, True, __MULTIPLE_TESTS, mode_test.get_update_message(__MULTIPLE_TESTS),
-      id="Existing program, existing dataset, multiple tests"
+      False, True, True, __MULTIPLE_TESTS, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, existing dataset, multiple tests"
     ),
     pytest.param(
-      True, True, __SHOW_PARAM, mode_test.get_update_message(""),
-      id="Existing program, existing dataset, show"
+      False, True, True, __SHOW_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, existing dataset, show"
     ),
     pytest.param(
-      True, True, __ALL_FUNCTIONS_PARAM, mode_test.get_update_message(""),
-      id="Existing program, existing dataset, all functions"
+      False, True, True, __ALL_FUNCTIONS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, existing dataset, all functions"
     ),
     pytest.param(
-      True, True, __ALL_PROGRAMS_PARAM, mode_test.get_update_message(""),
-      id="Existing program, existing dataset, all programs"
+      False, True, True, __ALL_PROGRAMS_PARAM, mode_test.NON_BASHRC_FILE,
+      id="Non-existing bashrc file, existing program, existing dataset, all programs"
+    ),
+    pytest.param(
+      True, False, False, __INDIVIDUAL_TEST, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, no dataset, individual test"
+    ),
+    pytest.param(
+      True, False, False, __MULTIPLE_TESTS, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, no dataset, multiple tests"
+    ),
+    pytest.param(
+      True, False, False, __SHOW_PARAM, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, no dataset, show"
+    ),
+    pytest.param(
+      True, False, False, __ALL_FUNCTIONS_PARAM, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, no dataset, all functions"
+    ),
+    pytest.param(
+      True, False, False, __ALL_PROGRAMS_PARAM, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, no dataset, all programs"
+    ),
+    pytest.param(
+      True, False, True, __INDIVIDUAL_TEST, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, existing dataset, individual test"
+    ),
+    pytest.param(
+      True, False, True, __MULTIPLE_TESTS, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, existing dataset, multiple tests"
+    ),
+    pytest.param(
+      True, False, True, __SHOW_PARAM, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, existing dataset, show"
+    ),
+    pytest.param(
+      True, False, True, __ALL_FUNCTIONS_PARAM, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, existing dataset, all functions"
+    ),
+    pytest.param(
+      True, False, True, __ALL_PROGRAMS_PARAM, mode_sync.NO_PROGRAM,
+      id="Existing bashrc file, non-existing program, existing dataset, all programs"
+    ),
+    pytest.param(
+      True, True, False, __INDIVIDUAL_TEST, mode_test.get_download_message(__INDIVIDUAL_TEST),
+      id="Existing bashrc file, existing program, no dataset, individual test"
+    ),
+    pytest.param(
+      True, True, False, __MULTIPLE_TESTS, mode_test.get_download_message(__MULTIPLE_TESTS),
+      id="Existing bashrc file, existing program, no dataset, multiple tests"
+    ),
+    pytest.param(
+      True, True, False, __SHOW_PARAM, mode_test.get_download_message(""),
+      id="Existing bashrc file, existing program, no dataset, show"
+    ),
+    pytest.param(
+      True, True, False, __ALL_FUNCTIONS_PARAM, mode_test.get_download_message(""),
+      id="Existing bashrc file, existing program, no dataset, all functions"
+    ),
+    pytest.param(
+      True, True, False, __ALL_PROGRAMS_PARAM, mode_test.get_download_message(""),
+      id="Existing bashrc file, existing program, no dataset, all programs"
+    ),
+    pytest.param(
+      True, True, True, __INDIVIDUAL_TEST, mode_test.get_update_message(__INDIVIDUAL_TEST),
+      id="Existing bashrc file, existing program, existing dataset, individual test"
+    ),
+    pytest.param(
+      True, True, True, __MULTIPLE_TESTS, mode_test.get_update_message(__MULTIPLE_TESTS),
+      id="Existing bashrc file, existing program, existing dataset, multiple tests"
+    ),
+    pytest.param(
+      True, True, True, __SHOW_PARAM, mode_test.get_update_message(""),
+      id="Existing bashrc file, existing program, existing dataset, show"
+    ),
+    pytest.param(
+      True, True, True, __ALL_FUNCTIONS_PARAM, mode_test.get_update_message(""),
+      id="Existing bashrc file, existing program, existing dataset, all functions"
+    ),
+    pytest.param(
+      True, True, True, __ALL_PROGRAMS_PARAM, mode_test.get_update_message(""),
+      id="Existing bashrc file, existing program, existing dataset, all programs"
     )
   ],
-  indirect=["__mock_sync_program_path", "__mock_dataset_path", "__mock_sys_argv"]
+  indirect=[
+    "__mock_bashrc_path",
+    "__mock_sync_program_path",
+    "__mock_dataset_path",
+    "__mock_sys_argv"
+  ]
 )
 def test_add_model(
+  __mock_bashrc_path,
   __mock_sync_program_path,
   __mock_sys_argv,
   expected_message,
@@ -190,6 +278,19 @@ def __mock_dataset_path(request, __mock_python_test_script_path):
     mode_test_executor,
     "_DATASET_PATH",
     new_value
+  ) as mock_object:
+    yield mock_object
+
+@pytest.fixture(autouse=True, params=[False])
+def __mock_bashrc_path(request):
+  new_path = os.path.join(
+    TEST_FILES_DIR,
+    mode_test.BASHRC_FILE_NAME
+  ) if request.param else mode_test.NON_EXISTING_BASHRC_FILE_PATH
+  with patch.object(
+    mode_test_executor,
+    "_BASHRC_FILE_PATH",
+    new_path
   ) as mock_object:
     yield mock_object
 
