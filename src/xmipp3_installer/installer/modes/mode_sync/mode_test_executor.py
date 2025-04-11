@@ -15,8 +15,13 @@ from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSy
 from xmipp3_installer.repository.config_vars import variables
 
 _DATASET_NAME = "xmipp_programs"
-_PYTHON_TEST_SCRIPT_NAME = os.path.join("tests", "test.py")
 _PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.SOURCES_PATH, "xmipp")
+_PYTHON_TEST_SCRIPT_INTERNAL_FOLDER = "tests"
+_PYTHON_TEST_SCRIPT_NAME = "test.py"
+_PYTHON_TEST_SCRIPT_INTERNAL_PATH = os.path.join(
+  _PYTHON_TEST_SCRIPT_INTERNAL_FOLDER,
+  _PYTHON_TEST_SCRIPT_NAME
+)
 _DEFAULT_PYTHON_HOME = "python3"
 _DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
 _BASHRC_FILE_PATH = os.path.abspath(os.path.join(paths.INSTALL_PATH, "xmipp.bashrc"))
@@ -127,7 +132,7 @@ class ModeTestExecutor(ModeSyncExecutor):
       test_names = self.param_value.replace(_TESTS_SEPARATOR, ", ")
       logger(f" Tests to run: {test_names}")
     ret_code, output = shell_handler.run_shell_command(
-      f"{self.python_home} {_PYTHON_TEST_SCRIPT_NAME} {self.param_value} {no_cuda_str}",
+      f"{self.python_home} {_PYTHON_TEST_SCRIPT_INTERNAL_PATH} {self.param_value} {no_cuda_str}",
       cwd=_PYTHON_TEST_SCRIPT_PATH,
       show_output=True
     )
