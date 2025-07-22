@@ -99,6 +99,7 @@ def __setup_environment():
     os.makedirs(os.path.join(__PYCACHE_ROOT, "__pycache__"), exist_ok=True)
     os.makedirs(paths.BUILD_PATH, exist_ok=True)
     create_versions_json_file()
+    os.makedirs(paths.BINARIES_PATH, exist_ok=True)
     __create_file(__BIN_FILE)
     yield
   finally:
