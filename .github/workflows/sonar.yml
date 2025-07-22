@@ -1,4 +1,6 @@
 name: Scan code with SonarQube
+permissions:
+  contents: read
 on:
   push:
     branches:
