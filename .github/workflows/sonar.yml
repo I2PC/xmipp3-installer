@@ -1,0 +1,55 @@
+name: Scan code with SonarQube
+permissions:
+  contents: read
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sonar-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Install project
+        working-directory: ${{ github.workspace }}
+        run: pip install -e .[test]
+
+      - name: Run unitary tests
+        env:
+          SCRIPT_PATH: ./scripts/run-tests.sh
+        run: |
+          chmod +x $SCRIPT_PATH
+          $SCRIPT_PATH unitary
+
+      - name: Run integration tests
+        env:
+          SCRIPT_PATH: ./scripts/run-tests.sh
+        run: |
+          chmod +x $SCRIPT_PATH
+          $SCRIPT_PATH integration
+
+      - name: Run e2e tests
+        env:
+          SCRIPT_PATH: ./scripts/run-tests.sh
+        run: |
+          chmod +x $SCRIPT_PATH
+          $SCRIPT_PATH e2e
+
+      - name: Generate report files
+        run: |
+          python -m coverage combine ./conf/coverage
+          python -m coverage xml
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

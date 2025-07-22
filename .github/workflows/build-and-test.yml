@@ -1,4 +1,6 @@
 name: Build package in standalone version
+permissions:
+  contents: read
 on:
   workflow_dispatch:
   pull_request:
@@ -16,13 +18,13 @@ jobs:
         - '3.11'
         - '3.12'
         - '3.13'
-    
+
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-        
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -30,19 +32,17 @@ jobs:
 
       - name: Install project
         working-directory: ${{ github.workspace }}
-        run: |
-          pip install -e .
-          pip install -e .[test]
+        run: pip install -e .[test]
 
       - name: Use CLI standalone
         run: ${{ vars.MODULE_NAME }} -h
-      
+
       - name: Use CLI as Python module
         run: python -m ${{ vars.MODULE_NAME }} -h
-        
+
       - name: Check source code with Ruff
         run: python -m ruff check --config ./conf/ruff-src.toml
-    
+
       - name: Check tests code with Ruff
         run: python -m ruff check --config ./conf/ruff-tests.toml
 
@@ -52,28 +52,28 @@ jobs:
         run: |
           chmod +x $SCRIPT_PATH
           $SCRIPT_PATH unitary
-      
+
       - name: Run integration tests
         env:
           SCRIPT_PATH: ./scripts/run-tests.sh
         run: |
           chmod +x $SCRIPT_PATH
           $SCRIPT_PATH integration
-      
+
       - name: Run e2e tests
         env:
           SCRIPT_PATH: ./scripts/run-tests.sh
         run: |
           chmod +x $SCRIPT_PATH
           $SCRIPT_PATH e2e
-      
+
       - name: Generate report files
         if: matrix.python-version == '3.13'
         run: |
           python -m coverage combine ./conf/coverage
           python -m coverage xml
           zip reports.zip coverage.xml report.xml
-      
+
       - uses: actions/upload-artifact@v4
         if: matrix.python-version == '3.13'
         with:
@@ -89,12 +89,12 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-      
+
       - uses: actions/download-artifact@v4
         with:
           name: test-reports
           path: ${{ github.workspace }}
-      
+
       - name: Unzip reports
         run: unzip reports.zip
 
@@ -102,4 +102,3 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
