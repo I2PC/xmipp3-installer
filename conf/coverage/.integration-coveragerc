@@ -7,5 +7,7 @@ skip_empty = true
 fail_under = 100
 show_missing = true
 omit = 
+  */site-packages/*
+  */dist-packages/*
   tests/__init__.py
   src/**

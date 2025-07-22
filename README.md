@@ -19,7 +19,6 @@ In order to run the tests for this project, the project needs to be installed in
 
 To do that, you need to clone this project, move inside the repository's folder, and run:
 ```
-pip install -e .
 pip install -e .[test]
 ```
 Once the dependencies have been installed, the automatic tests for this package can be run using `./scripts/run-tests.sh` in bash, or `.\scripts\run-tests.ps1` in PowerShell.
