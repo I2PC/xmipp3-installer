@@ -4,7 +4,6 @@ import pytest
 
 from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
-from xmipp3_installer.repository.config_vars import variables
 
 from ..... import get_assertion_message
 
