@@ -40,7 +40,8 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
       *ModeCleanBinExecutor.__get_compilation_files(),
       *ModeCleanBinExecutor.__get_empty_dirs(),
       *ModeCleanBinExecutor.__get_pycache_dirs(),
-      paths.BUILD_PATH
+      paths.BUILD_PATH,
+      paths.BINARIES_PATH
     ]
   
   def _get_confirmation_message(self) -> str:
