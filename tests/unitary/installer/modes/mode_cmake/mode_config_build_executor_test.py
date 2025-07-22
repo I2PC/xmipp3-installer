@@ -96,7 +96,7 @@ def test_returns_expected_is_empty_value(input_value, expected_is_empty):
   ), get_assertion_message("is empty value", expected_is_empty, is_empty)
 
 def test_returns_expected_config_vars():
-  config_vars = mode_config_build_executor._get_config_vars()
+  config_vars = mode_config_build_executor._get_non_internal_config_vars()
   config_vars.sort()
   expected_config_vars = __NON_INTERNAL_VARIABLES
   expected_config_vars.sort()

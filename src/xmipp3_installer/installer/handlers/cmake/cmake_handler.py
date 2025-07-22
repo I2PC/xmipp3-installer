@@ -2,10 +2,28 @@
 
 import os
 import shutil
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional, Tuple, Union, List
 
+from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
-from xmipp3_installer.repository.config_vars import variables
+
+
+def run_cmake_command(cmake: str, args: str, substitute: bool = True) -> int:
+  """
+  ### Runs a CMake command with the given arguments.
+
+  #### Params:
+  - cmake (str): Path to the CMake executable.
+  - args (str): Arguments to pass to the CMake command.
+  - substitute (bool): Whether to substitute variables in the command.
+
+  #### Returns:
+  - (int): Return code of the CMake command.
+  """
+  return 1
+  #cmake = cmake if cmake else get_cmake_path()
+  #cmd = f"{cmake} {args}"
+  #return shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=substitute)
 
 def get_cmake_path() -> Optional[str]:
   """
@@ -16,17 +34,16 @@ def get_cmake_path() -> Optional[str]:
   """
   return shutil.which(cmake_constants.DEFAULT_CMAKE)
 
-def get_cmake_vars_str(config: Dict[str, Any]) -> str:
+def get_cmake_params(variables: List[Tuple[str, Union[str, bool]]]) -> str:
   """
-  ### Converts the variables in the config dictionary into a list as CMake args.
-  
+  ### Converts the given list of variable names into CMake parameters.
+
   #### Params:
-  - config (dict): Dictionary to obtain the parameters from.
+  - variables (list): List of variable names to obtain the parameters from.
   """
   result = []
-  for (key, value) in config.items():
-    if key not in variables.INTERNAL_LOGIC_VARS and bool(value):
-      result.append(f"-D{key}={value}")
+  for key, value in variables:
+    result.append(f"-D{key}={value}")
   return ' '.join(result)
 
 def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
