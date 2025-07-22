@@ -15,6 +15,7 @@ __SO_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.so")
 __OS_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.os")
 __O_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.o")
 __DUMMY_FILE = os.path.join(__COMPILATION_FILES_DIR, "dummy_file")
+__BIN_FILE = os.path.join(paths.BINARIES_PATH, "bin_file")
 __DIR_STRUCT_ROOT = os.path.join(
   paths.SOURCES_PATH,
   constants.XMIPP,
@@ -53,7 +54,8 @@ def test_deletes_expected_files(__setup_environment, confirmation_text):
     __O_FILE,
     os.path.join(__PYCACHE_ROOT, "__pycache__"),
     os.path.join(__DIR_STRUCT_ROOT, __EMPTY_DIR),
-    paths.BUILD_PATH
+    paths.BUILD_PATH,
+    paths.BINARIES_PATH
   ]:
     file_exists = os.path.exists(remaining_path)
     assert (
@@ -97,6 +99,8 @@ def __setup_environment():
     os.makedirs(os.path.join(__PYCACHE_ROOT, "__pycache__"), exist_ok=True)
     os.makedirs(paths.BUILD_PATH, exist_ok=True)
     create_versions_json_file()
+    os.makedirs(paths.BINARIES_PATH, exist_ok=True)
+    __create_file(__BIN_FILE)
     yield
   finally:
     file_operations.delete_paths([
@@ -105,5 +109,6 @@ def __setup_environment():
       __DBLITE_FILE,
       __PYCACHE_ROOT,
       paths.BUILD_PATH,
-      paths.VERSION_INFO_FILE
+      paths.VERSION_INFO_FILE,
+      paths.BINARIES_PATH
     ])

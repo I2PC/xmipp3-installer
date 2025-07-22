@@ -205,7 +205,8 @@ def test_returns_expected_paths_to_delete(
     *__mock_get_compilation_files(),
     *__mock_get_empty_dirs(),
     *__mock_get_pycache_dirs(),
-    paths.BUILD_PATH
+    paths.BUILD_PATH,
+    paths.BINARIES_PATH
   ]
   paths_to_delete = ModeCleanBinExecutor({})._get_paths_to_delete()
   assert (
