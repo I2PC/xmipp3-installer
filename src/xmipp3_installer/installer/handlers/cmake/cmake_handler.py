@@ -4,26 +4,7 @@ import os
 import shutil
 from typing import Any, Dict, Optional, Tuple, Union, List
 
-from xmipp3_installer.installer.handlers import shell_handler
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
-
-
-def run_cmake_command(cmake: str, args: str, substitute: bool = True) -> int:
-  """
-  ### Runs a CMake command with the given arguments.
-
-  #### Params:
-  - cmake (str): Path to the CMake executable.
-  - args (str): Arguments to pass to the CMake command.
-  - substitute (bool): Whether to substitute variables in the command.
-
-  #### Returns:
-  - (int): Return code of the CMake command.
-  """
-  return 1
-  #cmake = cmake if cmake else get_cmake_path()
-  #cmd = f"{cmake} {args}"
-  #return shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=substitute)
 
 def get_cmake_path() -> Optional[str]:
   """

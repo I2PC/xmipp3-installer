@@ -54,10 +54,6 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
       if not _is_empty(self.context[variable_key])
     ]
     return cmake_handler.get_cmake_params(non_empty_variables)
-    return " ".join([
-      f"-D{variable_key}={self.context[variable_key]}" for variable_key
-      in _get_non_internal_config_vars() if not _is_empty(self.context[variable_key])
-    ])
   
 def _get_non_internal_config_vars() -> List[str]:
   """
