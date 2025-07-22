@@ -15,7 +15,7 @@ __SO_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.so")
 __OS_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.os")
 __O_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.o")
 __DUMMY_FILE = os.path.join(__COMPILATION_FILES_DIR, "dummy_file")
-__BIN_FILE = os.path.join(path.BINARIES_PATH, "bin_file")
+__BIN_FILE = os.path.join(paths.BINARIES_PATH, "bin_file")
 __DIR_STRUCT_ROOT = os.path.join(
   paths.SOURCES_PATH,
   constants.XMIPP,
