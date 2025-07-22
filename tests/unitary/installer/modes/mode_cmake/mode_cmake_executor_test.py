@@ -94,37 +94,37 @@ def test_stores_expected_values_when_initializing(
     values == expected_values
   ), get_assertion_message("stored values", expected_values, values)
 
-def test_calls_shutil_which_if_cmake_in_context_not_valid_when_getting_cmake_executable(
+def test_calls_get_cmake_path_if_cmake_in_context_not_valid_when_getting_cmake_executable(
   __dummy_test_mode_cmake_executor,
-  __mock_shutil_which
+  __mock_get_cmake_path
 ):
   __dummy_test_mode_cmake_executor(
     {**__CONTEXT, variables.CMAKE: None}
   )._ModeCMakeExecutor__get_cmake_executable()
-  __mock_shutil_which.assert_called_once_with("cmake")
+  __mock_get_cmake_path.assert_called_once_with()
 
-def test_does_not_call_shutil_which_if_cmake_in_context_valid_when_getting_cmake_executable(
+def test_does_not_call_get_cmake_path_if_cmake_in_context_valid_when_getting_cmake_executable(
   __dummy_test_mode_cmake_executor,
-  __mock_shutil_which
+  __mock_get_cmake_path
 ):
   __dummy_test_mode_cmake_executor(
     __CONTEXT.copy()
   )._ModeCMakeExecutor__get_cmake_executable()
-  __mock_shutil_which.assert_not_called()
+  __mock_get_cmake_path.assert_not_called()
 
 @pytest.mark.parametrize(
-  "cmake_in_context,__mock_shutil_which,expected_cmake_path",
+  "cmake_in_context,__mock_get_cmake_path,expected_cmake_path",
   [
     pytest.param(None, None, None),
     pytest.param(None, __CMAKE, __CMAKE),
     pytest.param(__CMAKE, None, __CMAKE),
     pytest.param(__CMAKE, "other_path", __CMAKE)
   ],
-  indirect=["__mock_shutil_which"]
+  indirect=["__mock_get_cmake_path"]
 )
 def test_returns_expected_cmake_path(
   cmake_in_context,
-  __mock_shutil_which,
+  __mock_get_cmake_path,
   expected_cmake_path,
   __dummy_test_mode_cmake_executor
 ):
@@ -216,8 +216,8 @@ def __dummy_test_mode_executor():
   return TestExecutor
 
 @pytest.fixture(params=[__CMAKE], autouse=True)
-def __mock_shutil_which(request):
-  with patch("shutil.which") as mock_method:
+def __mock_get_cmake_path(request):
+  with patch("xmipp3_installer.installer.handlers.cmake.cmake_handler.get_cmake_path") as mock_method:
     mock_method.return_value = request.param
     yield mock_method
 

@@ -4,12 +4,12 @@
 This module contains the base class for executors that run CMake commands.
 """
 
-import shutil
 from abc import abstractmethod
-from typing import Dict, Tuple, Optional
+from typing import Dict, Optional, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
+from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository.config_vars import variables
 
@@ -57,7 +57,7 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
     #### Returns:
     - (str | None): Path to the CMake executable. None if it was not found.
     """
-    return self.cmake or shutil.which("cmake")
+    return self.cmake or cmake_handler.get_cmake_path()
   
   @staticmethod
   def _get_error_code(ret_code, mode_error_code):
