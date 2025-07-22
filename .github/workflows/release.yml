@@ -1,4 +1,6 @@
 name: Generate release (Pypi, tag, & GitHub Release)
+permissions:
+  contents: write
 on: workflow_dispatch
 
 jobs:
