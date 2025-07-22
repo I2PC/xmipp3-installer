@@ -62,7 +62,7 @@ def __get_context_value_from_file_value(key: str, value: str, show_warnings: boo
     return __get_boolean_value_from_string(key, value, show_warnings)
   return value
 
-def __get_file_value_from_context_value(key: str, value: str) -> Union[str, bool]:
+def __get_file_value_from_context_value(key: str, value: str | bool) -> Union[str, bool]:
   """
   ### Converts a single configuration value from context format to file format.
 
@@ -74,7 +74,7 @@ def __get_file_value_from_context_value(key: str, value: str) -> Union[str, bool
   - (str): Value converted to its file storage format.
   """
   if key in variables.CONFIG_VARIABLES[variables.TOGGLES]:
-    return __get_string_value_from_boolean(value)
+    return __get_string_value_from_boolean(bool(value))
   return value
 
 def __get_boolean_value_from_string(key: str, value: str, show_warning: bool) -> bool:

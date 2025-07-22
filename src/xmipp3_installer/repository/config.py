@@ -181,13 +181,13 @@ class ConfigurationFileHandler(Singleton):
     
     return tokens[0].strip(), tokens[1].strip()
 
-  def __make_config_line(self, key: str, value: str, default_value: str) -> str:
+  def __make_config_line(self, key: str, value: Optional[str], default_value: str) -> str:
     """
     ### Composes a config file line given a key-value pair to write.
 
     #### Params:
     - key (int): Name of the variable.
-    - value (str): Value of the variable found in the config file.
+    - value (str | None): Value of the variable found in the config file.
     - default_value (str): Default value of the variable.
     
     #### Returns:
@@ -197,13 +197,13 @@ class ConfigurationFileHandler(Singleton):
     value = default_value if value is None else value
     return f"{key}{self.__ASSIGNMENT_SEPARATOR}{value}" if key else ""
 
-  def __get_section_lines(self, section_type: str, config_variables: Dict[str, Any]) -> List[str]:
+  def __get_section_lines(self, section_type: str, config_variables: Dict[str, str]) -> List[str]:
     """
     ### Returns the lines composed by the given section's variables in the dictionary, and deletes them from it.
 
     #### Params:
     - section_type (str): Section to extract variables from.
-    - config_variables (dict(str, any)): Dictionary containing all variables.
+    - config_variables (dict(str, str)): Dictionary containing all variables.
 
     #### Returns:
     - (list(str)): Config file lines created from the dictionary variables.

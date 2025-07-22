@@ -27,8 +27,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     ### Returns:
     - (str): Help of the mode (empty if mode not found).
     """
-    for group in list(modes.MODES.keys()):
-      if mode in list(modes.MODES[group].keys()):
+    for group in modes.MODES.keys():
+      if mode in modes.MODES[group].keys():
         messages = modes.MODES[group][mode]
         return BaseHelpFormatter.__get_message_from_list(messages, general)
     return ''
@@ -226,7 +226,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
       lines.append(line)
     return '\n'.join(lines)
 
-  def __get_spaces(self, start_section_text: str) -> Tuple[str, str]:
+  def __get_spaces(self, start_section_text: str) -> Tuple[int, str]:
     if self.__is_start_section_text_exceeding_size_limit(start_section_text):
       # If text exceeds size limit, it means that section space for modes and params 
       # is too low and should be set to a higher number, but for now we need to print anyways, 
