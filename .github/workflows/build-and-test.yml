@@ -1,4 +1,6 @@
 name: Build package in standalone version
+permissions:
+  contents: read
 on:
   workflow_dispatch:
   pull_request:
