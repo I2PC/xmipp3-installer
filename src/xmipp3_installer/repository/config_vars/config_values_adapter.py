@@ -62,7 +62,7 @@ def __get_context_value_from_file_value(key: str, value: str, show_warnings: boo
     return __get_boolean_value_from_string(key, value, show_warnings)
   return value
 
-def __get_file_value_from_context_value(key: str, value: str | bool) -> Union[str, bool]:
+def __get_file_value_from_context_value(key: str, value: Union[str, bool]) -> Union[str, bool]:
   """
   ### Converts a single configuration value from context format to file format.
 
