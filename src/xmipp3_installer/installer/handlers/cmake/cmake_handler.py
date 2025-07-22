@@ -17,7 +17,7 @@ def get_cmake_path(config: Dict[str, Any]) -> str:
   #### Returns:
   - (dict): Param 'packages' with the 'CMAKE' key updated based on the availability of 'cmake'.
   """
-  return config.get(variables.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE)
+  return str(config.get(variables.CMAKE)) or shutil.which(cmake_constants.DEFAULT_CMAKE) or ''
 
 def get_cmake_vars_str(config: Dict[str, Any]) -> str:
   """
