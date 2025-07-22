@@ -2,23 +2,19 @@
 
 import os
 import shutil
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
 from xmipp3_installer.repository.config_vars import variables
 
-def get_cmake_path(config: Dict[str, Any]) -> str:
+def get_cmake_path() -> Optional[str]:
   """
-  ### Retrieves information about the CMake package and updates the dictionary accordingly.
-
-  #### Params:
-  - packages (dict): Dictionary containing package information.
+  ### Returns the path to the CMake executable.
 
   #### Returns:
-  - (dict): Param 'packages' with the 'CMAKE' key updated based on the availability of 'cmake'.
+  - (str | None): Path to the CMake executable if found, None otherwise.
   """
-  
-  return config.get(variables.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE) or ''
+  return shutil.which(cmake_constants.DEFAULT_CMAKE)
 
 def get_cmake_vars_str(config: Dict[str, Any]) -> str:
   """

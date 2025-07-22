@@ -24,40 +24,25 @@ __STREAM_READLINES = [
   f"{__KEY3}={__VERSIONS[__KEY3]}\n"
 ]
 
-def test_does_not_call_which_when_getting_cmake_path_with_valid_cmake_key(__mock_which):
-  cmake_handler.get_cmake_path({variables.CMAKE: __CMAKE_PATH})
-  __mock_which.assert_not_called()
-
-@pytest.mark.parametrize(
-  "dictionary",
-  [
-    pytest.param({}),
-    pytest.param({'key': True}),
-    pytest.param({variables.CMAKE: None})
-  ]
-)
-def test_calls_which_when_getting_cmake_path_with_invalid_cmake_key(
-  dictionary,
+def test_calls_which_when_getting_cmake_path(
   __mock_which
 ):
-  cmake_handler.get_cmake_path(dictionary)
+  cmake_handler.get_cmake_path()
   __mock_which.assert_called_once_with(cmake_constants.DEFAULT_CMAKE)
 
 @pytest.mark.parametrize(
-  "dictionary,__mock_which,expected_cmake_path",
+  "__mock_which,expected_cmake_path",
   [
-    pytest.param({}, "test", "test"),
-    pytest.param({variables.CMAKE: "something"}, None, "something"),
-    pytest.param({variables.CMAKE: "something"}, "test", "something")
+    pytest.param("test", "test"),
+    pytest.param(None, None)
   ],
   indirect=["__mock_which"]
 )
 def test_returns_expected_cmake_path(
-  dictionary,
   __mock_which,
   expected_cmake_path
 ):
-  cmake_path = cmake_handler.get_cmake_path(dictionary)
+  cmake_path = cmake_handler.get_cmake_path()
   assert (
     cmake_path == expected_cmake_path
   ), get_assertion_message("CMake path", expected_cmake_path, cmake_path)
