@@ -17,7 +17,8 @@ def get_cmake_path(config: Dict[str, Any]) -> str:
   #### Returns:
   - (dict): Param 'packages' with the 'CMAKE' key updated based on the availability of 'cmake'.
   """
-  return str(config.get(variables.CMAKE)) or shutil.which(cmake_constants.DEFAULT_CMAKE) or ''
+  
+  return config.get(variables.CMAKE) or shutil.which(cmake_constants.DEFAULT_CMAKE) or ''
 
 def get_cmake_vars_str(config: Dict[str, Any]) -> str:
   """
@@ -61,7 +62,7 @@ def __get_library_version_from_line(version_line: str) -> Dict[str, Any]:
   #### Returns:
   - (dict(str, any)): Dictionary where the key is the name and the value is the version.
   """
-  TOKEN_NUMBER = 2 # Two tokens separated by an =
+  TOKEN_NUMBER = 2 # Two tokens separated by a =
   library_with_version = {}
   name_and_version = version_line.replace("\n", "").split('=')
   if len(name_and_version) == TOKEN_NUMBER:
