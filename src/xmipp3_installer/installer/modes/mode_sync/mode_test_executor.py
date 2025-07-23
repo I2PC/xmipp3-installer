@@ -11,19 +11,21 @@ from xmipp3_installer.application.logger.logger import logger, errors
 from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import _SYNC_PROGRAM_NAME, ModeSyncExecutor
 from xmipp3_installer.repository.config_vars import variables
 
 _DATASET_NAME = "xmipp_programs"
 _PYTHON_TEST_SCRIPT_PATH = os.path.join(paths.SOURCES_PATH, "xmipp")
 _PYTHON_TEST_SCRIPT_INTERNAL_FOLDER = "tests"
 _PYTHON_TEST_SCRIPT_NAME = "test.py"
+_PYTHON_DATA_FOLDER = 'data'
 _PYTHON_TEST_SCRIPT_INTERNAL_PATH = os.path.join(
   _PYTHON_TEST_SCRIPT_INTERNAL_FOLDER,
   _PYTHON_TEST_SCRIPT_NAME
 )
 _DEFAULT_PYTHON_HOME = "python3"
-_DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, 'data')
+_DATASET_PATH = os.path.join(_PYTHON_TEST_SCRIPT_PATH, _PYTHON_TEST_SCRIPT_INTERNAL_FOLDER,  _PYTHON_DATA_FOLDER)
+_TEST_DATA = os.path.join(_PYTHON_TEST_SCRIPT_INTERNAL_FOLDER, _PYTHON_DATA_FOLDER)
 _BASHRC_FILE_PATH = os.path.abspath(os.path.join(paths.INSTALL_PATH, "xmipp.bashrc"))
 _TESTS_SEPARATOR = " "
 _PARAM_MAPPER = {
@@ -81,14 +83,10 @@ class ModeTestExecutor(ModeSyncExecutor):
       show_output = True
     logger(logger.blue(f"{task_message} the test files"))
 
-    args = f"{_DATASET_PATH} {urls.SCIPION_TESTS_URL} {_DATASET_NAME}"
-    sync_program_relative_call = os.path.join(
-      ".",
-      os.path.basename(self.sync_program_path)
-    )
+    args = f"{_TEST_DATA} {urls.SCIPION_TESTS_URL} {_DATASET_NAME}"
     ret_code, output = shell_handler.run_shell_command(
-      f"{sync_program_relative_call} {task} {args}",
-      cwd=os.path.dirname(self.sync_program_path),
+      f"{_SYNC_PROGRAM_NAME} {task} {args}",
+      cwd=_PYTHON_TEST_SCRIPT_PATH,
       show_output=show_output
     )
     ret_code = 1 if ret_code else ret_code
