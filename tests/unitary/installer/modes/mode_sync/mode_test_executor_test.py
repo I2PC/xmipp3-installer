@@ -26,6 +26,7 @@ __CONTEXT = {
 }
 __PYHTON_HOME = "/path/to/python"
 __DATASET_PATH = "/path/to/dataset"
+__TEST_DATA = "/path/to/test_data"
 __DATASET_NAME = "dataset_name"
 __PYTHON_TEST_SCRIPT_PATH = "/path/to/python_script"
 __PYTHON_TEST_SCRIPT_INTERNAL_PATH = "tests/script_name"
@@ -325,22 +326,18 @@ def test_calls_run_shell_command_when_running_sync_operation(
   __mock_os_path_isdir,
   expected_task,
   expected_show_output,
-  __mock_os_path_join,
   __mock_run_shell_command,
   __mock_run_tests,
   __mock_dataset_name,
-  __mock_dataset_path
+  __mock_test_data_path,
+  __mock_python_test_script_path
 ):
   executor = ModeTestExecutor(__CONTEXT.copy())
   executor._sync_operation()
-  args = f"{__mock_dataset_path} {urls.SCIPION_TESTS_URL} {__mock_dataset_name}"
-  sync_program_relative_path = __mock_os_path_join(
-    ".",
-    os.path.basename(executor.sync_program_path)
-  )
+  args = f"{__mock_test_data_path} {urls.SCIPION_TESTS_URL} {__mock_dataset_name}"
   __mock_run_shell_command.assert_called_once_with(
-    f"{sync_program_relative_path} {expected_task} {args}",
-      cwd=os.path.dirname(executor.sync_program_path),
+    f"{os.path.basename(executor.sync_program_path)} {expected_task} {args}",
+      cwd=__mock_python_test_script_path,
       show_output=expected_show_output
   )
 
@@ -499,6 +496,15 @@ def __mock_dataset_path():
     mode_test_executor,
     "_DATASET_PATH",
     __DATASET_PATH
+  ) as mock_object:
+    yield mock_object
+
+@pytest.fixture(autouse=True)
+def __mock_test_data_path():
+  with patch.object(
+    mode_test_executor,
+    "_TEST_DATA",
+    __TEST_DATA
   ) as mock_object:
     yield mock_object
 
