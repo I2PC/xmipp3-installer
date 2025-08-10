@@ -11,7 +11,7 @@ from xmipp3_installer.application.logger.logger import logger, errors
 from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import _SYNC_PROGRAM_NAME, ModeSyncExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
 from xmipp3_installer.repository.config_vars import variables
 
 _DATASET_NAME = "xmipp_programs"
@@ -85,7 +85,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 
     args = f"{_TEST_DATA} {urls.SCIPION_TESTS_URL} {_DATASET_NAME}"
     ret_code, output = shell_handler.run_shell_command(
-      f"{_SYNC_PROGRAM_NAME} {task} {args}",
+      f"{os.path.basename(self.sync_program_path)} {task} {args}",
       cwd=_PYTHON_TEST_SCRIPT_PATH,
       show_output=show_output
     )
