@@ -55,14 +55,15 @@ def test_does_not_override_parent_config_values(
     inherited_config == base_config
   ), get_assertion_message("config values", base_config, inherited_config)
 
-def test_sets_sync_program_path_when_initializing():
+def test_sets_sync_program_variables_when_initializing():
   executor = DummySyncExecutor({})
   assert (
-    executor.sync_program_path == __SYNC_PROGRAM_PATH
+    (executor.sync_program_path, executor.sync_program_name) ==
+    (__SYNC_PROGRAM_PATH, mode_sync_executor._SYNC_PROGRAM_NAME)
   ), get_assertion_message(
-    "sync program path",
-    __SYNC_PROGRAM_PATH,
-    executor.sync_program_path
+    "sync program variables",
+    (executor.sync_program_path, executor.sync_program_name),
+    (__SYNC_PROGRAM_PATH, mode_sync_executor._SYNC_PROGRAM_NAME)
   )
 
 def test_calls_logger_when_sync_program_not_exists(
