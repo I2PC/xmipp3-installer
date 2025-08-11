@@ -50,13 +50,14 @@ class ModeGetModelsExecutor(ModeSyncExecutor):
       completed_task = "downloaded"
     
     logger(f"{in_progress_task} Deep Learning models (in background)")
-    ret_code, output = shell_handler.run_shell_command(
+    ret_code = shell_handler.run_shell_command_in_streaming(
       f"{self.sync_program_path} {task} {self.models_directory} {urls.MODELS_URL} DLmodels",
-      show_command=True,
-      show_output=True
+      show_output=True,
+      show_error=True,
+      substitute=True
     )
     if not ret_code:
       logger(logger.green(f"Models successfully {completed_task}!"))
 
     ret_code = 1 if ret_code else ret_code
-    return ret_code, output
+    return ret_code, ""
