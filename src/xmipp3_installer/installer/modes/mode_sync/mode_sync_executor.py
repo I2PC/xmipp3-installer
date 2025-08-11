@@ -26,6 +26,7 @@ class ModeSyncExecutor(mode_executor.ModeExecutor):
     - context (dict): Dictionary containing the installation context variables.
     """
     super().__init__(context)
+    self.sync_program_name = _SYNC_PROGRAM_NAME
     self.sync_program_path = os.path.join(_SYNC_PROGRAM_PATH, _SYNC_PROGRAM_NAME)
 
   def run(self) -> Tuple[int, str]:

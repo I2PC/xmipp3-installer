@@ -85,7 +85,7 @@ class ModeTestExecutor(ModeSyncExecutor):
 
     args = f"{_TEST_DATA} {urls.SCIPION_TESTS_URL} {_DATASET_NAME}"
     ret_code, output = shell_handler.run_shell_command(
-      f"{os.path.basename(self.sync_program_path)} {task} {args}",
+      f"{self.sync_program_name} {task} {args}",
       cwd=_PYTHON_TEST_SCRIPT_PATH,
       show_output=show_output
     )
