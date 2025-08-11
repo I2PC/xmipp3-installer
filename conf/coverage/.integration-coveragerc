@@ -6,8 +6,7 @@ data_file = ./conf/coverage/.coverage.integration
 skip_empty = true
 fail_under = 100
 show_missing = true
+include =
+  tests/**
 omit = 
-  */site-packages/*
-  */dist-packages/*
   tests/__init__.py
-  src/**

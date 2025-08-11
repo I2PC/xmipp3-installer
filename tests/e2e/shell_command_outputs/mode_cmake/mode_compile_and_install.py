@@ -87,3 +87,6 @@ def normalize_line_breaks(raw_output: str) -> str: # The number of line breaks i
     previous_line = line
     new_lines.append(line)
   return "\n".join([*new_lines, ""])
+
+def remove_ninja_error_code(raw_output: str) -> str:
+  return raw_output.replace(" [code=1]", "")

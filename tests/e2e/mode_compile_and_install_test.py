@@ -55,8 +55,10 @@ def test_returns_expected_compile_and_install_output(
     mode_compile_and_install.remove_command_error_line(
       mode_compile_and_install.normalize_error_path(
         __setup_evironment,
-        mode_compile_and_install.remove_ninja_output(
-          mode_cmake.normalize_cmake_executable(result)
+        mode_compile_and_install.remove_ninja_error_code(
+          mode_compile_and_install.remove_ninja_output(
+            mode_cmake.normalize_cmake_executable(result)
+          )
         )
       )
     )
