@@ -27,7 +27,7 @@ function Run-Tests {
   )
 
   Write-Host "Running $TestType tests..."
-  $pytestCommand = "python -m pytest -v --cache-clear --cov --cov-config=$RcFile -c=$ConfFile --rootdir=$ROOT_DIR --junitxml=report.xml --cov-report term"
+  $pytestCommand = "python -m pytest -v --cache-clear --cov --cov-config=$RcFile -c=$ConfFile --rootdir=$ROOT_DIR --junitxml=report.xml --cov-report term --no-cov-subprocesses"
   Invoke-Expression $pytestCommand
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE

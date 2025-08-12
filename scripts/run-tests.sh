@@ -22,7 +22,7 @@ run_tests() {
 
     echo "Running ${test_type} tests..."
     chmod +x $ROOT_DIR/tests/test_files/*.py
-    python -m pytest -v --cache-clear --cov --cov-config=$rcfile -c=$conffile --rootdir="${ROOT_DIR}" --junitxml=report.xml --cov-report term
+    python -m pytest -v --cache-clear --cov --cov-config=$rcfile -c=$conffile --rootdir="${ROOT_DIR}" --junitxml=report.xml --cov-report term --no-cov-subprocesses
     PYTEST_EXIT_CODE=$?
     if [ $PYTEST_EXIT_CODE -ne 0 ]; then
         exit $PYTEST_EXIT_CODE
