@@ -283,7 +283,7 @@ def test_returns_expected_results_when_running_tests(
 
 def test_calls_path_os_isdir_when_running_sync_operation(
   __mock_os_path_isdir,
-  __mock_run_shell_command,
+  __mock_run_shell_command_in_streaming,
   __mock_dataset_path
 ):
   executor = ModeTestExecutor(__CONTEXT.copy())
@@ -305,7 +305,7 @@ def test_calls_logger_when_running_sync_operation(
   expected_task,
   __mock_logger,
   __mock_logger_blue,
-  __mock_run_shell_command,
+  __mock_run_shell_command_in_streaming,
   __mock_run_tests
 ):
   executor = ModeTestExecutor(__CONTEXT.copy())
@@ -315,18 +315,17 @@ def test_calls_logger_when_running_sync_operation(
   )
 
 @pytest.mark.parametrize(
-  "__mock_os_path_isdir,expected_task,expected_show_output",
+  "__mock_os_path_isdir,expected_task",
   [
-    pytest.param(False, "download", True),
-    pytest.param(True, "update", False)
+    pytest.param(False, "download"),
+    pytest.param(True, "update")
   ],
   indirect=["__mock_os_path_isdir"]
 )
 def test_calls_run_shell_command_when_running_sync_operation(
   __mock_os_path_isdir,
   expected_task,
-  expected_show_output,
-  __mock_run_shell_command,
+  __mock_run_shell_command_in_streaming,
   __mock_run_tests,
   __mock_dataset_name,
   __mock_test_data_path,
@@ -335,10 +334,12 @@ def test_calls_run_shell_command_when_running_sync_operation(
   executor = ModeTestExecutor(__CONTEXT.copy())
   executor._sync_operation()
   args = f"{__mock_test_data_path} {urls.SCIPION_TESTS_URL} {__mock_dataset_name}"
-  __mock_run_shell_command.assert_called_once_with(
+  __mock_run_shell_command_in_streaming.assert_called_once_with(
     f"{os.path.basename(executor.sync_program_path)} {expected_task} {args}",
       cwd=__mock_python_test_script_path,
-      show_output=expected_show_output
+      show_output=True,
+      show_error=True,
+      substitute=True
   )
 
 def test_calls_load_bashrc_when_running_executor(
@@ -428,6 +429,14 @@ def __mock_logger():
 def __mock_run_shell_command(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
+  ) as mock_method:
+    mock_method.return_value = request.param
+    yield mock_method
+
+@pytest.fixture(params=[0])
+def __mock_run_shell_command_in_streaming(request):
+  with patch(
+    "xmipp3_installer.installer.handlers.shell_handler.run_shell_command_in_streaming"
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method
