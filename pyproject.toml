@@ -19,7 +19,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
   "pytest==8.*",
-  "pygments", # Needed by pytest-cov but not listed in its dependencies
+  "pygments==2.*", # Needed by pytest-cov but not listed in its dependencies
   "pytest-cov==5.*; python_version < '3.9'",
   "pytest-cov==6.*; python_version > '3.8'",
   "pytest-subprocess==1.*",
@@ -35,4 +35,3 @@ Issues = "https://github.com/I2PC/xmipp3-installer/issues"
 
 [project.scripts]
 xmipp3_installer = "xmipp3_installer.__main__:main"
-
