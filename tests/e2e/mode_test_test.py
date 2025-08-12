@@ -17,7 +17,7 @@ from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_test
 from .. import (
   get_assertion_message, normalize_text_line_endings,
-  TEST_FILES_DIR, create_versions_json_file
+  TEST_FILES_DIR, create_versions_json_file, remove_formatting_characters
 )
 
 __INDIVIDUAL_TEST = "test1"
@@ -209,10 +209,13 @@ def test_test(
   stdout, _ = __mock_stdout_stderr
   with pytest.raises(SystemExit):
     cli.main()
-  output = normalize_text_line_endings(stdout.getvalue())
+  output = remove_formatting_characters(
+    normalize_text_line_endings(stdout.getvalue())
+  )
+  normalized_expected_message = remove_formatting_characters(expected_message)
   assert (
-    output == expected_message
-  ), get_assertion_message("mode test output", expected_message, output)
+    output == normalized_expected_message
+  ), get_assertion_message("mode test output", normalized_expected_message, output)
 
 @pytest.fixture(autouse=True, params=[__MULTIPLE_TESTS])
 def __mock_sys_argv(request):

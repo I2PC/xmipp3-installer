@@ -76,21 +76,21 @@ class ModeTestExecutor(ModeSyncExecutor):
     if os.path.isdir(_DATASET_PATH):
       task_message = "Updating"
       task = "update"
-      show_output = False
     else:
       task_message = "Downloading"
       task = "download"
-      show_output = True
     logger(logger.blue(f"{task_message} the test files"))
 
     args = f"{_TEST_DATA} {urls.SCIPION_TESTS_URL} {_DATASET_NAME}"
-    ret_code, output = shell_handler.run_shell_command(
+    ret_code = shell_handler.run_shell_command_in_streaming(
       f"{self.sync_program_name} {task} {args}",
       cwd=_PYTHON_TEST_SCRIPT_PATH,
-      show_output=show_output
+      show_output=True,
+      show_error=True,
+      substitute=True
     )
     ret_code = 1 if ret_code else ret_code
-    return ret_code, output
+    return ret_code, ""
 
   @staticmethod
   def __load_bashrc() -> Tuple[int, str]:
