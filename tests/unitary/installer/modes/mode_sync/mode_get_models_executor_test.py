@@ -48,23 +48,23 @@ def test_sets_models_directory_when_initializing(
   ), get_assertion_message("models directory", expected_directory, executor.models_directory)
 
 @pytest.mark.parametrize(
-  "__mock_run_shell_command",
-  [pytest.param((0, "")), pytest.param((1, "error"))],
-  indirect=["__mock_run_shell_command"]
+  "__mock_run_shell_command_in_streaming",
+  [pytest.param(0), pytest.param(1)],
+  indirect=["__mock_run_shell_command_in_streaming"]
 )
 def test_calls_logger_with_download_when_executing_model_operation(
   __mock_os_path_exists,
   __mock_os_path_isdir,
   __mock_logger,
   __mock_logger_green,
-  __mock_run_shell_command
+  __mock_run_shell_command_in_streaming
 ):
   __mock_os_path_isdir.return_value = False
   ModeGetModelsExecutor(__ARGS.copy()).run()
   expected_calls = [
     call("Downloading Deep Learning models (in background)")
   ]
-  if __mock_run_shell_command()[0] == 0:
+  if __mock_run_shell_command_in_streaming() == 0:
     expected_calls.append(
       call(__mock_logger_green("Models successfully downloaded!"))
     )
@@ -74,22 +74,22 @@ def test_calls_logger_with_download_when_executing_model_operation(
   ), get_assertion_message("call count", expected_calls, __mock_logger.call_count)
 
 @pytest.mark.parametrize(
-  "__mock_run_shell_command",
-  [pytest.param((0, "")), pytest.param((1, "error"))],
-  indirect=["__mock_run_shell_command"]
+  "__mock_run_shell_command_in_streaming",
+  [pytest.param(0), pytest.param(1)],
+  indirect=["__mock_run_shell_command_in_streaming"]
 )
 def test_calls_logger_with_update_when_executing_model_operation(
   __mock_os_path_exists,
   __mock_os_path_isdir,
   __mock_logger,
   __mock_logger_green,
-  __mock_run_shell_command
+  __mock_run_shell_command_in_streaming
 ):
   ModeGetModelsExecutor(__ARGS.copy()).run()
   expected_calls = [
     call("Updating Deep Learning models (in background)")
   ]
-  if __mock_run_shell_command()[0] == 0:
+  if __mock_run_shell_command_in_streaming() == 0:
     expected_calls.append(
       call(__mock_logger_green("Models successfully updated!"))
     )
@@ -108,7 +108,7 @@ def test_calls_run_shell_command_when_executing_model_operation(
   __mock_os_path_isdir,
   __mock_logger,
   __mock_logger_green,
-  __mock_run_shell_command,
+  __mock_run_shell_command_in_streaming,
   __mock_sync_program_path,
   __mock_sync_program_name,
   __mock_os_path_join,
@@ -119,10 +119,11 @@ def test_calls_run_shell_command_when_executing_model_operation(
     __mock_sync_program_path,
     __mock_sync_program_name
   )
-  __mock_run_shell_command.assert_called_once_with(
+  __mock_run_shell_command_in_streaming.assert_called_once_with(
     f"{sync_program} {expected_task} {__MODELS_DIR} {urls.MODELS_URL} DLmodels",
-    show_command=True,
-    show_output=True
+    show_error=True,
+    show_output=True,
+    substitute=True
   )
 
 @pytest.fixture(autouse=True)
@@ -144,10 +145,10 @@ def __mock_os_path_isdir(request):
     mock_method.return_value = request.param
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
-def __mock_run_shell_command(request):
+@pytest.fixture(params=[0])
+def __mock_run_shell_command_in_streaming(request):
   with patch(
-    "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
+    "xmipp3_installer.installer.handlers.shell_handler.run_shell_command_in_streaming"
   ) as mock_method:
     mock_method.return_value = request.param
     yield mock_method

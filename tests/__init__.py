@@ -97,7 +97,7 @@ def get_test_file(file_path: str):
     file_path
   )
 
-def create_versions_json_file(output_path: str=None):
+def create_versions_json_file(output_path: str=""):
   """
   ### Generates a valid JSON versions file.
   """
@@ -114,3 +114,15 @@ def create_versions_json_file(output_path: str=None):
     ),
     full_output_path
   )
+
+def remove_formatting_characters(text: str) -> str:
+  """
+  ### Removes formatting characters from the given text.
+
+  #### Params:
+  - text (str): Text to remove formatting characters from.
+
+  #### Returns:
+  - (str): Text without substformattingitution characters.
+  """
+  return text.replace("\x1B[1A\r", "").replace("\033[K", "").replace("\x1b[0m", "").replace("\x1b[34m", "")
