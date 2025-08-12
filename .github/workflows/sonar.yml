@@ -6,6 +6,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
 jobs:
   sonar-scan:
     runs-on: ubuntu-latest
