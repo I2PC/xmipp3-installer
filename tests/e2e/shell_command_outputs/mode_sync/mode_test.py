@@ -25,6 +25,7 @@ def get_download_message(test_params: str) -> str:
   test_names = test_params.split(" ") if test_params else []
   return "\n".join([
     logger.blue("Downloading the test files"),
+    get_sync_command("download"),
     xmipp_sync_data.MESSAGE,
     get_test_messages_section(test_names),
     ""
@@ -34,6 +35,11 @@ def get_update_message(test_params: str) -> str:
   test_names = test_params.split(" ") if test_params else []
   return "\n".join([
     logger.blue("Updating the test files"),
+    get_sync_command("update"),
+    xmipp_sync_data.MESSAGE,
     get_test_messages_section(test_names),
     ""
 	])
+
+def get_sync_command(mode: str) -> str:
+  return f"./xmipp_sync_data.py {mode} tests/data http://scipion.cnb.csic.es/downloads/scipion/data/tests xmipp_programs"
