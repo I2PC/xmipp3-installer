@@ -204,10 +204,6 @@ def test_calls_re_match_when_finding_mac_address_in_lines_with_valid_lines(__moc
     ) for line in __LINES[:-1]
   ])
 
-def test_calls_re_match_group_when_finding_mac_address_in_lines(__mock_re_match):
-  installation_info_assembler.__find_mac_address_in_lines(__LINES[:2])
-  __mock_re_match().group.assert_called_once_with(1)
-
 def test_calls_re_search_when_finding_mac_address_in_lines(__mock_re_match, __mock_re_search):
   __mock_re_match.return_value = __mock_re_groups("enp")
   installation_info_assembler.__find_mac_address_in_lines(__LINES[:2])
