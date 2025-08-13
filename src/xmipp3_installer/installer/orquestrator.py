@@ -5,7 +5,7 @@ from typing import List, Tuple, Callable, Any
 
 def run_parallel_jobs(
   funcs: List[Callable],
-  func_args: List[Tuple[Any]],
+  func_args: List[Tuple[Any, ...]],
   n_jobs: int=multiprocessing.cpu_count()
 ) -> List:
   """
@@ -13,7 +13,7 @@ def run_parallel_jobs(
 
   #### Params:
   - funcs (list(callable)): Functions to run.
-  - func_args (list(tuple(any))): Arguments for each function.
+  - func_args (list(tuple(any, ...))): Arguments for each function.
   - n_jobs (int): Optional. Number of parallel jobs.
 
   #### Returns:
