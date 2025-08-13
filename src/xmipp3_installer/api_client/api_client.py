@@ -48,4 +48,4 @@ def __get_https_connection(parsed_url: ParseResult, timeout_seconds: int) -> htt
   #### Returns:
   - (HTTPSConnection): Established connection.
   """
-  return http.client.HTTPSConnection(parsed_url.hostname, parsed_url.port, timeout=timeout_seconds)
+  return http.client.HTTPSConnection(parsed_url.hostname or "localhost", parsed_url.port, timeout=timeout_seconds)
