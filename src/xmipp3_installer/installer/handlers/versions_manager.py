@@ -39,12 +39,12 @@ class VersionsManager(singleton.Singleton):
     self.sources_versions = version_info["sources_target_tag"]
     self.__validate_fields()
 
-  def __get_version_info(self) -> Dict[str, str]:
+  def __get_version_info(self) -> Dict[str, Dict[str, str]]:
     """
     ### Retrieves the version info from the version information JSON file.
 
     #### Returns:
-    - (dict(str, str)): Dictionary containing the parsed values.
+    - (dict(str, dict(str, str))): Dictionary containing the parsed values.
     """
     with open(self.version_file_path, encoding="utf-8") as json_data:
       version_info = json.load(json_data)
