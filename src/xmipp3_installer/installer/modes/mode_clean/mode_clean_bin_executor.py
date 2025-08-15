@@ -24,6 +24,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
 
   @property
   def confirmation_keyword(self) -> str:
+    """### Property containineg the keyword to confirm the cleaning operation."""
     return "y"
   
   @staticmethod
