@@ -14,7 +14,7 @@ from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler, git_handler, versions_manager
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
 
-def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> Optional[Dict]:
+def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> Dict:
   """
   ### Creates a dictionary with the necessary data for the API POST message.
   
@@ -23,7 +23,7 @@ def get_installation_info(version_manager: versions_manager.VersionsManager, ret
   - ret_code (int): Optional. Return code for the API request.
   
   #### Return:
-  - (dict | None): Dictionary with the required info or None if user id could not be produced.
+  - (dict): Dictionary with the required info.
   """
   library_versions = cmake_handler.get_library_versions_from_cmake_file(
     paths.LIBRARY_VERSIONS_FILE
