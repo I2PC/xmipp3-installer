@@ -18,7 +18,10 @@ class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
   Cleans all content from source and build directories.
   """
 
-  confirmation_keyword = "YeS"
+  @property
+  def confirmation_keyword(self) -> str:
+    """### Property containineg the keyword to confirm the cleaning operation."""
+    return "YeS"
 
   @staticmethod
   def _get_paths_to_delete() -> List[str]:

@@ -4,6 +4,7 @@
 This module contains the class to clean compiled binaries and related files.
 """
 
+import fnmatch
 import glob
 import os
 import pathlib
@@ -21,7 +22,10 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
   Cleans compiled binaries and related files.
   """
 
-  confirmation_keyword = "y"
+  @property
+  def confirmation_keyword(self) -> str:
+    """### Property containineg the keyword to confirm the cleaning operation."""
+    return "y"
   
   @staticmethod
   def _get_paths_to_delete() -> List[str]:
@@ -67,7 +71,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     compilation_files = []
     for root, _, files in os.walk(paths.SOURCES_PATH):
       for pattern in ['*.so', '*.os', '*.o']:
-        for filename in glob.fnmatch.filter(files, pattern):
+        for filename in fnmatch.filter(files, pattern):
           compilation_files.append(os.path.join(root, filename))
     return compilation_files
 

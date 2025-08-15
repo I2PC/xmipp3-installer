@@ -14,7 +14,7 @@ from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler, git_handler, versions_manager
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
 
-def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> Optional[Dict]:
+def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> Dict:
   """
   ### Creates a dictionary with the necessary data for the API POST message.
   
@@ -23,7 +23,7 @@ def get_installation_info(version_manager: versions_manager.VersionsManager, ret
   - ret_code (int): Optional. Return code for the API request.
   
   #### Return:
-  - (dict | None): Dictionary with the required info or None if user id could not be produced.
+  - (dict): Dictionary with the required info.
   """
   library_versions = cmake_handler.get_library_versions_from_cmake_file(
     paths.LIBRARY_VERSIONS_FILE
@@ -159,17 +159,12 @@ def __find_mac_address_in_lines(lines: List[str]) -> Optional[str]:
   - (str | None): MAC address if found, None otherwise.
   """
   for line_index in range(len(lines) - 1):
-    line = lines[line_index]
-    match = re.match(r"^\d+: (enp|wlp|eth|ens|eno)\w+", line)
+    match = re.match(r"^\d+: (enp|wlp|eth|ens|eno)\w+", lines[line_index])
     if not match:
       continue
-    interface_name = match.group(1)
-    if interface_name.startswith(('enp', 'wlp', 'eth', 'ens', 'eno')):
-      return re.search(
-        r"link/ether ([0-9a-f:]{17})",
-        lines[line_index + 1]
-      ).group(1)
-  return None
+    mac_match = re.search(r"link/ether ([0-9a-f:]{17})", lines[line_index + 1])
+    if mac_match:
+      return mac_match.group(1)
 
 def __is_installed_by_scipion() -> bool:
   """
