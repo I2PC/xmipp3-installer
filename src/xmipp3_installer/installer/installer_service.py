@@ -4,7 +4,7 @@
 This module contains the class to manage the installation process.
 """
 
-from typing import Dict
+from typing import Dict, cast
 
 from xmipp3_installer.api_client import api_client
 from xmipp3_installer.api_client.assembler import installation_info_assembler
@@ -71,7 +71,10 @@ class InstallationManager:
       )
     if not ret_code and self.mode_executor.prints_banner_on_exit:
       logger(predefined_messages.get_success_message(
-        self.context[constants.VERSIONS_CONTEXT_KEY].xmipp_version_number
+        cast(
+          versions_manager.VersionsManager,
+          self.context[constants.VERSIONS_CONTEXT_KEY]
+        ).xmipp_version_number
       ))
     logger.close()
     return ret_code
