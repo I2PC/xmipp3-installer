@@ -56,7 +56,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     super()._set_executor_config()
     self.prints_with_substitution = True
   
-  def __select_ref_to_clone(self, source_name: str, source_repo: str) -> str:
+  def __select_ref_to_clone(self, source_name: str, source_repo: str) -> Optional[str]:
     """
     ### Selects the reference to clone from the source.
 
@@ -65,7 +65,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     - source_repo (str): URL of the source's repository.
 
     #### Returns:
-    - (str): The reference name to clone.
+    - (str | None): The reference name to clone or None if no suitable ref was found.
     """
     current_branch = git_handler.get_current_branch()
     tag_name = None
