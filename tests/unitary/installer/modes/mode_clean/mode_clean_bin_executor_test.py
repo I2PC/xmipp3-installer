@@ -276,7 +276,7 @@ def __mock_os_path_join():
 
 @pytest.fixture(autouse=True)
 def __mock_fnmatch_filter():
-  with patch("glob.fnmatch.filter") as mock_method:
+  with patch("fnmatch.filter") as mock_method:
     mock_method.return_value = []
     yield mock_method
 

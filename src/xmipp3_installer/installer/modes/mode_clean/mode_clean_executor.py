@@ -46,11 +46,12 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
   
   @property
   @abstractmethod
-  def confirmation_keyword(self):
+  def confirmation_keyword(self) -> str:
     """### Confirmation keyword propery to be defined by inheriting classes."""
 
+  @staticmethod
   @abstractmethod
-  def _get_paths_to_delete(cls) -> List[str]:
+  def _get_paths_to_delete() -> List[str]:
     """Get paths to delete method to be implemented by the inheriting classes."""
   
   @abstractmethod
