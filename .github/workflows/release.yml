@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@main
+      uses: actions/checkout@v5
     
     - name: Install dependencies
       run: |
@@ -42,7 +42,8 @@ jobs:
         custom_tag: ${{ steps.version.outputs.VERSION }}
     
     - name: Create a GitHub release
-      uses: ncipollo/release-action@main
+      uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.tag_version.outputs.new_tag }}
         name: ${{ steps.version.outputs.VERSION }}
+
