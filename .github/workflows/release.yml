@@ -46,4 +46,3 @@ jobs:
       with:
         tag: ${{ steps.tag_version.outputs.new_tag }}
         name: ${{ steps.version.outputs.VERSION }}
-

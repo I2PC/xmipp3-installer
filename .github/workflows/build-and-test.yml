@@ -18,6 +18,7 @@ jobs:
         - '3.11'
         - '3.12'
         - '3.13'
+        - '3.14'
 
     steps:
       - name: Set up Python
@@ -75,7 +76,7 @@ jobs:
           zip reports.zip coverage.xml report.xml
 
       - uses: actions/upload-artifact@v5
-        if: matrix.python-version == '3.13'
+        if: matrix.python-version == '3.14'
         with:
           name: test-reports
           path: reports.zip
