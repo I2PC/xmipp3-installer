@@ -18,6 +18,7 @@ jobs:
         - '3.11'
         - '3.12'
         - '3.13'
+        - '3.14'
 
     steps:
       - name: Set up Python
@@ -68,14 +69,14 @@ jobs:
           $SCRIPT_PATH e2e
 
       - name: Generate report files
-        if: matrix.python-version == '3.13'
+        if: matrix.python-version == '3.14'
         run: |
           python -m coverage combine ./conf/coverage
           python -m coverage xml
           zip reports.zip coverage.xml report.xml
 
       - uses: actions/upload-artifact@v5
-        if: matrix.python-version == '3.13'
+        if: matrix.python-version == '3.14'
         with:
           name: test-reports
           path: reports.zip
