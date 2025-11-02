@@ -74,7 +74,7 @@ jobs:
           python -m coverage xml
           zip reports.zip coverage.xml report.xml
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: matrix.python-version == '3.13'
         with:
           name: test-reports
