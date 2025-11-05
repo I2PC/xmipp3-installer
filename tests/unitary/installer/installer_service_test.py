@@ -254,7 +254,10 @@ def test_calls_logger_to_send_installation_info_deppending_on_attribute_when_run
   }
   installation_manager.run_installer()
   if sends_info and config_sends_info:
-    __mock_logger.assert_called_once_with("Sending anonymous installation info...")
+    __mock_logger.assert_called_once_with(
+      "Sending anonymous installation info...",
+      show_in_terminal=False
+    )
   else:
     __mock_logger.assert_not_called()
 

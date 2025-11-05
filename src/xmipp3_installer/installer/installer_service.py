@@ -62,7 +62,7 @@ class InstallationManager:
       self.mode_executor.sends_installation_info and 
       self.context[variables.SEND_INSTALLATION_STATISTICS]
     ):
-      logger("Sending anonymous installation info...")
+      logger("Sending anonymous installation info...", show_in_terminal=False)
       api_client.send_installation_attempt(
         installation_info_assembler.get_installation_info(
           self.context[constants.VERSIONS_CONTEXT_KEY],
