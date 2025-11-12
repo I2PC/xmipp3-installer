@@ -129,7 +129,7 @@ def __mock_which(request):
 @pytest.fixture
 def __mock_open():
   m_open = mock_open(read_data=''.join(__STREAM_READLINES))
-  with patch("builtins.open", m_open):
+  with patch("xmipp3_installer.installer.handlers.cmake.cmake_handler.open", m_open):
     yield m_open
 
 @pytest.fixture
