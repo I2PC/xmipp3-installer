@@ -868,7 +868,7 @@ def __mock_path_exists(request):
 @pytest.fixture(params=[__FILE_LINES])
 def __mock_open(request):
   m_open = mock_open(read_data=''.join(request.param))
-  with patch("builtins.open", m_open):
+  with patch("xmipp3_installer.repository.config.open", m_open):
     yield m_open
 
 @pytest.fixture(params=[__FILE_LINES])

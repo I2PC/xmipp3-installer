@@ -187,7 +187,7 @@ def __mock_json_load():
 @pytest.fixture
 def __mock_open():
   m_open = mock_open()
-  with patch("builtins.open", m_open):
+  with patch("xmipp3_installer.installer.handlers.versions_manager.open", m_open):
     yield m_open
 
 @pytest.fixture(params=[__VERSION_INFO])
