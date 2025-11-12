@@ -39,7 +39,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
   
   def run(self) -> Tuple[int, str]:
     """
-    ### Executes the given git command into all xmipp source repositories.
+    ### Clones or updates Xmipp source repositories.
 
     #### Returns:
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
@@ -139,3 +139,4 @@ def _run_source_command(source_name: str, source_repo: str, target_branch: Optio
     if target_branch else ""
   )
   return shell_handler.run_shell_command(f"git clone{branch_str} {source_repo}.git", cwd=paths.SOURCES_PATH)
+
