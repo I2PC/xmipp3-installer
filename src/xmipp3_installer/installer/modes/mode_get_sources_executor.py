@@ -39,7 +39,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
   
   def run(self) -> Tuple[int, str]:
     """
-    ### Executes the given git command into all xmipp source repositories.
+    ### Clones or updates Xmipp source repositories.
 
     #### Returns:
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
