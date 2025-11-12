@@ -139,4 +139,3 @@ def _run_source_command(source_name: str, source_repo: str, target_branch: Optio
     if target_branch else ""
   )
   return shell_handler.run_shell_command(f"git clone{branch_str} {source_repo}.git", cwd=paths.SOURCES_PATH)
-
