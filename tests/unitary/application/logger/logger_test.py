@@ -435,7 +435,7 @@ def __mock_bold():
 
 @pytest.fixture
 def __mock_open():
-  with patch("builtins.open") as mock_method:
+  with patch("xmipp3_installer.application.logger.logger.open") as mock_method:
     mock_method.return_value = __DUMMY_FILE
     yield mock_method
 
