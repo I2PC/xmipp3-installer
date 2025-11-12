@@ -1,5 +1,5 @@
 # xmipp3-installer
-Python package that handles the installation of [xmipp3](https://github.com/I2PC/xmipp).
+Python package that handles the installation of [xmipp3](https://github.com/I2PC/xmipp3).
 
 ## Installation
 To install the package, simply run:
