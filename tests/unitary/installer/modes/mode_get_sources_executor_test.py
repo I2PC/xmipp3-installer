@@ -115,11 +115,11 @@ def test_calls_get_current_branch_when_selecting_ref_to_clone(
   "source_name,__mock_get_current_branch,expected_tag_name",
   [
     pytest.param(constants.XMIPP_CORE, None, __EXISTING_TAG),
-    pytest.param(constants.XMIPP_CORE, constants.MASTER_BRANCHNAME, __EXISTING_TAG),
     pytest.param(constants.XMIPP_CORE, __CONTEXT[constants.VERSIONS_CONTEXT_KEY].xmipp_version_name, __EXISTING_TAG),
+    pytest.param(constants.XMIPP_CORE, constants.MAIN_BRANCHNAME, None),
     pytest.param(constants.XMIPP_CORE, __BRANCH_NAME, None),
     pytest.param(__NON_EXISTING_SOURCE, None, None),
-    pytest.param(__NON_EXISTING_SOURCE, constants.MASTER_BRANCHNAME, None),
+    pytest.param(__NON_EXISTING_SOURCE, constants.MAIN_BRANCHNAME, None),
     pytest.param(__NON_EXISTING_SOURCE, __CONTEXT[constants.VERSIONS_CONTEXT_KEY].xmipp_version_name, None),
     pytest.param(__NON_EXISTING_SOURCE, __BRANCH_NAME, None),
   ],
