@@ -8,7 +8,7 @@ description = "Package to handle the installation of Xmipp3"
 keywords = ["xmipp3", "installer"]
 classifiers = ["Programming Language :: Python"]
 readme = "README.md"
-license = { "file" = "LICENSE" }
+license = "GPL-3.0-only"
 
 requires-python = ">=3.8"
 dependencies = [
