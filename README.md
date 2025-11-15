@@ -6,10 +6,6 @@ To install the package, simply run:
 ```
 pip install xmipp3-installer
 ```
-**Note:** When installing from source (cloning and then running `pip install .`), if your environment is running on Python 3.8, you will need to upgrade your toolchain packages running:
-```
-pip install --upgrade pip setuptools wheel
-``` 
 
 ## Usage
 This package has a CLI built-in, with help messages that explain how to use it.
