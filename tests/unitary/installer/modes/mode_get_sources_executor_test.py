@@ -19,11 +19,11 @@ from .... import (
 __PARAM_BRANCH = "branch_param"
 __PARAM_KEEP_OUTPUT = "keep-output"
 __CONTEXT = {
-  __PARAM_BRANCH: constants.DEVEL_BRANCHNAME,
+  __PARAM_BRANCH: constants.MAIN_BRANCHNAME,
   constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager(),
   __PARAM_KEEP_OUTPUT: False
 }
-__BRANCH_NAME = "devel"
+__BRANCH_NAME = "test_branch"
 __REPO_URL = "repourl"
 __NON_EXISTING_SOURCE = "non_existing_source"
 __EXISTING_TAG = __CONTEXT[constants.VERSIONS_CONTEXT_KEY].sources_versions[constants.XMIPP_CORE]
@@ -76,7 +76,7 @@ def test_stores_expected_values_when_initializing():
   )
   expected_values = (
     True,
-    constants.DEVEL_BRANCHNAME,
+    constants.MAIN_BRANCHNAME,
     JSON_XMIPP_VERSION_NAME,
     {
       constants.XMIPP_CORE: JSON_XMIPP_CORE_TARGET_TAG,
