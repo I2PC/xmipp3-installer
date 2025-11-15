@@ -18,7 +18,7 @@ classifiers = [
   "Operating System :: POSIX :: Linux"
 ]
 readme = "README.md"
-license = "GPL-3.0-only"
+license = { text = "GPL-3.0-only" }
 
 requires-python = ">=3.8"
 dependencies = [
@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["setuptools>=75.1", "wheel", "build", "pip>=25.0"]
+requires = ["setuptools>=75.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
