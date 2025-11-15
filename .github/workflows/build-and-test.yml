@@ -29,6 +29,9 @@ jobs:
       - name: Upgrade build toolchain
         if: matrix.python-version == '3.8'
         run: pip install --upgrade pip setuptools wheel
+      
+      - name: Pip version
+        run: pip --version
 
       - name: Checkout repository
         uses: actions/checkout@v5
