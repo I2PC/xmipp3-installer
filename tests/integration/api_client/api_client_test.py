@@ -13,7 +13,7 @@ from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
 
 from . import shell_command_outputs, file_contents
-from ... import get_assertion_message, JSON_XMIPP_VERSION_NUMBER
+from ... import get_assertion_message, JSON_XMIPP_VERSION_NAME
 
 def test_records_api_call_when_sending_installation_attempt(
   __mock_mac_address,
@@ -24,6 +24,7 @@ def test_records_api_call_when_sending_installation_attempt(
   __mock_is_branch_up_to_date,
   __mock_log_tail,
   __mock_get_os_release_name,
+  __mock_is_tag,
   __mock_server
 ):
   api_client.send_installation_attempt(
@@ -38,7 +39,7 @@ def test_records_api_call_when_sending_installation_attempt(
 def __get_version_manager():
   class DummyVersionManager:
     def __init__(self):
-      self.xmipp_version_number = JSON_XMIPP_VERSION_NUMBER
+      self.xmipp_version_name = JSON_XMIPP_VERSION_NAME
   return DummyVersionManager()
 
 @pytest.fixture
@@ -147,3 +148,11 @@ def __mock_get_os_release_name():
   ) as mock_method:
     mock_method.return_value = "Ubuntu 24.04"
     yield mock_method
+
+@pytest.fixture
+def __mock_is_tag(fake_process):
+  fake_process.register_subprocess(
+    shlex.split("git describe --tags --exact-match HEAD"),
+    stdout="v3.8.0-TestName"
+  )
+  yield fake_process
