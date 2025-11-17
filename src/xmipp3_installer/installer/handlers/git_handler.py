@@ -24,6 +24,7 @@ def get_current_branch(dir: str='./') -> str:
 def is_tag(dir: str='./') -> bool:
   """
   ### Returns True if the current Xmipp repository is in a tag.
+  
   This happens when the current commit matches a tag.
 
   #### Params:
