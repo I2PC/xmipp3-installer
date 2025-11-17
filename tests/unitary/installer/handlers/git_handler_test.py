@@ -20,15 +20,6 @@ __GIT_COMMAND = "git command"
 __SOURCE = "source"
 __SOURCE_PATH = "/path/to/source"
 
-def test_calls_run_shell_command_when_getting_current_branch(
-  __mock_run_shell_command
-):
-  git_handler.get_current_branch(dir=__CWD)
-  __mock_run_shell_command.assert_called_once_with(
-    "git rev-parse --abbrev-ref HEAD",
-    cwd=__CWD
-  )
-
 @pytest.mark.parametrize(
   "__mock_run_shell_command,expected_branch_name",
   [
@@ -46,23 +37,16 @@ def test_returns_expected_branch_when_getting_current_branch(
     branch_name == expected_branch_name
   ), get_assertion_message("branch name", expected_branch_name, branch_name)
 
-def test_calls_get_current_branch_when_checking_if_is_tag(
-  __mock_get_current_branch
-):
-  git_handler.is_tag(dir=__CWD)
-  __mock_get_current_branch.assert_called_once_with(dir=__CWD)
-
 @pytest.mark.parametrize(
-  "__mock_get_current_branch,expected_is_tag",
+  "__mock_run_shell_command, expected_is_tag",
   [
-    pytest.param("test_branch_name", False),
-    pytest.param("HEAD", True),
-    pytest.param(None, True)
+    pytest.param((1, ""), False),
+    pytest.param((0, ""), True)
   ],
-  indirect=["__mock_get_current_branch"]
+  indirect=["__mock_run_shell_command"]
 )
 def test_returns_expected_result_when_checking_if_is_tag(
-  __mock_get_current_branch,
+  __mock_run_shell_command,
   expected_is_tag
 ):
   is_tag = git_handler.is_tag()
