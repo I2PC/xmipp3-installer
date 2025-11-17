@@ -74,7 +74,7 @@ class InstallationManager:
         cast(
           versions_manager.VersionsManager,
           self.context[constants.VERSIONS_CONTEXT_KEY]
-        ).xmipp_version_number
+        ).xmipp_version_name
       ))
     logger.close()
     return ret_code

@@ -155,7 +155,7 @@ def test_calls_get_success_message_when_running_installer_with_zero_exit_code_de
   installation_manager = installer_service.InstallationManager({})
   installation_manager.run_installer()
   if prints_message:
-    __mock_get_success_message.assert_called_once_with(__XMIP_VERSION_NUMBER)
+    __mock_get_success_message.assert_called_once_with(__XMIP_VERSION_NAME)
   else:
     __mock_get_success_message.assert_not_called()
 
