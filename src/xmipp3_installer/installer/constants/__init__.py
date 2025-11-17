@@ -7,8 +7,7 @@ XMIPP_VIZ = 'xmippViz'
 XMIPP_SOURCES = [XMIPP_CORE, XMIPP_VIZ]
 
 # Branch names
-DEVEL_BRANCHNAME = 'devel'
-MASTER_BRANCHNAME = 'master'
+MAIN_BRANCHNAME = 'main'
 
 # Context
 VERSIONS_CONTEXT_KEY = "versions"

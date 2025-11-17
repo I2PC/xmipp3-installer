@@ -396,7 +396,7 @@ def test_returns_expected_os_release_name(
   [
     pytest.param(None, __XMIPP_VERSION_NUMBER),
     pytest.param("", __XMIPP_VERSION_NUMBER),
-    pytest.param(constants.MASTER_BRANCHNAME, __XMIPP_VERSION_NUMBER),
+    pytest.param(constants.MAIN_BRANCHNAME, constants.MAIN_BRANCHNAME),
     pytest.param("devel", "devel")
   ]
 )
