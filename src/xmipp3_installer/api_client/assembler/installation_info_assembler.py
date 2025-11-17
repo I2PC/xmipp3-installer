@@ -91,7 +91,7 @@ def __get_installation_branch_name(branch_name: str, version_manager: versions_m
   #### Return:
   - (str): Release name if Xmipp is in a release branch, or the branch name otherwise.
   """
-  return branch_name or version_manager.xmipp_version_number
+  return branch_name or version_manager.xmipp_version_name
 
 def __get_user_id() -> str:
   """

@@ -15,15 +15,17 @@ def get_current_branch(dir: str='./') -> str:
   - dir (str): Optional. Directory of the repository to get current branch from. Default is current directory.
   
   #### Returns:
-  - (str): The name of the branch, 'HEAD' if a tag, or empty string if given directory is not a repository or a recognizable tag.
+  - (str): The name of the branch, 'HEAD' if it is a tag, or empty string if the given directory is not a repository or a recognizable tag.
   """
   ret_code, branch_name = shell_handler.run_shell_command("git rev-parse --abbrev-ref HEAD", cwd=dir)
   # If there was an error, we are in no branch
-  return branch_name if not ret_code else ''
+  return '' if ret_code else branch_name
 
 def is_tag(dir: str='./') -> bool:
   """
   ### Returns True if the current Xmipp repository is in a tag.
+  
+  This happens when the current commit matches a tag.
 
   #### Params:
   - dir (str): Optional. Directory of the repository where the check will happen. Default is current directory.
@@ -31,8 +33,8 @@ def is_tag(dir: str='./') -> bool:
   #### Returns:
   - (bool): True if the repository is a tag. False otherwise.
   """
-  current_branch = get_current_branch(dir=dir)
-  return not current_branch or current_branch == "HEAD"
+  ret_code, _ = shell_handler.run_shell_command("git describe --tags --exact-match HEAD", cwd=dir)
+  return not ret_code
 
 def is_branch_up_to_date(dir: str='./') -> bool:
   """
