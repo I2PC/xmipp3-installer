@@ -45,6 +45,7 @@ __DISTRO_NAME = "Ubuntu"
 __DISTRO_VERSION = "24.04"
 __RELEASE_NAME_LINUX = f"{__DISTRO_NAME} {__DISTRO_VERSION}"
 __XMIPP_VERSION_NUMBER = "3.0.0"
+__XMIPP_VERSION_NAME = f"v{__XMIPP_VERSION_NUMBER}-Name"
 __LIBRARY_VERSIONS = {
   cmake_constants.CMAKE_CUDA: "12.2",
   cmake_constants.CMAKE_CMAKE: "3.16",
@@ -109,7 +110,7 @@ __EMPTY_INSTALLATION_INFO = {
     "jpeg": None
   },
   "xmipp": {
-    "branch": __XMIPP_VERSION_NUMBER,
+    "branch": __XMIPP_VERSION_NAME,
     "updated": None,
     "installedByScipion": None
   },
@@ -394,8 +395,8 @@ def test_returns_expected_os_release_name(
 @pytest.mark.parametrize(
   "received_branch_name,expected_branch_name",
   [
-    pytest.param(None, __XMIPP_VERSION_NUMBER),
-    pytest.param("", __XMIPP_VERSION_NUMBER),
+    pytest.param(None, __XMIPP_VERSION_NAME),
+    pytest.param("", __XMIPP_VERSION_NAME),
     pytest.param(constants.MAIN_BRANCHNAME, constants.MAIN_BRANCHNAME),
     pytest.param("devel", "devel")
   ]
@@ -491,9 +492,11 @@ def test_returns_expected_installation_info(
 
 def __get_version_manager():
   version_number = __XMIPP_VERSION_NUMBER
+  version_name = __XMIPP_VERSION_NAME
   class DummyVersionManager:
     def __init__(self):
       self.xmipp_version_number = version_number
+      self.xmipp_version_name = version_name
   return DummyVersionManager()
 
 @pytest.fixture(params=[(0, "")])
