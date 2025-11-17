@@ -41,7 +41,7 @@ __BUILD_PATH = "build_path"
 __BUILD_TYPE = "build_type"
 __CMAKE = "cmake_key"
 __CONTEXT = {
-  __PARAM_BRANCH: constants.DEVEL_BRANCHNAME,
+  __PARAM_BRANCH: constants.MAIN_BRANCHNAME,
   constants.VERSIONS_CONTEXT_KEY: DummyVersionsManager(),
   __PARAM_KEEP_OUTPUT: False,
   __VAR1_KEY: __VAR1_VALUE,
