@@ -23,7 +23,7 @@ license = { text = "GPL-3.0-only" }
 requires-python = ">=3.8"
 dependencies = [
   "typing-extensions>=4.12",
-  "distro>=1.9.0"
+  "distro>=1.8.0"
 ]
 
 [build-system]
@@ -48,4 +48,5 @@ Issues = "https://github.com/I2PC/xmipp3-installer/issues"
 
 [project.scripts]
 xmipp3_installer = "xmipp3_installer.__main__:main"
+
 
