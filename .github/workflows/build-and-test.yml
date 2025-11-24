@@ -27,7 +27,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
 
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
