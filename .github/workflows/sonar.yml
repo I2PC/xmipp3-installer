@@ -25,8 +25,10 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v6
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         with:
-          ref: ${{ github.head_ref }}
+          ref: $HEAD_REF
           fetch-depth: 0
 
       - name: Install project
@@ -63,5 +65,6 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
 
