@@ -28,7 +28,7 @@ jobs:
         env:
           HEAD_REF: ${{ github.head_ref }}
         with:
-          ref: $HEAD_REF
+          ref: "$HEAD_REF"
           fetch-depth: 0
 
       - name: Install project
