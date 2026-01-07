@@ -6,6 +6,11 @@ on:
     branches:
       - main
 
+  schedule:
+    # Scheduled because SonarQube rules evolve over time
+    # and need a re-scan to check against them
+    - cron: '0 0 * * 0' # weekly: Sunday 00:00 UTC
+
   workflow_dispatch:
 
 jobs:
@@ -57,3 +62,4 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
