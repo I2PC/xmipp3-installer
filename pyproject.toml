@@ -1,6 +1,6 @@
 [project]
 name = "xmipp3-installer"
-version = "2.0.3"
+version = "2.0.4"
 authors = [
   { name = "Martín Salinas", email = "ssalinasmartin@gmail.com" },
 ]
@@ -48,6 +48,7 @@ Issues = "https://github.com/I2PC/xmipp3-installer/issues"
 
 [project.scripts]
 xmipp3_installer = "xmipp3_installer.__main__:main"
+
 
 
 
