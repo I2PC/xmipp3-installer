@@ -29,10 +29,6 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v6
-        env:
-          HEAD_REF: ${{ github.head_ref }}
-        with:
-          ref: $HEAD_REF
 
       - name: Install project
         working-directory: ${{ github.workspace }}
@@ -93,10 +89,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-        env:
-          HEAD_REF: ${{ github.head_ref }}
         with:
-          ref: $HEAD_REF
           fetch-depth: 0
 
       - uses: actions/download-artifact@v7
