@@ -1,6 +1,4 @@
 name: Scan code with SonarQube
-permissions:
-  contents: read
 on:
   push:
     branches:
@@ -15,6 +13,9 @@ on:
 
 jobs:
   sonar-scan:
+    name: Sonar scan
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
@@ -62,4 +63,5 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
