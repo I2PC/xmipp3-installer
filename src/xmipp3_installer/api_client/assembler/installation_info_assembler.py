@@ -65,7 +65,7 @@ def get_installation_info(version_manager: versions_manager.VersionsManager, ret
       "installedByScipion": environment_info[3]
     },
     "returnCode": ret_code,
-    "logTail": environment_info[4] if ret_code else None # Only needed if something went wrong
+    "logTail": __anonymize_log_tail(environment_info[4]) if ret_code else None # Only needed if something went wrong
   }
 
 def get_os_release_name() -> str:
@@ -135,6 +135,22 @@ def __get_log_tail() -> Optional[str]:
     f"tail -n {constants.TAIL_LOG_NCHARS} {paths.LOG_FILE}"
   )
   return output if ret_code == 0 else None
+
+def __anonymize_log_tail(log_text: Optional[str]) -> Optional[str]:
+  """
+  ### Anonymizes usernames in a log string.
+  
+  #### Args:
+  - log_text (str | None): Log text to anonymize.
+  
+  #### Returns:
+  - (str | None): Log text with occurrences of /home/<username> replaced by /home/REDACTED, or None if input was None.
+  """
+  if log_text is None:
+    return
+
+  pattern = re.compile(r'(/home/)([^/\s]+)')
+  return pattern.sub(r'\1REDACTED', log_text)
 
 def __get_mac_address() -> Optional[str]:
   """
