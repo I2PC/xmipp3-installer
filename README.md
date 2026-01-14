@@ -14,6 +14,16 @@ To run such help, once the package is installed, run:
 xmipp3_installer -h
 ```
 
+## Installation telemetry
+This installer collects **basic information about your installation environment** (such as library versions, system architecture, and operating system) to improve compatibility, performance, and stability.
+
+If you prefer **not to send this data**, you can disable data collection.
+To do so, you will need to create a configuration file called `xmipp.conf` at the root folder of your xmipp3 installation.
+Inside that file, you will need to add the following variable: `SEND_INSTALLATION_STATISTICS=OFF`.
+If the file and/or the variable already exist, just make sure its value is `OFF`.
+
+For more information, please visit [the documentation](https://i2pc.github.io/docs/Others/Enhancing/index.html#data-collection).
+
 ## Testing the code
 In order to run the tests for this project, the project needs to be installed in development mode and also the test dependencies need to be installed.
 
