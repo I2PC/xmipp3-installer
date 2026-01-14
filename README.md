@@ -14,7 +14,7 @@ To run such help, once the package is installed, run:
 xmipp3_installer -h
 ```
 
-## Installation Telemetry
+## Installation telemetry
 This installer collects **basic information about your installation environment** (such as library versions, system architecture, and operating system) to improve compatibility, performance, and stability.
 
 If you prefer **not to send this data**, you can disable data collection.
