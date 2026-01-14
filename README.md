@@ -1,6 +1,15 @@
 # xmipp3-installer
 Python package that handles the installation of [xmipp3](https://github.com/I2PC/xmipp3).
 
+## Installation Telemetry
+
+Xmipp collects **basic information about your installation environment**  (such as library versions, system architecture, and operating system) to  improve compatibility, performance, and stability.
+
+If you prefer **not to send this data**, you can disable collection by setting: `SEND_INSTALLATION_STATISTICS=OFF`
+For more information, please visit [Data collection](https://i2pc.github.io/docs/Others/Enhancing/index.html#data-collection)
+
+
+
 ## Installation
 To install the package, simply run:
 ```
