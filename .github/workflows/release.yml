@@ -35,7 +35,6 @@ jobs:
         echo "Version number: $VERSION"
     
     - name: Build and publish
-      if: false # TODO: Remove when project is out of Pypi's quarantine
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
