@@ -46,3 +46,6 @@ CONFIG_VARIABLES = {
 
 # Do not pass this variables to CMake, only for installer logic
 INTERNAL_LOGIC_VARS = [SEND_INSTALLATION_STATISTICS, CMAKE, BUILD_TYPE]
+
+# Prefix to be used when setting config variables in the environment
+ENVIRONMENT_VARIABLES_PREFIX = "XMIPP3_"
