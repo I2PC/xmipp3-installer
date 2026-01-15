@@ -29,6 +29,7 @@ class ConfigurationFileHandler(Singleton):
     self.show_errors = show_errors
     self.values = {}
     self.read_config()
+    self.read_env_variables()
     self.last_modified = self.__read_config_date()
 
   def read_config(self):
@@ -50,6 +51,14 @@ class ConfigurationFileHandler(Singleton):
         show_warnings=self.show_errors
       )
     }
+  
+  def read_env_variables(self):
+    """### Reads the config variables present in the environment and updates the stored values with them."""
+    self.values.update({
+      key[len(variables.ENVIRONMENT_VARIABLES_PREFIX):]: value
+      for key, value in os.environ.items()
+      if key.startswith(variables.ENVIRONMENT_VARIABLES_PREFIX)
+    })
 
   def write_config(self, overwrite: bool=False):
     """
