@@ -54,11 +54,14 @@ class ConfigurationFileHandler(Singleton):
   
   def read_env_variables(self):
     """### Reads the config variables present in the environment and updates the stored values with them."""
-    self.values.update({
+    raw_variables = {
       key[len(variables.ENVIRONMENT_VARIABLES_PREFIX):]: value
       for key, value in os.environ.items()
       if key.startswith(variables.ENVIRONMENT_VARIABLES_PREFIX)
-    })
+    }
+    self.values.update(
+      config_values_adapter.get_context_values_from_file_values(raw_variables)
+    )
 
   def write_config(self, overwrite: bool=False):
     """
