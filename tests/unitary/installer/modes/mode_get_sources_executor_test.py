@@ -205,7 +205,7 @@ def test_calls_run_shell_command_if_source_and_target_branch_exist_when_running_
   "target_branch,expected_branch_str",
   [
     pytest.param(None, ""),
-    pytest.param(__BRANCH_NAME, f"{__PARAMS[__PARAM_BRANCH][__LONG_VERSION]} {__BRANCH_NAME}")
+    pytest.param(__BRANCH_NAME, f" {__PARAMS[__PARAM_BRANCH][__LONG_VERSION]} {__BRANCH_NAME}")
   ]
 )
 def test_calls_run_shell_command_if_source_does_not_exist_when_running_source_command(
