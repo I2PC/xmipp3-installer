@@ -1,13 +1,12 @@
 """### Containis all mode constants needed for the argument parsing part of Xmipp's installation."""
 
-from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments.params import (
   PARAM_SHORT, PARAM_JOBS, PARAM_BRANCH, PARAM_KEEP_OUTPUT, PARAM_OVERWRITE,
-  PARAM_MODELS_DIRECTORY, PARAM_TEST_NAMES, PARAM_SHOW_TESTS, PARAM_GIT_COMMAND,
+  PARAM_TEST_NAMES, PARAM_SHOW_TESTS, PARAM_GIT_COMMAND,
   PARAM_LOGIN, PARAM_MODEL_PATH, PARAM_UPDATE, PARAMS, PARAM_ALL_FUNCTIONS,
   PARAM_ALL_PROGRAMS, SHORT_VERSION, LONG_VERSION
 )
-from xmipp3_installer.installer import urls, constants
+from xmipp3_installer.installer import constants
 
 MODE = "mode"
 
@@ -19,7 +18,6 @@ MODE_CLEAN_BIN = 'cleanBin'
 MODE_COMPILE_AND_INSTALL = 'compileAndInstall'
 MODE_CONFIG_BUILD = 'configBuild'
 MODE_CONFIG = 'config'
-MODE_GET_MODELS = 'getModels'
 MODE_GET_SOURCES = 'getSources'
 MODE_GIT = 'git'
 MODE_TEST = 'test'
@@ -37,10 +35,6 @@ MODES = {
     MODE_CONFIG: ['Generates a config file template with default values.'],
   },
   'Downloads': {
-    MODE_GET_MODELS: [
-      f'Downloads the Deep Learning Models required by the DLTK tools at dir/models ({arguments.DEFAULT_MODELS_DIR} by default).',
-      f'Visit {urls.DLTK_DOCS_URL} for more details.'
-    ],
     MODE_GET_SOURCES: [f'Clones Xmipp\'s source repositories {constants.XMIPP_CORE} & {constants.XMIPP_VIZ}.']
   },
   'Clean': {
@@ -90,7 +84,6 @@ MODE_ARGS = {
   MODE_ALL: [PARAM_JOBS, PARAM_BRANCH, PARAM_KEEP_OUTPUT],
   MODE_CONFIG_BUILD: [PARAM_KEEP_OUTPUT],
   MODE_CONFIG: [PARAM_OVERWRITE],
-  MODE_GET_MODELS: [PARAM_MODELS_DIRECTORY],
   MODE_GET_SOURCES: [PARAM_BRANCH, PARAM_KEEP_OUTPUT],
   MODE_CLEAN_BIN: [],
   MODE_CLEAN_ALL: [],
@@ -120,10 +113,6 @@ MODE_EXAMPLES = {
   MODE_CONFIG_BUILD: [],
   MODE_CONFIG: [
     f'./xmipp {MODE_CONFIG} {PARAMS[PARAM_OVERWRITE][LONG_VERSION]}'
-  ],
-  MODE_GET_MODELS: [
-    f'./xmipp {MODE_GET_MODELS}',
-    f'./xmipp {MODE_GET_MODELS} {PARAMS[PARAM_MODELS_DIRECTORY][SHORT_VERSION]} /path/to/my/model/directory'
   ],
   MODE_GET_SOURCES: [
     f'./xmipp {MODE_GET_SOURCES}'

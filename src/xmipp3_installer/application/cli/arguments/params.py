@@ -1,7 +1,5 @@
 """### Containis all param constants needed for the argument parsing part of Xmipp's installation."""
 
-from xmipp3_installer.application.cli import arguments
-
 # Definition of all params found in the
 SHORT_VERSION = 'short'
 LONG_VERSION = 'long'
@@ -11,7 +9,6 @@ DESCRIPTION = 'description'
 PARAM_SHORT = 'short'
 PARAM_JOBS = 'jobs'
 PARAM_BRANCH = 'branch'
-PARAM_MODELS_DIRECTORY = 'directory'
 PARAM_TEST_NAMES = 'testNames'
 PARAM_SHOW_TESTS = 'show'
 PARAM_ALL_FUNCTIONS = 'all_functions'
@@ -36,11 +33,6 @@ PARAMS = {
     SHORT_VERSION: "-b",
     LONG_VERSION: "--branch",
     DESCRIPTION: "Branch for the source repositories."
-  },
-  PARAM_MODELS_DIRECTORY: {
-    SHORT_VERSION: "-d",
-    LONG_VERSION: "--directory",
-    DESCRIPTION: f"Directory where models will be saved. Default is \"{arguments.DEFAULT_MODELS_DIR}\"."
   },
   PARAM_TEST_NAMES: {
     SHORT_VERSION: PARAM_TEST_NAMES,
