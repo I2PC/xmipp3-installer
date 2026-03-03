@@ -1,10 +1,12 @@
 """### Argparser that shows the error messages formatted in a custom way."""
 
+from __future__ import annotations
+
 import argparse
-from typing import List
 
 from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.logger.logger import logger
+
 
 class ErrorHandlerArgumentParser(argparse.ArgumentParser):
   """### Overrides the error function of the standard argument parser to display better error messages."""
@@ -32,7 +34,7 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
       format.get_formatting_tabs(f"{args}{extra_line_break}{error_message}")
     )
   
-  def __get_args(self) -> List[str]:
+  def __get_args(self) -> list[str]:
     """
     ### Obtains args from stored class data.
 
@@ -42,7 +44,7 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     return self.prog.split(' ')
   
   @staticmethod
-  def __get_mode(args: List[str]) -> str:
+  def __get_mode(args: list[str]) -> str:
     """
     ### Obtains the usage mode from the received args.
 
@@ -55,7 +57,7 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     return args[-1]
   
   @staticmethod
-  def __is_mode_generic(args: List[str]) -> bool:
+  def __is_mode_generic(args: list[str]) -> bool:
     """
     ### Returns True if the usage mode selected is the generic one.
 

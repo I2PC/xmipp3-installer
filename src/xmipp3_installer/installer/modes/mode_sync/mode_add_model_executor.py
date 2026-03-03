@@ -4,17 +4,21 @@
 This module contains the class to upload models to the remote server.
 """
 
+from __future__ import annotations
+
 import os
 import tarfile
-from typing import Dict, Tuple
 
 from xmipp3_installer.application import user_interactions
-from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import (
+  ModeSyncExecutor,
+)
+
 
 class ModeAddModelExecutor(ModeSyncExecutor):
   """
@@ -23,7 +27,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
   Uploads models to the remote server.
   """
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -39,7 +43,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
     self.tar_file_name = f"xmipp_model_{self.model_name}.tgz"
     self.tar_file_path = os.path.join(self.model_dir, self.tar_file_name)
 
-  def _sync_operation(self) -> Tuple[int, str]:
+  def _sync_operation(self) -> tuple[int, str]:
     """
     ### Uploads the model to the remote server.
 
@@ -64,7 +68,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
     ret_code = 1 if ret_code else ret_code
     return ret_code, output
 
-  def __generate_compressed_file(self) -> Tuple[int, str]:
+  def __generate_compressed_file(self) -> tuple[int, str]:
     """
     ### Generates the model's compressed file.
 
@@ -93,7 +97,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
     ]))
     return user_interactions.get_user_confirmation("YES")
 
-  def __upload_model(self) -> Tuple[int, str]:
+  def __upload_model(self) -> tuple[int, str]:
     """
     ### Uploads the model to the remote server.
 

@@ -1,10 +1,11 @@
 """### Contains functions that can interact with packages via shell with a generic interface."""
 
-from typing import Optional
+from __future__ import annotations
 
 from xmipp3_installer.installer.handlers import shell_handler
 
-def get_package_version(package_name: str) -> Optional[str]:
+
+def get_package_version(package_name: str) -> str | None:
   """
   ### Retrieves the version of a package or program by executing '[package_name] --version' command.
 

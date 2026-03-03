@@ -1,13 +1,14 @@
 """### Functions that interact with the shell."""
 
+from __future__ import annotations
+
 import os
 import subprocess
 import threading
 
-from typing import Tuple
-
-from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.application.logger import errors
+from xmipp3_installer.application.logger.logger import logger
+
 
 def run_shell_command(
   cmd: str,
@@ -16,7 +17,7 @@ def run_shell_command(
   show_command: bool=False,
   show_output: bool=False,
   show_error: bool=False
-) -> Tuple[int, str]:
+) -> tuple[int, str]:
   """
   ### This function runs the given command.
 
@@ -88,7 +89,7 @@ def run_shell_command_in_streaming(
   
   return process.returncode
 
-def __run_command(cmd: str, cwd: str='./') -> Tuple[int, str]:
+def __run_command(cmd: str, cwd: str='./') -> tuple[int, str]:
   """
   ### Runs the given shell command.
 

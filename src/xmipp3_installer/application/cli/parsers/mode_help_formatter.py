@@ -1,12 +1,17 @@
 """### Help formatter specific for non-generic usage modes."""
 
-from typing import List, Union, cast
+from __future__ import annotations
+
+from typing import List, cast
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
-from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
+from xmipp3_installer.application.cli.parsers.base_help_formatter import (
+  BaseHelpFormatter,
+)
 from xmipp3_installer.application.logger.logger import logger
+
 
 class ModeHelpFormatter(BaseHelpFormatter):
   """### Overrides the default help formatter to display a custom help message deppending on the mode selected."""
@@ -65,7 +70,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     return help_message
 
   @staticmethod
-  def __args_contain_optional(arg_names: List[str]) -> bool:
+  def __args_contain_optional(arg_names: list[str]) -> bool:
     """
     ### Returns True if the param name list contains at least one optional param.
 
@@ -80,12 +85,12 @@ class ModeHelpFormatter(BaseHelpFormatter):
         return True
     return False
 
-  def __get_args_info(self, args: List[Union[str, List[str]]]) -> str:
+  def __get_args_info(self, args: list[str | list[str]]) -> str:
     """
     ### Returns the info of each param.
 
     #### Params:
-    - args (list[str]): List of parameters.
+    - args (list[str | list[str]]): List of parameters.
 
     #### Returns:
     - (str): Info of all parameters.
@@ -94,7 +99,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
       return self.__get_args_group_info(cast(List[str], args))
     return "\t---------------\n".join([self.__get_args_group_info(cast(List[str], group)) for group in args])
 
-  def __get_args_group_info(self, args: List[str]) -> str:
+  def __get_args_group_info(self, args: list[str]) -> str:
     """
     ### Returns the info of each param.
 
@@ -134,7 +139,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
 
     return help_message
 
-  def __flatten_args(self, args: List[Union[str, List[str]]]) -> List[str]:
+  def __flatten_args(self, args: list[str | list[str]]) -> list[str]:
     """
     ### Flattens a list of arguments.
 

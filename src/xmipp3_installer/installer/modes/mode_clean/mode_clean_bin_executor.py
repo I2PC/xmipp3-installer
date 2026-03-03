@@ -4,16 +4,18 @@
 This module contains the class to clean compiled binaries and related files.
 """
 
+from __future__ import annotations
+
 import fnmatch
 import glob
 import os
 import pathlib
-from typing import List
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
+
 
 class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
   """
@@ -28,7 +30,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     return "y"
   
   @staticmethod
-  def _get_paths_to_delete() -> List[str]:
+  def _get_paths_to_delete() -> list[str]:
     """
     ### Returns a list of all the paths to be deleted.
 
@@ -71,12 +73,12 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     compilation_files = []
     for root, _, files in os.walk(paths.SOURCES_PATH):
       for pattern in ['*.so', '*.os', '*.o']:
-        for filename in fnmatch.filter(files, pattern):
-          compilation_files.append(os.path.join(root, filename))
+        matches = [os.path.join(root, filename) for filename in fnmatch.filter(files, pattern)]
+        compilation_files.extend(matches)
     return compilation_files
 
   @staticmethod
-  def __get_empty_dirs() -> List[str]:
+  def __get_empty_dirs() -> list[str]:
     """
     ### Returns a list with all the empty directories inside the programs folder.
 
@@ -92,7 +94,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     return empty_dirs
 
   @staticmethod
-  def __get_pycache_dirs() -> List[str]:
+  def __get_pycache_dirs() -> list[str]:
     """
     ### Returns a list of all the __pycache__ directories.
 

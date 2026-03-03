@@ -4,14 +4,16 @@
 This module contains the base class for executors that run CMake commands.
 """
 
+from __future__ import annotations
+
 from abc import abstractmethod
-from typing import Dict, Optional, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository.config_vars import variables
+
 
 class ModeCMakeExecutor(mode_executor.ModeExecutor):
   """
@@ -20,7 +22,7 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
   Base class for executors that run CMake commands.
   """
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -32,7 +34,7 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
     self.cmake = context[variables.CMAKE]
     self.build_type = context[variables.BUILD_TYPE]
 
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Runs the CMake config with the appropiate params.
 
@@ -50,7 +52,7 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
     self.logs_to_file = True
     self.prints_with_substitution = True
   
-  def __get_cmake_executable(self) -> Optional[str]:
+  def __get_cmake_executable(self) -> str | None:
     """
     ### Returns the path to the CMake executable to be used.
 
@@ -64,5 +66,5 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
     return ret_code if ret_code == errors.INTERRUPTED_ERROR else mode_error_code
   
   @abstractmethod
-  def _run_cmake_mode(self, cmake: str) -> Tuple[int, str]:
+  def _run_cmake_mode(self, cmake: str) -> tuple[int, str]:
     """Run CMake mode method to be implemented by inheriting classes."""

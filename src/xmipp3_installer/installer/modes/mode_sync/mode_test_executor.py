@@ -3,15 +3,20 @@
 
 This module contains the class to execute Xmipp tests.
 """
+
+from __future__ import annotations
+
 import os
-from typing import Dict, Tuple, Any
+from typing import Any
 
 from xmipp3_installer.application.cli.arguments import params
-from xmipp3_installer.application.logger.logger import logger, errors
+from xmipp3_installer.application.logger.logger import errors, logger
 from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import (
+  ModeSyncExecutor,
+)
 from xmipp3_installer.repository.config_vars import variables
 
 _DATASET_NAME = "xmipp_programs"
@@ -37,7 +42,7 @@ _PARAM_MAPPER = {
 class ModeTestExecutor(ModeSyncExecutor):
   """Class to execute Xmipp tests."""
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -50,7 +55,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     python_home = context.pop(variables.PYTHON_HOME, None)
     self.python_home = python_home if python_home else _DEFAULT_PYTHON_HOME
   
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Runs the provided tests.
 
@@ -66,7 +71,7 @@ class ModeTestExecutor(ModeSyncExecutor):
       return ret_code, output
     return self.__run_tests()
 
-  def _sync_operation(self) -> Tuple[int, str]:
+  def _sync_operation(self) -> tuple[int, str]:
     """
     ### Executes the test operation.
 
@@ -93,7 +98,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     return ret_code, ""
 
   @staticmethod
-  def __load_bashrc() -> Tuple[int, str]:
+  def __load_bashrc() -> tuple[int, str]:
     """
     ### Loads the bashrc file.
 
@@ -114,7 +119,7 @@ class ModeTestExecutor(ModeSyncExecutor):
       os.environ[key] = value
     return 0, ""
 
-  def __run_tests(self) -> Tuple[int, str]:
+  def __run_tests(self) -> tuple[int, str]:
     """
     ### Runs the specified tests.
 
@@ -138,7 +143,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     return ret_code, output
 
   @staticmethod
-  def __get_selected_param_value(context: Dict[str, Any]) -> str:
+  def __get_selected_param_value(context: dict[str, Any]) -> str:
     """
     ### Returns the value of the param selected to run the test execution.
 
