@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict
 from unittest.mock import patch, mock_open, Mock, call
 
@@ -703,7 +703,7 @@ def test_calls_now_strftime_when_writing_config(
 	config_handler = ConfigurationFileHandler()
 	config_handler.values = __CONFIG_VALUES.copy()
 	config_handler.write_config()
-	__mock_datetime_now.now.assert_called_once_with(datetime.timezone.utc)
+	__mock_datetime_now.now.assert_called_once_with(timezone.utc)
 
 def test_calls_strftime_when_writing_config(
 	__mock_read_config,
