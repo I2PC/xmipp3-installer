@@ -3,18 +3,21 @@
 
 This module contains the class to collect and display version information.
 """
-import os
-from typing import Dict, Tuple
 
+from __future__ import annotations
+
+import os
+
+from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import git_handler, versions_manager
 from xmipp3_installer.installer.handlers.cmake import cmake_handler
+from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository.config_vars import variables
+
 
 class ModeVersionExecutor(mode_executor.ModeExecutor):
   """
@@ -25,7 +28,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
   
   __LEFT_TEXT_LEN = 25
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -42,7 +45,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     self.xmipp_version_name = versions.xmipp_version_name
     self.release_date = versions.xmipp_release_date
   
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Collects all the version information available and displays it.
 
@@ -94,10 +97,10 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     #### Returns:
     - (str): Sources related message section.
     """
-    sources_message_lines = []
-    for source_package in constants.XMIPP_SOURCES:
-      sources_message_lines.append(self.__get_source_info(source_package))
-    return '\n'.join(sources_message_lines)
+    return '\n'.join([
+      self.__get_source_info(source_package)
+      for source_package in constants.XMIPP_SOURCES
+    ])
 
   def __get_source_info(self, source: str) -> str:
     """

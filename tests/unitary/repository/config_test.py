@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict
 from unittest.mock import patch, mock_open, Mock, call
 
@@ -668,7 +668,7 @@ def test_calls_get_context_values_from_file_values_when_writing_config_with_over
 	__mock_read_env_variables,
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
-	__mock_datetime_today,
+	__mock_datetime_now,
 	__mock_open,
 	__mock_get_context_values_from_file_values
 ):
@@ -683,7 +683,7 @@ def test_calls_get_file_values_from_context_values_when_writing_config(
 	__mock_read_config,
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
-	__mock_datetime_today,
+	__mock_datetime_now,
 	__mock_open,
 	__mock_get_file_values_from_context_values
 ):
@@ -692,18 +692,18 @@ def test_calls_get_file_values_from_context_values_when_writing_config(
 	config_handler.write_config()
 	__mock_get_file_values_from_context_values.assert_called_once_with(__CONFIG_VALUES)
 
-def test_calls_today_strftime_when_writing_config(
+def test_calls_now_strftime_when_writing_config(
 	__mock_read_config,
 	__mock_read_config_date,
 	__mock_get_toggle_lines,
-	__mock_datetime_today,
+	__mock_datetime_now,
 	__mock_open,
 	__mock_get_file_values_from_context_values
 ):
 	config_handler = ConfigurationFileHandler()
 	config_handler.values = __CONFIG_VALUES.copy()
 	config_handler.write_config()
-	__mock_datetime_today.today.assert_called_once_with()
+	__mock_datetime_now.now.assert_called_once_with(timezone.utc)
 
 def test_calls_strftime_when_writing_config(
 	__mock_read_config,
@@ -715,7 +715,7 @@ def test_calls_strftime_when_writing_config(
 ):
 	config_handler = ConfigurationFileHandler()
 	config_handler.write_config()
-	__mock_datetime_strftime.today().strftime.assert_called_once_with('%d-%m-%Y %H:%M.%S')
+	__mock_datetime_strftime.now().strftime.assert_called_once_with('%d-%m-%Y %H:%M.%S')
 
 def test_saves_last_modified_when_writing_config(
 	__mock_read_config,
@@ -728,7 +728,7 @@ def test_saves_last_modified_when_writing_config(
 	config_handler = ConfigurationFileHandler()
 	config_handler.last_modified = None
 	config_handler.write_config()
-	expected_date = __mock_datetime_strftime.today().strftime()
+	expected_date = __mock_datetime_strftime.now().strftime()
 	assert (
 		config_handler.last_modified == expected_date
 	), get_assertion_message("last modified date", expected_date, config_handler.last_modified)
@@ -861,7 +861,7 @@ def test_calls_file_writelines_when_writing_config(
 		"# We recommend not modifying this variables unless you know what you are doing.\n",
 		*__mock_get_toggle_lines(__mock_config_flags, config_reference_values),
 		*__add_unknown_variable_lines(config_reference_values, __mock_get_unkown_variable_lines),
-		f"\n# {ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT} {__mock_datetime_strftime.today().strftime()}\n"
+		f"\n# {ConfigurationFileHandler._ConfigurationFileHandler__LAST_MODIFIED_TEXT} {__mock_datetime_strftime.now().strftime()}\n"
 	])
 
 def __mimick_get_toggle_lines(section: str, variables: Dict):
@@ -1013,17 +1013,17 @@ def __mock_config_flags():
 		yield mock_object
 
 @pytest.fixture
-def __mock_datetime_today():
+def __mock_datetime_now():
 	with patch("xmipp3_installer.repository.config.datetime") as mock_lib:
-		mock_lib.today.return_value = __DATE_TIME
+		mock_lib.now.return_value = __DATE_TIME
 		yield mock_lib
 
 @pytest.fixture
 def __mock_datetime_strftime():
 	with patch("xmipp3_installer.repository.config.datetime") as mock_lib:
-		mock_today = Mock()
-		mock_today.strftime.return_value = __DATE
-		mock_lib.today.return_value = mock_today
+		mock_now = Mock()
+		mock_now.strftime.return_value = __DATE
+		mock_lib.now.return_value = mock_now
 		yield mock_lib
 
 @pytest.fixture

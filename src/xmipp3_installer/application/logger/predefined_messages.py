@@ -70,4 +70,10 @@ def get_success_message(tag_version: str) -> str:
   margin_line = f"*{' ' * (total_len - 2)}*"
   box_border = '*' * total_len
 
-  return '\n'.join(["", box_border, margin_line, release_message, margin_line, box_border])
+  return (
+    f"\n{box_border}\n"
+    f"{margin_line}\n"
+    f"{release_message}\n"
+    f"{margin_line}\n"
+    f"{box_border}"
+  )

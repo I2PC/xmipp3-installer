@@ -135,10 +135,10 @@ def test_returns_file_stored_last_modification_date_when_there_is_no_value_store
 	config_handler.last_modified = ""
 	stored_date = config_handler.get_config_date()
 	assert (
-		stored_date == __mock_datetime_strftime.today().strftime()
+		stored_date == __mock_datetime_strftime.now().strftime()
 	), get_assertion_message(
 		"last modified date",
-		__mock_datetime_strftime.today().strftime(),
+		__mock_datetime_strftime.now().strftime(),
 		stored_date
 	)
 
@@ -166,9 +166,9 @@ def __mock_config_file():
 @pytest.fixture
 def __mock_datetime_strftime():
 	with patch("xmipp3_installer.repository.config.datetime") as mock_lib:
-		mock_today = Mock()
-		mock_today.strftime.return_value = file_content.DATE
-		mock_lib.today.return_value = mock_today
+		mock_now = Mock()
+		mock_now.strftime.return_value = file_content.DATE
+		mock_lib.now.return_value = mock_now
 		yield mock_lib
 
 @pytest.fixture(params=[("DUMMY_VAR", "DUMMT_VAL")])

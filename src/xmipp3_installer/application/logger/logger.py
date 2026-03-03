@@ -1,11 +1,13 @@
 """### Provides a global logger."""
 
 import shutil
+from contextlib import ExitStack
 from io import BufferedReader
 
-from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import urls
+from xmipp3_installer.shared.singleton import Singleton
+
 
 class Logger(Singleton):
   """### Logger class for keeping track of installation messages."""
@@ -18,15 +20,16 @@ class Logger(Singleton):
   __GREEN = "\033[92m"
   __YELLOW = "\033[93m"
   __END_FORMAT = "\033[0m"
-  __FORMATTING_CHARACTERS = [__UP, __REMOVE_LINE, __BOLD, __BLUE, __RED, __GREEN, __YELLOW, __END_FORMAT]
+  __FORMATTING_CHARACTERS = (__UP, __REMOVE_LINE, __BOLD, __BLUE, __RED, __GREEN, __YELLOW, __END_FORMAT)
  
   def __init__(self):
     """
     ### Constructor.
     
     #### Params:
-    - ouputToConsoloe (bool): Print messages to console.
+    - outputToConsole (bool): Print messages to console.
     """
+    self.__stack = ExitStack()
     self.__log_file = None
     self.__last_printed_elem = None
     self.__allow_substitution = True
@@ -99,13 +102,14 @@ class Logger(Singleton):
     - log_path (str): Path to the log file.
     """
     if self.__log_file is None:
-      self.__log_file = open(log_path, 'w', encoding="utf-8")
+      self.__log_file = self.__stack.enter_context(
+        open(log_path, 'w', encoding="utf-8") # noqa: SIM115 TODO change logger with loggin lib
+      )
 
   def close(self):
     """### Closes the log file."""
-    if self.__log_file:
-      self.__log_file.close()
-      self.__log_file = None
+    self.__stack.close()
+    self.__log_file = None
 
   def set_allow_substitution(self, allow_substitution: bool):
     """
@@ -198,7 +202,7 @@ class Logger(Singleton):
     n_line_breaks = self.__last_printed_elem.count("\n") + 1
     text_lines = self.__last_printed_elem.split("\n")
     for line in text_lines:
-      n_line_breaks += int(len(line) / (terminal_width + 1)) # Equal does not count, it needs to exceed
+      n_line_breaks += len(line) // (terminal_width + 1) # Equal does not count, it needs to exceed
     return n_line_breaks
   
   def __format_text(self, text: str, format_code: str) -> str:

@@ -1,19 +1,28 @@
 """### Command Line Interface that interacts with the installer."""
 
+from __future__ import annotations
+
 import argparse
 import multiprocessing
 import os
 import sys
-from typing import Dict, Any
+from typing import Any
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
-from xmipp3_installer.application.cli.parsers.error_handler_parser import ErrorHandlerArgumentParser
-from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
-from xmipp3_installer.application.cli.parsers.mode_help_formatter import ModeHelpFormatter
+from xmipp3_installer.application.cli.parsers.error_handler_parser import (
+  ErrorHandlerArgumentParser,
+)
+from xmipp3_installer.application.cli.parsers.general_help_formatter import (
+  GeneralHelpFormatter,
+)
+from xmipp3_installer.application.cli.parsers.mode_help_formatter import (
+  ModeHelpFormatter,
+)
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import installer_service
+
 
 def main():
   """### Main entry point function that starts the execution."""
@@ -232,7 +241,7 @@ def __help_requested() -> bool:
   """
   return '-h' in sys.argv or '--help' in sys.argv
 
-def __validate_args(args: Dict[str, Any], parser: argparse.ArgumentParser):
+def __validate_args(args: dict[str, Any], parser: argparse.ArgumentParser):
   """
   ### Performs validations on the arguments.
 
