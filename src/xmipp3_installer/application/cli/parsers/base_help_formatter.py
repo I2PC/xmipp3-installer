@@ -29,8 +29,8 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     ### Returns:
     - (str): Help of the mode (empty if mode not found).
     """
-    for group in modes.MODES.keys():
-      if mode in modes.MODES[group].keys():
+    for group in modes.MODES:
+      if mode in modes.MODES[group]:
         messages = modes.MODES[group][mode]
         return BaseHelpFormatter.__get_message_from_list(messages, general)
     return ''

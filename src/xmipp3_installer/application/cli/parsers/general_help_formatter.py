@@ -14,7 +14,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
   def format_help(self):
     """### Prints the help message of the argument parser."""
     help_message = "Run Xmipp's installer script\n\nUsage: xmipp [options]\n"
-    for section in modes.MODES.keys():
+    for section in modes.MODES:
       help_message += self.__get_section_message(section)
     help_message += f"\n{self.__get_epilog()}"
     help_message += self.__get_note()
@@ -104,10 +104,10 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     #### Params:
     - section (str): Section name.
 
-    #### Return:
+    #### Returns:
     - (str): Section's message.
     """
     section_message = self._get_help_separator() + f"\t# {section} #\n\n"
-    for mode in modes.MODES[section].keys():
+    for mode in modes.MODES[section]:
       section_message += self.__get_mode_args_and_help_str(f"\t{mode} ", mode)
     return section_message
