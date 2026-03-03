@@ -6,7 +6,7 @@ This module contains the class to configure the build using CMake.
 
 from __future__ import annotations
 
-from typing import cast
+from typing import Union, cast
 
 from xmipp3_installer.application.logger import errors, predefined_messages
 from xmipp3_installer.application.logger.logger import logger
@@ -52,7 +52,7 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     non_empty_variables = [
       (
         variable_key,
-        cast(str | bool, self.context[variable_key])
+        cast(Union[str, bool], self.context[variable_key])
       ) for variable_key in _get_non_internal_config_vars()
       if not _is_empty(self.context[variable_key])
     ]
