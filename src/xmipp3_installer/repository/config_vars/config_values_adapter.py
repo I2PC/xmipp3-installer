@@ -4,12 +4,13 @@
 This module contains functions to convert configuration values between file format and context format.
 """
 
-from typing import Dict, Union
+from __future__ import annotations
 
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.repository.config_vars import variables, default_values
+from xmipp3_installer.repository.config_vars import default_values, variables
 
-def get_context_values_from_file_values(file_values: Dict[str, str], show_warnings: bool=True) -> Dict[str, Union[str, bool]]:
+
+def get_context_values_from_file_values(file_values: dict[str, str], show_warnings: bool=True) -> dict[str, str | bool]:
   """
   ### Converts configuration values from file format to context format.
   
@@ -28,7 +29,7 @@ def get_context_values_from_file_values(file_values: Dict[str, str], show_warnin
     context_values[key] = __get_context_value_from_file_value(key, value, show_warnings)
   return context_values
 
-def get_file_values_from_context_values(context_values: Dict[str, Union[str, bool]]) -> Dict[str, str]:
+def get_file_values_from_context_values(context_values: dict[str, str | bool]) -> dict[str, str]:
   """
   ### Converts configuration values from context format to file format.
   
@@ -46,7 +47,7 @@ def get_file_values_from_context_values(context_values: Dict[str, Union[str, boo
     file_values[key] = __get_file_value_from_context_value(key, value)
   return file_values
 
-def __get_context_value_from_file_value(key: str, value: str, show_warnings: bool) -> Union[str, bool]:
+def __get_context_value_from_file_value(key: str, value: str, show_warnings: bool) -> str | bool:
   """
   ### Converts a single configuration value from file format to context format.
 
@@ -62,7 +63,7 @@ def __get_context_value_from_file_value(key: str, value: str, show_warnings: boo
     return __get_boolean_value_from_string(key, value, show_warnings)
   return value
 
-def __get_file_value_from_context_value(key: str, value: Union[str, bool]) -> Union[str, bool]:
+def __get_file_value_from_context_value(key: str, value: str | bool) -> str | bool:
   """
   ### Converts a single configuration value from context format to file format.
 

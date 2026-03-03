@@ -4,12 +4,13 @@
 This module contains the class to clean all content from source and build directories.
 """
 
-from typing import List
+from __future__ import annotations
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
+
 
 class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
   """
@@ -24,7 +25,7 @@ class ModeCleanAllExecutor(mode_clean_executor.ModeCleanExecutor):
     return "YeS"
 
   @staticmethod
-  def _get_paths_to_delete() -> List[str]:
+  def _get_paths_to_delete() -> list[str]:
     """
     ### Returns a list of all the paths to be deleted.
 

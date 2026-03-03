@@ -3,9 +3,11 @@
 
 This module contains the base class for mode executors with sync operations.
 """
+
+from __future__ import annotations
+
 import os
 from abc import abstractmethod
-from typing import Dict, Tuple
 
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger.logger import logger
@@ -18,7 +20,7 @@ _SYNC_PROGRAM_NAME = "xmipp_sync_data"
 class ModeSyncExecutor(mode_executor.ModeExecutor):
   """Base class for mode executors with sync operations."""
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -29,7 +31,7 @@ class ModeSyncExecutor(mode_executor.ModeExecutor):
     self.sync_program_name = _SYNC_PROGRAM_NAME
     self.sync_program_path = os.path.join(_SYNC_PROGRAM_PATH, _SYNC_PROGRAM_NAME)
 
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Executes the sync operation.
 
@@ -45,7 +47,7 @@ class ModeSyncExecutor(mode_executor.ModeExecutor):
     return self._sync_operation()
 
   @abstractmethod
-  def _sync_operation(self) -> Tuple[int, str]:
+  def _sync_operation(self) -> tuple[int, str]:
     """
     ### Executes the specific sync operation.
 

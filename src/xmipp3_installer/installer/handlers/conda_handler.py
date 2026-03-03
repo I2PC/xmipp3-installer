@@ -1,9 +1,11 @@
 """### Functions that interact with Conda via shell."""
 
-import os
-from typing import Optional
+from __future__ import annotations
 
-def get_conda_prefix_path() -> Optional[str]:
+import os
+
+
+def get_conda_prefix_path() -> str | None:
   """
   ### Returns the path for the current Conda enviroment.
 

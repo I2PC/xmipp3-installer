@@ -116,12 +116,12 @@ def test_sets_file_to_none_after_closing():
     logger._Logger__log_file is None
   ), get_assertion_message("logger file", None, logger._Logger__log_file)
 
-def test_calls_close_on_open_log_file_if_it_has_been_set():
-  mock_file = MagicMock()
+def test_calls_close_on_exit_stack():
+  mock_stack = MagicMock()
   logger = Logger()
-  logger._Logger__log_file = mock_file
+  logger._Logger__stack = mock_stack
   logger.close()
-  mock_file.close.assert_called_once_with()
+  mock_stack.close.assert_called_once_with()
 
 def test_does_not_call_close_on_open_log_file_if_it_has_not_been_set():
   mock_file = MagicMock()

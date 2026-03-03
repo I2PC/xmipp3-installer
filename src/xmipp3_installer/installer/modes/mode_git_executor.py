@@ -4,14 +4,15 @@
 This module contains the class to execute git commands on all Xmipp source repositories.
 """
 
-from typing import Dict, Tuple
+from __future__ import annotations
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import git_handler
+from xmipp3_installer.installer.modes import mode_executor
+
 
 class ModeGitExecutor(mode_executor.ModeExecutor):
   """
@@ -20,7 +21,7 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
   Executes git commands on all Xmipp source repositories.
   """
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -31,7 +32,7 @@ class ModeGitExecutor(mode_executor.ModeExecutor):
     command_param_list = context.pop(params.PARAM_GIT_COMMAND)
     self.command = ' '.join(command_param_list)
   
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Executes the given git command into all xmipp source repositories.
 

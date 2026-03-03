@@ -4,7 +4,9 @@
 This module contains the class to configure the build using CMake.
 """
 
-from typing import List, Optional, Tuple, Union, cast
+from __future__ import annotations
+
+from typing import Union, cast
 
 from xmipp3_installer.application.logger import errors, predefined_messages
 from xmipp3_installer.application.logger.logger import logger
@@ -14,6 +16,7 @@ from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.installer.modes.mode_cmake import mode_cmake_executor
 from xmipp3_installer.repository.config_vars import variables
 
+
 class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
   """
   ### Mode Config Build Executor.
@@ -21,7 +24,7 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
   Configures the build using CMake with the appropriate parameters.
   """
   
-  def _run_cmake_mode(self, cmake: str) -> Tuple[int, str]:
+  def _run_cmake_mode(self, cmake: str) -> tuple[int, str]:
     """
     ### Runs the CMake config with the appropiate params.
 
@@ -55,7 +58,7 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     ]
     return cmake_handler.get_cmake_params(non_empty_variables)
   
-def _get_non_internal_config_vars() -> List[str]:
+def _get_non_internal_config_vars() -> list[str]:
   """
   ### Returns all non-internal config variable keys.
 
@@ -70,7 +73,7 @@ def _get_non_internal_config_vars() -> List[str]:
   non_internal_keys.sort() # To keep order consistency
   return non_internal_keys
 
-def _is_empty(value: Optional[Union[bool, str]]) -> bool:
+def _is_empty(value: bool | str | None) -> bool:
   """
   ### Checks if the given config value is empty.
 

@@ -2,6 +2,7 @@
 
 from xmipp3_installer.application.logger.logger import logger
 
+
 class InvalidConfigLineError(RuntimeError):
   """
   ### Custom exception for invalid configuration lines.

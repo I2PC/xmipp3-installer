@@ -2,6 +2,7 @@
 
 from typing_extensions import Self
 
+
 class Singleton:
   """### Generic singleton class."""
 

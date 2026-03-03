@@ -4,12 +4,14 @@
 This module contains the class to manage version information.
 """
 
+from __future__ import annotations
+
 import json
-from datetime import datetime
-from typing import Dict, List
+from datetime import datetime, timezone
 
 from xmipp3_installer.installer import constants
 from xmipp3_installer.shared import singleton
+
 
 class VersionsManager(singleton.Singleton):
   """
@@ -39,7 +41,7 @@ class VersionsManager(singleton.Singleton):
     self.sources_versions = version_info["sources_target_tag"]
     self.__validate_fields()
 
-  def __get_version_info(self) -> Dict[str, Dict[str, str]]:
+  def __get_version_info(self) -> dict[str, dict[str, str]]:
     """
     ### Retrieves the version info from the version information JSON file.
 
@@ -47,8 +49,7 @@ class VersionsManager(singleton.Singleton):
     - (dict(str, dict(str, str))): Dictionary containing the parsed values.
     """
     with open(self.version_file_path, encoding="utf-8") as json_data:
-      version_info = json.load(json_data)
-    return version_info
+      return json.load(json_data)
   
   def __validate_fields(self):
     """
@@ -80,7 +81,7 @@ class VersionsManager(singleton.Singleton):
       )
 
   @staticmethod
-  def __is_valid_semver(version_parts: List[str]) -> bool:
+  def __is_valid_semver(version_parts: list[str]) -> bool:
     """
     ### Checks if version parts constitute a valid semantic version.
     
@@ -105,7 +106,7 @@ class VersionsManager(singleton.Singleton):
     - ValueError: If release date doesn't follow the required format or is invalid.
     """
     try:
-      datetime.strptime(self.xmipp_release_date, "%d/%m/%Y")
+      datetime.strptime(self.xmipp_release_date, "%d/%m/%Y").replace(tzinfo=timezone.utc)
     except ValueError:
       raise ValueError(
         f"Release date '{self.xmipp_release_date}' is invalid. Must be in dd/mm/yyyy format."
