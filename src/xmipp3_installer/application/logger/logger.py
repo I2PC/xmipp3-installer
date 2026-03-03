@@ -199,7 +199,7 @@ class Logger(Singleton):
     n_line_breaks = self.__last_printed_elem.count("\n") + 1
     text_lines = self.__last_printed_elem.split("\n")
     for line in text_lines:
-      n_line_breaks += int(len(line) / (terminal_width + 1)) # Equal does not count, it needs to exceed
+      n_line_breaks += len(line) // (terminal_width + 1) # Equal does not count, it needs to exceed
     return n_line_breaks
   
   def __format_text(self, text: str, format_code: str) -> str:
