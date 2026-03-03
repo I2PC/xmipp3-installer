@@ -1,6 +1,7 @@
 """### Provides a global logger."""
 
 import shutil
+from contextlib import ExitStack
 from io import BufferedReader
 
 from xmipp3_installer.application.logger import errors
@@ -28,6 +29,7 @@ class Logger(Singleton):
     #### Params:
     - outputToConsole (bool): Print messages to console.
     """
+    self.__stack = ExitStack()
     self.__log_file = None
     self.__last_printed_elem = None
     self.__allow_substitution = True
@@ -100,13 +102,14 @@ class Logger(Singleton):
     - log_path (str): Path to the log file.
     """
     if self.__log_file is None:
-      self.__log_file = open(log_path, 'w', encoding="utf-8")
+      self.__log_file = self.__stack.enter_context(
+        open(log_path, 'w', encoding="utf-8") # noqa: SIM115 TODO change logger with loggin lib
+      )
 
   def close(self):
     """### Closes the log file."""
-    if self.__log_file:
-      self.__log_file.close()
-      self.__log_file = None
+    self.__stack.close()
+    self.__log_file = None
 
   def set_allow_substitution(self, allow_substitution: bool):
     """
