@@ -22,8 +22,9 @@ license = { text = "GPL-3.0-only" }
 
 requires-python = ">=3.8"
 dependencies = [
-  "typing-extensions>=4.12",
-  "distro>=1.8.0"
+  "typing-extensions==4.13.2; python_version < '3.9'",
+  "typing-extensions==4.15.0; python_version >= '3.9'",
+  "distro==1.9.0"
 ]
 
 [build-system]
@@ -32,15 +33,15 @@ build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
 test = [
-  "pytest==8.*; python_version < '3.10'",
-  "pytest==9.*; python_version >= '3.10'",
-  "pytest-cov==5.*; python_version < '3.9'",
-  "pytest-cov==7.*; python_version >= '3.9'",
-  "pytest-subprocess==1.*",
-  "pytest-localserver==0.*",
-  "ruff==0.*",
-  "cmake==4.*",
-  "ninja==1.*"
+  "pytest==8.3.5; python_version < '3.10'",
+  "pytest==9.0.2; python_version >= '3.10'",
+  "pytest-cov==5.0.0; python_version < '3.9'",
+  "pytest-cov==7.0.0; python_version >= '3.9'",
+  "pytest-subprocess==1.5.3",
+  "pytest-localserver==0.10.0",
+  "ruff==0.15.4",
+  "cmake==4.2.3",
+  "ninja==1.13.0"
 ]
 
 [project.urls]
