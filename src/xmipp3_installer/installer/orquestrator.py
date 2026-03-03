@@ -1,14 +1,16 @@
 """### Contains functions that orquestrate other function executions."""
 
+from __future__ import annotations
+
 import multiprocessing
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable
 
 
 def run_parallel_jobs(
-  funcs: List[Callable],
-  func_args: List[Tuple[Any, ...]],
+  funcs: list[Callable],
+  func_args: list[tuple[Any, ...]],
   n_jobs: int=multiprocessing.cpu_count()
-) -> List:
+) -> list:
   """
   ### Runs the given command list in parallel.
 
@@ -21,16 +23,15 @@ def run_parallel_jobs(
   - (list): List containing the return of each function.
   """
   with multiprocessing.Pool(n_jobs) as p:
-    results = p.starmap(__run_lambda, zip(funcs, func_args))
-  return results
+    return p.starmap(__run_lambda, zip(funcs, func_args))
 
-def __run_lambda(func: Callable, args: Tuple[Any]) -> Any:
+def __run_lambda(func: Callable, args: tuple[Any, ...]) -> Any:
   """
   ### Runs the given function with its args.
   
   #### Params:
   - func (callable): Function to run.
-  - args (tuple(any)): Arguments for the function.
+  - args (tuple(any, ...)): Arguments for the function.
   
   #### Returns:
   - (any): Return of the called function.
