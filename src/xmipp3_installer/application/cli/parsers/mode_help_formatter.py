@@ -90,7 +90,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     ### Returns the info of each param.
 
     #### Params:
-    - args (list[str]): List of parameters.
+    - args (list[str | list[str]]): List of parameters.
 
     #### Returns:
     - (str): Info of all parameters.
