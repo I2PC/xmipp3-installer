@@ -4,6 +4,7 @@ import os
 import shutil
 from typing import List
 
+
 def delete_paths(paths: List[str]):
   """
   ### Deletes all the given paths (files or directories).

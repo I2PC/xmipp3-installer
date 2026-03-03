@@ -5,15 +5,20 @@ This module contains the class to clone or update Xmipp source repositories.
 """
 
 import os
-from typing import Dict, Tuple, Optional
+from typing import Dict, Optional, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
-from xmipp3_installer.application.logger import predefined_messages, errors
+from xmipp3_installer.application.logger import errors, predefined_messages
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants, urls
 from xmipp3_installer.installer.constants import paths
+from xmipp3_installer.installer.handlers import (
+  git_handler,
+  shell_handler,
+  versions_manager,
+)
 from xmipp3_installer.installer.modes import mode_executor
-from xmipp3_installer.installer.handlers import git_handler, versions_manager, shell_handler
+
 
 class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
   """

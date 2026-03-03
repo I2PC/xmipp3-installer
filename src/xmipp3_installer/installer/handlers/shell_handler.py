@@ -3,11 +3,11 @@
 import os
 import subprocess
 import threading
-
 from typing import Tuple
 
-from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.application.logger import errors
+from xmipp3_installer.application.logger.logger import logger
+
 
 def run_shell_command(
   cmd: str,

@@ -15,6 +15,7 @@ from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_clean import mode_clean_executor
 
+
 class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
   """
   ### Mode Clean Bin Executor.

@@ -7,6 +7,7 @@ from typing import List, Tuple, Union
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
 
+
 class BaseHelpFormatter(argparse.HelpFormatter):
   """### Extendes the available functions of the generic help formatter."""
 
@@ -124,7 +125,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     - (int): Maximum line size.
     """
     size = shutil.get_terminal_size().columns
-    return self.__LINE_SIZE_LOWER_LIMIT if size < self.__LINE_SIZE_LOWER_LIMIT else size
+    return max(size, self.__LINE_SIZE_LOWER_LIMIT)
 
   @staticmethod
   def __multi_line_help_text(text: str, size_limit: int, left_fill: str) -> str:
@@ -220,7 +221,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     words = text.split(' ')
     lines = []
     while words:
-      iteration_size_limit = size_limit if size_limit >= len(words[0]) else len(words[0])
+      iteration_size_limit = max(size_limit, len(words[0]))
       line, words = BaseHelpFormatter.__fit_words_in_line(words, iteration_size_limit)
       line = left_fill + line if lines else line
       lines.append(line)

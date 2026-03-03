@@ -2,17 +2,22 @@
 
 import getpass
 import hashlib
+import os
 import platform
 import re
-import os
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
 
 import distro
 
 from xmipp3_installer.installer import constants, orquestrator
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.installer.handlers import shell_handler, git_handler, versions_manager
+from xmipp3_installer.installer.handlers import (
+  git_handler,
+  shell_handler,
+  versions_manager,
+)
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
+
 
 def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> Dict:
   """

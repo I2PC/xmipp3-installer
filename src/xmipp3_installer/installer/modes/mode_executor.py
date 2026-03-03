@@ -10,6 +10,7 @@ from typing import Dict, Tuple
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
 
+
 class ModeExecutor(ABC):
   """### Base executor interface for installer modes."""
 

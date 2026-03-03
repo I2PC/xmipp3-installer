@@ -14,6 +14,7 @@ from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.installer.modes.mode_cmake import mode_cmake_executor
 from xmipp3_installer.repository.config_vars import variables
 
+
 class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
   """
   ### Mode Config Build Executor.

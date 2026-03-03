@@ -3,6 +3,7 @@
 import os
 from typing import Optional
 
+
 def get_conda_prefix_path() -> Optional[str]:
   """
   ### Returns the path for the current Conda enviroment.

@@ -3,10 +3,11 @@
 import http.client
 import json
 from typing import Dict
-from urllib.parse import urlparse, ParseResult
+from urllib.parse import ParseResult, urlparse
 
-from xmipp3_installer.installer import urls
 from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer import urls
+
 
 def send_installation_attempt(installation_info: Dict):
   """

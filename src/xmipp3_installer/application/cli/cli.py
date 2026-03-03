@@ -4,16 +4,23 @@ import argparse
 import multiprocessing
 import os
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
-from xmipp3_installer.application.cli.parsers.error_handler_parser import ErrorHandlerArgumentParser
-from xmipp3_installer.application.cli.parsers.general_help_formatter import GeneralHelpFormatter
-from xmipp3_installer.application.cli.parsers.mode_help_formatter import ModeHelpFormatter
+from xmipp3_installer.application.cli.parsers.error_handler_parser import (
+  ErrorHandlerArgumentParser,
+)
+from xmipp3_installer.application.cli.parsers.general_help_formatter import (
+  GeneralHelpFormatter,
+)
+from xmipp3_installer.application.cli.parsers.mode_help_formatter import (
+  ModeHelpFormatter,
+)
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import installer_service
+
 
 def main():
   """### Main entry point function that starts the execution."""

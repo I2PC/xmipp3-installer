@@ -4,16 +4,20 @@
 This module contains the class to run the whole installation process.
 """
 
-from typing import Tuple, Dict
+from typing import Dict, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.modes import (
-  mode_executor, mode_config_executor, mode_get_sources_executor
+  mode_config_executor,
+  mode_executor,
+  mode_get_sources_executor,
 )
 from xmipp3_installer.installer.modes.mode_cmake import (
-  mode_config_build_executor, mode_compile_and_install_executor
+  mode_compile_and_install_executor,
+  mode_config_build_executor,
 )
+
 
 class ModeAllExecutor(mode_executor.ModeExecutor):
   """

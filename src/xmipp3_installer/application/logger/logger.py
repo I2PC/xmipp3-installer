@@ -3,9 +3,10 @@
 import shutil
 from io import BufferedReader
 
-from xmipp3_installer.shared.singleton import Singleton
 from xmipp3_installer.application.logger import errors
 from xmipp3_installer.installer import urls
+from xmipp3_installer.shared.singleton import Singleton
+
 
 class Logger(Singleton):
   """### Logger class for keeping track of installation messages."""

@@ -13,6 +13,7 @@ from xmipp3_installer.installer.handlers.cmake import cmake_handler
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository.config_vars import variables
 
+
 class ModeCMakeExecutor(mode_executor.ModeExecutor):
   """
   ### Mode CMake Executor.

@@ -2,8 +2,11 @@
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.application.cli.parsers import format
-from xmipp3_installer.application.cli.parsers.base_help_formatter import BaseHelpFormatter
+from xmipp3_installer.application.cli.parsers.base_help_formatter import (
+  BaseHelpFormatter,
+)
 from xmipp3_installer.application.logger.logger import logger
+
 
 class GeneralHelpFormatter(BaseHelpFormatter):
   """### Overrides the default help formatter to display a custom help message."""

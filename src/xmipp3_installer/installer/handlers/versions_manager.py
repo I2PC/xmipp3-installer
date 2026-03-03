@@ -11,6 +11,7 @@ from typing import Dict, List
 from xmipp3_installer.installer import constants
 from xmipp3_installer.shared import singleton
 
+
 class VersionsManager(singleton.Singleton):
   """
   ### Versions Manager.

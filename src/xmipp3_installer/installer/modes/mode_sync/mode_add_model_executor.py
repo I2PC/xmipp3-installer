@@ -9,12 +9,15 @@ import tarfile
 from typing import Dict, Tuple
 
 from xmipp3_installer.application import user_interactions
-from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger import errors
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import (
+  ModeSyncExecutor,
+)
+
 
 class ModeAddModelExecutor(ModeSyncExecutor):
   """

@@ -6,6 +6,7 @@ from typing import List
 from xmipp3_installer.application.cli.parsers import format
 from xmipp3_installer.application.logger.logger import logger
 
+
 class ErrorHandlerArgumentParser(argparse.ArgumentParser):
   """### Overrides the error function of the standard argument parser to display better error messages."""
 

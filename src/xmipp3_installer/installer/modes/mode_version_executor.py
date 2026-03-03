@@ -6,15 +6,16 @@ This module contains the class to collect and display version information.
 import os
 from typing import Dict, Tuple
 
+from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.api_client.assembler import installation_info_assembler
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import git_handler, versions_manager
 from xmipp3_installer.installer.handlers.cmake import cmake_handler
+from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository.config_vars import variables
+
 
 class ModeVersionExecutor(mode_executor.ModeExecutor):
   """

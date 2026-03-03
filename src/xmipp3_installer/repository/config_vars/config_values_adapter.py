@@ -7,7 +7,8 @@ This module contains functions to convert configuration values between file form
 from typing import Dict, Union
 
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.repository.config_vars import variables, default_values
+from xmipp3_installer.repository.config_vars import default_values, variables
+
 
 def get_context_values_from_file_values(file_values: Dict[str, str], show_warnings: bool=True) -> Dict[str, Union[str, bool]]:
   """

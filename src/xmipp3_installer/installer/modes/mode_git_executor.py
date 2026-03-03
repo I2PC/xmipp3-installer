@@ -10,8 +10,9 @@ from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.installer.handlers import git_handler
+from xmipp3_installer.installer.modes import mode_executor
+
 
 class ModeGitExecutor(mode_executor.ModeExecutor):
   """

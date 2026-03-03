@@ -7,13 +7,13 @@ This module contains the class to manage the configuration file.
 import os
 from typing import Dict, Tuple
 
-from xmipp3_installer.application.logger import errors
-from xmipp3_installer.application.logger import predefined_messages
-from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.application.cli.arguments import params
+from xmipp3_installer.application.logger import errors, predefined_messages
+from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.repository import config
+
 
 class ModeConfigExecutor(mode_executor.ModeExecutor):
   """

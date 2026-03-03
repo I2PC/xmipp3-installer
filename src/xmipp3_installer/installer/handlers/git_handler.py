@@ -7,6 +7,7 @@ from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 
+
 def get_current_branch(dir: str='./') -> str:
   """
   ### Returns the current branch of the repository of the given directory or empty string if it is not a repository or a recognizable tag.

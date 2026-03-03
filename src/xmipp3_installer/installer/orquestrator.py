@@ -1,7 +1,8 @@
 """### Contains functions that orquestrate other function executions."""
 
 import multiprocessing
-from typing import List, Tuple, Callable, Any
+from typing import Any, Callable, List, Tuple
+
 
 def run_parallel_jobs(
   funcs: List[Callable],

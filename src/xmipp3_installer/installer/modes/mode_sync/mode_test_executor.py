@@ -4,14 +4,16 @@
 This module contains the class to execute Xmipp tests.
 """
 import os
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
-from xmipp3_installer.application.logger.logger import logger, errors
+from xmipp3_installer.application.logger.logger import errors, logger
 from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import ModeSyncExecutor
+from xmipp3_installer.installer.modes.mode_sync.mode_sync_executor import (
+  ModeSyncExecutor,
+)
 from xmipp3_installer.repository.config_vars import variables
 
 _DATASET_NAME = "xmipp_programs"

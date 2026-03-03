@@ -4,6 +4,7 @@ from typing import Optional
 
 from xmipp3_installer.installer.handlers import shell_handler
 
+
 def get_package_version(package_name: str) -> Optional[str]:
   """
   ### Retrieves the version of a package or program by executing '[package_name] --version' command.

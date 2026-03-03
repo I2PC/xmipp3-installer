@@ -5,14 +5,14 @@ This module contains the base class for executors that clean compiled binaries.
 """
 
 from abc import abstractmethod
-from typing import Tuple, List
+from typing import List, Tuple
 
 from xmipp3_installer.application import user_interactions
-from xmipp3_installer.application.logger import errors
-from xmipp3_installer.application.logger import predefined_messages
+from xmipp3_installer.application.logger import errors, predefined_messages
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.modes import mode_executor
 from xmipp3_installer.shared import file_operations
+
 
 class ModeCleanExecutor(mode_executor.ModeExecutor):
   """

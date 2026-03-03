@@ -1,15 +1,20 @@
 """### Contains the configuration file singleton that interact with the configuration file."""
 
-import re
 import os
+import re
 from datetime import datetime
-from typing import List, Optional, Tuple, Dict, Any
+from typing import Any, Dict, List, Optional, Tuple
 
-from xmipp3_installer.shared.singleton import Singleton
-from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.application.logger.logger import logger
-from xmipp3_installer.repository.config_vars import default_values, variables, config_values_adapter
+from xmipp3_installer.installer.constants import paths
+from xmipp3_installer.repository.config_vars import (
+  config_values_adapter,
+  default_values,
+  variables,
+)
 from xmipp3_installer.repository.invalid_config_line import InvalidConfigLineError
+from xmipp3_installer.shared.singleton import Singleton
+
 
 class ConfigurationFileHandler(Singleton):
   """### Configuration file class for loading and storing the installation configuration."""
