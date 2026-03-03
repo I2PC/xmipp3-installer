@@ -4,8 +4,9 @@
 This module contains the class to clone or update Xmipp source repositories.
 """
 
+from __future__ import annotations
+
 import os
-from typing import Dict, Optional, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors, predefined_messages
@@ -27,7 +28,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
   Clones or updates Xmipp source repositories.
   """
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -40,9 +41,9 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     self.target_branch = context.pop(params.PARAM_BRANCH)
     versions: versions_manager.VersionsManager = context[constants.VERSIONS_CONTEXT_KEY]
     self.xmipp_tag_name = versions.xmipp_version_name
-    self.source_versions: Dict = versions.sources_versions
+    self.source_versions: dict = versions.sources_versions
   
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Clones or updates Xmipp source repositories.
 
@@ -61,7 +62,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     super()._set_executor_config()
     self.prints_with_substitution = True
   
-  def __select_ref_to_clone(self, source_name: str, source_repo: str) -> Optional[str]:
+  def __select_ref_to_clone(self, source_name: str, source_repo: str) -> str | None:
     """
     ### Selects the reference to clone from the source.
 
@@ -78,7 +79,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
       tag_name = self.source_versions.get(source_name)
     return git_handler.get_clonable_branch(source_repo, self.target_branch, tag_name)
   
-  def __get_source(self, source_name: str) -> Tuple[int, str]:
+  def __get_source(self, source_name: str) -> tuple[int, str]:
     """
     ### Gets the given source.
     
@@ -107,7 +108,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
       logger(predefined_messages.get_done_message(), substitute=self.substitute)
     return ret_code, output
 
-def _run_source_command(source_name: str, source_repo: str, target_branch: Optional[str]) -> Tuple[int, str]:
+def _run_source_command(source_name: str, source_repo: str, target_branch: str | None) -> tuple[int, str]:
   """
   ### Executes git clone/checkout commands for a source repository.
   

@@ -4,8 +4,9 @@
 This module contains the class to download deep learning models.
 """
 
+from __future__ import annotations
+
 import os
-from typing import Dict, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
@@ -24,7 +25,7 @@ class ModeGetModelsExecutor(ModeSyncExecutor):
   Downloads deep learning models for the installation.
   """
   
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -36,7 +37,7 @@ class ModeGetModelsExecutor(ModeSyncExecutor):
     if self.models_directory == os.path.abspath(paths.INSTALL_PATH):
       self.models_directory = os.path.join(self.models_directory, 'models')
 
-  def _sync_operation(self) -> Tuple[int, str]:
+  def _sync_operation(self) -> tuple[int, str]:
     """
     ### Downloads deep learning models.
 

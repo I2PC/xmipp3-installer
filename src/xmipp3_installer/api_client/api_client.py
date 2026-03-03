@@ -1,15 +1,16 @@
 """### Contains an API client that registers the installation attempts."""
 
+from __future__ import annotations
+
 import http.client
 import json
-from typing import Dict
 from urllib.parse import ParseResult, urlparse
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import urls
 
 
-def send_installation_attempt(installation_info: Dict):
+def send_installation_attempt(installation_info: dict):
   """
   ### Sends a POST request to Xmipp's metrics's API.
   

@@ -4,7 +4,9 @@
 This module contains the class to manage the installation process.
 """
 
-from typing import Dict, cast
+from __future__ import annotations
+
+from typing import cast
 
 from xmipp3_installer.api_client import api_client
 from xmipp3_installer.api_client.assembler import installation_info_assembler
@@ -27,7 +29,7 @@ class InstallationManager:
   Manages the installation process by executing the appropriate mode based on the given arguments.
   """
   
-  def __init__(self, args: Dict):
+  def __init__(self, args: dict):
     """
     ### Constructor.
 		

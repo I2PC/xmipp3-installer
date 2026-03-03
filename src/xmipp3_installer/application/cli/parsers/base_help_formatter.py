@@ -1,8 +1,9 @@
 """### Defines a base help formatter with extened functions to be used by the custom formatters."""
 
+from __future__ import annotations
+
 import argparse
 import shutil
-from typing import List, Tuple, Union
 
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.application.cli.parsers import format
@@ -78,7 +79,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return f"{previous_text}{fill_in_space}{formatted_help}\n"
 
   @staticmethod
-  def _has_mutually_exclusive_groups(arg_list: List[Union[str, List[str]]]) -> bool:
+  def _has_mutually_exclusive_groups(arg_list: list[str | list[str]]) -> bool:
     """
     ### Checks if the param list provided contains mutually exclusive groups.
 
@@ -104,7 +105,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return len(format.get_formatting_tabs(text))
 
   @staticmethod
-  def __get_message_from_list(messages: List[str], only_general: bool) -> str:
+  def __get_message_from_list(messages: list[str], only_general: bool) -> str:
     """
     ### Return the appropiate message given a list of them and a condition.
 
@@ -147,7 +148,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     )
 
   @staticmethod
-  def __fit_words_in_line(words: List[str], size_limit: int) -> Tuple[str, List[str]]:
+  def __fit_words_in_line(words: list[str], size_limit: int) -> tuple[str, list[str]]:
     """
     ### Returns a tuple containig a line with the words from the given list that could fit given the size limit, and the list with the remaining words.
 
@@ -186,7 +187,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return len(word) <= size_limit
 
   @staticmethod
-  def __add_word_to_line(line: str, word: str, remaining_words: List[str]) -> Tuple[str, List[str]]:
+  def __add_word_to_line(line: str, word: str, remaining_words: list[str]) -> tuple[str, list[str]]:
     """
     ### Adds a word to the current line and updates the list of remaining words.
 
@@ -206,7 +207,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return line, remaining_words[1:]
 
   @staticmethod
-  def __format_text_in_lines(text: str, size_limit: int, left_fill: str):
+  def __format_text_in_lines(text: str, size_limit: int, left_fill: str) -> str:
     """
     ### Returns the text formatted into size-limited lines.
 
@@ -227,7 +228,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
       lines.append(line)
     return '\n'.join(lines)
 
-  def __get_spaces(self, start_section_text: str) -> Tuple[int, str]:
+  def __get_spaces(self, start_section_text: str) -> tuple[int, str]:
     if self.__is_start_section_text_exceeding_size_limit(start_section_text):
       # If text exceeds size limit, it means that section space for modes and params 
       # is too low and should be set to a higher number, but for now we need to print anyways, 

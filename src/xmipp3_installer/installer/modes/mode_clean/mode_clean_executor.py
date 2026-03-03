@@ -4,8 +4,9 @@
 This module contains the base class for executors that clean compiled binaries.
 """
 
+from __future__ import annotations
+
 from abc import abstractmethod
-from typing import List, Tuple
 
 from xmipp3_installer.application import user_interactions
 from xmipp3_installer.application.logger import errors, predefined_messages
@@ -21,7 +22,7 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
   Base class for executors that clean compiled binaries.
   """
   
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Deletes the compiled binaries.
 
@@ -51,7 +52,7 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
 
   @staticmethod
   @abstractmethod
-  def _get_paths_to_delete() -> List[str]:
+  def _get_paths_to_delete() -> list[str]:
     """Get paths to delete method to be implemented by the inheriting classes."""
   
   @abstractmethod

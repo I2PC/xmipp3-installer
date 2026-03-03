@@ -4,7 +4,7 @@
 This module contains the class to compile and install using CMake.
 """
 
-from typing import Dict, Tuple
+from __future__ import annotations
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors, predefined_messages
@@ -21,7 +21,7 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
   Compiles and installs using CMake with the appropriate parameters.
   """
   
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -36,7 +36,7 @@ class ModeCompileAndInstallExecutor(mode_cmake_executor.ModeCMakeExecutor):
     super()._set_executor_config()
     self.prints_banner_on_exit = True
 
-  def _run_cmake_mode(self, cmake: str) -> Tuple[int, str]:
+  def _run_cmake_mode(self, cmake: str) -> tuple[int, str]:
     """
     ### Runs the CMake compilation & installation with the appropiate params.
 

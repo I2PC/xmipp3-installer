@@ -1,11 +1,12 @@
 """### Contains functions to assemble the data dictionary required by the API client."""
 
+from __future__ import annotations
+
 import getpass
 import hashlib
 import os
 import platform
 import re
-from typing import Dict, List, Optional
 
 import distro
 
@@ -19,7 +20,7 @@ from xmipp3_installer.installer.handlers import (
 from xmipp3_installer.installer.handlers.cmake import cmake_constants, cmake_handler
 
 
-def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> Dict:
+def get_installation_info(version_manager: versions_manager.VersionsManager, ret_code: int=0) -> dict:
   """
   ### Creates a dictionary with the necessary data for the API POST message.
   
@@ -115,7 +116,7 @@ def __get_user_id() -> str:
   sha256.update(identifier.encode())
   return sha256.hexdigest()
 
-def __get_cpu_flags() -> List[str]:
+def __get_cpu_flags() -> list[str]:
   """
   ### This function obtains the list of compilation flags supported by the CPU.
 
@@ -129,7 +130,7 @@ def __get_cpu_flags() -> List[str]:
   flags_line = flags_line.replace(flags_header, "").strip()
   return [flag for flag in flags_line.split(" ") if flag]
 
-def __get_log_tail() -> Optional[str]:
+def __get_log_tail() -> str | None:
   """
   ### Returns the last lines of the installation log.
   
@@ -141,7 +142,7 @@ def __get_log_tail() -> Optional[str]:
   )
   return output if ret_code == 0 else None
 
-def __anonymize_log_tail(log_text: Optional[str]) -> Optional[str]:
+def __anonymize_log_tail(log_text: str | None) -> str | None:
   """
   ### Anonymizes usernames in a log string.
   
@@ -157,7 +158,7 @@ def __anonymize_log_tail(log_text: Optional[str]) -> Optional[str]:
   pattern = re.compile(r'(/home/)([^/\s]+)')
   return pattern.sub(r'\1REDACTED', log_text)
 
-def __get_mac_address() -> Optional[str]:
+def __get_mac_address() -> str | None:
   """
   ### Returns a physical MAC address for this machine. It prioritizes ethernet over wireless.
   
@@ -167,7 +168,7 @@ def __get_mac_address() -> Optional[str]:
   ret_code, output = shell_handler.run_shell_command("ip addr")
   return __find_mac_address_in_lines(output.split('\n')) if ret_code == 0 else None
 
-def __find_mac_address_in_lines(lines: List[str]) -> Optional[str]:
+def __find_mac_address_in_lines(lines: list[str]) -> str | None:
   """
   ### Returns a physical MAC address within the text lines provided.
 

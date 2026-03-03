@@ -1,7 +1,8 @@
 """### Functions that interact with Git via shell."""
 
+from __future__ import annotations
+
 import os
-from typing import Optional, Tuple
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
@@ -119,7 +120,7 @@ def tag_exists_in_repo(repo_url: str, tag: str) -> bool:
   """
   return __ref_exists_in_repo(repo_url, tag, False)
 
-def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: Optional[str]) -> Optional[str]:
+def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str | None) -> str | None:
   """
   ### Decides the target to be cloned from a given repository.
 
@@ -141,7 +142,7 @@ def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: Option
   if viable_tag and tag_exists_in_repo(repo_url, viable_tag):
     return viable_tag
 
-def execute_git_command_for_source(command: str, source: str) -> Tuple[int, str]:
+def execute_git_command_for_source(command: str, source: str) -> tuple[int, str]:
   """
   ### Executes the git command for a specific source.
 

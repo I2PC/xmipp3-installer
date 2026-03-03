@@ -1,6 +1,6 @@
 """### Common formatting functions for parsers."""
 
-from typing import List
+from __future__ import annotations
 
 from xmipp3_installer.application.cli.arguments import params
 
@@ -18,7 +18,7 @@ def get_formatting_tabs(text: str) -> str:
   """
   return text.expandtabs(TAB_SIZE)
 
-def get_param_names(param_key: str) -> List[str]:
+def get_param_names(param_key: str) -> list[str]:
   """
   ### Returns the list of possible names a given param has.
 

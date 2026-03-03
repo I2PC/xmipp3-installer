@@ -4,9 +4,10 @@
 This module contains the class to manage version information.
 """
 
+from __future__ import annotations
+
 import json
 from datetime import datetime, timezone
-from typing import Dict, List
 
 from xmipp3_installer.installer import constants
 from xmipp3_installer.shared import singleton
@@ -40,7 +41,7 @@ class VersionsManager(singleton.Singleton):
     self.sources_versions = version_info["sources_target_tag"]
     self.__validate_fields()
 
-  def __get_version_info(self) -> Dict[str, Dict[str, str]]:
+  def __get_version_info(self) -> dict[str, dict[str, str]]:
     """
     ### Retrieves the version info from the version information JSON file.
 
@@ -81,7 +82,7 @@ class VersionsManager(singleton.Singleton):
       )
 
   @staticmethod
-  def __is_valid_semver(version_parts: List[str]) -> bool:
+  def __is_valid_semver(version_parts: list[str]) -> bool:
     """
     ### Checks if version parts constitute a valid semantic version.
     

@@ -1,6 +1,8 @@
 """### Help formatter specific for non-generic usage modes."""
 
-from typing import List, Union, cast
+from __future__ import annotations
+
+from typing import cast
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
@@ -68,7 +70,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     return help_message
 
   @staticmethod
-  def __args_contain_optional(arg_names: List[str]) -> bool:
+  def __args_contain_optional(arg_names: list[str]) -> bool:
     """
     ### Returns True if the param name list contains at least one optional param.
 
@@ -83,7 +85,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
         return True
     return False
 
-  def __get_args_info(self, args: List[Union[str, List[str]]]) -> str:
+  def __get_args_info(self, args: list[str | list[str]]) -> str:
     """
     ### Returns the info of each param.
 
@@ -94,10 +96,10 @@ class ModeHelpFormatter(BaseHelpFormatter):
     - (str): Info of all parameters.
     """
     if not self._has_mutually_exclusive_groups(args):
-      return self.__get_args_group_info(cast(List[str], args))
-    return "\t---------------\n".join([self.__get_args_group_info(cast(List[str], group)) for group in args])
+      return self.__get_args_group_info(cast(list[str], args))
+    return "\t---------------\n".join([self.__get_args_group_info(cast(list[str], group)) for group in args])
 
-  def __get_args_group_info(self, args: List[str]) -> str:
+  def __get_args_group_info(self, args: list[str]) -> str:
     """
     ### Returns the info of each param.
 
@@ -137,7 +139,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
 
     return help_message
 
-  def __flatten_args(self, args: List[Union[str, List[str]]]) -> List[str]:
+  def __flatten_args(self, args: list[str | list[str]]) -> list[str]:
     """
     ### Flattens a list of arguments.
 
@@ -148,7 +150,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     - (list[str]): A flattened list of arguments, where nested groups are expanded into a single list.
     """
     if not self._has_mutually_exclusive_groups(args):
-      return cast(List[str], args)
+      return cast(list[str], args)
 
     return [
       arg

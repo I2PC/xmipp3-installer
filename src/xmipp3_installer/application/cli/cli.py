@@ -1,10 +1,12 @@
 """### Command Line Interface that interacts with the installer."""
 
+from __future__ import annotations
+
 import argparse
 import multiprocessing
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
@@ -239,7 +241,7 @@ def __help_requested() -> bool:
   """
   return '-h' in sys.argv or '--help' in sys.argv
 
-def __validate_args(args: Dict[str, Any], parser: argparse.ArgumentParser):
+def __validate_args(args: dict[str, Any], parser: argparse.ArgumentParser):
   """
   ### Performs validations on the arguments.
 

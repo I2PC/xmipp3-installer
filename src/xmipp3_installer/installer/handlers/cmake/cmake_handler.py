@@ -1,13 +1,15 @@
 """### Functions that interact with CMake."""
 
+from __future__ import annotations
+
 import os
 import shutil
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from xmipp3_installer.installer.handlers.cmake import cmake_constants
 
 
-def get_cmake_path() -> Optional[str]:
+def get_cmake_path() -> str | None:
   """
   ### Returns the path to the CMake executable.
 
@@ -16,7 +18,7 @@ def get_cmake_path() -> Optional[str]:
   """
   return shutil.which(cmake_constants.DEFAULT_CMAKE)
 
-def get_cmake_params(variables: List[Tuple[str, Union[str, bool]]]) -> str:
+def get_cmake_params(variables: list[tuple[str, str | bool]]) -> str:
   """
   ### Converts the given list of variable names into CMake parameters.
 
@@ -28,7 +30,7 @@ def get_cmake_params(variables: List[Tuple[str, Union[str, bool]]]) -> str:
     result.append(f"-D{key}={value}")
   return ' '.join(result)
 
-def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
+def get_library_versions_from_cmake_file(path: str) -> dict[str, Any]:
   """
   ### Obtains the library versions from the CMake cache file.
 
@@ -47,7 +49,7 @@ def get_library_versions_from_cmake_file(path: str) -> Dict[str, Any]:
       result.update(__get_library_version_from_line(line))
   return result
 
-def __get_library_version_from_line(version_line: str) -> Dict[str, Any]:
+def __get_library_version_from_line(version_line: str) -> dict[str, Any]:
   """
   ### Retrieves the name and version of the library in the given line.
   

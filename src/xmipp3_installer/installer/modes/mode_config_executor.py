@@ -4,8 +4,9 @@
 This module contains the class to manage the configuration file.
 """
 
+from __future__ import annotations
+
 import os
-from typing import Dict, Tuple
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors, predefined_messages
@@ -22,7 +23,7 @@ class ModeConfigExecutor(mode_executor.ModeExecutor):
   Manages the configuration file for the installation.
   """
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -33,7 +34,7 @@ class ModeConfigExecutor(mode_executor.ModeExecutor):
     self.overwrite = context.pop(params.PARAM_OVERWRITE)
     self.config_values = {}
   
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Reads the config file and writes to it formatting properly with the appropiate values.
 

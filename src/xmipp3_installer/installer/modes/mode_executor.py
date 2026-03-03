@@ -4,8 +4,9 @@
 This module contains the base executor interface for installer modes.
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import Dict, Tuple
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
@@ -14,7 +15,7 @@ from xmipp3_installer.installer.constants import paths
 class ModeExecutor(ABC):
   """### Base executor interface for installer modes."""
 
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
 		
@@ -41,5 +42,5 @@ class ModeExecutor(ABC):
       logger.set_allow_substitution(True)
   
   @abstractmethod
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """Run method to be implemented by inheriting classes."""

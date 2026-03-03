@@ -3,6 +3,7 @@
 
 This module contains the class to collect and display version information.
 """
+
 from __future__ import annotations
 
 import os

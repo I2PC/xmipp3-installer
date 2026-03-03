@@ -4,7 +4,7 @@
 This module contains the class to run the whole installation process.
 """
 
-from typing import Dict, Tuple
+from __future__ import annotations
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
@@ -26,7 +26,7 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
   Runs the whole installation process with the appropriate parameters.
   """
   
-  def __init__(self, context: Dict):
+  def __init__(self, context: dict):
     """
     ### Constructor.
     
@@ -61,7 +61,7 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
     self.prints_banner_on_exit = True
     self.sends_installation_info = True
 
-  def run(self) -> Tuple[int, str]:
+  def run(self) -> tuple[int, str]:
     """
     ### Runs the whole installation process with the appropiate params.
 
