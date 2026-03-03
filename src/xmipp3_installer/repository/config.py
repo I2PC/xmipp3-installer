@@ -1,9 +1,11 @@
 """### Contains the configuration file singleton that interact with the configuration file."""
 
+from __future__ import annotations
+
 import os
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.constants import paths
@@ -113,7 +115,7 @@ class ConfigurationFileHandler(Singleton):
       self.last_modified = self.__read_config_date()
     return self.last_modified
     
-  def __get_file_content(self) -> List[str]:
+  def __get_file_content(self) -> list[str]:
     """
     ### Reads the whole unparsed content of the given file.
 
@@ -143,7 +145,7 @@ class ConfigurationFileHandler(Singleton):
         return match.group()
     return ""
 
-  def __add_line_values(self, config: Dict, line: str, line_number: int) -> Optional[Dict]:
+  def __add_line_values(self, config: Dict, line: str, line_number: int) -> dict | None:
     """
     ### Adds the config values present in the current line to the given dictionary.
 
@@ -167,7 +169,7 @@ class ConfigurationFileHandler(Singleton):
       config[key] = value
     return config
 
-  def __parse_config_line(self, line: str, line_number: int) -> Optional[Tuple[str, str]]:
+  def __parse_config_line(self, line: str, line_number: int) -> tuple[str, str] | None:
     """
     ### Reads the given line from the config file and returns the key-value pair as a tuple.
 
@@ -198,7 +200,7 @@ class ConfigurationFileHandler(Singleton):
     
     return tokens[0].strip(), tokens[1].strip()
 
-  def __make_config_line(self, key: str, value: Optional[str], default_value: str) -> str:
+  def __make_config_line(self, key: str, value: str | None, default_value: str) -> str:
     """
     ### Composes a config file line given a key-value pair to write.
 
@@ -214,7 +216,7 @@ class ConfigurationFileHandler(Singleton):
     value = default_value if value is None else value
     return f"{key}{self.__ASSIGNMENT_SEPARATOR}{value}" if key else ""
 
-  def __get_section_lines(self, section_type: str, config_variables: Dict[str, str]) -> List[str]:
+  def __get_section_lines(self, section_type: str, config_variables: dict[str, str]) -> list[str]:
     """
     ### Returns the lines composed by the given section's variables in the dictionary, and deletes them from it.
 
@@ -238,7 +240,7 @@ class ConfigurationFileHandler(Singleton):
       config_variables.pop(section_variable, None)
     return lines
 
-  def __get_unkown_variable_lines(self, config_variables: Dict[str, Any]) -> List[str]:
+  def __get_unkown_variable_lines(self, config_variables: dict[str, Any]) -> list[str]:
     """
     ### Returns the lines composed by the unkown variables in the dictionary.
 
