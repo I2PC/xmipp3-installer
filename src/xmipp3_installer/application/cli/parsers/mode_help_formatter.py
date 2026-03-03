@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import cast
+from typing import List, cast
 
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
@@ -96,8 +96,8 @@ class ModeHelpFormatter(BaseHelpFormatter):
     - (str): Info of all parameters.
     """
     if not self._has_mutually_exclusive_groups(args):
-      return self.__get_args_group_info(cast(list[str], args))
-    return "\t---------------\n".join([self.__get_args_group_info(cast(list[str], group)) for group in args])
+      return self.__get_args_group_info(cast(List[str], args))
+    return "\t---------------\n".join([self.__get_args_group_info(cast(List[str], group)) for group in args])
 
   def __get_args_group_info(self, args: list[str]) -> str:
     """
@@ -150,7 +150,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     - (list[str]): A flattened list of arguments, where nested groups are expanded into a single list.
     """
     if not self._has_mutually_exclusive_groups(args):
-      return cast(list[str], args)
+      return cast(List[str], args)
 
     return [
       arg
