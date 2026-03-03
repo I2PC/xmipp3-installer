@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from xmipp3_installer.application.logger.logger import logger
@@ -80,7 +80,7 @@ class ConfigurationFileHandler(Singleton):
     if overwrite:
       self.values = config_values_adapter.get_context_values_from_file_values(default_values.CONFIG_DEFAULT_VALUES)
     values = config_values_adapter.get_file_values_from_context_values(self.values.copy())
-    self.last_modified = datetime.today().strftime('%d-%m-%Y %H:%M.%S')
+    self.last_modified = datetime.now(timezone.utc).strftime('%d-%m-%Y %H:%M.%S')
     
     lines = ["##### TOGGLE SECTION #####\n"]
     lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
@@ -145,7 +145,7 @@ class ConfigurationFileHandler(Singleton):
         return match.group()
     return ""
 
-  def __add_line_values(self, config: Dict, line: str, line_number: int) -> dict | None:
+  def __add_line_values(self, config: dict, line: str, line_number: int) -> dict | None:
     """
     ### Adds the config values present in the current line to the given dictionary.
 
