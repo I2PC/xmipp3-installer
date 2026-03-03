@@ -5,7 +5,7 @@ This module contains the class to manage version information.
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List
 
 from xmipp3_installer.installer import constants
@@ -106,7 +106,7 @@ class VersionsManager(singleton.Singleton):
     - ValueError: If release date doesn't follow the required format or is invalid.
     """
     try:
-      datetime.strptime(self.xmipp_release_date, "%d/%m/%Y")
+      datetime.strptime(self.xmipp_release_date, "%d/%m/%Y").replace(tzinfo=timezone.utc)
     except ValueError:
       raise ValueError(
         f"Release date '{self.xmipp_release_date}' is invalid. Must be in dd/mm/yyyy format."
