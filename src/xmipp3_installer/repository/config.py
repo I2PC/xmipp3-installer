@@ -124,10 +124,8 @@ class ConfigurationFileHandler(Singleton):
     """
     if not os.path.exists(self.__path):
       return []
-    lines = []
     with open(self.__path, encoding="utf-8") as config_file:
-      lines = config_file.readlines()
-    return lines
+      return config_file.readlines()
 
   def __read_config_date(self) -> str:
     """
