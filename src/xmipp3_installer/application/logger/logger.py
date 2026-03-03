@@ -26,7 +26,7 @@ class Logger(Singleton):
     ### Constructor.
     
     #### Params:
-    - ouputToConsoloe (bool): Print messages to console.
+    - outputToConsole (bool): Print messages to console.
     """
     self.__log_file = None
     self.__last_printed_elem = None
