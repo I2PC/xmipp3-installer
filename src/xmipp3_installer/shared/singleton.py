@@ -1,11 +1,13 @@
 """### Contains a generic singleton class."""
 
+from typing_extensions import Self
+
 class Singleton:
   """### Generic singleton class."""
 
   __instance = None
 
-  def __new__(cls, *args, **kwrgs) -> "Singleton":
+  def __new__(cls, *args, **kwrgs) -> Self:
     """
     ### Singleton instancer.
 
