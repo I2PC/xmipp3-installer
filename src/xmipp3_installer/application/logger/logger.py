@@ -19,7 +19,7 @@ class Logger(Singleton):
   __GREEN = "\033[92m"
   __YELLOW = "\033[93m"
   __END_FORMAT = "\033[0m"
-  __FORMATTING_CHARACTERS = [__UP, __REMOVE_LINE, __BOLD, __BLUE, __RED, __GREEN, __YELLOW, __END_FORMAT]
+  __FORMATTING_CHARACTERS = (__UP, __REMOVE_LINE, __BOLD, __BLUE, __RED, __GREEN, __YELLOW, __END_FORMAT)
  
   def __init__(self):
     """
