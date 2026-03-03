@@ -1,11 +1,12 @@
 """# Module containing file-related functions."""
 
+from __future__ import annotations
+
 import os
 import shutil
-from typing import List
 
 
-def delete_paths(paths: List[str]):
+def delete_paths(paths: list[str]):
   """
   ### Deletes all the given paths (files or directories).
 
