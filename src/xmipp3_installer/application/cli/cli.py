@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import multiprocessing
-import os
 import sys
 from typing import Any
 
@@ -79,9 +78,6 @@ def __add_params(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
   config_subparser = subparsers.add_parser(modes.MODE_CONFIG, formatter_class=ModeHelpFormatter)
   __add_params_mode_config(config_subparser)
 
-  get_models_subparser = subparsers.add_parser(modes.MODE_GET_MODELS, formatter_class=ModeHelpFormatter)
-  __add_params_mode_get_models(get_models_subparser)
-
   get_sources_subparser = subparsers.add_parser(modes.MODE_GET_SOURCES, formatter_class=ModeHelpFormatter)
   __add_params_mode_get_sources(get_sources_subparser)
 
@@ -148,18 +144,6 @@ def __add_params_mode_config(subparser: argparse.ArgumentParser):
   - subparser (ArgumentParser): Subparser to add the params to.
   """
   subparser.add_argument(*format.get_param_names(params.PARAM_OVERWRITE), action='store_true')
-
-def __add_params_mode_get_models(subparser: argparse.ArgumentParser):
-  """
-  ### Adds params for mode "getModels".
-
-  #### Params:
-  - subparser (ArgumentParser): Subparser to add the params to.
-  """
-  subparser.add_argument(
-    *format.get_param_names(params.PARAM_MODELS_DIRECTORY),
-    default=os.path.abspath(arguments.DEFAULT_MODELS_DIR)
-  )
 
 def __add_params_mode_get_sources(subparser: argparse.ArgumentParser):
   """

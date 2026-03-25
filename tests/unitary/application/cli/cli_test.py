@@ -196,26 +196,6 @@ def test_returns_expected_mode_config_args(
 @pytest.mark.parametrize(
   "__mock_sys_argv,expected_args",
   [
-    pytest.param(["getModels"], {"directory": os.path.abspath(arguments.DEFAULT_MODELS_DIR)}),
-    pytest.param(["getModels", "-d", __DUMMY_PATH], {"directory": __DUMMY_PATH}),
-    pytest.param(["getModels", "--directory", __DUMMY_PATH], {"directory": __DUMMY_PATH}),
-    pytest.param(["getModels", f"-d={__DUMMY_PATH}"], {"directory": __DUMMY_PATH})
-  ],
-  indirect=["__mock_sys_argv"]
-)
-def test_returns_expected_mode_get_models_args(
-  expected_args,
-  __mock_sys_argv,
-  __mock_validate_args,
-  __mock_stdout_stderr,
-  __mock_run_installer,
-  __mock_sys_exit
-):
-  __test_args_in_mode("getModels", {"directory": os.path.join(__DUMMY_PATH, "default")}, expected_args, __mock_run_installer)
-
-@pytest.mark.parametrize(
-  "__mock_sys_argv,expected_args",
-  [
     pytest.param(["getSources"], {}),
     pytest.param(["getSources", "-b", "test_branch"], {"branch": "test_branch"}),
     pytest.param(["getSources", "--branch", "test_branch"], {"branch": "test_branch"}),
