@@ -37,7 +37,7 @@ test = [
   "pytest==9.0.2; python_version >= '3.10'",
   "pytest-cov==5.0.0; python_version < '3.9'",
   "pytest-cov==7.0.0; python_version >= '3.9'",
-  "pytest-subprocess==1.5.3",
+  "pytest-subprocess==1.5.4",
   "pytest-localserver==0.10.0",
   "ruff==0.15.7",
   "cmake==4.3.0",
