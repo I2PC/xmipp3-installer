@@ -39,7 +39,7 @@ test = [
   "pytest-cov==7.1.0; python_version >= '3.9'",
   "pytest-subprocess==1.5.4",
   "pytest-localserver==0.10.0",
-  "ruff==0.15.9",
+  "ruff==0.15.10",
   "cmake==4.3.1",
   "ninja==1.13.0"
 ]
