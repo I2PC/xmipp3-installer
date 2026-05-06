@@ -24,13 +24,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install build twine
     
-    - name: Install Package
-      run: pip install .
-    
     - name: Get package version
       id: version
       run: |
-        export VERSION=$(python -c "import importlib.metadata; print(importlib.metadata.version(\"${{ vars.MODULE_NAME }}\"))")
+        export VERSION=$(grep -m 1 '^version = ' pyproject.toml | cut -d '"' -f 2)
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         echo "Version number: $VERSION"
     
