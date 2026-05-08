@@ -5,6 +5,7 @@ import ssl
 import tempfile
 import socket
 from unittest.mock import patch
+from urllib.parse import urlparse
 
 import pytest
 
@@ -39,7 +40,6 @@ def test_records_api_call_when_sending_installation_attempt(
 
 def test_internet_available_integration_true(httpserver, monkeypatch):
   httpserver.serve_content(content=None, code=200, store_request_data=True)
-  from urllib.parse import urlparse
 
   parsed = urlparse(httpserver.url)
   monkeypatch.setattr(api_client, "INTERNET_CHECK_IP", parsed.hostname)
