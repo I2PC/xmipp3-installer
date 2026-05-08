@@ -4,10 +4,15 @@ from __future__ import annotations
 
 import http.client
 import json
+import socket
 from urllib.parse import ParseResult, urlparse
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import urls
+
+INTERNET_CHECK_TIMEOUT = 0.3
+INTERNET_CHECK_IP = "1.1.1.1" # Cloudflare DNS, chosen for its reliability and speed
+INTERNET_CHECK_PORT = 53 # DNS typically uses port 53, which is less likely to be blocked by firewalls compared to HTTP/HTTPS ports
 
 
 def send_installation_attempt(installation_info: dict):
@@ -35,6 +40,22 @@ def send_installation_attempt(installation_info: dict):
   finally:
     if conn is not None:
       conn.close()
+
+
+def internet_available() -> bool:
+  """
+  ### Checks if the internet is available by trying to connect to the API URL.
+
+  #### Returns:
+  - (bool): True if the connection was successful, False otherwise.
+  """
+  try:
+    socket.setdefaulttimeout(INTERNET_CHECK_TIMEOUT)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((INTERNET_CHECK_IP, INTERNET_CHECK_PORT))
+    return True
+  except OSError:
+      return False
 
 
 def __get_https_connection(parsed_url: ParseResult, timeout_seconds: int) -> http.client.HTTPSConnection:
