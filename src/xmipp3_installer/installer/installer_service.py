@@ -60,10 +60,7 @@ class InstallationManager:
       return errors.INTERRUPTED_ERROR
     if ret_code:
       logger.log_error(output, ret_code=ret_code, add_portal_link=ret_code != errors.INTERRUPTED_ERROR)
-    if (
-      self.mode_executor.sends_installation_info and 
-      self.context[variables.SEND_INSTALLATION_STATISTICS]
-    ):
+    if self._should_send_installation_info():
       logger("Sending anonymous installation info...", show_in_terminal=False)
       api_client.send_installation_attempt(
         installation_info_assembler.get_installation_info(
@@ -80,3 +77,19 @@ class InstallationManager:
       ))
     logger.close()
     return ret_code
+
+  def _should_send_installation_info(self) -> bool:
+    """
+    ### Determines whether installation information should be sent to the server.
+
+    #### Returns:
+    - (bool): True if installation information should be sent, False otherwise.
+    """
+    if not self.mode_executor.sends_installation_info or not self.context[variables.SEND_INSTALLATION_STATISTICS]:
+      return False
+    
+    if not api_client.internet_available():
+      logger("No internet connection available. Installation info will not be sent.", show_in_terminal=False)
+      return False
+    
+    return True

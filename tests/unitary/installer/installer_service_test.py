@@ -342,6 +342,29 @@ def test_returns_interrupted_error_when_running_installer_and_user_interrupts_ex
     ret_code == errors.INTERRUPTED_ERROR
   ), get_assertion_message("return code", errors.INTERRUPTED_ERROR, ret_code)
 
+def test_does_not_send_installation_info_when_no_internet(
+  __mock_mode_executors,
+  __mock_get_installation_info,
+  __mock_send_installation_info,
+  __mock_logger,
+  __mock_internet_available
+):
+  __mock_mode_executors['all'](None).sends_installation_info = True
+  installation_manager = installer_service.InstallationManager({})
+  installation_manager.context = {
+    **installation_manager.context,
+    __SEND_INSTALLATION_INFO_KEY: True
+  }
+  __mock_internet_available.return_value = False
+
+  installation_manager.run_installer()
+
+  __mock_send_installation_info.assert_not_called()
+  __mock_logger.assert_called_once_with(
+    "No internet connection available. Installation info will not be sent.",
+    show_in_terminal=False
+  )
+
 def __mock_executor(ret_code, message):
   executor = MagicMock()
   executor.run.return_value = (ret_code, message)
@@ -438,6 +461,14 @@ def __mock_logger_close():
   with patch(
     "xmipp3_installer.application.logger.logger.Logger.close"
   ) as mock_method:
+    yield mock_method
+
+@pytest.fixture(autouse=True, params=[True])
+def __mock_internet_available(request):
+  with patch(
+    "xmipp3_installer.api_client.api_client.internet_available"
+  ) as mock_method:
+    mock_method.return_value = request.param
     yield mock_method
 
 @pytest.fixture(autouse=True)
