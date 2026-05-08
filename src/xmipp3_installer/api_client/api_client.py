@@ -53,10 +53,10 @@ def internet_available() -> bool:
   try:
     socket.setdefaulttimeout(INTERNET_CHECK_TIMEOUT)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((INTERNET_CHECK_IP, INTERNET_CHECK_PORT))
+      s.connect((INTERNET_CHECK_IP, INTERNET_CHECK_PORT))
     return True
   except OSError:
-      return False
+    return False
 
 
 def __get_https_connection(parsed_url: ParseResult, timeout_seconds: int) -> http.client.HTTPSConnection:
