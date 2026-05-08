@@ -6,7 +6,6 @@ import http.client
 import json
 import socket
 from urllib.parse import ParseResult, urlparse
-from typing import Optional
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import urls
@@ -16,7 +15,7 @@ INTERNET_CHECK_IP = "1.1.1.1" # Cloudflare DNS, chosen for its reliability and s
 INTERNET_CHECK_PORT = 53 # DNS typically uses port 53, which is less likely to be blocked by firewalls compared to HTTP/HTTPS ports
 
 
-def send_installation_attempt(installation_info: Optional[dict]):
+def send_installation_attempt(installation_info: dict | None):
   """
   ### Sends a POST request to Xmipp's metrics's API.
   
