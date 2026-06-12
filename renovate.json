@@ -1,6 +1,19 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "minimumReleaseAge": "14 days",
+  "packageRules": [
+    {
+      "matchDepNames": ["python"],
+      "enabled": false
+    },
+    {
+      "description": "Security advisories bypass the 14-day delay",
+      "matchUpdateTypes": ["security"],
+      "minimumReleaseAge": "0 days"
+    }
   ]
 }
