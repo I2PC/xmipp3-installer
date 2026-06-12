@@ -12,10 +12,10 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
       with:
         python-version: '3.13'
     
@@ -41,13 +41,13 @@ jobs:
     
     - name: Generate tag
       id: tag_version
-      uses: mathieudutour/github-tag-action@v6.2
+      uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         custom_tag: ${{ steps.version.outputs.VERSION }}
     
     - name: Create a GitHub release
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1
       with:
         tag: ${{ steps.tag_version.outputs.new_tag }}
         name: ${{ steps.version.outputs.VERSION }}
