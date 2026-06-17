@@ -5,6 +5,7 @@
     "helpers:pinGitHubActionDigests"
   ],
   "minimumReleaseAge": "14 days",
+  "internalChecksFilter": "strict",
   "packageRules": [
     {
       "matchDepNames": ["python"],
