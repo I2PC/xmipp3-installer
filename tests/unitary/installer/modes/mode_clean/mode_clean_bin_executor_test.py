@@ -243,12 +243,12 @@ def __mock_logger_yellow():
     mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
     yield mock_method
 
-@pytest.fixture(autouse=True, params=[True])
+@pytest.fixture(autouse=True)
 def __mock_get_user_confirmation(request):
   with patch(
     "xmipp3_installer.application.user_interactions.get_user_confirmation"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
 @pytest.fixture(autouse=True)

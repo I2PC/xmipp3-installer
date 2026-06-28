@@ -912,30 +912,30 @@ def __mock_init():
 	) as mock_method:
 		yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_path_exists(request):
 	with patch("os.path.exists") as mock_method:
-		mock_method.return_value = request.param
+		mock_method.return_value = getattr(request, 'param', True)
 		yield mock_method
 
-@pytest.fixture(params=[__FILE_LINES])
+@pytest.fixture
 def __mock_open(request):
-	m_open = mock_open(read_data=''.join(request.param))
+	m_open = mock_open(read_data=''.join(getattr(request, 'param', __FILE_LINES)))
 	with patch("xmipp3_installer.repository.config.open", m_open):
 		yield m_open
 
-@pytest.fixture(params=[__FILE_LINES])
+@pytest.fixture
 def __mock_get_file_content(request):
 	with patch(
 		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__get_file_content"
 	) as mock_method:
-		mock_method.return_value = request.param
+		mock_method.return_value = getattr(request, 'param', __FILE_LINES)
 		yield mock_method
 
-@pytest.fixture(params=([""]))
+@pytest.fixture
 def __mock_re_search(request):
 	mock_groups = Mock()
-	mock_groups.group.side_effect = request.param
+	mock_groups.group.side_effect = getattr(request, 'param', [""])
 	with patch("re.search") as mock_method:
 		mock_method.return_value = mock_groups
 		yield mock_method
@@ -1037,12 +1037,12 @@ def __mock_get_unkown_variable_lines():
 		mock_method.side_effect = side_effect
 		yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_parse_config_line(request):
 	with patch(
 		"xmipp3_installer.repository.config.ConfigurationFileHandler._ConfigurationFileHandler__parse_config_line"
 	) as mock_method:
-		if request.param:
+		if getattr(request, 'param', True):
 			mock_method.return_value = ('key', 'value')
 		else:
 			mock_method.side_effect = InvalidConfigLineError(__INVALID_LINE_ERROR_MESSAGE)
@@ -1064,9 +1064,9 @@ def __mock_get_file_values_from_context_values():
 		mock_method.side_effect = lambda values: values
 		yield mock_method
 
-@pytest.fixture(params=[("DUMMY_VAR", "DUMMY_VAL")])
+@pytest.fixture
 def __mock_environment(request, monkeypatch):
-	key, value = request.param
+	key, value = getattr(request, 'param', ("DUMMY_VAR", "DUMMY_VAL"))
 	monkeypatch.setenv(key, value)
 	actual_key = next(k for k in os.environ if k.upper() == key.upper())
 	yield [actual_key, value]

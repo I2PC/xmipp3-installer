@@ -153,9 +153,9 @@ def __dummy_test_mode_executor():
   TestExecutor({}).run() # For coverage
   return TestExecutor
 
-@pytest.fixture(params=[(False, False, False, False)])
+@pytest.fixture
 def __configured_mode_executor(__dummy_test_mode_executor, request):
-  logs_to_file, substitute, prints_banner, sends_info = request.param
+  logs_to_file, substitute, prints_banner, sends_info = getattr(request, 'param', (False, False, False, False))
   class ConfiguredModeExecutor(__dummy_test_mode_executor):
     def _set_executor_config(self):
       self.logs_to_file = logs_to_file

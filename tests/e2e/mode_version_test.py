@@ -57,9 +57,9 @@ def __delete_library_versions_file():
     [os.path.dirname(paths.LIBRARY_VERSIONS_FILE)]
   )
 
-@pytest.fixture(params=[(False, False)])
+@pytest.fixture
 def __setup_evironment(request):
-  config_done, sources_exist = request.param
+  config_done, sources_exist = getattr(request, 'param', (False, False))
   try:
     create_versions_json_file()
     if not config_done:

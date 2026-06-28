@@ -61,9 +61,9 @@ def __normalize_paths(raw_output: str) -> str: # Absolute paths are different pe
     new_lines.append(new_line)
   return "".join(new_lines)
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __setup_evironment(request):
-  cmake_project_name = mode_cmake.VALID_PROJECT if request.param else mode_cmake.CONFIG_ERROR_PROJECT
+  cmake_project_name = mode_cmake.VALID_PROJECT if getattr(request, 'param', True) else mode_cmake.CONFIG_ERROR_PROJECT
   project_path = get_cmake_project_path(cmake_project_name)
   try:
     create_versions_json_file(output_path=project_path)

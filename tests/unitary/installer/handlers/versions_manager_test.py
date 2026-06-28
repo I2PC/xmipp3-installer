@@ -190,7 +190,7 @@ def __mock_open():
   with patch("xmipp3_installer.installer.handlers.versions_manager.open", m_open):
     yield m_open
 
-@pytest.fixture(params=[__VERSION_INFO])
+@pytest.fixture
 def __mock_init(request):
   with patch(
     "xmipp3_installer.installer.handlers.versions_manager.VersionsManager.__init__",
@@ -198,10 +198,10 @@ def __mock_init(request):
   ) as mock_method:
     version_manager = VersionsManager(__FILE_PATH)
     version_manager.version_file_path = __FILE_PATH
-    version_manager.xmipp_version_number = request.param[constants.XMIPP]["version_number"]
-    version_manager.xmipp_version_name = request.param[constants.XMIPP]["version_name"]
-    version_manager.xmipp_release_date = request.param[constants.XMIPP]["release_date"]
-    version_manager.sources_versions = request.param["sources_target_tag"]
+    version_manager.xmipp_version_number = getattr(request, 'param', __VERSION_INFO)[constants.XMIPP]["version_number"]
+    version_manager.xmipp_version_name = getattr(request, 'param', __VERSION_INFO)[constants.XMIPP]["version_name"]
+    version_manager.xmipp_release_date = getattr(request, 'param', __VERSION_INFO)[constants.XMIPP]["release_date"]
+    version_manager.sources_versions = getattr(request, 'param', __VERSION_INFO)["sources_target_tag"]
     yield mock_method
 
 @pytest.fixture

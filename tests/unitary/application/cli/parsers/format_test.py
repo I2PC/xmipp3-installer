@@ -58,9 +58,9 @@ def test_gets_expected_param_names(key, expected_n_names, __mock_params):
     name_amount == expected_n_names
   ), get_assertion_message("name amount", expected_n_names, name_amount)
 
-@pytest.fixture(params=[4])
+@pytest.fixture
 def __mock_tab_size(request):
-  with patch.object(format, "TAB_SIZE", request.param):
+  with patch.object(format, "TAB_SIZE", getattr(request, 'param', 4)):
     yield
 
 @pytest.fixture

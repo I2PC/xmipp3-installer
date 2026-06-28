@@ -143,17 +143,17 @@ def __mock_logger_yellow():
     mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
     yield mock_method
 
-@pytest.fixture(params=[__SECTION_MESSAGE_LEN])
+@pytest.fixture
 def __mock_section_message_len(request):
-  with patch.object(predefined_messages, "__SECTION_MESSAGE_LEN", new=request.param):
-    yield request.param
+  with patch.object(predefined_messages, "__SECTION_MESSAGE_LEN", new=getattr(request, 'param', __SECTION_MESSAGE_LEN)):
+    yield getattr(request, 'param', __SECTION_MESSAGE_LEN)
 
-@pytest.fixture(params=[False])
+@pytest.fixture
 def __mock_is_tag(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.is_tag"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
 
 @pytest.fixture

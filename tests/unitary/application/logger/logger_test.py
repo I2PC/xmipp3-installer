@@ -449,10 +449,10 @@ def __mock_errors():
   with patch.object(errors, "ERROR_CODES", __ERROR_CODES):
     yield
 
-@pytest.fixture(params=[0])
+@pytest.fixture
 def __mock_get_terminal_column_size(request):
   with patch("shutil.get_terminal_size") as mock_method:
-    mock_method.return_value = MockTerminalSize(request.param)
+    mock_method.return_value = MockTerminalSize(getattr(request, 'param', 0))
     yield mock_method
 
 @pytest.fixture
@@ -467,10 +467,10 @@ def __mock_remove_line():
   with patch.object(Logger, "_Logger__REMOVE_LINE", new_format_code):
     yield new_format_code
 
-@pytest.fixture(params=[0])
+@pytest.fixture
 def __mock_get_n_last_lines(request):
   with patch("xmipp3_installer.application.logger.logger.Logger._Logger__get_n_last_lines") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', 0)
     yield mock_method
 
 @pytest.fixture

@@ -217,12 +217,12 @@ def test_test(
     output == normalized_expected_message
   ), get_assertion_message("mode test output", normalized_expected_message, output)
 
-@pytest.fixture(autouse=True, params=[__MULTIPLE_TESTS])
+@pytest.fixture(autouse=True)
 def __mock_sys_argv(request):
   params = [
     arguments.XMIPP_PROGRAM_NAME,
     modes.MODE_TEST,
-    request.param
+    getattr(request, 'param', __MULTIPLE_TESTS)
   ]
   with patch.object(sys, 'argv', params) as mock_object:
     yield mock_object
@@ -242,11 +242,11 @@ def __mock_sync_program_name():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_sync_program_path(request):
   new_value = (
     TEST_FILES_DIR
-    if request.param else
+    if getattr(request, 'param', False) else
     mode_sync_executor._SYNC_PROGRAM_PATH
   )
   with patch.object(
@@ -283,9 +283,9 @@ def __mock_default_python_home():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_dataset_path(request, __mock_python_test_script_path):
-  new_value = TEST_FILES_DIR if request.param else mode_test_executor._DATASET_PATH
+  new_value = TEST_FILES_DIR if getattr(request, 'param', False) else mode_test_executor._DATASET_PATH
   with patch.object(
     mode_test_executor,
     "_DATASET_PATH",
@@ -293,12 +293,12 @@ def __mock_dataset_path(request, __mock_python_test_script_path):
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_bashrc_path(request):
   new_path = os.path.join(
     TEST_FILES_DIR,
     mode_test.BASHRC_FILE_NAME
-  ) if request.param else mode_test.NON_EXISTING_BASHRC_FILE_PATH
+  ) if getattr(request, 'param', False) else mode_test.NON_EXISTING_BASHRC_FILE_PATH
   with patch.object(
     mode_test_executor,
     "_BASHRC_FILE_PATH",

@@ -120,10 +120,10 @@ def test_returns_expected_cmake_params(
     cmake_vars == expected_params
   ), get_assertion_message("CMake variables string", expected_params, cmake_vars)
 
-@pytest.fixture(params=[__CMAKE_PATH])
+@pytest.fixture
 def __mock_which(request):
   with patch("shutil.which") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __CMAKE_PATH)
     yield mock_method
 
 @pytest.fixture
@@ -140,8 +140,8 @@ def __mock_get_library_version_from_line():
     mock_method.return_value = {"test": "test"}
     yield mock_method
 
-@pytest.fixture(params=[True], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_os_path_exists(request):
 	with patch("os.path.exists") as mock_method:
-		mock_method.return_value = request.param
+		mock_method.return_value = getattr(request, 'param', True)
 		yield mock_method

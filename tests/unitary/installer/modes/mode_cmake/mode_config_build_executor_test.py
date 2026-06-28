@@ -272,12 +272,12 @@ def __mock_internal_logic_vars():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(params=[__NON_INTERNAL_VARIABLES])
+@pytest.fixture
 def __mock_get_non_internal_config_vars(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor._get_non_internal_config_vars"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __NON_INTERNAL_VARIABLES)
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -303,12 +303,12 @@ def __mock_get_done_message():
     mock_method.return_value = "done message"
     yield mock_method
 
-@pytest.fixture(params=[0], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_run_shell_command_in_streaming(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command_in_streaming"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', 0)
     yield mock_method
 
 @pytest.fixture
@@ -340,10 +340,10 @@ def __mock_cmake():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(params=[1])
+@pytest.fixture
 def __mock_get_error_code(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor.ModeCMakeExecutor._get_error_code"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', 1)
     yield mock_method

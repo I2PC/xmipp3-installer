@@ -350,16 +350,16 @@ def __mock_logger_green():
     mock_method.side_effect = lambda text: f"green-{text}-green"
     yield mock_method
 
-@pytest.fixture(autouse=True, params=[True])
+@pytest.fixture(autouse=True)
 def __mock_os_path_isdir(request):
   with patch("os.path.isdir") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[(False, False)])
+@pytest.fixture
 def __mock_tarfile_open(request):
-  raises_exception = request.param[0]
-  is_read_error = request.param[1]
+  raises_exception = getattr(request, 'param', (False, False))[0]
+  is_read_error = getattr(request, 'param', (False, False))[1]
   tar_file = MagicMock()
   if raises_exception:
     tar_file.add.side_effect = lambda *args, **kwargs: __raise_tarfile_exception(is_read_error)
@@ -375,36 +375,36 @@ def __mock_get_user_confirmation():
     mock_method.return_value = True
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_run_shell_command(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_generate_compressed_file(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__generate_compressed_file"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_get_confirmation(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__get_confirmation"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_upload_model(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__upload_model"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -424,10 +424,10 @@ def __mock_os_path_abspath():
     mock_method.side_effect = lambda path: f"abs-{path}-abs"
     yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_os_path_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
 @pytest.fixture(autouse=True)

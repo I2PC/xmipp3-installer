@@ -37,8 +37,8 @@ def test_returns_expected_user_confirmation(
     confirmation == expected_confirmation
   ), get_assertion_message("confirmation", expected_confirmation, confirmation)
 
-@pytest.fixture(params=["YES"], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_input(request):
   with patch("builtins.input") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', "YES")
     yield mock_method

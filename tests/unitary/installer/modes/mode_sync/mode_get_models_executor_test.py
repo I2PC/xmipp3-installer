@@ -139,18 +139,18 @@ def __mock_os_path_exists():
     mock_method.return_value = True
     yield mock_method
 
-@pytest.fixture(autouse=True, params=[True])
+@pytest.fixture(autouse=True)
 def __mock_os_path_isdir(request):
   with patch("os.path.isdir") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[0])
+@pytest.fixture
 def __mock_run_shell_command_in_streaming(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command_in_streaming"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', 0)
     yield mock_method
 
 @pytest.fixture(autouse=True)

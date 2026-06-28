@@ -215,16 +215,16 @@ def __dummy_test_mode_executor():
   TestExecutor({}).run() # For coverage
   return TestExecutor
 
-@pytest.fixture(params=[__CMAKE], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_get_cmake_path(request):
   with patch("xmipp3_installer.installer.handlers.cmake.cmake_handler.get_cmake_path") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __CMAKE)
     yield mock_method
 
-@pytest.fixture(params=[__CMAKE])
+@pytest.fixture
 def __mock_get_cmake_executable(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor.ModeCMakeExecutor._ModeCMakeExecutor__get_cmake_executable"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __CMAKE)
     yield mock_method

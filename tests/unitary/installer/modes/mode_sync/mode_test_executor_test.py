@@ -425,20 +425,20 @@ def __mock_logger():
   ) as mock_method:
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_run_shell_command(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
-@pytest.fixture(params=[0])
+@pytest.fixture
 def __mock_run_shell_command_in_streaming(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command_in_streaming"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', 0)
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -449,18 +449,18 @@ def __mock_logger_blue():
     mock_method.side_effect = lambda text: f"blue-{text}-blue"
     yield mock_method
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_os_path_isdir(request):
   with patch("os.path.isdir") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_run_tests(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._ModeTestExecutor__run_tests"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -517,32 +517,32 @@ def __mock_test_data_path():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_os_path_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_sync_operation(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._sync_operation"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_load_bashrc(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._ModeTestExecutor__load_bashrc"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_parent_run(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_sync.mode_sync_executor.ModeSyncExecutor.run"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method

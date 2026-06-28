@@ -171,8 +171,8 @@ def __mock_datetime_strftime():
 		mock_lib.now.return_value = mock_now
 		yield mock_lib
 
-@pytest.fixture(params=[("DUMMY_VAR", "DUMMT_VAL")])
+@pytest.fixture
 def __mock_environment(request, monkeypatch):
-	stored_name = request.param[0].replace(variables.ENVIRONMENT_VARIABLES_PREFIX, "")
-	monkeypatch.setenv(request.param[0], request.param[1])
-	yield stored_name, request.param[1]
+	stored_name = getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[0].replace(variables.ENVIRONMENT_VARIABLES_PREFIX, "")
+	monkeypatch.setenv(getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[0], getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[1])
+	yield stored_name, getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[1]

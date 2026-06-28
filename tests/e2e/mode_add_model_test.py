@@ -79,13 +79,13 @@ def test_add_model(
     output == expected_message
   ), get_assertion_message("add model output", expected_message, output)
 
-@pytest.fixture(autouse=True, params=[__MODEL_PATH])
+@pytest.fixture(autouse=True)
 def __mock_sys_argv(request):
   params = [
     arguments.XMIPP_PROGRAM_NAME,
     modes.MODE_ADD_MODEL,
     mode_add_model.LOGIN,
-    request.param
+    getattr(request, 'param', __MODEL_PATH)
   ]
   with patch.object(sys, 'argv', params) as mock_object:
     yield mock_object
@@ -96,9 +96,9 @@ def __mock_stdout_stderr():
   with patch('sys.stdout', new=new_stdout), patch('sys.stderr', new=new_stderr):
     yield new_stdout, new_stderr
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_sys_stdin(request):
-  stdin = StringIO("YES" if request.param else "no")
+  stdin = StringIO("YES" if getattr(request, 'param', False) else "no")
   with patch.object(sys, 'stdin', stdin) as mock_object:
     yield mock_object
 
@@ -111,10 +111,10 @@ def __mock_sync_program_name():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_sync_program_path(request):
   model_path = os.path.dirname(__MODEL_PATH)
-  new_value = model_path if request.param else mode_sync_executor._SYNC_PROGRAM_PATH
+  new_value = model_path if getattr(request, 'param', False) else mode_sync_executor._SYNC_PROGRAM_PATH
   with patch.object(
     mode_sync_executor,
     "_SYNC_PROGRAM_PATH",

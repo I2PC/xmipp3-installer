@@ -84,9 +84,9 @@ def __change_config_cmake_path():
   with open(paths.CONFIG_FILE, 'w') as config_file:
     config_file.write(content)
 
-@pytest.fixture(params=[(False, "default.conf")])
+@pytest.fixture
 def __setup_config_evironment(request):
-  exists, copy_name = request.param
+  exists, copy_name = getattr(request, 'param', (False, "default.conf"))
   try:
     create_versions_json_file()
     if not exists:

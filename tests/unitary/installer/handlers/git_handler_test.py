@@ -425,44 +425,44 @@ def test_returns_expected_result_when_executing_git_command_for_source(
 def __return_unchanged(value):
   return value
 
-@pytest.fixture(params=[(0, "default_output")])
+@pytest.fixture
 def __mock_run_shell_command(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, "default_output"))
     yield mock_method
 
-@pytest.fixture(params=["default_branch"])
+@pytest.fixture
 def __mock_get_current_branch(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.get_current_branch"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', "default_branch")
     yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_ref_exists_in_repo(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.__ref_exists_in_repo"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_branch_exists_in_repo(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.branch_exists_in_repo"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_tag_exists_in_repo(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.tag_exists_in_repo"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -473,10 +473,10 @@ def __mock_get_path_source():
     mock_method.return_value = __SOURCE_PATH
     yield mock_method
 
-@pytest.fixture(params=[True], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_os_path_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
 @pytest.fixture(autouse=True)

@@ -122,16 +122,16 @@ def test_does_not_call_os_remove_when_deleting_dirs(
   file_operations.delete_paths(__PATHS)
   __mock_os_remove.assert_not_called()
 
-@pytest.fixture(params=[True], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_os_path_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[False], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_os_path_isdir(request):
   with patch("os.path.isdir") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
 
 @pytest.fixture(autouse=True)

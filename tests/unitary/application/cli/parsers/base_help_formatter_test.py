@@ -298,25 +298,25 @@ def __mock_params():
   with patch.object(params, "PARAMS", __PARAMS):
     yield
 
-@pytest.fixture(params=[2])
+@pytest.fixture
 def __mock_tab_size(request):
-  with patch.object(format, "TAB_SIZE", request.param):
+  with patch.object(format, "TAB_SIZE", getattr(request, 'param', 2)):
     yield
 
-@pytest.fixture(params=[(1, '')])
+@pytest.fixture
 def __mock_get_spaces(request):
   with patch(
     "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_spaces"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (1, ''))
     yield mock_method
 
-@pytest.fixture(params=[''])
+@pytest.fixture
 def __mock_multi_line_help_text(request):
   with patch(
     "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__multi_line_help_text"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', '')
     yield mock_method
 
 @pytest.fixture
@@ -334,20 +334,20 @@ def __mock_get_formatting_tabs():
   ) as mock_method:
     yield mock_method
 
-@pytest.fixture(params=[25])
+@pytest.fixture
 def __mock_get_terminal_column_size(request):
   with patch("shutil.get_terminal_size") as mock_method:
-    mock_method.return_value = MockTerminalSize(request.param)
+    mock_method.return_value = MockTerminalSize(getattr(request, 'param', 25))
     yield mock_method
 
-@pytest.fixture(params=[5])
+@pytest.fixture
 def __mock_line_size_lower_limit(request):
-  with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__LINE_SIZE_LOWER_LIMIT", request.param):
+  with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__LINE_SIZE_LOWER_LIMIT", getattr(request, 'param', 5)):
     yield
 
-@pytest.fixture(params=[5])
+@pytest.fixture
 def __mock_section_help_start(request):
-  with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_HELP_START", request.param):
+  with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_HELP_START", getattr(request, 'param', 5)):
     yield
 
 @pytest.fixture

@@ -417,9 +417,9 @@ def __get_args_help_message(
 def __setup_formatter():
   yield ModeHelpFormatter("test")
 
-@pytest.fixture(params=["this is the mode: default_mode"])
+@pytest.fixture
 def __mock_formatter_prog(request, __setup_formatter):
-  with patch.object(__setup_formatter, "_prog", request.param):
+  with patch.object(__setup_formatter, "_prog", getattr(request, 'param', "this is the mode: default_mode")):
     yield __setup_formatter
 
 @pytest.fixture
@@ -471,12 +471,12 @@ def __mock_get_param_first_name():
     mock_method.side_effect = lambda arg_name: f"{arg_name}-name"
     yield mock_method
 
-@pytest.fixture(params=[False])
+@pytest.fixture
 def __mock_args_contain_optional(request):
   with patch(
     "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__args_contain_optional"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
 
 @pytest.fixture
@@ -551,10 +551,10 @@ def __mock_get_formatting_tabs():
     mock_method.side_effect = lambda text: f"format_start - {text} - format_end"
     yield mock_method
 
-@pytest.fixture(params=[False])
+@pytest.fixture
 def __mock_has_mutually_exclusive_groups(request):
   with patch(
     "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._has_mutually_exclusive_groups"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method

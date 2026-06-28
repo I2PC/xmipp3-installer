@@ -137,12 +137,12 @@ def __mock_logger_blue():
     mock_method.side_effect = lambda text: f"blue-{text}-blue"
     yield mock_method
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_execute_git_command_for_source(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.execute_git_command_for_source"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
 @pytest.fixture(autouse=True)

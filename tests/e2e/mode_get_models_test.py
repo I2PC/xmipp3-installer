@@ -72,11 +72,11 @@ def __mock_sync_program_name():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_sync_program_path(request):
   new_value = (
     TEST_FILES_DIR 
-    if request.param else 
+    if getattr(request, 'param', False) else 
     mode_sync_executor._SYNC_PROGRAM_PATH
   )
   with patch.object(
@@ -86,10 +86,10 @@ def __mock_sync_program_path(request):
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(autouse=True, params=[False])
+@pytest.fixture(autouse=True)
 def __mock_os_path_isdir(request):
   with patch("os.path.isdir") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
 
 @pytest.fixture
