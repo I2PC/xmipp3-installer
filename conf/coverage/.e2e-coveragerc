@@ -11,3 +11,4 @@ include =
 omit = 
   tests/__init__.py
   tests/test_files/**
+  tests\e2e\conftest.py

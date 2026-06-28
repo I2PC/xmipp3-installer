@@ -2,10 +2,12 @@ import os
 from typing import List
 
 from xmipp3_installer.application.logger.logger import logger
+from xmipp3_installer.installer import urls
 from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
 
 from ... import shell_command_outputs
 from ....test_files import xmipp_sync_data, test
+from . import SYNC_PROGRAM_NAME
 
 BASHRC_FILE_NAME = "fake.bashrc"
 NON_EXISTING_BASHRC_FILE_PATH = os.path.join(
@@ -42,4 +44,4 @@ def get_update_message(test_params: str) -> str:
 	])
 
 def get_sync_command(mode: str) -> str:
-  return f"./xmipp_sync_data.py {mode} tests/data http://scipion.cnb.csic.es/downloads/scipion/data/tests xmipp_programs"
+  return f"{SYNC_PROGRAM_NAME} {mode} {mode_test_executor._TEST_DATA} {urls.SCIPION_TESTS_URL} {mode_test_executor._DATASET_NAME}"

@@ -12,3 +12,4 @@ include =
 omit = 
   tests/__init__.py
   src/xmipp3_installer/__main__.py
+  tests/unitary/repository/config_test.py

@@ -167,3 +167,12 @@ cython_debug/
 
 # Ruff
 .ruff_cache
+
+# Test files
+xmipp.conf
+version-info.json
+test.dblite
+dummy_file
+file1
+test.o
+test.os

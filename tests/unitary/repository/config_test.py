@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timezone
 from typing import Dict
 from unittest.mock import patch, mock_open, Mock, call
@@ -1065,5 +1066,7 @@ def __mock_get_file_values_from_context_values():
 
 @pytest.fixture(params=[("DUMMY_VAR", "DUMMY_VAL")])
 def __mock_environment(request, monkeypatch):
-	monkeypatch.setenv(request.param[0], request.param[1])
-	yield request.param
+	key, value = request.param
+	monkeypatch.setenv(key, value)
+	actual_key = next(k for k in os.environ if k.upper() == key.upper())
+	yield [actual_key, value]
