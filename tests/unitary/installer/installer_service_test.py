@@ -372,10 +372,10 @@ def __mock_executor(ret_code, message):
   executor.sends_installation_info = False
   return executor
 
-@pytest.fixture(params=[(0, 0)])
+@pytest.fixture
 def __mock_mode_executors(request):
-  selected_executor = __mock_executor(request.param[0], __SELECTED_MODE_MESASGE)
-  all_executor = __mock_executor(request.param[1], __MODE_ALL_MESSAGE)
+  selected_executor = __mock_executor(getattr(request, 'param', (0, 0))[0], __SELECTED_MODE_MESASGE)
+  all_executor = __mock_executor(getattr(request, 'param', (0, 0))[1], __MODE_ALL_MESSAGE)
   with patch.object(mode_selector, 'MODE_EXECUTORS', {
     __MODE_NAME: lambda _: selected_executor,
     modes.MODE_ALL: lambda _: all_executor
@@ -463,12 +463,12 @@ def __mock_logger_close():
   ) as mock_method:
     yield mock_method
 
-@pytest.fixture(autouse=True, params=[True])
+@pytest.fixture(autouse=True)
 def __mock_internet_available(request):
   with patch(
     "xmipp3_installer.api_client.api_client.internet_available"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
 @pytest.fixture(autouse=True)

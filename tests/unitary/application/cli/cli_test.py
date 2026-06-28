@@ -400,9 +400,9 @@ def __test_args_in_mode(
   cli.main()
   __mock_run_installer.assert_called_once_with(expected_args)
 
-@pytest.fixture(params=[["-h"]])
+@pytest.fixture
 def __mock_sys_argv(request):
-  with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, *request.param]) as mock_object:
+  with patch.object(sys, 'argv', [arguments.XMIPP_PROGRAM_NAME, *getattr(request, 'param', ["-h"])]) as mock_object:
     yield mock_object
 
 @pytest.fixture
@@ -447,10 +447,10 @@ def __mock_logger_set_allow_substitution():
   ) as mock_method:
     yield mock_method
 
-@pytest.fixture(params=[0])
+@pytest.fixture
 def __mock_run_installer(request):
   mock_installation_manager = Mock()
-  mock_installation_manager.run_installer.return_value = request.param
+  mock_installation_manager.run_installer.return_value = getattr(request, 'param', 0)
   with patch(
     "xmipp3_installer.installer.installer_service.InstallationManager"
   ) as mock_class:

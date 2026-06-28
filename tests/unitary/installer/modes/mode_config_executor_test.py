@@ -188,12 +188,12 @@ def __dummy_test_mode_executor():
   TestExecutor(__CONTEXT.copy()).run() # For coverage
   return TestExecutor
 
-@pytest.fixture(params=[False])
+@pytest.fixture
 def __mock_configuration_file_handler(request):
   mock_handler = MagicMock()
   mock_handler.values = __CONFIG_VALUES
   with patch.object(config, "ConfigurationFileHandler") as mock_object:
-    if request.param:
+    if getattr(request, 'param', False):
       mock_object.side_effect = PermissionError(__PERMISSION_ERROR_MESSAGE)
     else:
       mock_object.return_value = mock_handler
@@ -222,8 +222,8 @@ def __mock_get_done_message():
     mock_method.return_value = "done message"
     yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method

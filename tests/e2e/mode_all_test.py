@@ -79,9 +79,9 @@ def __normalize_build_path(project_path: str, raw_output: str) -> str: # Build o
     new_lines.append(new_line)
   return "".join(new_lines)
 
-@pytest.fixture(params=[(True, True, True)])
+@pytest.fixture
 def __setup_evironment(request):
-  configure, build, install = request.param
+  configure, build, install = getattr(request, 'param', (True, True, True))
   if not configure:
     cmake_project_name = mode_cmake.CONFIG_ERROR_PROJECT
   elif not build:

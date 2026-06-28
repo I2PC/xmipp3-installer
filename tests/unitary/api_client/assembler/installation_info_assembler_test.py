@@ -499,12 +499,12 @@ def __get_version_manager():
       self.xmipp_version_name = version_name
   return DummyVersionManager()
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_run_shell_command(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
 def __mock_re_groups(group_value):
@@ -512,16 +512,16 @@ def __mock_re_groups(group_value):
   groups.group.side_effect = lambda _: group_value
   return groups
 
-@pytest.fixture(params=[""])
+@pytest.fixture
 def __mock_re_match(request):
   with patch("re.match") as mock_method:
-    mock_method.return_value = __mock_re_groups(request.param)
+    mock_method.return_value = __mock_re_groups(getattr(request, 'param', ""))
     yield mock_method
 
-@pytest.fixture(params=([""]))
+@pytest.fixture
 def __mock_re_search(request):
   with patch("re.search") as mock_method:
-    mock_method.return_value = __mock_re_groups(request.param)
+    mock_method.return_value = __mock_re_groups(getattr(request, 'param', [""]))
     yield mock_method
 
 @pytest.fixture
@@ -531,56 +531,56 @@ def __mock_find_mac_address_in_lines():
   ) as mock_method:
     yield mock_method
 
-@pytest.fixture(params=[__ETH_MAC_ADDRESS])
+@pytest.fixture
 def __mock_get_mac_address(request):
   with patch(
     "xmipp3_installer.api_client.assembler.installation_info_assembler.__get_mac_address"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __ETH_MAC_ADDRESS)
     yield mock_method
 
-@pytest.fixture(params=[None])
+@pytest.fixture
 def __mock_hashlib_sha256(request):
   mock_sha256 = Mock()
   mock_sha256.update.return_value = None
-  mock_sha256.hexdigest.return_value = request.param
+  mock_sha256.hexdigest.return_value = getattr(request, 'param', None)
   with patch("hashlib.sha256") as mock_method:
     mock_method.return_value = mock_sha256
     yield mock_method
 
-@pytest.fixture(params=[__USER_ID])
+@pytest.fixture
 def __mock_get_user_id(request):
   with patch(
     "xmipp3_installer.api_client.assembler.installation_info_assembler.__get_user_id"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __USER_ID)
     yield mock_method
 
-@pytest.fixture(params=[__LIBRARY_VERSIONS])
+@pytest.fixture
 def __mock_get_library_versions_from_cmake_file(request):
   with patch(
     "xmipp3_installer.installer.handlers.cmake.cmake_handler.get_library_versions_from_cmake_file"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __LIBRARY_VERSIONS)
     yield mock_method
 
-@pytest.fixture(params=[__ENVIROMENT_INFO])
+@pytest.fixture
 def __mock_run_parallel_jobs(request):
   with patch(
     "xmipp3_installer.installer.orquestrator.run_parallel_jobs"
   ) as mock_method:
-    mock_method.side_effect = [request.param]
+    mock_method.side_effect = [getattr(request, 'param', __ENVIROMENT_INFO)]
     yield mock_method
 
-@pytest.fixture(params=[None])
+@pytest.fixture
 def __mock_os_getenv(request):
   with patch("os.getenv") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', None)
     yield mock_method
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_os_is_linux(request):
-  return request.param
+  return getattr(request, 'param', True)
 
 @pytest.fixture()
 def __mock_platform_system(__mock_os_is_linux):
@@ -614,10 +614,10 @@ def __mock_get_os_release_name():
     mock_method.return_value = __RELEASE_NAME_LINUX
     yield mock_method
 
-@pytest.fixture(params=[__USERNAME], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_getuser(request):
   with patch(
     "getpass.getuser"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __USERNAME)
     yield mock_method

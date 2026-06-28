@@ -108,9 +108,9 @@ def test_returns_returns_expected_get_sources_output(
     output == expected_output
   ), get_assertion_message("get sources command output", expected_output, output)
 
-@pytest.fixture(params=[False])
+@pytest.fixture
 def __setup_evironment(request):
-  sources_exist = request.param
+  sources_exist = getattr(request, 'param', False)
   try:
     create_versions_json_file()
     if not sources_exist:
@@ -125,13 +125,13 @@ def __setup_evironment(request):
       paths.VERSION_INFO_FILE
     ])
 
-@pytest.fixture(autouse=True, params=[[]])
+@pytest.fixture(autouse=True)
 def __mock_sys_argv(request):
   args = [
     arguments.XMIPP_PROGRAM_NAME,
     modes.MODE_GET_SOURCES,
     params.PARAMS[params.PARAM_KEEP_OUTPUT][params.LONG_VERSION],
-    *request.param
+    *getattr(request, 'param', [])
   ]
   with patch.object(sys, 'argv', args) as mock_object:
     yield mock_object
@@ -142,7 +142,7 @@ def __mock_stdout_stderr():
   with patch('sys.stdout', new=new_stdout), patch('sys.stderr', new=new_stderr):
     yield new_stdout, new_stderr
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_clone_and_checkout(request, __mock_sys_argv):
   original_run_shell_command = shell_handler.run_shell_command
   def __side_effect(cmd: str, **kwargs):
@@ -157,7 +157,7 @@ def __mock_clone_and_checkout(request, __mock_sys_argv):
         cmd.startswith("git ls-remote")
       )
     ):
-      return request.param
+      return getattr(request, 'param', (0, ""))
     return original_run_shell_command(cmd, **kwargs)
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"

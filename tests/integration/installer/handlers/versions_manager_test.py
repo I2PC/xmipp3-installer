@@ -45,9 +45,9 @@ def test_raises_value_error_when_fields_are_not_valid(__setup_environment):
 def test_reads_expected_json_file(__setup_environment):
   versions_manager.VersionsManager(paths.VERSION_INFO_FILE)
 
-@pytest.fixture(params=[(True, "valid")])
+@pytest.fixture
 def __setup_environment(request):
-  exists, file_name = request.param
+  exists, file_name = getattr(request, 'param', (True, "valid"))
   file_name = f"{file_name}.json"
   try:
     if exists:

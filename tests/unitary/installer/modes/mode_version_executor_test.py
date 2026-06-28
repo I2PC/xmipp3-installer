@@ -584,11 +584,11 @@ def test_returns_expected_configuration_warning_message(
     warning_message == expected_warning_message
   ), get_assertion_message("configuration warning message", expected_warning_message, warning_message)
 
-@pytest.fixture(params=[[True, True]])
+@pytest.fixture
 def __mock_exists_init(request, __mock_exists):
   def __side_effect(path):
-    config_file_exists = request.param[0]
-    lib_file_exists = request.param[1]
+    config_file_exists = getattr(request, 'param', [True, True])[0]
+    lib_file_exists = getattr(request, 'param', [True, True])[1]
     if path == paths.CONFIG_FILE:
       return config_file_exists
     elif path == paths.LIBRARY_VERSIONS_FILE:
@@ -599,10 +599,10 @@ def __mock_exists_init(request, __mock_exists):
   __mock_exists.side_effect = __side_effect
   yield __mock_exists
 
-@pytest.fixture(params=[(True, True)])
+@pytest.fixture
 def __mock_exist_config_and_library_versions(__mock_exists, request):
   def __side_effect(path):
-    config_file_exists, library_version_file_exists = request.param
+    config_file_exists, library_version_file_exists = getattr(request, 'param', (True, True))
     if path == paths.CONFIG_FILE:
       return config_file_exists
     elif path == paths.LIBRARY_VERSIONS_FILE:
@@ -613,10 +613,10 @@ def __mock_exist_config_and_library_versions(__mock_exists, request):
   __mock_exists.side_effect = __side_effect
   yield __mock_exists
 
-@pytest.fixture(params=[(True, True)])
+@pytest.fixture
 def __mock_exists_sources(request, __mock_exists):
   def __side_effect(path):
-    core_exists, viz_exists = request.param
+    core_exists, viz_exists = getattr(request, 'param', (True, True))
     if path == paths.get_source_path(constants.XMIPP_CORE):
       return core_exists
     elif path == paths.get_source_path(constants.XMIPP_VIZ):
@@ -627,10 +627,10 @@ def __mock_exists_sources(request, __mock_exists):
   __mock_exists.side_effect = __side_effect
   yield __mock_exists
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
 @pytest.fixture
@@ -682,12 +682,12 @@ def __mock_get_current_branch(__mock_is_tag):
     mock_method.return_value = "HEAD" if __mock_is_tag.return_value else __BRANCH_NAME
     yield mock_method
 
-@pytest.fixture(params=[False])
+@pytest.fixture
 def __mock_is_tag(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.is_tag"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
 
 @pytest.fixture
@@ -729,12 +729,12 @@ def __mock_get_os_release_name():
     mock_method.return_value = __RELEASE_NAME
     yield mock_method
 
-@pytest.fixture(params=[__LIBRARIES_WITH_VERSIONS])
+@pytest.fixture
 def __mock_get_library_versions_from_cmake_file(request):
   with patch(
     "xmipp3_installer.installer.handlers.cmake.cmake_handler.get_library_versions_from_cmake_file"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __LIBRARIES_WITH_VERSIONS)
     yield mock_method
 
 @pytest.fixture
@@ -753,12 +753,12 @@ def __mock_logger_yellow():
     mock_method.side_effect = lambda text: f"yellow-{text}-yellow"
     yield mock_method
 
-@pytest.fixture(params=[False])
+@pytest.fixture
 def __mock_are_all_sources_present(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_version_executor._are_all_sources_present"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
 
 @pytest.fixture

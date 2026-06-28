@@ -66,9 +66,9 @@ def test_returns_returns_xpected_git_command_output(
     result == expected_output
   ), get_assertion_message("git command output", expected_output, result)
 
-@pytest.fixture(params=[False, False, False])
+@pytest.fixture
 def __setup_evironment(request):
-  xmipp_exists, xmipp_core_exists, xmipp_viz_exists = request.param
+  xmipp_exists, xmipp_core_exists, xmipp_viz_exists = getattr(request, 'param', (False, False, False))
   try:
     create_versions_json_file()
     if not xmipp_exists:

@@ -220,9 +220,9 @@ def __mock_process_wait_keyboard_interrupt(__mock_popen):
   __mock_popen().wait.side_effect = KeyboardInterrupt
   yield __mock_popen
 
-@pytest.fixture(params=[('defaulf_output', 'default_err')])
+@pytest.fixture
 def __mock_process_communicate(request, __mock_popen):
-  raw_messages = request.param
+  raw_messages = getattr(request, 'param', ('defaulf_output', 'default_err'))
   messages = (raw_messages[0].encode(), raw_messages[1].encode())
   __mock_popen().communicate.return_value = messages
   yield __mock_popen

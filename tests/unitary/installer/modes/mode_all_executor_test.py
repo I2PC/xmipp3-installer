@@ -244,40 +244,40 @@ def __dummy_test_mode_cmake_executor():
   TestExecutor({}).run() # For coverage
   return TestExecutor
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_config_executor(request):
   executor = MagicMock(spec=ModeConfigExecutor)
-  executor.run.return_value = request.param
+  executor.run.return_value = getattr(request, 'param', (0, ""))
   with patch(
     "xmipp3_installer.installer.modes.mode_config_executor.ModeConfigExecutor"
   ) as mock_class:
     mock_class.return_value = executor
     yield mock_class
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_get_sources_executor(request):
   executor = MagicMock(spec=ModeGetSourcesExecutor)
-  executor.run.return_value = request.param
+  executor.run.return_value = getattr(request, 'param', (0, ""))
   with patch(
     "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor"
   ) as mock_class:
     mock_class.return_value = executor
     yield mock_class
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_config_build_executor(request):
   executor = MagicMock(spec=ModeConfigBuildExecutor)
-  executor.run.return_value = request.param
+  executor.run.return_value = getattr(request, 'param', (0, ""))
   with patch(
     "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.ModeConfigBuildExecutor"
   ) as mock_class:
     mock_class.return_value = executor
     yield mock_class
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_compile_and_install_executor(request):
   executor = MagicMock(spec=ModeCompileAndInstallExecutor)
-  executor.run.return_value = request.param
+  executor.run.return_value = getattr(request, 'param', (0, ""))
   with patch(
     "xmipp3_installer.installer.modes.mode_cmake.mode_compile_and_install_executor.ModeCompileAndInstallExecutor"
   ) as mock_class:

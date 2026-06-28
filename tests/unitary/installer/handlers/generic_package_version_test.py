@@ -38,10 +38,10 @@ def test_returns_expected_result_when_getting_package_version(
     package_version == expected_package_version
   ), get_assertion_message("package version", expected_package_version, package_version)
 
-@pytest.fixture(params=[(0, "default_output")])
+@pytest.fixture
 def __mock_run_shell_command(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, "default_output"))
     yield mock_method

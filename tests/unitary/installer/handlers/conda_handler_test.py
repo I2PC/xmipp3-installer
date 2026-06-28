@@ -26,9 +26,9 @@ def __mock_env_get():
   with patch("os.environ.get") as mock_method:
     yield mock_method
 
-@pytest.fixture(params=["/path/to/conda/env"])
+@pytest.fixture
 def __mock_env(request):
   with patch.dict(
-    'os.environ', {'CONDA_PREFIX': request.param}
+    'os.environ', {'CONDA_PREFIX': getattr(request, 'param', "/path/to/conda/env")}
   ):
-    yield request.param
+    yield getattr(request, 'param', "/path/to/conda/env")

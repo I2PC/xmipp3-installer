@@ -296,10 +296,10 @@ def __mock_param_jobs():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_mode_git_executor(request):
   mock_run = MagicMock()
-  mock_run.return_value = request.param
+  mock_run.return_value = getattr(request, 'param', (0, ""))
   with patch(
     "xmipp3_installer.installer.modes.mode_git_executor.ModeGitExecutor"
   ) as mock_class:
@@ -336,15 +336,15 @@ def __mock_get_done_message():
     mock_method.return_value = "done message"
     yield mock_method
 
-@pytest.fixture(params=[0], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_run_shell_command_in_streaming(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command_in_streaming"
   ) as mock_method:
-    if isinstance(request.param, int):
-      mock_method.return_value = request.param
+    if isinstance(getattr(request, 'param', 0), int):
+      mock_method.return_value = getattr(request, 'param', 0)
     else:
-      mock_method.side_effect = request.param
+      mock_method.side_effect = getattr(request, 'param', 0)
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -368,18 +368,18 @@ def __mock_cmake():
   ) as mock_object:
     yield mock_object
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_execute_git_command_for_source(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.execute_git_command_for_source"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
-@pytest.fixture(params=[1])
+@pytest.fixture
 def __mock_get_error_code(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor.ModeCMakeExecutor._get_error_code"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', 1)
     yield mock_method

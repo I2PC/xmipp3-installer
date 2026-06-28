@@ -186,40 +186,40 @@ def __mock_logger():
   ) as mock_method:
     yield mock_method
 
-@pytest.fixture(params=["confirmation message"])
+@pytest.fixture
 def __mock_get_confirmation_message(__dummy_test_mode_clean_executor, request):
   with patch.object(__dummy_test_mode_clean_executor, "_get_confirmation_message") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', "confirmation message")
     yield mock_method
 
-@pytest.fixture(autouse=True, params=[True])
+@pytest.fixture(autouse=True)
 def __mock_get_user_confirmation(request):
   with patch(
     "xmipp3_installer.application.user_interactions.get_user_confirmation"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=["YES"])
+@pytest.fixture
 def __mock_get_confirmation_keyword(__dummy_test_mode_clean_executor, request):
   with patch.object(
     __dummy_test_mode_clean_executor,
     "confirmation_keyword",
-    request.param) as mock_object:
+    getattr(request, 'param', "YES")) as mock_object:
     yield mock_object
 
-@pytest.fixture(params=[True])
+@pytest.fixture
 def __mock_get_confirmation(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_clean.mode_clean_executor.ModeCleanExecutor._ModeCleanExecutor__get_confirmation"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[["path1"]])
+@pytest.fixture
 def __mock_get_paths_to_delete(__dummy_test_mode_clean_executor, request):
   with patch.object(__dummy_test_mode_clean_executor, "_get_paths_to_delete") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', ["path1"])
     yield mock_method
 
 @pytest.fixture(autouse=True)

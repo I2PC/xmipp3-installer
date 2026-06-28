@@ -67,9 +67,9 @@ def test_returns_expected_compile_and_install_output(
     result == expected_output
   ), get_assertion_message("compile and install output", expected_output, result)
 
-@pytest.fixture(params=[(True, True)])
+@pytest.fixture
 def __setup_evironment(request):
-  build, install = request.param
+  build, install = getattr(request, 'param', (True, True))
   if not build:
     cmake_project_name = mode_cmake.BUILD_ERROR_PROJECT
   elif not install:

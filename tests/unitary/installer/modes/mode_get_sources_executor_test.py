@@ -458,20 +458,20 @@ def __dummy_test_mode_executor():
   TestExecutor(__CONTEXT.copy()).run() # For coverage
   return TestExecutor
 
-@pytest.fixture(params=[__BRANCH_NAME])
+@pytest.fixture
 def __mock_get_current_branch(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.get_current_branch"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __BRANCH_NAME)
     yield mock_method
 
-@pytest.fixture(params=[__BRANCH_NAME], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_get_clonable_branch(request):
   with patch(
     "xmipp3_installer.installer.handlers.git_handler.get_clonable_branch"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __BRANCH_NAME)
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -482,18 +482,18 @@ def __mock_get_source_path():
     mock_method.side_effect = lambda source: f"sources/{source}"
     yield mock_method
 
-@pytest.fixture(params=[True], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_os_path_exists(request):
   with patch("os.path.exists") as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
 
-@pytest.fixture(params=[(0, "")], autouse=True)
+@pytest.fixture(autouse=True)
 def __mock_run_shell_command(request):
   with patch(
     "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -562,20 +562,20 @@ def __mock_get_done_message():
     mock_method.return_value = "done message"
     yield mock_method
 
-@pytest.fixture(params=[__BRANCH_NAME])
+@pytest.fixture
 def __mock_select_ref_to_clone(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__select_ref_to_clone"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', __BRANCH_NAME)
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_run_source_command(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_get_sources_executor._run_source_command"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
 @pytest.fixture(autouse=True)
@@ -593,12 +593,12 @@ def __mock_get_section_message():
     mock_method.side_effect = lambda text: f"section-{text}-section"
     yield mock_method
 
-@pytest.fixture(params=[(0, "")])
+@pytest.fixture
 def __mock_get_source(request):
   with patch(
     "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__get_source"
   ) as mock_method:
-    mock_method.return_value = request.param
+    mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
 
 @pytest.fixture(autouse=True)
