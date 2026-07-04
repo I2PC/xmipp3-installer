@@ -40,7 +40,7 @@ test = [
   "pytest-subprocess==1.6.0",
   "pytest-localserver==0.10.0",
   "ruff==0.15.18",
-  "cmake==4.3.2",
+  "cmake==4.3.4",
   "ninja==1.13.0"
 ]
 
