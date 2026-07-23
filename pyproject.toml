@@ -22,7 +22,7 @@ license = { text = "GPL-3.0-only" }
 
 requires-python = ">=3.8"
 dependencies = [
-  "typing-extensions==4.13.2; python_version < '3.9'",
+  "typing-extensions==4.16.0; python_version < '3.9'",
   "typing-extensions==4.16.0; python_version >= '3.9'",
   "distro==1.8.0" # DO NOT UPGRADE UNTIL NEW SCIPION RELEASE SUPPORTS 1.9.0 VERSION
 ]
