@@ -6,6 +6,10 @@
   ],
   "minimumReleaseAge": "14 days",
   "internalChecksFilter": "strict",
+  "poetry": {
+    "description": "Not a poetry project; let pep621 own pyproject.toml so [build-system].requires is tracked.",
+    "enabled": false
+  },
   "packageRules": [
     {
       "matchDepNames": ["python"],
