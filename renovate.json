@@ -16,6 +16,39 @@
       "enabled": false
     },
     {
+      "description": [
+        "The typing-extensions pin for python_version < '3.9'; 4.14.0 raised requires-python to >=3.9.",
+        "Renovate drops the PEP 508 marker, so both pins of a split dependency look identical to it: matchCurrentVersion tells them apart, and the cap itself comes from each release's requires_python.",
+        "Only old pins are capped, on purpose. A new pin or an unsplit dependency dropping an old Python should open a PR that fails CI, not freeze silently.",
+        "The constraint must be a bare version: pep440 has no subset(), so a range would filter out every release."
+      ],
+      "matchDepNames": ["typing-extensions"],
+      "matchCurrentVersion": "<4.14",
+      "constraints": { "python": "3.8" },
+      "constraintsFiltering": "strict"
+    },
+    {
+      "description": "The pytest-cov pin for python_version < '3.9'; 6.0.0 raised requires-python to >=3.9.",
+      "matchDepNames": ["pytest-cov"],
+      "matchCurrentVersion": "<6",
+      "constraints": { "python": "3.8" },
+      "constraintsFiltering": "strict"
+    },
+    {
+      "description": "The pytest pin for python_version < '3.9'; 8.4.0 raised requires-python to >=3.9.",
+      "matchDepNames": ["pytest"],
+      "matchCurrentVersion": "<8.4",
+      "constraints": { "python": "3.8" },
+      "constraintsFiltering": "strict"
+    },
+    {
+      "description": "The pytest pin for python_version == '3.9'; 9.0.0 raised requires-python to >=3.10.",
+      "matchDepNames": ["pytest"],
+      "matchCurrentVersion": ">=8.4,<9",
+      "constraints": { "python": "3.9" },
+      "constraintsFiltering": "strict"
+    },
+    {
       "description": "Security advisories bypass the 14-day delay",
       "matchUpdateTypes": ["security"],
       "minimumReleaseAge": "0 days"
