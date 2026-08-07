@@ -55,17 +55,20 @@ it wasn't redundant.
 
 ## Ruff
 
-Two separate configs: `conf/ruff-src.toml` (stricter, includes
-docstring rules) and `conf/ruff-tests.toml` (looser). Both pin an
-explicit `select = ["E4", "E7", "E9", "F"]` base before `extend-select`.
-**Don't remove that `select` line.** Ruff's actual default rule set
-changes between versions when only `extend-select` is set (0.16.0
-silently went from ~200 enabled rules to ~430, unrelated categories
-included, and broke CI on a routine Renovate version bump) — pinning
-`select` explicitly keeps the enforced rule set stable across ruff
-upgrades. When adding a new rule category, add it deliberately to both
-files' `extend-select`, run the full suite, and fix what it finds rather
-than assuming it's already covered by defaults.
+Single `conf/ruff.toml` covering both `src/` and `tests/`. Tests are
+looser (no docstring rules, higher argument-count tolerance) via
+`[lint.per-file-ignores]` on the `tests/**/*.py` glob rather than a
+separate config file — same effective rule set as before, just one
+place to look. Pins an explicit `select = ["E4", "E7", "E9", "F"]`
+base before `extend-select`. **Don't remove that `select` line.**
+Ruff's actual default rule set changes between versions when only
+`extend-select` is set (0.16.0 silently went from ~200 enabled rules
+to ~430, unrelated categories included, and broke CI on a routine
+Renovate version bump) — pinning `select` explicitly keeps the
+enforced rule set stable across ruff upgrades. When adding a new rule
+category, add it deliberately to `extend-select`, run the full suite,
+and fix what it finds rather than assuming it's already covered by
+defaults.
 
 Renovate opens ruff/dependency bump PRs with the version pinned in
 `pyproject.toml`; since CI always uses that pinned version (never
