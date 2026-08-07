@@ -141,6 +141,7 @@ def get_clonable_branch(repo_url: str, preferred_branch: str, viable_tag: str | 
     return preferred_branch
   if viable_tag and tag_exists_in_repo(repo_url, viable_tag):
     return viable_tag
+  return None
 
 def execute_git_command_for_source(command: str, source: str) -> tuple[int, str]:
   """

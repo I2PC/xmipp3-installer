@@ -161,7 +161,7 @@ class ConfigurationFileHandler(Singleton):
       if self.show_errors:
         logger(str(error))
       config = {}
-      return
+      return None
     if key_value_pair:
       key, value = key_value_pair
       config[key] = value

@@ -541,7 +541,7 @@ def test_calls_add_padding_spaces_when_getting_library_versions_section(
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
   version_executor._ModeVersionExecutor__get_library_versions_section()
   __mock_add_padding_spaces.assert_has_calls([
-    call(f"{library}: ") for library in __LIBRARIES_WITH_VERSIONS.keys()
+    call(f"{library}: ") for library in __LIBRARIES_WITH_VERSIONS
   ])
 
 @pytest.mark.parametrize(
@@ -591,10 +591,9 @@ def __mock_exists_init(request, __mock_exists):
     lib_file_exists = getattr(request, 'param', [True, True])[1]
     if path == paths.CONFIG_FILE:
       return config_file_exists
-    elif path == paths.LIBRARY_VERSIONS_FILE:
+    if path == paths.LIBRARY_VERSIONS_FILE:
       return lib_file_exists
-    else:
-      return False
+    return False
   _ = __side_effect("non-existent") # To cover system case
   __mock_exists.side_effect = __side_effect
   yield __mock_exists
@@ -605,10 +604,9 @@ def __mock_exist_config_and_library_versions(__mock_exists, request):
     config_file_exists, library_version_file_exists = getattr(request, 'param', (True, True))
     if path == paths.CONFIG_FILE:
       return config_file_exists
-    elif path == paths.LIBRARY_VERSIONS_FILE:
+    if path == paths.LIBRARY_VERSIONS_FILE:
       return library_version_file_exists
-    else:
-      return False
+    return False
   _ = __side_effect("non-existent") # To cover system case
   __mock_exists.side_effect = __side_effect
   yield __mock_exists
@@ -619,10 +617,9 @@ def __mock_exists_sources(request, __mock_exists):
     core_exists, viz_exists = getattr(request, 'param', (True, True))
     if path == paths.get_source_path(constants.XMIPP_CORE):
       return core_exists
-    elif path == paths.get_source_path(constants.XMIPP_VIZ):
+    if path == paths.get_source_path(constants.XMIPP_VIZ):
       return viz_exists
-    else:
-      return False
+    return False
   _ = __side_effect("non-existent") # To cover system case
   __mock_exists.side_effect = __side_effect
   yield __mock_exists

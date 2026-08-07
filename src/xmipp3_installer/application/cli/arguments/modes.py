@@ -74,10 +74,10 @@ MODES = {
     MODE_ADD_MODEL: [
       "Takes a DeepLearning model from the modelPath, makes a tgz of it and uploads the .tgz according to the <login>.",
       "This mode is used to upload a model folder to the Scipion/Xmipp server.",
-      "Usually the model folder contains big files used to feed deep learning procedures "
+      ("Usually the model folder contains big files used to feed deep learning procedures "
       "with pretrained data. All the models stored in the server will be downloaded "
       "using the 'get_models' mode, during the compilation/installation time, "
-      "or with scipion3 installb deepLearningToolkit.",
+      "or with scipion3 installb deepLearningToolkit."),
       "Param <modelsPath> must be an absolute path.",
       "",
       "Usage: -> ./xmipp addModel <usr@server> <modelsPath> [--update]",
@@ -127,8 +127,8 @@ MODE_EXAMPLES = {
     f'./xmipp {MODE_ALL}',
     f'./xmipp {PARAMS[PARAM_JOBS][SHORT_VERSION]} 20',
     f'./xmipp {PARAMS[PARAM_BRANCH][SHORT_VERSION]} devel',
-    f'./xmipp {MODE_ALL} {PARAMS[PARAM_JOBS][SHORT_VERSION]} 20 '
-    f'{PARAMS[PARAM_BRANCH][SHORT_VERSION]} devel'
+    (f'./xmipp {MODE_ALL} {PARAMS[PARAM_JOBS][SHORT_VERSION]} 20 '
+    f'{PARAMS[PARAM_BRANCH][SHORT_VERSION]} devel')
   ],
   MODE_CONFIG_BUILD: [],
   MODE_CONFIG: [
@@ -139,7 +139,7 @@ MODE_EXAMPLES = {
     f'./xmipp {MODE_GET_MODELS} {PARAMS[PARAM_MODELS_DIRECTORY][SHORT_VERSION]} /path/to/my/model/directory'
   ],
   MODE_GET_SOURCES: [
-    f'./xmipp {MODE_GET_SOURCES}'
+    f'./xmipp {MODE_GET_SOURCES}',
     f'./xmipp {MODE_GET_SOURCES} {PARAMS[PARAM_BRANCH][SHORT_VERSION]} devel'
   ],
   MODE_CLEAN_BIN: [],

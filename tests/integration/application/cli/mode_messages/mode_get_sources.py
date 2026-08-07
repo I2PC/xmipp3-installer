@@ -11,7 +11,8 @@ HELP_MESSAGE = {
     -b, --branch                                                          Branch for the source repositories.
     --keep-output                                                         If set, output sent through the terminal won't substitute lines, looking more like the log.
 
-Example: ./xmipp getSources./xmipp getSources -b devel
+Example 1: ./xmipp getSources
+Example 2: ./xmipp getSources -b devel
 """,
   terminal_sizes.SHORT_TERMINAL_WIDTH: f"""Clones Xmipp\'s source repositories xmippCore & xmippViz.
 
@@ -24,6 +25,7 @@ Example: ./xmipp getSources./xmipp getSources -b devel
                                                                           terminal won't substitute lines,
                                                                           looking more like the log.
 
-Example: ./xmipp getSources./xmipp getSources -b devel
+Example 1: ./xmipp getSources
+Example 2: ./xmipp getSources -b devel
 """
 }

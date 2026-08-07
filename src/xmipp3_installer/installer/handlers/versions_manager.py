@@ -107,7 +107,7 @@ class VersionsManager(singleton.Singleton):
     """
     try:
       datetime.strptime(self.xmipp_release_date, "%d/%m/%Y").replace(tzinfo=timezone.utc)
-    except ValueError:
+    except ValueError as error:
       raise ValueError(
         f"Release date '{self.xmipp_release_date}' is invalid. Must be in dd/mm/yyyy format."
-      )
+      ) from error
