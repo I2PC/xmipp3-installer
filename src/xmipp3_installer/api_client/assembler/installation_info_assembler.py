@@ -153,7 +153,7 @@ def __anonymize_log_tail(log_text: str | None) -> str | None:
   - (str | None): Log text with occurrences of /home/<username> replaced by /home/REDACTED, or None if input was None.
   """
   if log_text is None:
-    return
+    return None
 
   pattern = re.compile(r'(/home/)([^/\s]+)')
   return pattern.sub(r'\1REDACTED', log_text)
@@ -185,6 +185,7 @@ def __find_mac_address_in_lines(lines: list[str]) -> str | None:
     mac_match = re.search(r"link/ether ([0-9a-f:]{17})", lines[line_index + 1])
     if mac_match:
       return mac_match.group(1)
+  return None
 
 def __is_installed_by_scipion() -> bool:
   """

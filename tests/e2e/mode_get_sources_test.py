@@ -147,8 +147,7 @@ def __mock_clone_and_checkout(request, __mock_sys_argv):
   original_run_shell_command = shell_handler.run_shell_command
   def __side_effect(cmd: str, **kwargs):
     if (
-      cmd.startswith("git clone") or
-      cmd.startswith("git checkout") or
+      cmd.startswith(("git clone", "git checkout")) or
       (
         (
           params.PARAMS[params.PARAM_BRANCH][params.SHORT_VERSION] in __mock_sys_argv or

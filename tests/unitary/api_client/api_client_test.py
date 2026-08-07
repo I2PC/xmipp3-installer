@@ -106,11 +106,11 @@ def __mock_logger_yellow():
 
 @pytest.fixture
 def __mock_socket_available():
-	with patch("xmipp3_installer.api_client.api_client.socket.socket") as mock_socket:
-		with patch("xmipp3_installer.api_client.api_client.socket.setdefaulttimeout") as set_timeout:
-			instance = mock_socket.return_value.__enter__.return_value
-			instance.connect.return_value = None
-			yield mock_socket, set_timeout, instance
+	with patch("xmipp3_installer.api_client.api_client.socket.socket") as mock_socket, \
+			patch("xmipp3_installer.api_client.api_client.socket.setdefaulttimeout") as set_timeout:
+		instance = mock_socket.return_value.__enter__.return_value
+		instance.connect.return_value = None
+		yield mock_socket, set_timeout, instance
 
 
 @pytest.fixture

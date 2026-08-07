@@ -868,7 +868,7 @@ def test_calls_file_writelines_when_writing_config(
 def __mimick_get_toggle_lines(section: str, variables: Dict):
 	lines = []
 	variables_copy = variables.copy()
-	for variable in variables_copy.keys():
+	for variable in variables_copy:
 		if variable in __CONFIG_VARIABLES[section]:
 			lines.append(f"{variable}-{__CONFIG_VALUES.get(variable)}-{__DEFAULT_CONFIG_VALUES[variable]}")
 			variables.pop(variable, None)

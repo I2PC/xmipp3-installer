@@ -80,10 +80,7 @@ class ModeHelpFormatter(BaseHelpFormatter):
     ### Returns:
     - (bool): True if there is at least one optional param. False otherwise.
     """
-    for name in arg_names:
-      if name.startswith('-'):
-        return True
-    return False
+    return any(name.startswith('-') for name in arg_names)
 
   def __get_args_info(self, args: list[str | list[str]]) -> str:
     """
