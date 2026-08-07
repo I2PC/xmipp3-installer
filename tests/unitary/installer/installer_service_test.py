@@ -265,7 +265,7 @@ def test_calls_logger_to_send_installation_info_deppending_on_attribute_when_run
   "shows_message,__mock_mode_executors",
   [
     pytest.param(False, (1, 1)),
-    pytest.param(False, (1, 1)),
+    pytest.param(False, (0, 0)),
     pytest.param(True, (1, 1)),
     pytest.param(True, (0, 0))
   ],

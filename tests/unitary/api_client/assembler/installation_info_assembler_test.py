@@ -582,7 +582,7 @@ def __mock_os_getenv(request):
 def __mock_os_is_linux(request):
   return getattr(request, 'param', True)
 
-@pytest.fixture()
+@pytest.fixture
 def __mock_platform_system(__mock_os_is_linux):
   with patch("platform.system") as mock_method:
     mock_method.return_value = __PLATFORM_SYSTEM_LINUX if __mock_os_is_linux else __PLATFORM_SYSTEM_WINDOWS
