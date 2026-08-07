@@ -34,14 +34,14 @@ class VersionsManager(singleton.Singleton):
     """
     super().__init__()
     self.version_file_path = version_file_path
-    version_info = self.__get_version_info()
+    version_info = self._get_version_info()
     self.xmipp_version_number = version_info[constants.XMIPP]["version_number"]
     self.xmipp_version_name = version_info[constants.XMIPP]["version_name"]
     self.xmipp_release_date = version_info[constants.XMIPP]["release_date"]
     self.sources_versions = version_info["sources_target_tag"]
-    self.__validate_fields()
+    self._validate_fields()
 
-  def __get_version_info(self) -> dict[str, dict[str, str]]:
+  def _get_version_info(self) -> dict[str, dict[str, str]]:
     """
     ### Retrieves the version info from the version information JSON file.
 
@@ -51,7 +51,7 @@ class VersionsManager(singleton.Singleton):
     with open(self.version_file_path, encoding="utf-8") as json_data:
       return json.load(json_data)
   
-  def __validate_fields(self):
+  def _validate_fields(self):
     """
     ### Validates version numbers and release date format.
     
@@ -62,10 +62,10 @@ class VersionsManager(singleton.Singleton):
     #### Raises:
     - ValueError: If any field doesn't match its required format.
     """
-    self.__validate_version_number()
-    self.__validate_release_date()
+    self._validate_version_number()
+    self._validate_release_date()
 
-  def __validate_version_number(self):
+  def _validate_version_number(self):
     """
     ### Validates that version numbers follow semantic versioning format.
     
@@ -75,13 +75,13 @@ class VersionsManager(singleton.Singleton):
     - ValueError: If any version number doesn't follow the required format.
     """
     parts = self.xmipp_version_number.split('.')
-    if not VersionsManager.__is_valid_semver(parts):
+    if not VersionsManager._is_valid_semver(parts):
       raise ValueError(
         f"Version number '{self.xmipp_version_number}' is invalid. Must be three numbers separated by dots (x.y.z)."
       )
 
   @staticmethod
-  def __is_valid_semver(version_parts: list[str]) -> bool:
+  def _is_valid_semver(version_parts: list[str]) -> bool:
     """
     ### Checks if version parts constitute a valid semantic version.
     
@@ -94,7 +94,7 @@ class VersionsManager(singleton.Singleton):
     SEMVER_N_NUMBERS = 3 # 3 numbers separated by dots: X.Y.Z
     return len(version_parts) == SEMVER_N_NUMBERS and all(part.isdigit() for part in version_parts)
 
-  def __validate_release_date(self):
+  def _validate_release_date(self):
     """
     ### Validates that release date follows dd/mm/yyyy format.
     

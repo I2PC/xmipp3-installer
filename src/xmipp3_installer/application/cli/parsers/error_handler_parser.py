@@ -18,10 +18,10 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     #### Params:
     - message (str): Error message.
     """
-    args = self.__get_args()
-    mode = ErrorHandlerArgumentParser.__get_mode(args)
+    args = self._get_args()
+    mode = ErrorHandlerArgumentParser._get_mode(args)
 
-    if ErrorHandlerArgumentParser.__is_mode_generic(args):
+    if ErrorHandlerArgumentParser._is_mode_generic(args):
       args = ' '.join(args[:-1])
       extra_line_break = '\n'
     else:
@@ -34,7 +34,7 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
       format.get_formatting_tabs(f"{args}{extra_line_break}{error_message}")
     )
   
-  def __get_args(self) -> list[str]:
+  def _get_args(self) -> list[str]:
     """
     ### Obtains args from stored class data.
 
@@ -44,7 +44,7 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     return self.prog.split(' ')
   
   @staticmethod
-  def __get_mode(args: list[str]) -> str:
+  def _get_mode(args: list[str]) -> str:
     """
     ### Obtains the usage mode from the received args.
 
@@ -57,7 +57,7 @@ class ErrorHandlerArgumentParser(argparse.ArgumentParser):
     return args[-1]
   
   @staticmethod
-  def __is_mode_generic(args: list[str]) -> bool:
+  def _is_mode_generic(args: list[str]) -> bool:
     """
     ### Returns True if the usage mode selected is the generic one.
 

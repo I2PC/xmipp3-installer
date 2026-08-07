@@ -20,7 +20,7 @@ def test_writes_default_config_when_there_is_no_config_file(
 	config_handler = ConfigurationFileHandler(__mock_config_file.name)
 	config_handler.write_config()
 	config_file_content = ''.join(
-		config_handler._ConfigurationFileHandler__get_file_content()
+		config_handler._get_file_content()
 	).splitlines()
 	config_file_content = __change_config_cmake_path(config_file_content)
 	assert (
@@ -73,7 +73,7 @@ def test_writes_unkown_variables_to_config_when_unkown_variables_are_added_to_va
 	config_handler.values.update({unknown_key: unknown_value})
 	config_handler.write_config()
 	config_file_content = ''.join(
-		config_handler._ConfigurationFileHandler__get_file_content()
+		config_handler._get_file_content()
 	).splitlines()
 	expected_file_content = [
 		*file_content.MANDATORY_SECTIONS_LINES,
@@ -100,7 +100,7 @@ def test_writes_modified_variables_to_config_when_some_variable_values_are_chang
 	config_handler.values.update({modified_key: False})
 	config_handler.write_config()
 	config_file_content = ''.join(
-		config_handler._ConfigurationFileHandler__get_file_content()
+		config_handler._get_file_content()
 	).splitlines()
 	expected_file_content = '\n'.join(
 		file_content.DEFAULT_FILE_LINES

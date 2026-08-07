@@ -95,14 +95,14 @@ def test_does_not_call_open_when_starting_log_file_and_log_file_is_open(
 ):
   log_file_name = "test_log_file"
   logger = Logger()
-  logger._Logger__log_file = "Something not None"
+  logger._log_file = "Something not None"
   logger.start_log_file(log_file_name)
   __mock_open.assert_not_called()
 
 def test_starts_log_file(__mock_open):
   logger = Logger()
   logger.start_log_file("test_log_file")
-  log_file = logger._Logger__log_file
+  log_file = logger._log_file
   assert (
     log_file is __DUMMY_FILE
   ), get_assertion_message("log file", __DUMMY_FILE, log_file)
@@ -110,16 +110,16 @@ def test_starts_log_file(__mock_open):
 def test_sets_file_to_none_after_closing():
   mock_file = MagicMock()
   logger = Logger()
-  logger._Logger__log_file = mock_file
+  logger._log_file = mock_file
   logger.close()
   assert (
-    logger._Logger__log_file is None
-  ), get_assertion_message("logger file", None, logger._Logger__log_file)
+    logger._log_file is None
+  ), get_assertion_message("logger file", None, logger._log_file)
 
 def test_calls_close_on_exit_stack():
   mock_stack = MagicMock()
   logger = Logger()
-  logger._Logger__stack = mock_stack
+  logger._stack = mock_stack
   logger.close()
   mock_stack.close.assert_called_once_with()
 
@@ -139,7 +139,7 @@ def test_does_not_call_close_on_open_log_file_if_it_has_not_been_set():
 def test_sets_allow_substitution(expected_allow_substitution):
   logger = Logger()
   logger.set_allow_substitution(expected_allow_substitution)
-  allow_substitution = logger._Logger__allow_substitution
+  allow_substitution = logger._allow_substitution
   assert (
     allow_substitution == expected_allow_substitution
   ), get_assertion_message("allow substitution value", expected_allow_substitution, allow_substitution)
@@ -196,7 +196,7 @@ def test_calls_logger_with_expected_params_when_logging_error(
 def test_returns_expected_text_when_removing_non_printable_characters():
   printable_text = "This text should remain"
   logger = Logger()
-  modified_text = logger._Logger__remove_non_printable(
+  modified_text = logger._remove_non_printable(
     logger.blue(logger.yellow(logger.red(logger.bold(logger.green(printable_text)))))
   )
   assert (
@@ -225,8 +225,8 @@ def test_returns_expected_n_last_lines(
   expected_n_last_lines
 ):
   logger = Logger()
-  with patch.object(logger, "_Logger__last_printed_elem", last_printed_element):
-    n_last_lines = logger._Logger__get_n_last_lines()
+  with patch.object(logger, "_last_printed_elem", last_printed_element):
+    n_last_lines = logger._get_n_last_lines()
   assert (
     n_last_lines == expected_n_last_lines
   ), get_assertion_message("number of lines from last print", expected_n_last_lines, n_last_lines)
@@ -247,7 +247,7 @@ def test_returns_the_expected_text_when_substituting_lines(
 ):
   sample_text = "This is some sample text"
   logger = Logger()
-  substituted_text = logger._Logger__substitute_lines(sample_text)
+  substituted_text = logger._substitute_lines(sample_text)
   expected_substituted_text = f"{__get_substitution_chars(__mock_up, __mock_remove_line, __mock_get_n_last_lines())}{sample_text}"
   assert (
     substituted_text == expected_substituted_text
@@ -314,7 +314,7 @@ def test_sets_expected_last_printed_element_when_calling_logger(
   logger = Logger()
   logger.set_allow_substitution(allow_substitution)
   logger(__SAMPLE_TEXT, show_in_terminal=False, substitute=substitute)
-  last_printed_elem = logger._Logger__last_printed_elem
+  last_printed_elem = logger._last_printed_elem
   expected_len = __mock_remove_non_printable(__SAMPLE_TEXT) if stores else None
   assert (
     last_printed_elem == expected_len
@@ -400,37 +400,37 @@ def __get_substitution_chars(up_char: str, remove_line_char: str, n_lines: int):
 @pytest.fixture
 def __mock_reset_format():
   new_format_code = "-format_end"
-  with patch.object(Logger, "_Logger__END_FORMAT", new_format_code):
+  with patch.object(Logger, "_END_FORMAT", new_format_code):
     yield new_format_code
 
 @pytest.fixture
 def __mock_color_green():
   new_format_code = "green_start-"
-  with patch.object(Logger, "_Logger__GREEN", new_format_code):
+  with patch.object(Logger, "_GREEN", new_format_code):
     yield new_format_code
 
 @pytest.fixture
 def __mock_color_yellow():
   new_format_code = "yellow_start-"
-  with patch.object(Logger, "_Logger__YELLOW", new_format_code):
+  with patch.object(Logger, "_YELLOW", new_format_code):
     yield new_format_code
 
 @pytest.fixture
 def __mock_color_red():
   new_format_code = "red_start-"
-  with patch.object(Logger, "_Logger__RED", new_format_code):
+  with patch.object(Logger, "_RED", new_format_code):
     yield new_format_code
 
 @pytest.fixture
 def __mock_color_blue():
   new_format_code = "blue_start-"
-  with patch.object(Logger, "_Logger__BLUE", new_format_code):
+  with patch.object(Logger, "_BLUE", new_format_code):
     yield new_format_code
 
 @pytest.fixture
 def __mock_bold():
   new_format_code = "bold_start-"
-  with patch.object(Logger, "_Logger__BOLD", new_format_code):
+  with patch.object(Logger, "_BOLD", new_format_code):
     yield new_format_code
 
 @pytest.fixture
@@ -458,18 +458,18 @@ def __mock_get_terminal_column_size(request):
 @pytest.fixture
 def __mock_up():
   new_format_code = "up-"
-  with patch.object(Logger, "_Logger__UP", new_format_code):
+  with patch.object(Logger, "_UP", new_format_code):
     yield new_format_code
 
 @pytest.fixture
 def __mock_remove_line():
   new_format_code = "line_remove-"
-  with patch.object(Logger, "_Logger__REMOVE_LINE", new_format_code):
+  with patch.object(Logger, "_REMOVE_LINE", new_format_code):
     yield new_format_code
 
 @pytest.fixture
 def __mock_get_n_last_lines(request):
-  with patch("xmipp3_installer.application.logger.logger.Logger._Logger__get_n_last_lines") as mock_method:
+  with patch("xmipp3_installer.application.logger.logger.Logger._get_n_last_lines") as mock_method:
     mock_method.return_value = getattr(request, 'param', 0)
     yield mock_method
 
@@ -480,13 +480,13 @@ def __mock_print():
 
 @pytest.fixture
 def __mock_remove_non_printable():
-  with patch("xmipp3_installer.application.logger.logger.Logger._Logger__remove_non_printable") as mock_method:
+  with patch("xmipp3_installer.application.logger.logger.Logger._remove_non_printable") as mock_method:
     mock_method.side_effect = lambda text: f"non_printable_affix-{text}-non_printable_affix"
     yield mock_method
 
 @pytest.fixture
 def __mock_substitute_lines():
-  with patch("xmipp3_installer.application.logger.logger.Logger._Logger__substitute_lines") as mock_method:
+  with patch("xmipp3_installer.application.logger.logger.Logger._substitute_lines") as mock_method:
     mock_method.side_effect = lambda text: f"substitute_lines_affix-{text}-non_printable_affix"
     yield mock_method
 

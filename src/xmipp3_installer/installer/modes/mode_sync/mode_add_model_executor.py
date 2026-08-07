@@ -57,18 +57,18 @@ class ModeAddModelExecutor(ModeSyncExecutor):
       ]))
       return errors.IO_ERROR, ""
     
-    ret_code, output = self.__generate_compressed_file()
+    ret_code, output = self._generate_compressed_file()
     if ret_code:
       return ret_code, output
     
-    if not self.__get_confirmation():
+    if not self._get_confirmation():
       return errors.INTERRUPTED_ERROR, ""
     
-    ret_code, output = self.__upload_model()
+    ret_code, output = self._upload_model()
     ret_code = 1 if ret_code else ret_code
     return ret_code, output
 
-  def __generate_compressed_file(self) -> tuple[int, str]:
+  def _generate_compressed_file(self) -> tuple[int, str]:
     """
     ### Generates the model's compressed file.
 
@@ -83,7 +83,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
       return errors.IO_ERROR, str(ex)
     return 0, ""
 
-  def __get_confirmation(self) -> bool:
+  def _get_confirmation(self) -> bool:
     """
     ### Asks the user for confirmation.
 
@@ -97,7 +97,7 @@ class ModeAddModelExecutor(ModeSyncExecutor):
     ]))
     return user_interactions.get_user_confirmation("YES")
 
-  def __upload_model(self) -> tuple[int, str]:
+  def _upload_model(self) -> tuple[int, str]:
     """
     ### Uploads the model to the remote server.
 

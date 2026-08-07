@@ -106,7 +106,7 @@ def test_raises_key_error_if_variable_not_present_in_context_when_initializing(
 def test_calls_get_current_branch_when_selecting_ref_to_clone(
   __mock_get_current_branch
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__select_ref_to_clone(
+  ModeGetSourcesExecutor(__CONTEXT.copy())._select_ref_to_clone(
     constants.XMIPP_CORE, __REPO_URL
   )
   __mock_get_current_branch.assert_called_once_with()
@@ -131,7 +131,7 @@ def test_calls_get_clonable_branch_when_selecting_ref_to_clone(
   expected_tag_name,
   __mock_get_clonable_branch
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__select_ref_to_clone(
+  ModeGetSourcesExecutor(__CONTEXT.copy())._select_ref_to_clone(
     source_name, __REPO_URL
   )
   __mock_get_clonable_branch.assert_called_once_with(
@@ -144,7 +144,7 @@ def test_calls_get_clonable_branch_when_selecting_ref_to_clone(
   indirect=["__mock_get_clonable_branch"]
 )
 def test_returns_expected_ref_to_clone(__mock_get_clonable_branch):
-  result = ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__select_ref_to_clone(
+  result = ModeGetSourcesExecutor(__CONTEXT.copy())._select_ref_to_clone(
     constants.XMIPP_CORE, __REPO_URL
   )
   assert (
@@ -305,7 +305,7 @@ def test_calls_logger_when_getting_source(
 ):
   ModeGetSourcesExecutor(
     {**__CONTEXT, __PARAM_BRANCH: target_branch, __PARAM_KEEP_OUTPUT: not substitute},
-  )._ModeGetSourcesExecutor__get_source(source_name)
+  )._get_source(source_name)
   expected_calls = [
     call(f"Cloning {source_name}...", substitute=substitute),
     call(__mock_get_working_message(), substitute=substitute),
@@ -334,7 +334,7 @@ def test_calls_get_working_message_when_getting_source(
   __mock_select_ref_to_clone,
   __mock_run_source_command
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+  ModeGetSourcesExecutor(__CONTEXT.copy())._get_source(
     constants.XMIPP_CORE
   )
   __mock_get_working_message.assert_called_once_with()
@@ -349,7 +349,7 @@ def test_calls_select_ref_to_clone_when_getting_source(
   __mock_run_source_command,
   __mock_i2pc_repo_url
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+  ModeGetSourcesExecutor(__CONTEXT.copy())._get_source(
     source_name
   )
   __mock_select_ref_to_clone.assert_called_once_with(
@@ -372,7 +372,7 @@ def test_calls_run_source_command_when_getting_source(
   __mock_run_source_command,
   __mock_i2pc_repo_url
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+  ModeGetSourcesExecutor(__CONTEXT.copy())._get_source(
     source_name
   )
   __mock_run_source_command.assert_called_once_with(
@@ -386,7 +386,7 @@ def test_calls_get_done_message_when_getting_source(
   __mock_select_ref_to_clone,
   __mock_run_source_command
 ):
-  ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+  ModeGetSourcesExecutor(__CONTEXT.copy())._get_source(
     constants.XMIPP_CORE
   )
   __mock_get_done_message.assert_called_once_with()
@@ -403,7 +403,7 @@ def test_returns_expected_result_when_getting_source(
   __mock_select_ref_to_clone,
   __mock_run_source_command
 ):
-  result = ModeGetSourcesExecutor(__CONTEXT.copy())._ModeGetSourcesExecutor__get_source(
+  result = ModeGetSourcesExecutor(__CONTEXT.copy())._get_source(
     constants.XMIPP_CORE
   )
   assert (
@@ -565,7 +565,7 @@ def __mock_get_done_message():
 @pytest.fixture
 def __mock_select_ref_to_clone(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__select_ref_to_clone"
+    "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._select_ref_to_clone"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', __BRANCH_NAME)
     yield mock_method
@@ -596,7 +596,7 @@ def __mock_get_section_message():
 @pytest.fixture
 def __mock_get_source(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._ModeGetSourcesExecutor__get_source"
+    "xmipp3_installer.installer.modes.mode_get_sources_executor.ModeGetSourcesExecutor._get_source"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method

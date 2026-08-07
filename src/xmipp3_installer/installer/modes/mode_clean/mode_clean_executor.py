@@ -29,13 +29,13 @@ class ModeCleanExecutor(mode_executor.ModeExecutor):
     #### Returns:
     - (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
     """
-    if not self.__get_confirmation():
+    if not self._get_confirmation():
       return errors.INTERRUPTED_ERROR, ""
     file_operations.delete_paths(self.__class__._get_paths_to_delete())
     logger(predefined_messages.get_done_message())
     return 0, ""
   
-  def __get_confirmation(self) -> bool:
+  def _get_confirmation(self) -> bool:
     """
     ### Asks the user for confirmation.
 

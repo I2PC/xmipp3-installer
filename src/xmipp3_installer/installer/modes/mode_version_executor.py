@@ -26,7 +26,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
   Collects and displays version information for the installation.
   """
   
-  __LEFT_TEXT_LEN = 25
+  _LEFT_TEXT_LEN = 25
 
   def __init__(self, context: dict):
     """
@@ -52,11 +52,11 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     #### Returns:
     - (tuple(int, str)): Tuple containing the error status and an error message if there was an error.
     """
-    installation_info =  self.xmipp_version_name if self.short else self.__get_long_version()
+    installation_info =  self.xmipp_version_name if self.short else self._get_long_version()
     logger(installation_info)
     return 0, ""
 
-  def __get_long_version(self) -> str:
+  def _get_long_version(self) -> str:
     """
     ### Returns the long version of the installation info.
 
@@ -67,30 +67,30 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     version_type = 'release' if git_handler.is_tag() else git_handler.get_current_branch()
     title = f"Xmipp {self.xmipp_version_number} ({version_type})"
     installation_info_lines.append(f"{logger.bold(title)}\n")
-    installation_info_lines.append(self.__get_dates_section())
-    system_version_left_text = self.__add_padding_spaces("System version: ")
+    installation_info_lines.append(self._get_dates_section())
+    system_version_left_text = self._add_padding_spaces("System version: ")
     installation_info_lines.append(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
-    installation_info_lines.append(self.__get_sources_info())
+    installation_info_lines.append(self._get_sources_info())
     if self.version_file_exists:
-      installation_info_lines.append(f"\n{self.__get_library_versions_section()}")
+      installation_info_lines.append(f"\n{self._get_library_versions_section()}")
     if not self.is_configured or not _are_all_sources_present():
       installation_info_lines.append(f"\n{_get_configuration_warning_message()}")
     return '\n'.join(installation_info_lines)
 
-  def __get_dates_section(self) -> str:
+  def _get_dates_section(self) -> str:
     """
     ### Returns the message section related to dates.
 
     #### Returns:
     - (str): Dates related message section.
     """
-    dates_section = f"{self.__add_padding_spaces('Release date: ')}{self.release_date}\n"
-    dates_section += f"{self.__add_padding_spaces('Compilation date: ')}"
+    dates_section = f"{self._add_padding_spaces('Release date: ')}{self.release_date}\n"
+    dates_section += f"{self._add_padding_spaces('Compilation date: ')}"
     last_modified = self.context.get(variables.LAST_MODIFIED_KEY)
     dates_section += last_modified if last_modified else '-'
     return dates_section
 
-  def __get_sources_info(self) -> str:
+  def _get_sources_info(self) -> str:
     """
     ### Returns the message section related to sources.
 
@@ -98,11 +98,11 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     - (str): Sources related message section.
     """
     return '\n'.join([
-      self.__get_source_info(source_package)
+      self._get_source_info(source_package)
       for source_package in constants.XMIPP_SOURCES
     ])
 
-  def __get_source_info(self, source: str) -> str:
+  def _get_source_info(self, source: str) -> str:
     """
     ### Returns the info message related to a given source.
 
@@ -113,7 +113,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     - (str): Info message about the given source.
     """
     source_path = paths.get_source_path(source)
-    source_left_text = self.__add_padding_spaces(f"{source} branch: ")
+    source_left_text = self._add_padding_spaces(f"{source} branch: ")
     if not os.path.exists(source_path):
       return f"{source_left_text}{logger.yellow('Not found')}"
     current_commit = git_handler.get_current_commit(dir=source_path)
@@ -122,7 +122,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     display_name = commit_branch if git_handler.is_tag(dir=source_path) else current_branch
     return f"{source_left_text}{display_name} ({current_commit})"
 
-  def __add_padding_spaces(self, left_text: str) -> str:
+  def _add_padding_spaces(self, left_text: str) -> str:
     """
     ### Adds right padding as spaces to the given text until it reaches the desired length.
 
@@ -133,12 +133,12 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     - (str): Padded string.
     """
     text_len = len(left_text)
-    if text_len >= self.__LEFT_TEXT_LEN:
+    if text_len >= self._LEFT_TEXT_LEN:
       return left_text
-    spaces = ''.join([' ' for _ in range(self.__LEFT_TEXT_LEN - text_len)])
+    spaces = ''.join([' ' for _ in range(self._LEFT_TEXT_LEN - text_len)])
     return f"{left_text}{spaces}"
 
-  def __get_library_versions_section(self) -> str:
+  def _get_library_versions_section(self) -> str:
     """
     ### Retrieves the version of the libraries used in the project.
     
@@ -149,7 +149,7 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     for library, version in cmake_handler.get_library_versions_from_cmake_file(
       paths.LIBRARY_VERSIONS_FILE
     ).items():
-      library_left_text = self.__add_padding_spaces(f"{library}: ")
+      library_left_text = self._add_padding_spaces(f"{library}: ")
       version_lines.append(f"{library_left_text}{version}")
     return '\n'.join(version_lines)
   

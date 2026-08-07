@@ -15,12 +15,12 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     """### Prints the help message of the argument parser."""
     help_message = "Run Xmipp's installer script\n\nUsage: xmipp [options]\n"
     for section in modes.MODES:
-      help_message += self.__get_section_message(section)
-    help_message += f"\n{self.__get_epilog()}"
-    help_message += self.__get_note()
+      help_message += self._get_section_message(section)
+    help_message += f"\n{self._get_epilog()}"
+    help_message += self._get_note()
     return format.get_formatting_tabs(help_message)
   
-  def __get_mode_arg_group_str(self, args: str) -> str:
+  def _get_mode_arg_group_str(self, args: str) -> str:
     """
     ### This method returns the args text for a given arg group.
 
@@ -37,7 +37,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
         param_names.append(f'[{param_name}]')
     return ' '.join(param_names)
 
-  def __get_mode_args_str(self, mode: str) -> str:
+  def _get_mode_args_str(self, mode: str) -> str:
     """
     ### This method returns the args text for a given mode.
 
@@ -49,15 +49,15 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     """
     args = modes.MODE_ARGS[mode]
     if not self._has_mutually_exclusive_groups(args):
-      return self.__get_mode_arg_group_str(args)
+      return self._get_mode_arg_group_str(args)
     
     group_strs = [
-      self.__get_mode_arg_group_str(arg_group) for arg_group in args
+      self._get_mode_arg_group_str(arg_group) for arg_group in args
     ]
     exclusive_group_str = " | ".join(group_strs)
     return f"({exclusive_group_str})"
 
-  def __get_mode_args_and_help_str(self, previous_text: str, mode: str) -> str:
+  def _get_mode_args_and_help_str(self, previous_text: str, mode: str) -> str:
     """
     ### This method returns the args and help text for a given mode.
 
@@ -69,12 +69,12 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     - (str): Args and help text for given mode.
     """
     return self._text_with_limits(
-      previous_text + self.__get_mode_args_str(mode),
+      previous_text + self._get_mode_args_str(mode),
       self._get_mode_help(mode)
     )
 
   @staticmethod
-  def __get_epilog() -> str:
+  def _get_epilog() -> str:
     """
     ### Returns the epilogue.
 
@@ -86,7 +86,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     return epilogue
   
   @staticmethod
-  def __get_note() -> str:
+  def _get_note() -> str:
     """
     ### Returns the additional note message.
 
@@ -97,7 +97,7 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     note_message += f"Example: ./xmipp {modes.MODE_ALL} -h\n"
     return logger.yellow(note_message)
 
-  def __get_section_message(self, section: str) -> str:
+  def _get_section_message(self, section: str) -> str:
     """
     ### Returns the given section's message.
 
@@ -109,5 +109,5 @@ class GeneralHelpFormatter(BaseHelpFormatter):
     """
     section_message = self._get_help_separator() + f"\t# {section} #\n\n"
     for mode in modes.MODES[section]:
-      section_message += self.__get_mode_args_and_help_str(f"\t{mode} ", mode)
+      section_message += self._get_mode_args_and_help_str(f"\t{mode} ", mode)
     return section_message

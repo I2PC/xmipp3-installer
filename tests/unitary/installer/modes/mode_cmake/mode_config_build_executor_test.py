@@ -107,7 +107,7 @@ def test_returns_expected_config_vars():
 def test_calls_get_non_internal_config_vars_when_getting_cmake_vars(
   __mock_get_non_internal_config_vars
 ):
-  ModeConfigBuildExecutor(__CONTEXT.copy())._ModeConfigBuildExecutor__get_cmake_vars()
+  ModeConfigBuildExecutor(__CONTEXT.copy())._get_cmake_vars()
   __mock_get_non_internal_config_vars.assert_called_once_with()
 
 @pytest.mark.parametrize(
@@ -119,7 +119,7 @@ def test_calls_get_non_internal_config_vars_when_getting_cmake_vars(
   indirect=["__mock_get_non_internal_config_vars"]
 )
 def test_returns_expected_cmake_vars(__mock_get_non_internal_config_vars, expected_cmake_vars):
-  cmake_vars = ModeConfigBuildExecutor(__CONTEXT.copy())._ModeConfigBuildExecutor__get_cmake_vars()
+  cmake_vars = ModeConfigBuildExecutor(__CONTEXT.copy())._get_cmake_vars()
   assert (
     cmake_vars == expected_cmake_vars
   ), get_assertion_message("CMake variables", expected_cmake_vars, cmake_vars)
@@ -314,7 +314,7 @@ def __mock_run_shell_command_in_streaming(request):
 @pytest.fixture
 def __mock_get_cmake_vars():
   with patch(
-    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.ModeConfigBuildExecutor._ModeConfigBuildExecutor__get_cmake_vars"
+    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.ModeConfigBuildExecutor._get_cmake_vars"
   ) as mock_method:
     mock_method.return_value = __CMAKE_VARS
     yield mock_method
