@@ -41,7 +41,7 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
     #### Returns:
     - (tuple(int, str)): Tuple containing the error status and an error message if there was an error. 
     """
-    cmake = self.__get_cmake_executable()
+    cmake = self._get_cmake_executable()
     if not cmake:
       return errors.CMAKE_ERROR, "CMake installation not found."
     return self._run_cmake_mode(cmake)
@@ -52,7 +52,7 @@ class ModeCMakeExecutor(mode_executor.ModeExecutor):
     self.logs_to_file = True
     self.prints_with_substitution = True
   
-  def __get_cmake_executable(self) -> str | None:
+  def _get_cmake_executable(self) -> str | None:
     """
     ### Returns the path to the CMake executable to be used.
 

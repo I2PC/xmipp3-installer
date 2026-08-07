@@ -12,15 +12,15 @@ from xmipp3_installer.shared.singleton import Singleton
 class Logger(Singleton):
   """### Logger class for keeping track of installation messages."""
 
-  __UP = "\x1B[1A\r"
-  __REMOVE_LINE = '\033[K'
-  __BOLD = "\033[1m"
-  __BLUE = "\033[34m"
-  __RED = "\033[91m"
-  __GREEN = "\033[92m"
-  __YELLOW = "\033[93m"
-  __END_FORMAT = "\033[0m"
-  __FORMATTING_CHARACTERS = (__UP, __REMOVE_LINE, __BOLD, __BLUE, __RED, __GREEN, __YELLOW, __END_FORMAT)
+  _UP = "\x1B[1A\r"
+  _REMOVE_LINE = '\033[K'
+  _BOLD = "\033[1m"
+  _BLUE = "\033[34m"
+  _RED = "\033[91m"
+  _GREEN = "\033[92m"
+  _YELLOW = "\033[93m"
+  _END_FORMAT = "\033[0m"
+  _FORMATTING_CHARACTERS = (_UP, _REMOVE_LINE, _BOLD, _BLUE, _RED, _GREEN, _YELLOW, _END_FORMAT)
  
   def __init__(self):
     """
@@ -29,10 +29,10 @@ class Logger(Singleton):
     #### Params:
     - outputToConsole (bool): Print messages to console.
     """
-    self.__stack = ExitStack()
-    self.__log_file = None
-    self.__last_printed_elem = None
-    self.__allow_substitution = True
+    self._stack = ExitStack()
+    self._log_file = None
+    self._last_printed_elem = None
+    self._allow_substitution = True
   
   def green(self, text: str) -> str:
     """
@@ -44,7 +44,7 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text formatted in green color.
     """
-    return self.__format_text(text, self.__GREEN)
+    return self._format_text(text, self._GREEN)
 
   def yellow(self, text: str) -> str:
     """
@@ -56,7 +56,7 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text formatted in yellow color.
     """
-    return self.__format_text(text, self.__YELLOW)
+    return self._format_text(text, self._YELLOW)
 
   def red(self, text: str) -> str:
     """
@@ -68,7 +68,7 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text formatted in red color.
     """
-    return self.__format_text(text, self.__RED)
+    return self._format_text(text, self._RED)
 
   def blue(self, text: str) -> str:
     """
@@ -80,7 +80,7 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text formatted in blue color.
     """
-    return self.__format_text(text, self.__BLUE)
+    return self._format_text(text, self._BLUE)
 
   def bold(self, text: str) -> str:
     """
@@ -92,7 +92,7 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text formatted in bold.
     """
-    return self.__format_text(text, self.__BOLD)
+    return self._format_text(text, self._BOLD)
 
   def start_log_file(self, log_path: str):
     """
@@ -101,15 +101,15 @@ class Logger(Singleton):
     #### Params:
     - log_path (str): Path to the log file.
     """
-    if self.__log_file is None:
-      self.__log_file = self.__stack.enter_context(
+    if self._log_file is None:
+      self._log_file = self._stack.enter_context(
         open(log_path, 'w', encoding="utf-8") # noqa: SIM115 TODO change logger with loggin lib
       )
 
   def close(self):
     """### Closes the log file."""
-    self.__stack.close()
-    self.__log_file = None
+    self._stack.close()
+    self._log_file = None
 
   def set_allow_substitution(self, allow_substitution: bool):
     """
@@ -118,7 +118,7 @@ class Logger(Singleton):
     #### Params:
     - allow_substitution (bool): If False, console outputs won't be substituted.
     """
-    self.__allow_substitution = allow_substitution
+    self._allow_substitution = allow_substitution
 
   def __call__(self, text: str, show_in_terminal: bool=True, substitute: bool=False):
     """
@@ -129,15 +129,15 @@ class Logger(Singleton):
     - show_in_terminal (bool): Optional. If True, text is also printed through terminal.
     - substitute (bool): Optional. If True, previous line is substituted with new text. Only used when show_in_terminal = True.
     """
-    if self.__log_file is not None:
-      print(self.__remove_non_printable(text), file=self.__log_file, flush=True)
+    if self._log_file is not None:
+      print(self._remove_non_printable(text), file=self._log_file, flush=True)
       
     if show_in_terminal:
-      text = self.__substitute_lines(text) if self.__allow_substitution and substitute else text
+      text = self._substitute_lines(text) if self._allow_substitution and substitute else text
       print(text, flush=True)
     
     # Store printed string for next substitution calculation
-    self.__last_printed_elem = self.__remove_non_printable(text) if self.__allow_substitution and substitute else None
+    self._last_printed_elem = self._remove_non_printable(text) if self._allow_substitution and substitute else None
    
   def log_error(self, error_msg: str, ret_code: int=1, add_portal_link: bool=True):
     """
@@ -173,7 +173,7 @@ class Logger(Singleton):
         calling_line = self.red(calling_line)
       self.__call__(calling_line, show_in_terminal=show_in_terminal, substitute=substitute)
 
-  def __remove_non_printable(self, text: str) -> str:
+  def _remove_non_printable(self, text: str) -> str:
     """
     ### This function returns the given text without non printable characters.
 
@@ -183,29 +183,29 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text without format.
     """
-    for formatting_char in self.__FORMATTING_CHARACTERS:
+    for formatting_char in self._FORMATTING_CHARACTERS:
       text = text.replace(formatting_char, "")
     return text
 
-  def __get_n_last_lines(self) -> int:
+  def _get_n_last_lines(self) -> int:
     """
     ### This function returns the number of lines of the terminal the last print occupied.
 
     #### Returns:
     - (int): Number of lines of the last print. 
     """
-    if self.__last_printed_elem is None:
+    if self._last_printed_elem is None:
       return 0
     
     terminal_width = shutil.get_terminal_size().columns
     # At least one line break exists, as prints end with line break
-    n_line_breaks = self.__last_printed_elem.count("\n") + 1
-    text_lines = self.__last_printed_elem.split("\n")
+    n_line_breaks = self._last_printed_elem.count("\n") + 1
+    text_lines = self._last_printed_elem.split("\n")
     for line in text_lines:
       n_line_breaks += len(line) // (terminal_width + 1) # Equal does not count, it needs to exceed
     return n_line_breaks
   
-  def __format_text(self, text: str, format_code: str) -> str:
+  def _format_text(self, text: str, format_code: str) -> str:
     """
     ### Returns the given text formatted in the given format code.
 
@@ -216,9 +216,9 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text formatted.
     """
-    return f"{format_code}{text}{self.__END_FORMAT}"
+    return f"{format_code}{text}{self._END_FORMAT}"
 
-  def __substitute_lines(self, text: str) -> str:
+  def _substitute_lines(self, text: str) -> str:
     """
     ### Removes the appropiate lines from the terminal to show a given text.
 
@@ -228,7 +228,7 @@ class Logger(Singleton):
     #### Returns:
     - (str): Text with line substitution characters as a prefix.
     """
-    substitution_chars = [f'{self.__UP}{self.__REMOVE_LINE}' for _ in range(self.__get_n_last_lines())]
+    substitution_chars = [f'{self._UP}{self._REMOVE_LINE}' for _ in range(self._get_n_last_lines())]
     return f"{''.join(substitution_chars)}{text}"
   
 """

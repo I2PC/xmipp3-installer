@@ -94,7 +94,7 @@ def test_calls_open_when_getting_version_info(
   __mock_init,
   __mock_open
 ):
-  VersionsManager(__FILE_PATH)._VersionsManager__get_version_info()
+  VersionsManager(__FILE_PATH)._get_version_info()
   __mock_open.assert_called_once_with(__FILE_PATH, encoding="utf-8")
 
 def test_calls_json_load_when_getting_version_info(
@@ -102,12 +102,12 @@ def test_calls_json_load_when_getting_version_info(
   __mock_json_load,
   __mock_open
 ):
-  VersionsManager(__FILE_PATH)._VersionsManager__get_version_info()
+  VersionsManager(__FILE_PATH)._get_version_info()
   __mock_json_load.assert_called_once_with(__mock_open())
 
 def test_returns_loaded_json_when_getting_version_info(__mock_init, __mock_open):
   version_manager = VersionsManager(__FILE_PATH)
-  version_info = version_manager._VersionsManager__get_version_info()
+  version_info = version_manager._get_version_info()
   assert (
     version_info == __VERSION_INFO
   ), get_assertion_message("version info", __VERSION_INFO, version_info)
@@ -133,14 +133,14 @@ def test_raises_value_error_when_validating_invalid_fields(
   expected_error_message
 ):
   with pytest.raises(ValueError) as error:
-    VersionsManager(__FILE_PATH)._VersionsManager__validate_fields()
+    VersionsManager(__FILE_PATH)._validate_fields()
   error_message = str(error.value)
   assert (
     error_message == expected_error_message
   ), get_assertion_message("ValueError message", expected_error_message, error_message)
 
 def test_validates_version_numbers_successfully(__mock_init):
-  VersionsManager(__FILE_PATH)._VersionsManager__validate_version_number()
+  VersionsManager(__FILE_PATH)._validate_version_number()
 
 @pytest.mark.parametrize(
   "version_number,valid",
@@ -153,20 +153,20 @@ def test_validates_version_numbers_successfully(__mock_init):
   ]
 )
 def test_returns_expected_semver_validation(__mock_init, version_number, valid):
-  assert VersionsManager._VersionsManager__is_valid_semver(version_number.split('.')) == valid
+  assert VersionsManager._is_valid_semver(version_number.split('.')) == valid
 
 def test_calls_datetime_strptime_when_validatingrelease_date(
   __mock_init,
   __mock_datetime
 ):
   version_manager = VersionsManager(__FILE_PATH)
-  version_manager._VersionsManager__validate_release_date()
+  version_manager._validate_release_date()
   __mock_datetime.strptime.assert_called_once_with(version_manager.xmipp_release_date, "%d/%m/%Y")
 
 @pytest.fixture
 def __mock_get_version_info():
   with patch(
-    "xmipp3_installer.installer.handlers.versions_manager.VersionsManager._VersionsManager__get_version_info"
+    "xmipp3_installer.installer.handlers.versions_manager.VersionsManager._get_version_info"
   ) as mock_method:
     mock_method.return_value = __VERSION_INFO
     yield mock_method
@@ -174,7 +174,7 @@ def __mock_get_version_info():
 @pytest.fixture
 def __mock_validate_fields():
   with patch(
-    "xmipp3_installer.installer.handlers.versions_manager.VersionsManager._VersionsManager__validate_fields"
+    "xmipp3_installer.installer.handlers.versions_manager.VersionsManager._validate_fields"
   ) as mock_method:
     yield mock_method
 

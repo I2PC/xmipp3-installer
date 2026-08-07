@@ -23,7 +23,7 @@ def test_checks_is_mode_generic(
   expected_is_generic,
   __setup_parser
 ):
-  is_generic = __setup_parser._ErrorHandlerArgumentParser__is_mode_generic(args)
+  is_generic = __setup_parser._is_mode_generic(args)
   assert (
     is_generic == expected_is_generic
   ), get_assertion_message("result", expected_is_generic, is_generic)
@@ -41,7 +41,7 @@ def test_gets_expected_mode(
   expected_mode,
   __setup_parser
 ):
-  mode = __setup_parser._ErrorHandlerArgumentParser__get_mode(args)
+  mode = __setup_parser._get_mode(args)
   assert (
     mode == expected_mode
   ), get_assertion_message("mode", expected_mode, mode)
@@ -60,7 +60,7 @@ def test_gets_expected_args(
   __mock_formatter_prog,
   expected_args
 ):
-  args = __mock_formatter_prog._ErrorHandlerArgumentParser__get_args()
+  args = __mock_formatter_prog._get_args()
   assert (
     args == expected_args
   ), get_assertion_message("mode", expected_args, args)
@@ -115,7 +115,7 @@ def __mock_formatter_prog(request, __setup_parser):
 @pytest.fixture
 def __mock_get_args(request):
   with patch(
-    "xmipp3_installer.application.cli.parsers.error_handler_parser.ErrorHandlerArgumentParser._ErrorHandlerArgumentParser__get_args"
+    "xmipp3_installer.application.cli.parsers.error_handler_parser.ErrorHandlerArgumentParser._get_args"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', ["arg1"])
     yield mock_method

@@ -25,7 +25,7 @@ class ModeExecutor(ABC):
     super().__init__()
     self.context = context
     self._set_executor_config()
-    self.__configure_logger()
+    self._configure_logger()
   
   def _set_executor_config(self):
     """### Sets the specific executor params for this mode."""
@@ -34,7 +34,7 @@ class ModeExecutor(ABC):
     self.prints_banner_on_exit = False
     self.sends_installation_info = False
   
-  def __configure_logger(self):
+  def _configure_logger(self):
     """### Configures the logger according to the specified config."""
     if self.logs_to_file:
       logger.start_log_file(paths.LOG_FILE)

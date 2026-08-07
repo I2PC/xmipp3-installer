@@ -21,9 +21,9 @@ from xmipp3_installer.shared.singleton import Singleton
 class ConfigurationFileHandler(Singleton):
   """### Configuration file class for loading and storing the installation configuration."""
 
-  __COMMENT_ESCAPE = '#'
-  __ASSIGNMENT_SEPARATOR = '='
-  __LAST_MODIFIED_TEXT = "Config file automatically generated on"
+  _COMMENT_ESCAPE = '#'
+  _ASSIGNMENT_SEPARATOR = '='
+  _LAST_MODIFIED_TEXT = "Config file automatically generated on"
 
   def __init__(self, path: str=paths.CONFIG_FILE, show_errors: bool=True):
     """
@@ -32,19 +32,19 @@ class ConfigurationFileHandler(Singleton):
     #### Params:
     - path (str): Optional. Path to the configuration file.
     """
-    self.__path = path
+    self._path = path
     self.show_errors = show_errors
     self.values = {}
     self.read_config()
     self.read_env_variables()
-    self.last_modified = self.__read_config_date()
+    self.last_modified = self._read_config_date()
 
   def read_config(self):
     """### Reads the config file and stores a dictionary with all the parsed variables."""
-    file_lines = self.__get_file_content()
+    file_lines = self._get_file_content()
     result = {}
     for line_number, line in enumerate(file_lines):
-      new_result = self.__add_line_values(result.copy(), line, line_number + 1)
+      new_result = self._add_line_values(result.copy(), line, line_number + 1)
       if new_result is None:
         result = {}
         break
@@ -84,24 +84,24 @@ class ConfigurationFileHandler(Singleton):
     
     lines = ["##### TOGGLE SECTION #####\n"]
     lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
-    lines.extend(self.__get_section_lines(variables.TOGGLES, values))
+    lines.extend(self._get_section_lines(variables.TOGGLES, values))
 
     lines.append("\n##### PACKAGE HOME SECTION #####\n")
     lines.append("# Use this variables to use custom installation paths for the required packages.\n")
     lines.append("# If left empty, CMake will search for those packages within your system.\n")
-    lines.extend(self.__get_section_lines(variables.LOCATIONS, values))
+    lines.extend(self._get_section_lines(variables.LOCATIONS, values))
     
     lines.append("\n##### COMPILATION FLAGS #####\n")
     lines.append("# We recommend not modifying this variables unless you know what you are doing.\n")
-    lines.extend(self.__get_section_lines(variables.COMPILATION_FLAGS, values))
+    lines.extend(self._get_section_lines(variables.COMPILATION_FLAGS, values))
     
     if values:
       lines.append("\n##### UNKNOWN VARIABLES #####\n")
       lines.append("# This variables were not expected, but are kept here in case they might be needed.\n")
-      lines.extend(self.__get_unkown_variable_lines(values))
+      lines.extend(self._get_unkown_variable_lines(values))
 
-    lines.append(f"\n# {self.__LAST_MODIFIED_TEXT} {self.last_modified}\n")
-    with open(self.__path, 'w', encoding="utf-8") as config_file:
+    lines.append(f"\n# {self._LAST_MODIFIED_TEXT} {self.last_modified}\n")
+    with open(self._path, 'w', encoding="utf-8") as config_file:
       config_file.writelines(lines)
 
   def get_config_date(self) -> str:
@@ -112,38 +112,38 @@ class ConfigurationFileHandler(Singleton):
     - (str): Date in dd-mm-yyyy format.
     """
     if not self.last_modified:
-      self.last_modified = self.__read_config_date()
+      self.last_modified = self._read_config_date()
     return self.last_modified
     
-  def __get_file_content(self) -> list[str]:
+  def _get_file_content(self) -> list[str]:
     """
     ### Reads the whole unparsed content of the given file.
 
     #### Returns:
     - (list(str)): Content of the file, where each line is a string in the result list.
     """
-    if not os.path.exists(self.__path):
+    if not os.path.exists(self._path):
       return []
-    with open(self.__path, encoding="utf-8") as config_file:
+    with open(self._path, encoding="utf-8") as config_file:
       return config_file.readlines()
 
-  def __read_config_date(self) -> str:
+  def _read_config_date(self) -> str:
     """
     ### Reads from the config file the date of its last modification.
 
     #### Returns:
     - (str): Date in dd-mm-yyyy format.
     """
-    config_lines = self.__get_file_content()
+    config_lines = self._get_file_content()
     for line in config_lines:
-      if self.__LAST_MODIFIED_TEXT not in line:
+      if self._LAST_MODIFIED_TEXT not in line:
         continue
       match = re.search(r'\d{2}-\d{2}-\d{4} \d{2}:\d{2}.\d{2}', line)
       if match:
         return match.group()
     return ""
 
-  def __add_line_values(self, config: dict, line: str, line_number: int) -> dict | None:
+  def _add_line_values(self, config: dict, line: str, line_number: int) -> dict | None:
     """
     ### Adds the config values present in the current line to the given dictionary.
 
@@ -156,7 +156,7 @@ class ConfigurationFileHandler(Singleton):
     - (dict | None): An updated dictionary with the newly obtained variable, or None if there was an error.
     """
     try:
-      key_value_pair = self.__parse_config_line(line, line_number)
+      key_value_pair = self._parse_config_line(line, line_number)
     except InvalidConfigLineError as error:
       if self.show_errors:
         logger(str(error))
@@ -167,7 +167,7 @@ class ConfigurationFileHandler(Singleton):
       config[key] = value
     return config
 
-  def __parse_config_line(self, line: str, line_number: int) -> tuple[str, str] | None:
+  def _parse_config_line(self, line: str, line_number: int) -> tuple[str, str] | None:
     """
     ### Reads the given line from the config file and returns the key-value pair as a tuple.
 
@@ -182,11 +182,11 @@ class ConfigurationFileHandler(Singleton):
     - RuntimeError: Raised when a line has an invalid format and cannot be parsed.
     """
     N_TOKENS = 2
-    line_without_comments = line.split(self.__COMMENT_ESCAPE, maxsplit=2)[0].strip()
+    line_without_comments = line.split(self._COMMENT_ESCAPE, maxsplit=2)[0].strip()
     if not line_without_comments:
       return None
     
-    tokens = line_without_comments.split(self.__ASSIGNMENT_SEPARATOR, maxsplit=1)
+    tokens = line_without_comments.split(self._ASSIGNMENT_SEPARATOR, maxsplit=1)
     if len(tokens) != N_TOKENS:
       raise InvalidConfigLineError(
         InvalidConfigLineError.generate_error_message(
@@ -198,7 +198,7 @@ class ConfigurationFileHandler(Singleton):
     
     return tokens[0].strip(), tokens[1].strip()
 
-  def __make_config_line(self, key: str, value: str | None, default_value: str) -> str:
+  def _make_config_line(self, key: str, value: str | None, default_value: str) -> str:
     """
     ### Composes a config file line given a key-value pair to write.
 
@@ -212,9 +212,9 @@ class ConfigurationFileHandler(Singleton):
     """
     default_value = '' if default_value is None else default_value
     value = default_value if value is None else value
-    return f"{key}{self.__ASSIGNMENT_SEPARATOR}{value}" if key else ""
+    return f"{key}{self._ASSIGNMENT_SEPARATOR}{value}" if key else ""
 
-  def __get_section_lines(self, section_type: str, config_variables: dict[str, str]) -> list[str]:
+  def _get_section_lines(self, section_type: str, config_variables: dict[str, str]) -> list[str]:
     """
     ### Returns the lines composed by the given section's variables in the dictionary, and deletes them from it.
 
@@ -228,7 +228,7 @@ class ConfigurationFileHandler(Singleton):
     lines = []
     for section_variable in variables.CONFIG_VARIABLES[section_type]:
       lines.append(''.join([
-        self.__make_config_line(
+        self._make_config_line(
           section_variable,
           config_variables.get(section_variable),
           default_values.CONFIG_DEFAULT_VALUES[section_variable]
@@ -238,7 +238,7 @@ class ConfigurationFileHandler(Singleton):
       config_variables.pop(section_variable, None)
     return lines
 
-  def __get_unkown_variable_lines(self, config_variables: dict[str, Any]) -> list[str]:
+  def _get_unkown_variable_lines(self, config_variables: dict[str, Any]) -> list[str]:
     """
     ### Returns the lines composed by the unkown variables in the dictionary.
 
@@ -251,6 +251,6 @@ class ConfigurationFileHandler(Singleton):
     lines = []
     for variable_name, value in config_variables.items():
       lines.append(
-        f"{self.__make_config_line(variable_name, value, '')}\n"
+        f"{self._make_config_line(variable_name, value, '')}\n"
       )
     return lines

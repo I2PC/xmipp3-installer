@@ -100,7 +100,7 @@ def test_calls_get_cmake_path_if_cmake_in_context_not_valid_when_getting_cmake_e
 ):
   __dummy_test_mode_cmake_executor(
     {**__CONTEXT, variables.CMAKE: None}
-  )._ModeCMakeExecutor__get_cmake_executable()
+  )._get_cmake_executable()
   __mock_get_cmake_path.assert_called_once_with()
 
 def test_does_not_call_get_cmake_path_if_cmake_in_context_valid_when_getting_cmake_executable(
@@ -109,7 +109,7 @@ def test_does_not_call_get_cmake_path_if_cmake_in_context_valid_when_getting_cma
 ):
   __dummy_test_mode_cmake_executor(
     __CONTEXT.copy()
-  )._ModeCMakeExecutor__get_cmake_executable()
+  )._get_cmake_executable()
   __mock_get_cmake_path.assert_not_called()
 
 @pytest.mark.parametrize(
@@ -130,7 +130,7 @@ def test_returns_expected_cmake_path(
 ):
   cmake_path = __dummy_test_mode_cmake_executor(
     {**__CONTEXT, variables.CMAKE: cmake_in_context}
-  )._ModeCMakeExecutor__get_cmake_executable()
+  )._get_cmake_executable()
   assert (
     cmake_path == expected_cmake_path
   ), get_assertion_message("CMake path", expected_cmake_path, cmake_path)
@@ -224,7 +224,7 @@ def __mock_get_cmake_path(request):
 @pytest.fixture
 def __mock_get_cmake_executable(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor.ModeCMakeExecutor._ModeCMakeExecutor__get_cmake_executable"
+    "xmipp3_installer.installer.modes.mode_cmake.mode_cmake_executor.ModeCMakeExecutor._get_cmake_executable"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', __CMAKE)
     yield mock_method

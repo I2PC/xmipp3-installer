@@ -50,7 +50,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     - context (dict): Dictionary containing the installation context variables.
     """
     super().__init__(context)
-    self.param_value = self.__get_selected_param_value(context)
+    self.param_value = self._get_selected_param_value(context)
     self.cuda = context.pop(variables.CUDA)
     python_home = context.pop(variables.PYTHON_HOME, None)
     self.python_home = python_home if python_home else _DEFAULT_PYTHON_HOME
@@ -62,14 +62,14 @@ class ModeTestExecutor(ModeSyncExecutor):
     #### Returns:
     - (tuple(int, str)): Tuple containing the return code and an error message if there was an error.
     """
-    ret_code, output = self.__load_bashrc()
+    ret_code, output = self._load_bashrc()
     if ret_code:
       return ret_code, output
     
     ret_code, output = super().run()
     if ret_code:
       return ret_code, output
-    return self.__run_tests()
+    return self._run_tests()
 
   def _sync_operation(self) -> tuple[int, str]:
     """
@@ -98,7 +98,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     return ret_code, ""
 
   @staticmethod
-  def __load_bashrc() -> tuple[int, str]:
+  def _load_bashrc() -> tuple[int, str]:
     """
     ### Loads the bashrc file.
 
@@ -119,7 +119,7 @@ class ModeTestExecutor(ModeSyncExecutor):
       os.environ[key] = value
     return 0, ""
 
-  def __run_tests(self) -> tuple[int, str]:
+  def _run_tests(self) -> tuple[int, str]:
     """
     ### Runs the specified tests.
 
@@ -143,7 +143,7 @@ class ModeTestExecutor(ModeSyncExecutor):
     return ret_code, output
 
   @staticmethod
-  def __get_selected_param_value(context: dict[str, Any]) -> str:
+  def _get_selected_param_value(context: dict[str, Any]) -> str:
     """
     ### Returns the value of the param selected to run the test execution.
 

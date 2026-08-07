@@ -64,20 +64,20 @@ def test_formats_help(
   ), get_assertion_message("formatted help", expected_formatted_help, formatted_help)
 
 def test_gets_expected_epilog(__setup_formatter):
-  epilog = __setup_formatter._GeneralHelpFormatter__get_epilog()
+  epilog = __setup_formatter._get_epilog()
   assert (
     epilog == ___EPILOG_TEXT
   ), get_assertion_message("epilog", ___EPILOG_TEXT, epilog)
 
 def test_gets_expected_note(__setup_formatter, __mock_logger_yellow):
-  note = __setup_formatter._GeneralHelpFormatter__get_note()
+  note = __setup_formatter._get_note()
   expected_note = __mock_logger_yellow(__NOTE_TEXT)
   assert (
     note == expected_note
   ), get_assertion_message("note", expected_note, note)
 
 def test_calls_logger_yellow_when_getting_note(__setup_formatter, __mock_logger_yellow):
-  __setup_formatter._GeneralHelpFormatter__get_note()
+  __setup_formatter._get_note()
   __mock_logger_yellow.assert_called_once_with(__NOTE_TEXT)
 
 @pytest.mark.parametrize(
@@ -98,7 +98,7 @@ def test_gets_expected_mode_args_str(
   __mock_params,
   __setup_formatter
 ):
-  mode_args_str = __setup_formatter._GeneralHelpFormatter__get_mode_args_str(mode)
+  mode_args_str = __setup_formatter._get_mode_args_str(mode)
   assert (
     mode_args_str == expected_args_str
   ), get_assertion_message("arguments string", expected_args_str, mode_args_str)
@@ -111,7 +111,7 @@ def test_calls_text_with_limits_when_getting_mode_args_and_help_str(
 ):
   previous_text_message = "this is the previous text message"
   mode = "my_test_mode"
-  __setup_formatter._GeneralHelpFormatter__get_mode_args_and_help_str(
+  __setup_formatter._get_mode_args_and_help_str(
     previous_text_message,
     mode
   )
@@ -135,7 +135,7 @@ def test_returns_expected_section_message(
   __mock_get_mode_args_and_help_str,
   __setup_formatter
 ):
-  section_message = __setup_formatter._GeneralHelpFormatter__get_section_message(section)
+  section_message = __setup_formatter._get_section_message(section)
   expected_section_message = f"{__mock_get_help_separator()}\t# {section} #\n\n{expected_mode_args_and_help}"
   assert (
     section_message == expected_section_message
@@ -181,7 +181,7 @@ def __mock_params():
 @pytest.fixture
 def __mock_get_mode_args_str():
   with patch(
-    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_mode_args_str"
+    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_mode_args_str"
   ) as mock_method:
     mock_method.side_effect = lambda mode: f"[mode-{mode}-param1]"
     yield mock_method
@@ -202,7 +202,7 @@ def __mock_modes():
 @pytest.fixture
 def __mock_get_mode_args_and_help_str():
   with patch(
-    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_mode_args_and_help_str"
+    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_mode_args_and_help_str"
   ) as mock_method:
     mock_method.side_effect = lambda mode_start, _: mode_start
     yield mock_method
@@ -210,7 +210,7 @@ def __mock_get_mode_args_and_help_str():
 @pytest.fixture
 def __mock_get_section_message():
   with patch(
-    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_section_message"
+    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_section_message"
   ) as mock_method:
     mock_method.side_effect = lambda section: f"section message for section {section}"
     yield mock_method
@@ -218,7 +218,7 @@ def __mock_get_section_message():
 @pytest.fixture
 def __mock_get_epilog():
   with patch(
-    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_epilog"
+    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_epilog"
   ) as mock_method:
     mock_method.return_value = "This is the epilog message"
     yield mock_method
@@ -226,7 +226,7 @@ def __mock_get_epilog():
 @pytest.fixture
 def __mock_get_note():
   with patch(
-    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._GeneralHelpFormatter__get_note"
+    "xmipp3_installer.application.cli.parsers.general_help_formatter.GeneralHelpFormatter._get_note"
   ) as mock_method:
     mock_method.return_value = "This is the note message"
     yield mock_method

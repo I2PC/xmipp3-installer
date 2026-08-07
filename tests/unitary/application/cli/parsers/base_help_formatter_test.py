@@ -93,7 +93,7 @@ def test_gets_expected_help_separator(
   expected_separator,
   __setup_parser
 ):
-  with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_N_DASH", n_dashes):
+  with patch.object(BaseHelpFormatter, "_SECTION_N_DASH", n_dashes):
     help_separator = __setup_parser._get_help_separator()
     assert (
       help_separator == expected_separator
@@ -156,7 +156,7 @@ def test_calls_formatting_tabs_when_getting_expected_text_len(
   __setup_parser
 ):
   test_text = "my text"
-  __setup_parser._BaseHelpFormatter__get_text_length(test_text)
+  __setup_parser._get_text_length(test_text)
   __mock_get_formatting_tabs.assert_called_once_with(test_text)
 
 @pytest.mark.parametrize(
@@ -176,7 +176,7 @@ def test_gets_expected_text_len(
   expected_length,
   __setup_parser
 ):
-  text_length = __setup_parser._BaseHelpFormatter__get_text_length(text)
+  text_length = __setup_parser._get_text_length(text)
   assert (
     text_length == expected_length
   ), get_assertion_message("text length", expected_length, text_length)
@@ -199,7 +199,7 @@ def test_gets_expected_line_size(
   expected_size,
   __setup_parser
 ):
-  line_size = __setup_parser._BaseHelpFormatter__get_line_size()
+  line_size = __setup_parser._get_line_size()
   assert (
     line_size == expected_size
   ), get_assertion_message("line size", expected_size, line_size)
@@ -227,7 +227,7 @@ def test_calls_format_text_in_lines_when_getting_multi_line_help_text(
   expected_formatted_text,
   __setup_parser
 ):
-  formatted_text = __setup_parser._BaseHelpFormatter__multi_line_help_text(
+  formatted_text = __setup_parser._multi_line_help_text(
     text,
     size_limit,
     left_fill
@@ -253,7 +253,7 @@ def test_returns_expected_spaces(
   __setup_parser
 ):
   __mock_get_line_size.return_value = 80
-  remaining_space, fill_in_space = __setup_parser._BaseHelpFormatter__get_spaces(text)
+  remaining_space, fill_in_space = __setup_parser._get_spaces(text)
   assert (
     (remaining_space, fill_in_space) == (expected_remaining_space, expected_fill_in_space)
   ), get_assertion_message(
@@ -306,7 +306,7 @@ def __mock_tab_size(request):
 @pytest.fixture
 def __mock_get_spaces(request):
   with patch(
-    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_spaces"
+    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._get_spaces"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', (1, ''))
     yield mock_method
@@ -314,7 +314,7 @@ def __mock_get_spaces(request):
 @pytest.fixture
 def __mock_multi_line_help_text(request):
   with patch(
-    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__multi_line_help_text"
+    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._multi_line_help_text"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', '')
     yield mock_method
@@ -322,7 +322,7 @@ def __mock_multi_line_help_text(request):
 @pytest.fixture
 def __mock_get_start_section_fill_in_space():
   with patch(
-    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_start_section_fill_in_space"
+    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._get_start_section_fill_in_space"
   ) as mock_method:
     mock_method.return_value = ""
     yield mock_method
@@ -342,17 +342,17 @@ def __mock_get_terminal_column_size(request):
 
 @pytest.fixture
 def __mock_line_size_lower_limit(request):
-  with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__LINE_SIZE_LOWER_LIMIT", getattr(request, 'param', 5)):
+  with patch.object(BaseHelpFormatter, "_LINE_SIZE_LOWER_LIMIT", getattr(request, 'param', 5)):
     yield
 
 @pytest.fixture
 def __mock_section_help_start(request):
-  with patch.object(BaseHelpFormatter, "_BaseHelpFormatter__SECTION_HELP_START", getattr(request, 'param', 5)):
+  with patch.object(BaseHelpFormatter, "_SECTION_HELP_START", getattr(request, 'param', 5)):
     yield
 
 @pytest.fixture
 def __mock_get_line_size():
   with patch(
-    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._BaseHelpFormatter__get_line_size"
+    "xmipp3_installer.application.cli.parsers.base_help_formatter.BaseHelpFormatter._get_line_size"
   ) as mock_method:
     yield mock_method

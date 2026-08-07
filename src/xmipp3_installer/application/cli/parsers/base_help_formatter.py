@@ -12,10 +12,10 @@ from xmipp3_installer.application.cli.parsers import format
 class BaseHelpFormatter(argparse.HelpFormatter):
   """### Extendes the available functions of the generic help formatter."""
 
-  __SECTION_N_DASH = 68
-  __SECTION_SPACE_MODE_HELP = 2
-  __SECTION_HELP_START = format.TAB_SIZE + __SECTION_N_DASH + __SECTION_SPACE_MODE_HELP
-  __LINE_SIZE_LOWER_LIMIT = int(__SECTION_HELP_START * 1.5)
+  _SECTION_N_DASH = 68
+  _SECTION_SPACE_MODE_HELP = 2
+  _SECTION_HELP_START = format.TAB_SIZE + _SECTION_N_DASH + _SECTION_SPACE_MODE_HELP
+  _LINE_SIZE_LOWER_LIMIT = int(_SECTION_HELP_START * 1.5)
 
   @staticmethod
   def _get_mode_help(mode: str, general: bool=True) -> str:
@@ -32,7 +32,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     for group in modes.MODES:
       if mode in modes.MODES[group]:
         messages = modes.MODES[group][mode]
-        return BaseHelpFormatter.__get_message_from_list(messages, general)
+        return BaseHelpFormatter._get_message_from_list(messages, general)
     return ''
 
   @staticmethod
@@ -56,7 +56,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     ### Returns:
     - (str): Line that separates sections inside the help message.
     """
-    dashes = ['-' for _ in range(self.__SECTION_N_DASH)]
+    dashes = ['-' for _ in range(self._SECTION_N_DASH)]
     return format.get_formatting_tabs(f"\t{''.join(dashes)}\n")
 
   def _text_with_limits(self, previous_text: str, text: str) -> str:
@@ -70,11 +70,11 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     ### Returns:
     - (str): Formatted text.
     """
-    remaining_space, fill_in_space = self.__get_spaces(previous_text)
-    formatted_help = BaseHelpFormatter.__multi_line_help_text(
+    remaining_space, fill_in_space = self._get_spaces(previous_text)
+    formatted_help = BaseHelpFormatter._multi_line_help_text(
       text,
       remaining_space,
-      self.__get_start_section_fill_in_space('')
+      self._get_start_section_fill_in_space('')
     )
     return f"{previous_text}{fill_in_space}{formatted_help}\n"
 
@@ -92,7 +92,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return any(isinstance(arg, list) for arg in arg_list)
 
   @staticmethod
-  def __get_text_length(text: str) -> int:
+  def _get_text_length(text: str) -> int:
     """
     ### Returns the length of a text that might contain tabs.
 
@@ -105,7 +105,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return len(format.get_formatting_tabs(text))
 
   @staticmethod
-  def __get_message_from_list(messages: list[str], only_general: bool) -> str:
+  def _get_message_from_list(messages: list[str], only_general: bool) -> str:
     """
     ### Return the appropiate message given a list of them and a condition.
 
@@ -118,7 +118,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     """
     return messages[0] if only_general else '\n'.join(messages)
 
-  def __get_line_size(self) -> int:
+  def _get_line_size(self) -> int:
     """
     ### Returns the maximum size for a line.
 
@@ -126,10 +126,10 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     - (int): Maximum line size.
     """
     size = shutil.get_terminal_size().columns
-    return max(size, self.__LINE_SIZE_LOWER_LIMIT)
+    return max(size, self._LINE_SIZE_LOWER_LIMIT)
 
   @staticmethod
-  def __multi_line_help_text(text: str, size_limit: int, left_fill: str) -> str:
+  def _multi_line_help_text(text: str, size_limit: int, left_fill: str) -> str:
     """
     ### This function returns the given text, formatted in several lines so that it does not exceed the given character limit.
 
@@ -144,11 +144,11 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return (
       text
       if len(text) <= size_limit else
-      BaseHelpFormatter.__format_text_in_lines(text, size_limit, left_fill)
+      BaseHelpFormatter._format_text_in_lines(text, size_limit, left_fill)
     )
 
   @staticmethod
-  def __fit_words_in_line(words: list[str], size_limit: int) -> tuple[str, list[str]]:
+  def _fit_words_in_line(words: list[str], size_limit: int) -> tuple[str, list[str]]:
     """
     ### Returns a tuple containig a line with the words from the given list that could fit given the size limit, and the list with the remaining words.
 
@@ -163,14 +163,14 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     line = ''
     remaining_words = words
     for word in words:
-      if BaseHelpFormatter.__word_fits_in_line(line, word, size_limit):
-        line, remaining_words = BaseHelpFormatter.__add_word_to_line(line, word, remaining_words)
+      if BaseHelpFormatter._word_fits_in_line(line, word, size_limit):
+        line, remaining_words = BaseHelpFormatter._add_word_to_line(line, word, remaining_words)
       else:
         break
     return line, remaining_words
 
   @staticmethod
-  def __word_fits_in_line(line: str, word: str, size_limit: int) -> bool:
+  def _word_fits_in_line(line: str, word: str, size_limit: int) -> bool:
     """
     ### Checks if a word can fit in the current line without exceeding the size limit.
 
@@ -187,7 +187,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return len(word) <= size_limit
 
   @staticmethod
-  def __add_word_to_line(line: str, word: str, remaining_words: list[str]) -> tuple[str, list[str]]:
+  def _add_word_to_line(line: str, word: str, remaining_words: list[str]) -> tuple[str, list[str]]:
     """
     ### Adds a word to the current line and updates the list of remaining words.
 
@@ -207,7 +207,7 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     return line, remaining_words[1:]
 
   @staticmethod
-  def __format_text_in_lines(text: str, size_limit: int, left_fill: str) -> str:
+  def _format_text_in_lines(text: str, size_limit: int, left_fill: str) -> str:
     """
     ### Returns the text formatted into size-limited lines.
 
@@ -223,24 +223,24 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     lines = []
     while words:
       iteration_size_limit = max(size_limit, len(words[0]))
-      line, words = BaseHelpFormatter.__fit_words_in_line(words, iteration_size_limit)
+      line, words = BaseHelpFormatter._fit_words_in_line(words, iteration_size_limit)
       line = left_fill + line if lines else line
       lines.append(line)
     return '\n'.join(lines)
 
-  def __get_spaces(self, start_section_text: str) -> tuple[int, str]:
-    if self.__is_start_section_text_exceeding_size_limit(start_section_text):
+  def _get_spaces(self, start_section_text: str) -> tuple[int, str]:
+    if self._is_start_section_text_exceeding_size_limit(start_section_text):
       # If text exceeds size limit, it means that section space for modes and params 
       # is too low and should be set to a higher number, but for now we need to print anyways, 
       # so we reduce space from the one reserved for mode help and add minimum fill-in space
-      remaining_space = self.__get_line_size() - BaseHelpFormatter.__get_text_length(start_section_text)
+      remaining_space = self._get_line_size() - BaseHelpFormatter._get_text_length(start_section_text)
       fill_in_space = ' '
     else:
-      remaining_space = self.__get_line_size() - self.__SECTION_HELP_START
-      fill_in_space = self.__get_start_section_fill_in_space(start_section_text)
+      remaining_space = self._get_line_size() - self._SECTION_HELP_START
+      fill_in_space = self._get_start_section_fill_in_space(start_section_text)
     return remaining_space, fill_in_space
 
-  def __get_start_section_fill_in_space(self, text: str) -> str:
+  def _get_start_section_fill_in_space(self, text: str) -> str:
     """
     ### Returns the fill-in space for the start section.
 
@@ -251,10 +251,10 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     - (str): The required number of spaces to generate the start section's fill-in.
     """
     return ''.join(
-      [' ' for _ in range(self.__SECTION_HELP_START - BaseHelpFormatter.__get_text_length(text))]
+      [' ' for _ in range(self._SECTION_HELP_START - BaseHelpFormatter._get_text_length(text))]
     )
   
-  def __is_start_section_text_exceeding_size_limit(self, start_section_text: str) -> bool:
+  def _is_start_section_text_exceeding_size_limit(self, start_section_text: str) -> bool:
     """
     ### Indicates if the given start section text exceedes allowed size limit.
 
@@ -264,4 +264,4 @@ class BaseHelpFormatter(argparse.HelpFormatter):
     #### Returns:
     - (bool): True if the text exceedes allowed size limit.
     """
-    return BaseHelpFormatter.__get_text_length(start_section_text) >= self.__SECTION_HELP_START
+    return BaseHelpFormatter._get_text_length(start_section_text) >= self._SECTION_HELP_START

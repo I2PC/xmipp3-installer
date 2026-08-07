@@ -43,9 +43,9 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     )
     return [
       *dblite_files,
-      *ModeCleanBinExecutor.__get_compilation_files(),
-      *ModeCleanBinExecutor.__get_empty_dirs(),
-      *ModeCleanBinExecutor.__get_pycache_dirs(),
+      *ModeCleanBinExecutor._get_compilation_files(),
+      *ModeCleanBinExecutor._get_empty_dirs(),
+      *ModeCleanBinExecutor._get_pycache_dirs(),
       paths.BUILD_PATH,
       paths.BINARIES_PATH
     ]
@@ -63,7 +63,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     ])
   
   @staticmethod
-  def __get_compilation_files():
+  def _get_compilation_files():
     """
     ### Returns a list of all the compilation-related files.
 
@@ -78,7 +78,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     return compilation_files
 
   @staticmethod
-  def __get_empty_dirs() -> list[str]:
+  def _get_empty_dirs() -> list[str]:
     """
     ### Returns a list with all the empty directories inside the programs folder.
 
@@ -94,7 +94,7 @@ class ModeCleanBinExecutor(mode_clean_executor.ModeCleanExecutor):
     return empty_dirs
 
   @staticmethod
-  def __get_pycache_dirs() -> list[str]:
+  def _get_pycache_dirs() -> list[str]:
     """
     ### Returns a list of all the __pycache__ directories.
 

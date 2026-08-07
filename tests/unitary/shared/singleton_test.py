@@ -6,7 +6,7 @@ from ... import get_assertion_message
 
 def test_returns_new_instance():
   singleton1 = Singleton()
-  with patch.object(Singleton, "_Singleton__instance", None):
+  with patch.object(Singleton, "_instance", None):
     singleton2 = Singleton()
   assert (
     singleton1 is not singleton2

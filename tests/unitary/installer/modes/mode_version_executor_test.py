@@ -162,7 +162,7 @@ def test_returns_expected_text_when_adding_padding_spaces(
   __mock_left_text_len
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  result_text = version_executor._ModeVersionExecutor__add_padding_spaces(input_text)
+  result_text = version_executor._add_padding_spaces(input_text)
   assert (
     result_text == expected_result
   ), get_assertion_message("padded text", expected_result, result_text)
@@ -171,7 +171,7 @@ def test_calls_add_padding_spaces_when_getting_dates_section(
   __mock_add_padding_spaces
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_dates_section()
+  version_executor._get_dates_section()
   __mock_add_padding_spaces.assert_has_calls([
     call('Release date: '),
     call('Compilation date: ')
@@ -194,7 +194,7 @@ def test_returns_expected_dates_section(
     variables.LAST_MODIFIED_KEY: __DATE if config_file_exists else ''
   }
   version_executor = ModeVersionExecutor(context)
-  dates_section = version_executor._ModeVersionExecutor__get_dates_section()
+  dates_section = version_executor._get_dates_section()
   expected_dates_section = f"{__FIXED_DATES_SECTION_PART}{expected_compilation_date}"
   assert (
     dates_section == expected_dates_section
@@ -206,7 +206,7 @@ def test_calls_add_padding_spaces_when_getting_source_info(
 ):
   __mock_exists.return_value = False
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+  version_executor._get_source_info(__SOURCE)
   __mock_add_padding_spaces.assert_called_once_with(__SOURCE_LEFT_TEXT)
 
 def test_calls_get_current_commit_when_getting_source_info(
@@ -218,7 +218,7 @@ def test_calls_get_current_commit_when_getting_source_info(
   __mock_is_tag
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+  version_executor._get_source_info(__SOURCE)
   __mock_get_current_commit.assert_called_once_with(dir=__SOURCE_PATH)
 
 def test_calls_get_commit_branch_when_getting_source_info(
@@ -230,7 +230,7 @@ def test_calls_get_commit_branch_when_getting_source_info(
   __mock_is_tag
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+  version_executor._get_source_info(__SOURCE)
   __mock_get_commit_branch.assert_called_once_with(
     __mock_get_current_commit.return_value,
     dir=__SOURCE_PATH
@@ -245,7 +245,7 @@ def test_calls_get_current_branch_when_getting_source_info(
   __mock_is_tag
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+  version_executor._get_source_info(__SOURCE)
   __mock_get_current_branch.assert_called_once_with(dir=__SOURCE_PATH)
 
 def test_calls_is_tag_when_getting_source_info(
@@ -257,7 +257,7 @@ def test_calls_is_tag_when_getting_source_info(
   __mock_is_tag
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+  version_executor._get_source_info(__SOURCE)
   __mock_is_tag.assert_called_once_with(dir=__SOURCE_PATH)
 
 @pytest.mark.parametrize(
@@ -280,7 +280,7 @@ def test_returns_expected_source_info(
   __mock_is_tag
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  source_info = version_executor._ModeVersionExecutor__get_source_info(__SOURCE)
+  source_info = version_executor._get_source_info(__SOURCE)
   expected_info = f"{__SOURCE_LEFT_TEXT}{expected_info_right}"
   assert (
     source_info == expected_info
@@ -288,14 +288,14 @@ def test_returns_expected_source_info(
 
 def test_calls_get_source_info_when_getting_sources_info(__mock_get_source_info):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_sources_info()
+  version_executor._get_sources_info()
   __mock_get_source_info.assert_has_calls([
     call(source) for source in constants.XMIPP_SOURCES
   ])
 
 def test_returns_expected_sources_info(__mock_get_source_info):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  sources_info = version_executor._ModeVersionExecutor__get_sources_info()
+  sources_info = version_executor._get_sources_info()
   expected_sources_info = '\n'.join([
     __mock_get_source_info(source) for source in constants.XMIPP_SOURCES
   ])
@@ -524,14 +524,14 @@ def test_calls_os_path_exists_when_getting_library_versions_section(
 ):
   __mock_exists.return_value = False
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_library_versions_section()
+  version_executor._get_library_versions_section()
   __mock_exists.assert_called_with(paths.LIBRARY_VERSIONS_FILE)
 
 def test_calls_get_library_versions_from_cmake_file_when_getting_library_versions_section(
   __mock_get_library_versions_from_cmake_file
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_library_versions_section()
+  version_executor._get_library_versions_section()
   __mock_get_library_versions_from_cmake_file.assert_called_with(paths.LIBRARY_VERSIONS_FILE)
 
 def test_calls_add_padding_spaces_when_getting_library_versions_section(
@@ -539,7 +539,7 @@ def test_calls_add_padding_spaces_when_getting_library_versions_section(
   __mock_add_padding_spaces
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  version_executor._ModeVersionExecutor__get_library_versions_section()
+  version_executor._get_library_versions_section()
   __mock_add_padding_spaces.assert_has_calls([
     call(f"{library}: ") for library in __LIBRARIES_WITH_VERSIONS
   ])
@@ -558,7 +558,7 @@ def test_returns_expected_library_versions_section(
   __mock_add_padding_spaces
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
-  versions_section = version_executor._ModeVersionExecutor__get_library_versions_section()
+  versions_section = version_executor._get_library_versions_section()
   assert (
     versions_section == expected_versions_section
   ), get_assertion_message("library versions section", expected_versions_section, versions_section)
@@ -642,7 +642,7 @@ def __dummy_test_mode_executor():
 def __mock_left_text_len():
   with patch.object(
     ModeVersionExecutor,
-    "_ModeVersionExecutor__LEFT_TEXT_LEN",
+    "_LEFT_TEXT_LEN",
     new=__LEFT_TEXT_LEN
   ):
     yield
@@ -650,7 +650,7 @@ def __mock_left_text_len():
 @pytest.fixture
 def __mock_add_padding_spaces():
   with patch(
-    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__add_padding_spaces"
+    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._add_padding_spaces"
   ) as mock_method:
     mock_method.side_effect = lambda text: text
     yield mock_method
@@ -690,7 +690,7 @@ def __mock_is_tag(request):
 @pytest.fixture
 def __mock_get_source_info():
   with patch(
-    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_source_info"
+    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._get_source_info"
   ) as mock_method:
     mock_method.side_effect = lambda source: f"{source} info"
     yield mock_method
@@ -698,7 +698,7 @@ def __mock_get_source_info():
 @pytest.fixture
 def __mock_get_sources_info():
   with patch(
-    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_sources_info"
+    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._get_sources_info"
   ) as mock_method:
     mock_method.return_value = "Source1: info\nSource2: info\n"
     yield mock_method
@@ -713,7 +713,7 @@ def __mock_logger():
 @pytest.fixture
 def __mock_get_dates_section():
   with patch(
-    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_dates_section"
+    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._get_dates_section"
   ) as mock_method:
     mock_method.return_value = "Release date: dd/mm/yyyy\nLast compilation: -"
     yield mock_method
@@ -737,7 +737,7 @@ def __mock_get_library_versions_from_cmake_file(request):
 @pytest.fixture
 def __mock_get_library_versions_section():
   with patch(
-    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._ModeVersionExecutor__get_library_versions_section"
+    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._get_library_versions_section"
   ) as mock_method:
     mock_method.return_value = __LIBRARIES_WITH_VERSION_SECTION
     yield mock_method
