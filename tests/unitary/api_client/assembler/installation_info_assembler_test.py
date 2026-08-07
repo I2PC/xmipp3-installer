@@ -60,7 +60,7 @@ __LIBRARY_VERSIONS = {
 }
 __ENVIROMENT_INFO = [
   ["flag1", "flag2"],
-  "devel",
+  "main",
   True,
   False,
   __LOG_TAIL
@@ -398,7 +398,7 @@ def test_returns_expected_os_release_name(
     pytest.param(None, __XMIPP_VERSION_NAME),
     pytest.param("", __XMIPP_VERSION_NAME),
     pytest.param(constants.MAIN_BRANCHNAME, constants.MAIN_BRANCHNAME),
-    pytest.param("devel", "devel")
+    pytest.param("feature-branch", "feature-branch")
   ]
 )
 def test_returns_expected_installation_branch_name(

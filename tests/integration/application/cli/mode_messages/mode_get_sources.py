@@ -12,7 +12,7 @@ HELP_MESSAGE = {
     --keep-output                                                         If set, output sent through the terminal won't substitute lines, looking more like the log.
 
 Example 1: ./xmipp getSources
-Example 2: ./xmipp getSources -b devel
+Example 2: ./xmipp getSources -b main
 """,
   terminal_sizes.SHORT_TERMINAL_WIDTH: f"""Clones Xmipp\'s source repositories xmippCore & xmippViz.
 
@@ -26,6 +26,6 @@ Example 2: ./xmipp getSources -b devel
                                                                           looking more like the log.
 
 Example 1: ./xmipp getSources
-Example 2: ./xmipp getSources -b devel
+Example 2: ./xmipp getSources -b main
 """
 }

@@ -7,7 +7,7 @@ from xmipp3_installer.application.logger import predefined_messages
 from .... import get_assertion_message
 
 __SECTION_MESSAGE_LEN = 10
-__BRANCH_NAME = "devel"
+__BRANCH_NAME = "main"
 __TAG_VERSION = "tag-version"
 
 def test_calls_logger_green_when_getting_done_message(__mock_logger_green):

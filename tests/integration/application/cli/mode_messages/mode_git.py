@@ -10,7 +10,7 @@ Usage: xmipp git [options]
     command                                                               Git command to run on all source repositories.
 
 Example 1: ./xmipp git pull
-Example 2: ./xmipp git checkout devel
+Example 2: ./xmipp git checkout main
 """,
   terminal_sizes.SHORT_TERMINAL_WIDTH: """Runs the given git action for all source repositories.
 
@@ -22,6 +22,6 @@ Usage: xmipp git [options]
                                                                           repositories.
 
 Example 1: ./xmipp git pull
-Example 2: ./xmipp git checkout devel
+Example 2: ./xmipp git checkout main
 """
 }
