@@ -1,7 +1,7 @@
 """### Provides a global logger."""
 
+import logging
 import shutil
-from contextlib import ExitStack
 from io import BufferedReader
 
 from xmipp3_installer.application.logger import errors
@@ -29,8 +29,7 @@ class Logger(Singleton):
     #### Params:
     - outputToConsole (bool): Print messages to console.
     """
-    self._stack = ExitStack()
-    self._log_file = None
+    self._file_logger = None
     self._last_printed_elem = None
     self._allow_substitution = True
   
@@ -101,15 +100,20 @@ class Logger(Singleton):
     #### Params:
     - log_path (str): Path to the log file.
     """
-    if self._log_file is None:
-      self._log_file = self._stack.enter_context(
-        open(log_path, 'w', encoding="utf-8") # noqa: SIM115 TODO change logger with loggin lib
-      )
+    if self._file_logger is None:
+      handler = logging.FileHandler(log_path, mode='w', encoding="utf-8")
+      handler.setFormatter(logging.Formatter("%(message)s"))
+      file_logger = logging.Logger(f"{__name__}.file")
+      file_logger.setLevel(logging.INFO)
+      file_logger.addHandler(handler)
+      self._file_logger = file_logger
 
   def close(self):
     """### Closes the log file."""
-    self._stack.close()
-    self._log_file = None
+    if self._file_logger is not None:
+      for handler in self._file_logger.handlers:
+        handler.close()
+    self._file_logger = None
 
   def set_allow_substitution(self, allow_substitution: bool):
     """
@@ -129,9 +133,9 @@ class Logger(Singleton):
     - show_in_terminal (bool): Optional. If True, text is also printed through terminal.
     - substitute (bool): Optional. If True, previous line is substituted with new text. Only used when show_in_terminal = True.
     """
-    if self._log_file is not None:
-      print(self._remove_non_printable(text), file=self._log_file, flush=True)
-      
+    if self._file_logger is not None:
+      self._file_logger.info(self._remove_non_printable(text))
+
     if show_in_terminal:
       text = self._substitute_lines(text) if self._allow_substitution and substitute else text
       print(text, flush=True)
