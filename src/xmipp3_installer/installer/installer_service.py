@@ -54,29 +54,31 @@ class InstallationManager:
     - (int): Return code.
     """
     try:
-      ret_code, output = self.mode_executor.run()
-    except KeyboardInterrupt:
-      logger.log_error("", ret_code=errors.INTERRUPTED_ERROR, add_portal_link=False)
-      return errors.INTERRUPTED_ERROR
-    if ret_code:
-      logger.log_error(output, ret_code=ret_code, add_portal_link=ret_code != errors.INTERRUPTED_ERROR)
-    if self._should_send_installation_info():
-      logger("Sending anonymous installation info...", show_in_terminal=False)
-      api_client.send_installation_attempt(
-        installation_info_assembler.get_installation_info(
-          self.context[constants.VERSIONS_CONTEXT_KEY],
-          ret_code=ret_code
+      try:
+        ret_code, output = self.mode_executor.run()
+      except KeyboardInterrupt:
+        logger.log_error("", ret_code=errors.INTERRUPTED_ERROR, add_portal_link=False)
+        return errors.INTERRUPTED_ERROR
+      if ret_code:
+        logger.log_error(output, ret_code=ret_code, add_portal_link=ret_code != errors.INTERRUPTED_ERROR)
+      if self._should_send_installation_info():
+        logger("Sending anonymous installation info...", show_in_terminal=False)
+        api_client.send_installation_attempt(
+          installation_info_assembler.get_installation_info(
+            self.context[constants.VERSIONS_CONTEXT_KEY],
+            ret_code=ret_code
+          )
         )
-      )
-    if not ret_code and self.mode_executor.prints_banner_on_exit:
-      logger(predefined_messages.get_success_message(
-        cast(
-          versions_manager.VersionsManager,
-          self.context[constants.VERSIONS_CONTEXT_KEY]
-        ).xmipp_version_name
-      ))
-    logger.close()
-    return ret_code
+      if not ret_code and self.mode_executor.prints_banner_on_exit:
+        logger(predefined_messages.get_success_message(
+          cast(
+            versions_manager.VersionsManager,
+            self.context[constants.VERSIONS_CONTEXT_KEY]
+          ).xmipp_version_name
+        ))
+      return ret_code
+    finally:
+      logger.close()
 
   def _should_send_installation_info(self) -> bool:
     """
