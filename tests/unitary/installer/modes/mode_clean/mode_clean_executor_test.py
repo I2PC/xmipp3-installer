@@ -51,7 +51,7 @@ def test_calls_get_confirmation_message_when_getting_confirmation(
   __mock_get_confirmation_message,
   __mock_get_confirmation_keyword
 ):
-  __dummy_test_mode_clean_executor({})._ModeCleanExecutor__get_confirmation()
+  __dummy_test_mode_clean_executor({})._get_confirmation()
   __mock_get_confirmation_message.assert_called_once_with()
 
 @pytest.mark.parametrize(
@@ -65,7 +65,7 @@ def test_calls_logger_when_getting_confirmation(
   __mock_get_confirmation_keyword,
   __mock_logger
 ):
-  __dummy_test_mode_clean_executor({})._ModeCleanExecutor__get_confirmation()
+  __dummy_test_mode_clean_executor({})._get_confirmation()
   __mock_logger.assert_called_once_with(__mock_get_confirmation_message())
 
 @pytest.mark.parametrize(
@@ -79,7 +79,7 @@ def test_calls_get_user_confirmation_when_getting_confirmation(
   __mock_get_confirmation_keyword,
   __mock_get_user_confirmation
 ):
-  __dummy_test_mode_clean_executor({})._ModeCleanExecutor__get_confirmation()
+  __dummy_test_mode_clean_executor({})._get_confirmation()
   __mock_get_user_confirmation.assert_called_once_with(__mock_get_confirmation_keyword)
 
 @pytest.mark.parametrize(
@@ -93,7 +93,7 @@ def test_returns_expected_confirmation(
   __mock_get_confirmation_keyword,
   __mock_get_user_confirmation
 ):
-  confirmation = __dummy_test_mode_clean_executor({})._ModeCleanExecutor__get_confirmation()
+  confirmation = __dummy_test_mode_clean_executor({})._get_confirmation()
   assert (
     confirmation == __mock_get_user_confirmation()
   ), get_assertion_message("user confirmation", __mock_get_user_confirmation(), confirmation)
@@ -211,7 +211,7 @@ def __mock_get_confirmation_keyword(__dummy_test_mode_clean_executor, request):
 @pytest.fixture
 def __mock_get_confirmation(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_clean.mode_clean_executor.ModeCleanExecutor._ModeCleanExecutor__get_confirmation"
+    "xmipp3_installer.installer.modes.mode_clean.mode_clean_executor.ModeCleanExecutor._get_confirmation"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', True)
     yield mock_method

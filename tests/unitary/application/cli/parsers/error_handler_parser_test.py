@@ -10,43 +10,6 @@ from ..... import get_assertion_message
 __FORMATTED_HELP = "This is the formatted help"
 
 @pytest.mark.parametrize(
-  "args,expected_is_generic",
-  [
-    pytest.param([], False),
-    pytest.param(["arg1"], False),
-    pytest.param(["arg1", "arg2"], True),
-    pytest.param(["arg1", "arg2", "arg3"], True)
-  ],
-)
-def test_checks_is_mode_generic(
-  args,
-  expected_is_generic,
-  __setup_parser
-):
-  is_generic = __setup_parser._ErrorHandlerArgumentParser__is_mode_generic(args)
-  assert (
-    is_generic == expected_is_generic
-  ), get_assertion_message("result", expected_is_generic, is_generic)
-
-@pytest.mark.parametrize(
-  "args,expected_mode",
-  [
-    pytest.param(["arg1"], "arg1"),
-    pytest.param(["arg1", "arg2"], "arg2"),
-    pytest.param(["arg1", "arg2", "arg3"], "arg3")
-  ],
-)
-def test_gets_expected_mode(
-  args,
-  expected_mode,
-  __setup_parser
-):
-  mode = __setup_parser._ErrorHandlerArgumentParser__get_mode(args)
-  assert (
-    mode == expected_mode
-  ), get_assertion_message("mode", expected_mode, mode)
-
-@pytest.mark.parametrize(
   "__mock_formatter_prog,expected_args",
   [
     pytest.param("", [""]),
@@ -60,7 +23,7 @@ def test_gets_expected_args(
   __mock_formatter_prog,
   expected_args
 ):
-  args = __mock_formatter_prog._ErrorHandlerArgumentParser__get_args()
+  args = __mock_formatter_prog._get_args()
   assert (
     args == expected_args
   ), get_assertion_message("mode", expected_args, args)
@@ -115,7 +78,7 @@ def __mock_formatter_prog(request, __setup_parser):
 @pytest.fixture
 def __mock_get_args(request):
   with patch(
-    "xmipp3_installer.application.cli.parsers.error_handler_parser.ErrorHandlerArgumentParser._ErrorHandlerArgumentParser__get_args"
+    "xmipp3_installer.application.cli.parsers.error_handler_parser.ErrorHandlerArgumentParser._get_args"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', ["arg1"])
     yield mock_method

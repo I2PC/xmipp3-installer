@@ -100,17 +100,17 @@ def test_calls_logger_when_generating_compressed_file(
   __mock_tarfile_open
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__generate_compressed_file()
+  executor._generate_compressed_file()
   __mock_logger.assert_called_once_with(f"Creating the {__TAR_NAME} model.")
 
 def test_calls_tarfile_open_when_generating_compressed_file(__mock_tarfile_open):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__generate_compressed_file()
+  executor._generate_compressed_file()
   __mock_tarfile_open.assert_called_once_with(__TAR_PATH, "w:gz")
 
 def test_calls_tarfile_add_when_generating_compressed_file(__mock_tarfile_open):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__generate_compressed_file()
+  executor._generate_compressed_file()
   __mock_tarfile_open.return_value.__enter__.return_value.add.assert_called_once_with(
     __MODEL_PATH,
     arcname=__MODEL_NAME
@@ -131,7 +131,7 @@ def test_returns_expected_outputs_when_generating_compressed_file(
   expected_return_values
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  return_values = executor._ModeAddModelExecutor__generate_compressed_file()
+  return_values = executor._generate_compressed_file()
   assert (
     return_values == expected_return_values
   ), get_assertion_message(__RETURN_VALUES_STR, expected_return_values, return_values)
@@ -141,7 +141,7 @@ def test_calls_logger_when_getting_confirmation(
   __mock_logger_yellow
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__get_confirmation()
+  executor._get_confirmation()
   expected_message = '\n'.join([
     __mock_logger_yellow("Warning: Uploading, please BE CAREFUL! This can be dangerous."),
     f"You are going to be connected to {__LOGIN} to write in folder {paths.SCIPION_SOFTWARE_EM}.",
@@ -153,14 +153,14 @@ def test_calls_get_user_confirmation_when_getting_confirmation(
   __mock_get_user_confirmation
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__get_confirmation()
+  executor._get_confirmation()
   __mock_get_user_confirmation.assert_called_once_with("YES")
 
 def test_returns_get_user_confirmation_output_when_getting_confirmation(
   __mock_get_user_confirmation
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  return_value = executor._ModeAddModelExecutor__get_confirmation()
+  return_value = executor._get_confirmation()
   assert (
     return_value == __mock_get_user_confirmation.return_value
   ), get_assertion_message(
@@ -181,7 +181,7 @@ def test_calls_run_shell_command_when_uploading_model(
   __mock_os_path_abspath
 ):
   executor = ModeAddModelExecutor({**__CONTEXT, 'update': update})
-  executor._ModeAddModelExecutor__upload_model()
+  executor._upload_model()
   args = f"{__LOGIN}, {__mock_os_path_abspath(__TAR_PATH)}, {paths.SCIPION_SOFTWARE_EM}, {expected_update_str}"
   __mock_run_shell_command.assert_called_once_with(
     f"{__mock_os_path_join('.', os.path.basename(executor.sync_program_path))} upload {args}",
@@ -193,7 +193,7 @@ def test_calls_os_remove_when_upload_is_ok_when_uploading_model(
   __mock_os_remove
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__upload_model()
+  executor._upload_model()
   __mock_os_remove.assert_called_once_with(__TAR_PATH)
 
 def test_does_not_call_os_remove_when_upload_is_not_ok(
@@ -202,7 +202,7 @@ def test_does_not_call_os_remove_when_upload_is_not_ok(
 ):
   __mock_run_shell_command.return_value = (1, "")
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__upload_model()
+  executor._upload_model()
   __mock_os_remove.assert_not_called()
 
 @pytest.mark.parametrize(
@@ -221,7 +221,7 @@ def test_calls_logger_deppending_on_upload_status(
   __mock_run_shell_command
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  executor._ModeAddModelExecutor__upload_model()
+  executor._upload_model()
   calls = [call(f"Trying to upload the model using {__LOGIN} as login")]
   if __mock_run_shell_command.return_value[0] == 0:
     calls.append(call(__mock_logger_green(f"{__MODEL_NAME} model successfully uploaded! Removing the local .tgz")))
@@ -245,7 +245,7 @@ def test_returns_expected_upload_output_status(
   expected_results
 ):
   executor = ModeAddModelExecutor(__CONTEXT.copy())
-  return_values = executor._ModeAddModelExecutor__upload_model()
+  return_values = executor._upload_model()
   assert (
     return_values == expected_results
   ), get_assertion_message(__RETURN_VALUES_STR, expected_results, return_values)
@@ -386,7 +386,7 @@ def __mock_run_shell_command(request):
 @pytest.fixture
 def __mock_generate_compressed_file(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__generate_compressed_file"
+    "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._generate_compressed_file"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
@@ -394,7 +394,7 @@ def __mock_generate_compressed_file(request):
 @pytest.fixture
 def __mock_get_confirmation(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__get_confirmation"
+    "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._get_confirmation"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', True)
     yield mock_method
@@ -402,7 +402,7 @@ def __mock_get_confirmation(request):
 @pytest.fixture
 def __mock_upload_model(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._ModeAddModelExecutor__upload_model"
+    "xmipp3_installer.installer.modes.mode_sync.mode_add_model_executor.ModeAddModelExecutor._upload_model"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method

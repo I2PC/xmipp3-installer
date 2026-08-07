@@ -52,7 +52,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     """
     logger(predefined_messages.get_section_message("Getting Xmipp sources"))
     for source in constants.XMIPP_SOURCES:
-      ret_code, output = self.__get_source(source)
+      ret_code, output = self._get_source(source)
       if ret_code:
         return errors.SOURCE_CLONE_ERROR, output
     return 0, ""
@@ -62,7 +62,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     super()._set_executor_config()
     self.prints_with_substitution = True
   
-  def __select_ref_to_clone(self, source_name: str, source_repo: str) -> str | None:
+  def _select_ref_to_clone(self, source_name: str, source_repo: str) -> str | None:
     """
     ### Selects the reference to clone from the source.
 
@@ -79,7 +79,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
       tag_name = self.source_versions.get(source_name)
     return git_handler.get_clonable_branch(source_repo, self.target_branch, tag_name)
   
-  def __get_source(self, source_name: str) -> tuple[int, str]:
+  def _get_source(self, source_name: str) -> tuple[int, str]:
     """
     ### Gets the given source.
     
@@ -95,7 +95,7 @@ class ModeGetSourcesExecutor(mode_executor.ModeExecutor):
     logger(f"Cloning {source_name}...", substitute=self.substitute)
     logger(predefined_messages.get_working_message(), substitute=self.substitute)
 
-    clone_branch = self.__select_ref_to_clone(source_name, repo_url)
+    clone_branch = self._select_ref_to_clone(source_name, repo_url)
     if self.target_branch and not clone_branch:
       warning_message = "\n".join([
         logger.yellow(f"Warning: branch \'{self.target_branch}\' does not exist for repository with url {repo_url}"),

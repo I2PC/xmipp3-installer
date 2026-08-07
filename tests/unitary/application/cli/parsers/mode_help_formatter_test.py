@@ -44,7 +44,7 @@ def test_get_mode(
   expected_mode,
   __mock_formatter_prog
 ):
-  mode = __mock_formatter_prog._ModeHelpFormatter__get_mode()
+  mode = __mock_formatter_prog._get_mode()
   assert (
     mode == expected_mode
   ), get_assertion_message("mode", expected_mode, mode)
@@ -62,7 +62,7 @@ def test_checks_if_args_contain_optional(
   expected_contains,
   __setup_formatter
 ):
-  contains = __setup_formatter._ModeHelpFormatter__args_contain_optional(args)
+  contains = __setup_formatter._args_contain_optional(args)
   assert (
     contains == expected_contains
   ), get_assertion_message("optional arg check result", expected_contains, contains)
@@ -91,7 +91,7 @@ def test_returns_expected_args_info(
   __mock_text_with_limits,
   __setup_formatter
 ):
-  args_info = __setup_formatter._ModeHelpFormatter__get_args_info(args)
+  args_info = __setup_formatter._get_args_info(args)
   assert (
     args_info == expected_arg_info
   ), get_assertion_message("args info", expected_arg_info, args_info)
@@ -104,7 +104,7 @@ def test_calls_text_with_limits_with_expected_params_when_getting_arg_info(
   __setup_formatter
 ):
   params = ["param1"]
-  __setup_formatter._ModeHelpFormatter__get_args_info(params)
+  __setup_formatter._get_args_info(params)
   __mock_text_with_limits.assert_called_once_with(
     f"\t{params[0]}-1, {params[0]}-2",
     __PARAMS[params[0]][__INNER_KEY]
@@ -118,7 +118,7 @@ def test_calls_get_param_names_with_expected_params_when_getting_arg_info(
   __setup_formatter
 ):
   params = ["param1"]
-  __setup_formatter._ModeHelpFormatter__get_args_info(params)
+  __setup_formatter._get_args_info(params)
   __mock_get_param_names.assert_called_once_with(params[0])
 
 @pytest.mark.parametrize(
@@ -138,7 +138,7 @@ def test_returns_expected_examples_message(
   __mock_mode_examples,
   __setup_formatter
 ):
-  examples_message = __setup_formatter._ModeHelpFormatter__get_examples_message(mode)
+  examples_message = __setup_formatter._get_examples_message(mode)
   assert (
     examples_message == expected_message
   ), get_assertion_message("examples message", expected_message, examples_message)
@@ -154,7 +154,7 @@ def test_calls_get_param_first_name_when_getting_args_message(
   __setup_formatter
 ):
   mode = "mode1"
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_get_param_first_name.assert_called_once_with(
     __MODE_ARGS[mode][0]
   )
@@ -170,7 +170,7 @@ def test_does_not_call_get_param_first_name_when_getting_args_message(
   __setup_formatter
 ):
   mode = "mode2"
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_get_param_first_name.assert_not_called()
 
 def test_calls_args_contain_optional_when_getting_args_message(
@@ -184,7 +184,7 @@ def test_calls_args_contain_optional_when_getting_args_message(
   __setup_formatter
 ):
   mode = "mode1"
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_args_contain_optional.assert_called_once_with(
     [__mock_get_param_first_name(__MODE_ARGS[mode][0])]
   )
@@ -202,7 +202,7 @@ def test_calls_logger_yellow_if_there_are_optional_params_when_getting_args_mess
 ):
   mode = "mode1"
   __mock_args_contain_optional.return_value = True
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_logger_yellow.assert_called_once_with(__NOTE_MESSAGE)
 
 def test_calls_logger_yellow_if_there_are_mutually_exclusive_groups_when_getting_args_message(
@@ -218,7 +218,7 @@ def test_calls_logger_yellow_if_there_are_mutually_exclusive_groups_when_getting
 ):
   mode = "mode3"
   __mock_has_mutually_exclusive_groups.return_value = True
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_logger_yellow.assert_called_once_with(__MUTUALLY_EXCLUSIVE_GROUPS_MESSAGE)
 
 @pytest.mark.parametrize(
@@ -248,7 +248,7 @@ def test_does_not_call_logger_yellow_if_no_optional_params_and_no_exclusive_grou
   __mock_get_args_info,
   __setup_formatter
 ):
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_logger_yellow.assert_not_called()
 
 def test_does_not_call_get_help_separator_when_getting_args_message(
@@ -262,7 +262,7 @@ def test_does_not_call_get_help_separator_when_getting_args_message(
   __setup_formatter
 ):
   mode = "mode2"
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_get_help_separator.assert_not_called()
 
 @pytest.mark.parametrize(
@@ -280,7 +280,7 @@ def test_calls_get_args_info_when_getting_args_message(
   __mock_get_args_info,
   __setup_formatter
 ):
-  __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  __setup_formatter._get_args_message(mode)
   __mock_get_args_info.assert_called_once_with(__MODE_ARGS[mode])
 
 @pytest.mark.parametrize(
@@ -311,7 +311,7 @@ def test_returns_expected_args_message(
     __mock_logger_yellow,
     __mock_get_args_info
   )
-  help_message = __setup_formatter._ModeHelpFormatter__get_args_message(mode)
+  help_message = __setup_formatter._get_args_message(mode)
   assert (
     help_message == expected_help_message
   ), get_assertion_message("args help message", expected_help_message, help_message)
@@ -327,7 +327,7 @@ def test_returns_expected_args_message(
   ]
 )
 def test_returns_expected_flattened_args(args, expected_result, __setup_formatter):
-  result = __setup_formatter._ModeHelpFormatter__flatten_args(args)
+  result = __setup_formatter._flatten_args(args)
   assert (
     result == expected_result
   ), get_assertion_message("flattened args", expected_result, result)
@@ -474,7 +474,7 @@ def __mock_get_param_first_name():
 @pytest.fixture
 def __mock_args_contain_optional(request):
   with patch(
-    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__args_contain_optional"
+    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._args_contain_optional"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', False)
     yield mock_method
@@ -506,7 +506,7 @@ def __mock_get_args_info():
       ]
     return f'info-{"*".join(formatted_args)}-info'
   with patch(
-    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_args_info"
+    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._get_args_info"
   ) as mock_method:
     mock_method.side_effect = side_effect
     yield mock_method
@@ -514,7 +514,7 @@ def __mock_get_args_info():
 @pytest.fixture
 def __mock_get_mode():
   with patch(
-    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_mode"
+    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._get_mode"
   ) as mock_method:
     mock_method.return_value = "mode1"
     yield mock_method
@@ -530,7 +530,7 @@ def __mock_get_mode_help():
 @pytest.fixture
 def __mock_get_args_message():
   with patch(
-    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_args_message"
+    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._get_args_message"
   ) as mock_method:
     mock_method.side_effect = lambda mode: f"args_message-{mode}-args_message"
     yield mock_method
@@ -538,7 +538,7 @@ def __mock_get_args_message():
 @pytest.fixture
 def __mock_get_examples_message():
   with patch(
-    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._ModeHelpFormatter__get_examples_message"
+    "xmipp3_installer.application.cli.parsers.mode_help_formatter.ModeHelpFormatter._get_examples_message"
   ) as mock_method:
     mock_method.side_effect = lambda mode: f"examples_message-{mode}-examples_message"
     yield mock_method

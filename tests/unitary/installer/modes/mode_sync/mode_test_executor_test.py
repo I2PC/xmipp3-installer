@@ -135,7 +135,7 @@ def test_calls_run_shell_command_if_file_exists_when_loading_bashrc(
   __mock_run_shell_command,
   __mock_bashrc_file_path
 ):
-  ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  ModeTestExecutor(__CONTEXT.copy())._load_bashrc()
   __mock_run_shell_command.assert_called_once_with(
     f"bash -c 'source {__mock_bashrc_file_path} && env'"
   )
@@ -146,7 +146,7 @@ def test_does_not_call_run_shell_command_if_file_does_not_exist_when_loading_bas
   __mock_bashrc_file_path
 ):
   __mock_os_path_exists.return_value = False
-  ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  ModeTestExecutor(__CONTEXT.copy())._load_bashrc()
   __mock_run_shell_command.assert_not_called()
 
 def test_loads_env_variables_when_loading_bashrc(
@@ -154,7 +154,7 @@ def test_loads_env_variables_when_loading_bashrc(
   __mock_run_shell_command
 ):
   __mock_run_shell_command.return_value = (0, __ENV_VARIABLES_STR)
-  ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  ModeTestExecutor(__CONTEXT.copy())._load_bashrc()
   for variable, value in __ENV_VARIABLES.items():
     assert (
       variable in os.environ
@@ -178,7 +178,7 @@ def test_returns_expected_result_when_loading_bashrc(
   __mock_run_shell_command,
   expected_result
 ):
-  result = ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__load_bashrc()
+  result = ModeTestExecutor(__CONTEXT.copy())._load_bashrc()
   assert (
     result == expected_result
   ), get_assertion_message("load bashrc output", expected_result, result)
@@ -190,7 +190,7 @@ def test_calls_logger_if_param_is_tests_when_running_tests(
   executor = ModeTestExecutor(
     {**__CONTEXT, params.PARAM_TEST_NAMES: __MULTIPLE_TESTS}
   )
-  executor._ModeTestExecutor__run_tests()
+  executor._run_tests()
   __mock_logger.assert_called_once_with(
     f" Tests to run: {', '.join(__MULTIPLE_TESTS)}"
   )
@@ -219,7 +219,7 @@ def test_does_not_call_logger_if_param_is_not_tests_when_running_tests(
       params.PARAM_ALL_PROGRAMS: all_programs
     }
   )
-  executor._ModeTestExecutor__run_tests()
+  executor._run_tests()
   __mock_logger.assert_not_called()
 
 @pytest.mark.parametrize(
@@ -261,7 +261,7 @@ def test_calls_run_shell_command_when_running_tests(
   }
   executor = ModeTestExecutor(new_context)
   executor.param_value = param
-  executor._ModeTestExecutor__run_tests()
+  executor._run_tests()
   __mock_run_shell_command.assert_called_once_with(
     f"{executor.python_home} {__mock_python_test_script_internal_path} {param} {expected_no_cuda}",
     cwd=__mock_python_test_script_path,
@@ -276,7 +276,7 @@ def test_calls_run_shell_command_when_running_tests(
 def test_returns_expected_results_when_running_tests(
   __mock_run_shell_command
 ):
-  output = ModeTestExecutor(__CONTEXT.copy())._ModeTestExecutor__run_tests()
+  output = ModeTestExecutor(__CONTEXT.copy())._run_tests()
   assert (
     output == __mock_run_shell_command()
   ), get_assertion_message("function output", __mock_run_shell_command(), output)
@@ -458,7 +458,7 @@ def __mock_os_path_isdir(request):
 @pytest.fixture
 def __mock_run_tests(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._ModeTestExecutor__run_tests"
+    "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._run_tests"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method
@@ -534,7 +534,7 @@ def __mock_sync_operation(request):
 @pytest.fixture
 def __mock_load_bashrc(request):
   with patch(
-    "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._ModeTestExecutor__load_bashrc"
+    "xmipp3_installer.installer.modes.mode_sync.mode_test_executor.ModeTestExecutor._load_bashrc"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', (0, ""))
     yield mock_method

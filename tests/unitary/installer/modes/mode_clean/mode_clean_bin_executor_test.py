@@ -66,7 +66,7 @@ def test_returns_expected_confirmation_message(__mock_logger_yellow):
 def test_calls_path_rglob_when_getting_pycache_dirs(
   __mock_path
 ):
-  ModeCleanBinExecutor._ModeCleanBinExecutor__get_pycache_dirs()
+  ModeCleanBinExecutor._get_pycache_dirs()
   __mock_path().rglob.assert_called_once_with("__pycache__")
   
 @pytest.mark.parametrize(
@@ -79,7 +79,7 @@ def test_calls_path_rglob_when_getting_pycache_dirs(
 )
 def test_returns_expected_pycache_dirs(__mock_path, expected_dirs):
   __mock_path().rglob.return_value = expected_dirs
-  pycache_dirs = ModeCleanBinExecutor._ModeCleanBinExecutor__get_pycache_dirs()
+  pycache_dirs = ModeCleanBinExecutor._get_pycache_dirs()
   assert (
     pycache_dirs == expected_dirs
   ), get_assertion_message("pycache dirs", expected_dirs, pycache_dirs)
@@ -88,7 +88,7 @@ def test_calls_os_walk_when_getting_empty_dirs(
   __mock_os_walk,
   __mock_os_path_join
 ):
-  ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs()
+  ModeCleanBinExecutor._get_empty_dirs()
   __mock_os_walk.assert_called_once_with(
     __mock_os_path_join(
       paths.SOURCES_PATH,
@@ -112,13 +112,13 @@ def test_returns_expected_empty_dirs(__mock_os_walk):
     f"{paths.INSTALL_PATH}/folder2/subfolder1",
     f"{paths.INSTALL_PATH}/folder2/subfolder2/empty"
   ]
-  empty_dirs = ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs()
+  empty_dirs = ModeCleanBinExecutor._get_empty_dirs()
   assert (
     empty_dirs == expected_empty_dirs
   ), get_assertion_message("empty directories", expected_empty_dirs, empty_dirs)
 
 def test_calls_os_walk_when_getting_compilation_files(__mock_os_walk):
-  ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
+  ModeCleanBinExecutor._get_compilation_files()
   __mock_os_walk.assert_called_once_with(paths.SOURCES_PATH)
 
 def test_calls_glob_when_getting_compilation_files(
@@ -128,7 +128,7 @@ def test_calls_glob_when_getting_compilation_files(
   __mock_os_walk.side_effect = None
   files = ["file1", "file2", "file3"]
   __mock_os_walk.return_value = [("root", [], files)]
-  ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
+  ModeCleanBinExecutor._get_compilation_files()
   expected_calls = [
     call(files, '*.so'),
     call(files, '*.os'),
@@ -152,7 +152,7 @@ def test_returns_expected_compilation_files(
     __mock_os_path_join(paths.SOURCES_PATH, file_name)
     for file_name in ["file1", "file2", "file3", "file4"]
   ]
-  compilation_files = ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files()
+  compilation_files = ModeCleanBinExecutor._get_compilation_files()
   assert (
     compilation_files == expected_compilation_files
   ), get_assertion_message("compilation files", expected_compilation_files, compilation_files)
@@ -289,7 +289,7 @@ def __mock_glob():
 @pytest.fixture
 def __mock_get_compilation_files():
   with patch(
-    "xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_compilation_files"
+    "xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._get_compilation_files"
   ) as mock_method:
     mock_method.return_value = ["compilation_file1", "compilation_file2"]
     yield mock_method
@@ -297,7 +297,7 @@ def __mock_get_compilation_files():
 @pytest.fixture
 def __mock_get_empty_dirs():
   with patch(
-    "xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_empty_dirs"
+    "xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._get_empty_dirs"
   ) as mock_method:
     mock_method.return_value = ["empty_dir"]
     yield mock_method
@@ -305,7 +305,7 @@ def __mock_get_empty_dirs():
 @pytest.fixture
 def __mock_get_pycache_dirs():
   with patch(
-    "xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._ModeCleanBinExecutor__get_pycache_dirs"
+    "xmipp3_installer.installer.modes.mode_clean.mode_clean_bin_executor.ModeCleanBinExecutor._get_pycache_dirs"
   ) as mock_method:
     mock_method.return_value = ["__pycache__"]
     yield mock_method
