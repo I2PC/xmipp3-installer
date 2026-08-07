@@ -1,4 +1,3 @@
-from io import BytesIO
 from unittest.mock import patch, Mock, call, MagicMock
 
 import pytest
@@ -19,7 +18,6 @@ __ERROR_CODES = {
   4: ['', 'Error 4 second']
 }
 __PORTAL_LINK_MESSAGE = f"\nMore details on the Xmipp documentation portal: {urls.DOCUMENTATION_URL}"
-__DUMMY_FILE = BytesIO()
 __STREAM_READLINE = [b'line1\n', b'line2\n', b'']
 __STREAM_READLINE_DECODED = ['line1', 'line2']
 
@@ -82,52 +80,56 @@ def test_formats_bold(
     formatted_text == expected_formatted_text
   ), get_assertion_message("bold format", expected_formatted_text, formatted_text)
 
-def test_calls_open_when_starting_log_file_and_log_file_is_not_open(
-  __mock_open
-):
-  log_file_name = "test_log_file"
+def test_creates_log_file_when_starting_log_file_and_log_file_is_not_open(tmp_path):
+  log_path = tmp_path / "test.log"
   logger = Logger()
-  logger.start_log_file(log_file_name)
-  __mock_open.assert_called_once_with(log_file_name, 'w', encoding="utf-8")
-
-def test_does_not_call_open_when_starting_log_file_and_log_file_is_open(
-  __mock_open
-):
-  log_file_name = "test_log_file"
-  logger = Logger()
-  logger._log_file = "Something not None"
-  logger.start_log_file(log_file_name)
-  __mock_open.assert_not_called()
-
-def test_starts_log_file(__mock_open):
-  logger = Logger()
-  logger.start_log_file("test_log_file")
-  log_file = logger._log_file
+  logger.start_log_file(str(log_path))
   assert (
-    log_file is __DUMMY_FILE
-  ), get_assertion_message("log file", __DUMMY_FILE, log_file)
+    log_path.exists()
+  ), get_assertion_message("log file existance", True, log_path.exists())
+  logger.close()
 
-def test_sets_file_to_none_after_closing():
-  mock_file = MagicMock()
+def test_does_not_replace_file_logger_when_starting_log_file_and_log_file_is_open(tmp_path):
   logger = Logger()
-  logger._log_file = mock_file
+  logger.start_log_file(str(tmp_path / "first.log"))
+  first_file_logger = logger._file_logger
+  logger.start_log_file(str(tmp_path / "second.log"))
+  assert (
+    logger._file_logger is first_file_logger
+  ), get_assertion_message("file logger", first_file_logger, logger._file_logger)
+  logger.close()
+
+def test_starts_log_file(tmp_path):
+  logger = Logger()
+  logger.start_log_file(str(tmp_path / "test.log"))
+  assert (
+    logger._file_logger is not None
+  ), get_assertion_message("file logger", "a logging.Logger instance", None)
+  logger.close()
+
+def test_sets_file_logger_to_none_after_closing(tmp_path):
+  logger = Logger()
+  logger.start_log_file(str(tmp_path / "test.log"))
   logger.close()
   assert (
-    logger._log_file is None
-  ), get_assertion_message("logger file", None, logger._log_file)
+    logger._file_logger is None
+  ), get_assertion_message("file logger", None, logger._file_logger)
 
-def test_calls_close_on_exit_stack():
-  mock_stack = MagicMock()
+def test_calls_close_on_file_handler(tmp_path):
   logger = Logger()
-  logger._stack = mock_stack
+  logger.start_log_file(str(tmp_path / "test.log"))
+  mock_handler = MagicMock()
+  logger._file_logger.handlers = [mock_handler]
   logger.close()
-  mock_stack.close.assert_called_once_with()
+  mock_handler.close.assert_called_once_with()
 
-def test_does_not_call_close_on_open_log_file_if_it_has_not_been_set():
-  mock_file = MagicMock()
+def test_does_not_fail_on_close_if_log_file_has_not_been_set():
   logger = Logger()
+  logger._file_logger = None
   logger.close()
-  mock_file.close.assert_not_called()
+  assert (
+    logger._file_logger is None
+  ), get_assertion_message("file logger", None, logger._file_logger)
 
 @pytest.mark.parametrize(
   "expected_allow_substitution",
@@ -336,19 +338,16 @@ def test_does_not_call_print_when_calling_logger_without_file(
   logger(__SAMPLE_TEXT, show_in_terminal=show_in_terminal, substitute=substitute)
   __mock_print.assert_not_called()
 
-def test_calls_print_when_calling_logger_with_file(
-  __mock_open,
-  __mock_remove_non_printable,
-  __mock_print
-):
+def test_writes_expected_text_to_log_file(tmp_path):
+  log_path = tmp_path / "test.log"
   logger = Logger()
-  logger.start_log_file("dummy_file_name")
-  logger(__SAMPLE_TEXT, show_in_terminal=False)
-  __mock_print.assert_called_once_with(
-    __mock_remove_non_printable(__SAMPLE_TEXT),
-    file=__mock_open(),
-    flush=True
-  )
+  logger.start_log_file(str(log_path))
+  logger(logger.red(__SAMPLE_TEXT), show_in_terminal=False)
+  logger.close()
+  file_content = log_path.read_text()
+  assert (
+    file_content == f"{__SAMPLE_TEXT}\n"
+  ), get_assertion_message("log file content", f"{__SAMPLE_TEXT}\n", file_content)
 
 def test_calls_stream_readline_when_logging_in_streaming(__mock_stream):
   __mock_stream.readline.side_effect = []
@@ -432,12 +431,6 @@ def __mock_bold():
   new_format_code = "bold_start-"
   with patch.object(Logger, "_BOLD", new_format_code):
     yield new_format_code
-
-@pytest.fixture
-def __mock_open():
-  with patch("xmipp3_installer.application.logger.logger.open") as mock_method:
-    mock_method.return_value = __DUMMY_FILE
-    yield mock_method
 
 @pytest.fixture
 def __mock_call():
