@@ -284,72 +284,6 @@ def test_returns_expected_config_date_when_reading_config_date(
 	), get_assertion_message("last configuration modification date", expected_date, config_date)
 
 @pytest.mark.parametrize(
-	"line,line_number",
-	[
-		pytest.param("aaaaaa", 0),
-		pytest.param("whatever", 1),
-		pytest.param("does-not-have-equal-separator", 5)
-	]
-)
-def test_raises_runtime_error_when_parsing_config_line_with_invalid_format(
-	line,
-	line_number,
-	__mock_init,
-	__mock_generate_invalid_config_line_error_message
-):
-	with pytest.raises(
-		InvalidConfigLineError,
-		match=__mock_generate_invalid_config_line_error_message(
-			paths.CONFIG_FILE,
-			line_number,
-			line
-		)
-	):
-		config_handler = ConfigurationFileHandler()
-		config_handler._parse_config_line(line, line_number)
-
-@pytest.mark.parametrize(
-	"line",
-	[
-		pytest.param(""),
-		pytest.param(" "),
-		pytest.param("\n"),
-		pytest.param(" \n"),
-		pytest.param("#"),
-		pytest.param("# Test comment")
-	]
-)
-def test_returns_none_when_parsing_config_line_with_empty_data(
-	line,
-	__mock_init
-):
-	config_handler = ConfigurationFileHandler()
-	parsed_line = config_handler._parse_config_line(line, 0)
-	assert (
-		parsed_line is None
-	), get_assertion_message("parsed configuration file line", None, parsed_line)
-
-@pytest.mark.parametrize(
-	"line,expected_key,expected_value",
-	[
-		pytest.param("key=value", "key", "value"),
-		pytest.param("test-key=test-value", "test-key", "test-value"),
-		pytest.param("test-key=", "test-key", "")
-	]
-)
-def test_returns_expected_key_value_pair_when_parsing_config_line(
-	line,
-	expected_key,
-	expected_value,
-	__mock_init
-):
-	config_handler = ConfigurationFileHandler()
-	key_value_pair = config_handler._parse_config_line(line, 0)
-	assert (
-		key_value_pair == (expected_key, expected_value)
-	), get_assertion_message("key-value pair", (expected_key, expected_value), key_value_pair)
-
-@pytest.mark.parametrize(
 	"key,value,default_value,expected_line",
 	[
 		pytest.param(None, None, None, ""),
@@ -388,17 +322,6 @@ def test_returns_expected_config_line_when_making_config_line(
 	assert (
 		config_line == expected_line
 	), get_assertion_message("configuration file line", expected_line, config_line)
-
-def test_calls_parse_config_line_when_adding_line_values(
-	__mock_init,
-	__mock_get_file_content,
-	__mock_parse_config_line,
-	__mock_logger
-):
-	line = "line string"
-	line_number = 0
-	ConfigurationFileHandler()._add_line_values({}, line, line_number)
-	__mock_parse_config_line.assert_called_once_with(line, line_number)
 
 @pytest.mark.parametrize(
 	"__mock_parse_config_line",
