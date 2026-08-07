@@ -26,6 +26,6 @@ Done
 
 ******************************************************************
 *                                                                *
-*     Xmipp devel has been successfully installed, enjoy it!     *
+*     Xmipp main has been successfully installed, enjoy it!      *
 *                                                                *
 ******************************************************************"""

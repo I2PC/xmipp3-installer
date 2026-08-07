@@ -29,7 +29,7 @@ __SOURCE = constants.XMIPP_CORE
 __COMMIT = "5c3a24f"
 __SOURCE_LEFT_TEXT = f"{__SOURCE} branch: "
 __TAG_NAME = "tags/v3.24.06-Oceanus"
-__BRANCH_NAME = "devel"
+__BRANCH_NAME = "main"
 __RELEASE_NAME = "Ubuntu 24.04"
 __LIBRARIES_WITH_VERSIONS = {
   "CMake": '3.31.3',

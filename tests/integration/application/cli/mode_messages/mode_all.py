@@ -15,8 +15,8 @@ HELP_MESSAGE = {
 Example 1: ./xmipp
 Example 2: ./xmipp all
 Example 3: ./xmipp -j 20
-Example 4: ./xmipp -b devel
-Example 5: ./xmipp all -j 20 -b devel
+Example 4: ./xmipp -b main
+Example 5: ./xmipp all -j 20 -b main
 """,
   terminal_sizes.SHORT_TERMINAL_WIDTH: f"""Default param. Runs config, configBuild, and compileAndInstall.
 
@@ -34,7 +34,7 @@ Example 5: ./xmipp all -j 20 -b devel
 Example 1: ./xmipp
 Example 2: ./xmipp all
 Example 3: ./xmipp -j 20
-Example 4: ./xmipp -b devel
-Example 5: ./xmipp all -j 20 -b devel
+Example 4: ./xmipp -b main
+Example 5: ./xmipp all -j 20 -b main
 """
 }

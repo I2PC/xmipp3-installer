@@ -126,9 +126,9 @@ MODE_EXAMPLES = {
     './xmipp',
     f'./xmipp {MODE_ALL}',
     f'./xmipp {PARAMS[PARAM_JOBS][SHORT_VERSION]} 20',
-    f'./xmipp {PARAMS[PARAM_BRANCH][SHORT_VERSION]} devel',
+    f'./xmipp {PARAMS[PARAM_BRANCH][SHORT_VERSION]} main',
     (f'./xmipp {MODE_ALL} {PARAMS[PARAM_JOBS][SHORT_VERSION]} 20 '
-    f'{PARAMS[PARAM_BRANCH][SHORT_VERSION]} devel')
+    f'{PARAMS[PARAM_BRANCH][SHORT_VERSION]} main')
   ],
   MODE_CONFIG_BUILD: [],
   MODE_CONFIG: [
@@ -140,7 +140,7 @@ MODE_EXAMPLES = {
   ],
   MODE_GET_SOURCES: [
     f'./xmipp {MODE_GET_SOURCES}',
-    f'./xmipp {MODE_GET_SOURCES} {PARAMS[PARAM_BRANCH][SHORT_VERSION]} devel'
+    f'./xmipp {MODE_GET_SOURCES} {PARAMS[PARAM_BRANCH][SHORT_VERSION]} main'
   ],
   MODE_CLEAN_BIN: [],
   MODE_CLEAN_ALL: [],
@@ -152,7 +152,7 @@ MODE_EXAMPLES = {
   ],
   MODE_GIT: [
     f'./xmipp {MODE_GIT} pull',
-    f'./xmipp {MODE_GIT} checkout devel'
+    f'./xmipp {MODE_GIT} checkout main'
   ],
   MODE_ADD_MODEL: [
     f'./xmipp {MODE_ADD_MODEL} myuser@127.0.0.1 /home/myuser/mymodel'
