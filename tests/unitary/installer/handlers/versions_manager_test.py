@@ -132,8 +132,9 @@ def test_raises_value_error_when_validating_invalid_fields(
   __mock_init,
   expected_error_message
 ):
+  version_manager = VersionsManager(__FILE_PATH)
   with pytest.raises(ValueError) as error:
-    VersionsManager(__FILE_PATH)._validate_fields()
+    version_manager._validate_fields()
   error_message = str(error.value)
   assert (
     error_message == expected_error_message
