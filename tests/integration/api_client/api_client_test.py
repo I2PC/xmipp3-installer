@@ -74,7 +74,7 @@ def __mock_mac_address(fake_process):
     shlex.split("ip addr"),
     stdout=shell_command_outputs.IP_ADDR
   )
-  yield fake_process
+  return fake_process
 
 @pytest.fixture
 def __mock_file():
@@ -101,7 +101,7 @@ def __mock_get_cpu_flags(fake_process):
     'lscpu | grep \"Flags:\"',
     stdout=shell_command_outputs.LSCPU_FLAGS
   )
-  yield fake_process
+  return fake_process
 
 @pytest.fixture
 def __mock_get_current_branch(fake_process):
@@ -110,7 +110,7 @@ def __mock_get_current_branch(fake_process):
     stdout=constants.MAIN_BRANCHNAME,
     occurrences=2
   )
-  yield fake_process
+  return fake_process
 
 @pytest.fixture
 def __mock_is_branch_up_to_date(fake_process):
@@ -124,7 +124,7 @@ def __mock_is_branch_up_to_date(fake_process):
     shlex.split(f"git rev-parse origin/{constants.MAIN_BRANCHNAME}"),
     stdout=commit
   )
-  yield fake_process
+  return fake_process
 
 @pytest.fixture
 def __mock_log_tail(fake_process):
@@ -133,7 +133,7 @@ def __mock_log_tail(fake_process):
     shlex.split(f"tail -n {constants.TAIL_LOG_NCHARS} {paths.LOG_FILE}"),
     stdout=log_file_content
   )
-  yield fake_process
+  return fake_process
 
 @pytest.fixture
 def __mock_run_parallel_jobs():

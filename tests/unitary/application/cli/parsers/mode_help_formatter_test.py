@@ -415,7 +415,7 @@ def __get_args_help_message(
 
 @pytest.fixture
 def __setup_formatter():
-  yield ModeHelpFormatter("test")
+  return ModeHelpFormatter("test")
 
 @pytest.fixture
 def __mock_formatter_prog(request, __setup_formatter):
