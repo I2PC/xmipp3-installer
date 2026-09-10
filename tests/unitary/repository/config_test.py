@@ -992,4 +992,4 @@ def __mock_environment(request, monkeypatch):
 	key, value = getattr(request, 'param', ("DUMMY_VAR", "DUMMY_VAL"))
 	monkeypatch.setenv(key, value)
 	actual_key = next(k for k in os.environ if k.upper() == key.upper())
-	yield [actual_key, value]
+	return [actual_key, value]

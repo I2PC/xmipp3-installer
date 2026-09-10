@@ -181,4 +181,4 @@ def __mock_is_tag(fake_process):
     shlex.split("git describe --tags --exact-match HEAD"),
     stdout="v3.8.0-TestName"
   )
-  yield fake_process
+  return fake_process

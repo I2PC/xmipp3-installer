@@ -609,7 +609,7 @@ def __mock_exist_config_and_library_versions(__mock_exists, request):
     return False
   _ = __side_effect("non-existent") # To cover system case
   __mock_exists.side_effect = __side_effect
-  yield __mock_exists
+  return __mock_exists
 
 @pytest.fixture
 def __mock_exists_sources(request, __mock_exists):
@@ -622,7 +622,7 @@ def __mock_exists_sources(request, __mock_exists):
     return False
   _ = __side_effect("non-existent") # To cover system case
   __mock_exists.side_effect = __side_effect
-  yield __mock_exists
+  return __mock_exists
 
 @pytest.fixture
 def __mock_exists(request):
