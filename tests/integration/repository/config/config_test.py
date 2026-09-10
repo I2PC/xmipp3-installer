@@ -175,4 +175,4 @@ def __mock_datetime_strftime():
 def __mock_environment(request, monkeypatch):
 	stored_name = getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[0].replace(variables.ENVIRONMENT_VARIABLES_PREFIX, "")
 	monkeypatch.setenv(getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[0], getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[1])
-	yield stored_name, getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[1]
+	return stored_name, getattr(request, 'param', ("DUMMY_VAR", "DUMMT_VAL"))[1]
