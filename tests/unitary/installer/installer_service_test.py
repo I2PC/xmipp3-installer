@@ -443,7 +443,7 @@ def __mock_mode_executors_interrupted(
 ):
   __mock_mode_executors[modes.MODE_ALL]({}).run.side_effect = KeyboardInterrupt
   __mock_mode_executors[__MODE_NAME]({}).run.side_effect = KeyboardInterrupt
-  yield __mock_mode_executors
+  return __mock_mode_executors
 
 @pytest.fixture(autouse=True)
 def __mock_versions_manager():
