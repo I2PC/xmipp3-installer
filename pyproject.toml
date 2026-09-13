@@ -47,7 +47,7 @@ test = [
   "pytest-localserver==0.10.0",
   "ruff==0.16.5",
   "cmake==4.4.3",
-  "ninja==1.13.0"
+  "ninja==1.13.2"
 ]
 
 [project.urls]
