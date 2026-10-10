@@ -6,12 +6,11 @@ import pytest
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.shared import file_operations
 
+from . import init_git_repository
 from .shell_command_outputs import mode_git
 from .. import get_assertion_message, create_versions_json_file
 
-__XMIPP_PATH = paths.get_source_path(constants.XMIPP)
 
 @pytest.mark.parametrize(
   "__setup_evironment",
@@ -68,30 +67,10 @@ def test_returns_returns_xpected_git_command_output(
 
 @pytest.fixture
 def __setup_evironment(request):
-  xmipp_exists, xmipp_core_exists, xmipp_viz_exists = getattr(request, 'param', (False, False, False))
-  try:
-    create_versions_json_file()
-    if not xmipp_exists:
-      file_operations.delete_paths([__XMIPP_PATH])
-    else:
-      os.makedirs(__XMIPP_PATH, exist_ok=True)
-    if not xmipp_core_exists:
-      file_operations.delete_paths(
-        [paths.get_source_path(constants.XMIPP_CORE)]
-      )
-    else:
-      os.makedirs(paths.get_source_path(constants.XMIPP_CORE), exist_ok=True)
-    if not xmipp_viz_exists:
-      file_operations.delete_paths(
-        [paths.get_source_path(constants.XMIPP_VIZ)]
-      )
-    else:
-      os.makedirs(paths.get_source_path(constants.XMIPP_VIZ), exist_ok=True)
-    yield xmipp_exists, xmipp_core_exists, xmipp_viz_exists
-  finally:
-    file_operations.delete_paths([
-      __XMIPP_PATH,
-      paths.get_source_path(constants.XMIPP_CORE),
-      paths.get_source_path(constants.XMIPP_VIZ),
-      paths.VERSION_INFO_FILE
-    ])
+  sources_exist = getattr(request, 'param', (False, False, False))
+  create_versions_json_file()
+  init_git_repository()
+  for exists, source in zip(sources_exist, [constants.XMIPP, *constants.XMIPP_SOURCES]):
+    if exists:
+      os.makedirs(os.path.join(paths.SOURCES_PATH, source))
+  return sources_exist

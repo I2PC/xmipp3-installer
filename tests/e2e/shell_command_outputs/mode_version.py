@@ -4,7 +4,6 @@ from xmipp3_installer.installer.handlers import git_handler
 
 from ... import JSON_XMIPP_VERSION_NUMBER, JSON_XMIPP_RELEASE_DATE
 
-__TITLE = f"Xmipp {JSON_XMIPP_VERSION_NUMBER} ({git_handler.get_current_branch()})"
 __DATE = "10-12-2024 17:26.33"
 
 __SOURCE_NOT_FOUND_MESSAGE = logger.yellow("Not found")
@@ -22,16 +21,12 @@ JPEG:                    80
 SQLite3:                 3.45.1
 Java:                    17.0.13"""
 
-__COMMON_SECTION_NO_CONFIG = f"""{logger.bold(__TITLE)}
+def __get_common_section(compilation_date: str) -> str:
+  title = f"Xmipp {JSON_XMIPP_VERSION_NUMBER} ({git_handler.get_current_branch()})"
+  return f"""{logger.bold(title)}
 
 Release date:            {JSON_XMIPP_RELEASE_DATE}
-Compilation date:        -
-System version:          {installation_info_assembler.get_os_release_name()}"""
-
-__COMMON_SECTION_WITH_CONFIG = f"""{logger.bold(__TITLE)}
-
-Release date:            {JSON_XMIPP_RELEASE_DATE}
-Compilation date:        {__DATE}
+Compilation date:        {compilation_date}
 System version:          {installation_info_assembler.get_os_release_name()}"""
 
 __SOURCES_NOT_FOUND_SECTION = f"""xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}
@@ -46,7 +41,7 @@ def get_sources_found_section():
 
 def get_full_info_before_config():
   return '\n'.join([
-    __COMMON_SECTION_NO_CONFIG,
+    __get_common_section("-"),
     __SOURCES_NOT_FOUND_SECTION,
     "",
     __WARNING_MESSAGE,
@@ -55,7 +50,7 @@ def get_full_info_before_config():
 
 def get_full_info_before_config_with_sources():
   return '\n'.join([
-    __COMMON_SECTION_NO_CONFIG,
+    __get_common_section("-"),
     get_sources_found_section(),
     "",
     __WARNING_MESSAGE,
@@ -64,7 +59,7 @@ def get_full_info_before_config_with_sources():
 
 def get_full_info_after_config_without_sources():
   return '\n'.join([
-    __COMMON_SECTION_WITH_CONFIG,
+    __get_common_section(__DATE),
     __SOURCES_NOT_FOUND_SECTION,
     "",
     __LIBRARIES_WITH_VERSIONS,
@@ -75,7 +70,7 @@ def get_full_info_after_config_without_sources():
 
 def get_full_info_after_config_with_sources():
   return '\n'.join([
-    __COMMON_SECTION_WITH_CONFIG,
+    __get_common_section(__DATE),
     get_sources_found_section(),
     "",
     __LIBRARIES_WITH_VERSIONS,

@@ -116,6 +116,15 @@ underscore, that's not what this rule is about.
   actually exercises that code path unmocked before removing anything
   (the 100% coverage gate will catch you if you get this wrong, but
   check first anyway).
+- Every e2e test runs inside its own empty temporary directory
+  (`tests/e2e/conftest.py`), so it can create whatever it needs without
+  touching the work tree and needs no cleanup. Inputs from
+  `tests/test_files/` are copied in (`copy_cmake_project`), never written
+  to in place. Two consequences: don't use paths resolved at import time
+  (`paths.XMIPP_SOURCE_PATHS` points at the repository; use
+  `get_source_paths()`), and don't build expected outputs from this
+  repository's git state (use `init_git_repository()` and compute them
+  inside the test).
 
 ## Docstrings
 

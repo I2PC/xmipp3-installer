@@ -5,8 +5,8 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.shared import file_operations
 
+from . import get_source_paths, init_git_repository
 from .shell_command_outputs import mode_version
 from .. import (
   get_assertion_message, copy_file_from_reference,
@@ -52,38 +52,21 @@ def test_returns_full_version(
     result == expected_output
   ), get_assertion_message("full version", expected_output, result)
 
-def __delete_library_versions_file():
-  file_operations.delete_paths(
-    [os.path.dirname(paths.LIBRARY_VERSIONS_FILE)]
-  )
-
 @pytest.fixture
 def __setup_evironment(request):
   config_done, sources_exist = getattr(request, 'param', (False, False))
-  try:
-    create_versions_json_file()
-    if not config_done:
-      __delete_library_versions_file()
-      file_operations.delete_paths([paths.CONFIG_FILE])
-    else:
-      copy_file_from_reference(
-        get_test_file("libraries-with-versions.txt"),
-        paths.LIBRARY_VERSIONS_FILE
-      )
-      copy_file_from_reference(
-        get_test_file(os.path.join("conf-files", "input", "default.conf")),
-        paths.CONFIG_FILE
-      )
-    if not sources_exist:
-      file_operations.delete_paths(paths.XMIPP_SOURCE_PATHS)
-    else:
-      for source in paths.XMIPP_SOURCE_PATHS:
-        os.makedirs(source, exist_ok=True)
-    yield config_done, sources_exist
-  finally:
-    __delete_library_versions_file()
-    file_operations.delete_paths([
-      paths.CONFIG_FILE,
-      *paths.XMIPP_SOURCE_PATHS,
-      paths.VERSION_INFO_FILE
-    ])
+  create_versions_json_file()
+  init_git_repository()
+  if config_done:
+    copy_file_from_reference(
+      get_test_file("libraries-with-versions.txt"),
+      paths.LIBRARY_VERSIONS_FILE
+    )
+    copy_file_from_reference(
+      get_test_file(os.path.join("conf-files", "input", "default.conf")),
+      paths.CONFIG_FILE
+    )
+  if sources_exist:
+    for source in get_source_paths():
+      os.makedirs(source)
+  return config_done, sources_exist

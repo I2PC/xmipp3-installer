@@ -8,10 +8,8 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes
-from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
 from xmipp3_installer.installer.modes.mode_sync import mode_test_executor
-from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_test
@@ -308,10 +306,4 @@ def __mock_bashrc_path(request):
 
 @pytest.fixture
 def __setup_environment():
-  try:
-    create_versions_json_file()
-    yield
-  finally:
-    file_operations.delete_paths([
-      paths.VERSION_INFO_FILE
-    ])
+  create_versions_json_file()
