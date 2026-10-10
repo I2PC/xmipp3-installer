@@ -49,6 +49,14 @@
       "constraintsFiltering": "strict"
     },
     {
+      "description": [
+        "distro is a range, not a pin, because Scipion (usually installed alongside) pins its own distro version and lags behind.",
+        "widen keeps the lower bound and only raises the upper one (>=1.8.0,<=1.9.0 -> >=1.8.0,<=1.10.0); the default replace would raise both, breaking compatibility again."
+      ],
+      "matchDepNames": ["distro"],
+      "rangeStrategy": "widen"
+    },
+    {
       "description": "Security advisories bypass the 14-day delay",
       "matchUpdateTypes": ["security"],
       "minimumReleaseAge": "0 days"

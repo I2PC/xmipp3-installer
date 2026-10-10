@@ -1,6 +1,6 @@
 [project]
 name = "xmipp3-installer"
-version = "2.1.2"
+version = "2.1.3"
 authors = [
   { name = "Martín Salinas", email = "ssalinasmartin@gmail.com" },
 ]
@@ -24,7 +24,7 @@ requires-python = ">=3.8"
 dependencies = [
   "typing-extensions==4.13.2; python_version < '3.9'",
   "typing-extensions==4.16.0; python_version >= '3.9'",
-  "distro==1.9.0" # DO NOT UPGRADE UNTIL NEW SCIPION RELEASE SUPPORTS 1.9.0 VERSION
+  "distro>=1.8.0,<=1.9.0" # Range so it can coexist with Scipion's own distro pin; Renovate only raises the upper bound
 ]
 
 [build-system]
