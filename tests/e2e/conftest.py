@@ -8,6 +8,12 @@ from xmipp3_installer.installer.handlers import shell_handler
 
 
 @pytest.fixture(autouse=True)
+def _run_in_temporary_directory(tmp_path, monkeypatch):
+	# Everything the installer generates lands in the working directory, so it must never be the repository
+	monkeypatch.chdir(tmp_path)
+
+
+@pytest.fixture(autouse=True)
 def _fix_py_script_invocation_on_windows():
 	if sys.platform != "win32":
 		yield

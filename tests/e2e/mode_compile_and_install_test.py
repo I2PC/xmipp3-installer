@@ -5,9 +5,8 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.shared import file_operations
 
-from . import get_cmake_project_path
+from . import copy_cmake_project, init_git_repository
 from .shell_command_outputs import mode_cmake
 from .shell_command_outputs.mode_cmake import mode_compile_and_install
 from .. import (
@@ -54,7 +53,6 @@ def test_returns_expected_compile_and_install_output(
   result = mode_compile_and_install.normalize_line_breaks(
     mode_compile_and_install.remove_command_error_line(
       mode_compile_and_install.normalize_error_path(
-        __setup_evironment,
         mode_compile_and_install.remove_ninja_error_code(
           mode_compile_and_install.remove_ninja_output(
             mode_cmake.normalize_cmake_executable(result)
@@ -76,20 +74,11 @@ def __setup_evironment(request):
     cmake_project_name = mode_cmake.INSTALL_ERROR_PROJECT
   else:
     cmake_project_name = mode_cmake.VALID_PROJECT
-  project_path = get_cmake_project_path(cmake_project_name)
-  try:
-    create_versions_json_file(output_path=project_path)
-    copy_file_from_reference(
-      mode_cmake.TEST_CONFIG_FILE_PATH,
-      os.path.join(project_path, paths.CONFIG_FILE)
-    ) 
-    yield project_path
-  finally:
-    file_operations.delete_paths([
-      os.path.join(project_path, file_name) for file_name in [
-        paths.VERSION_INFO_FILE,
-        paths.BUILD_PATH,
-        paths.CONFIG_FILE,
-        paths.LOG_FILE
-      ]
-    ])
+  init_git_repository()
+  project_path = copy_cmake_project(cmake_project_name)
+  create_versions_json_file(output_path=project_path)
+  copy_file_from_reference(
+    mode_cmake.TEST_CONFIG_FILE_PATH,
+    os.path.join(project_path, paths.CONFIG_FILE)
+  )
+  return project_path

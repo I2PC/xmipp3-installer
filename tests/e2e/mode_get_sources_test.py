@@ -8,10 +8,9 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
-from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
-from xmipp3_installer.shared import file_operations
 
+from . import get_source_paths
 from .shell_command_outputs import mode_get_sources
 from .. import get_assertion_message, create_versions_json_file
 
@@ -111,19 +110,11 @@ def test_returns_returns_expected_get_sources_output(
 @pytest.fixture
 def __setup_evironment(request):
   sources_exist = getattr(request, 'param', False)
-  try:
-    create_versions_json_file()
-    if not sources_exist:
-      file_operations.delete_paths(paths.XMIPP_SOURCE_PATHS)
-    else:
-      for source in paths.XMIPP_SOURCE_PATHS:
-        os.makedirs(source, exist_ok=True)
-    yield sources_exist
-  finally:
-    file_operations.delete_paths([
-      *paths.XMIPP_SOURCE_PATHS,
-      paths.VERSION_INFO_FILE
-    ])
+  create_versions_json_file()
+  if sources_exist:
+    for source in get_source_paths():
+      os.makedirs(source)
+  return sources_exist
 
 @pytest.fixture(autouse=True)
 def __mock_sys_argv(request):

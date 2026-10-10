@@ -6,9 +6,8 @@ import pytest
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.shared import file_operations
 
-from . import get_cmake_project_path
+from . import copy_cmake_project, init_git_repository
 from .shell_command_outputs import mode_cmake, mode_all
 from .shell_command_outputs.mode_cmake import mode_config_build, mode_compile_and_install
 from .. import (
@@ -47,10 +46,8 @@ def test_returns_expected_full_installation_output(
     check=False
   ).stdout
   result = __normalize_build_path(
-    __setup_evironment,
     mode_compile_and_install.normalize_line_breaks(
       mode_compile_and_install.normalize_error_path(
-        __setup_evironment,
         mode_compile_and_install.remove_command_error_line(
           mode_compile_and_install.remove_ninja_error_code(
             mode_compile_and_install.remove_ninja_output(
@@ -69,13 +66,12 @@ def test_returns_expected_full_installation_output(
     result == expected_output
   ), get_assertion_message("full installation output", expected_output, result)
 
-def __normalize_build_path(project_path: str, raw_output: str) -> str: # Build output is obtained from a static variable with a fixed path
+def __normalize_build_path(raw_output: str) -> str: # Absolute path changes per run
   new_lines = []
   for line in raw_output.splitlines(keepends=True):
     new_line = line
     if line.startswith(mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START):
-      new_path = os.path.join(project_path, "build")
-      new_line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{new_path}\n"
+      new_line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.BUILD_PATH}\n"
     new_lines.append(new_line)
   return "".join(new_lines)
 
@@ -90,25 +86,13 @@ def __setup_evironment(request):
     cmake_project_name = mode_cmake.INSTALL_ERROR_PROJECT
   else:
     cmake_project_name = mode_cmake.VALID_PROJECT
-  project_path = get_cmake_project_path(cmake_project_name)
-  try:
-    create_versions_json_file(output_path=project_path)
-    copy_file_from_reference(
-      mode_cmake.TEST_CONFIG_FILE_PATH,
-      os.path.join(project_path, paths.CONFIG_FILE)
-    )
-    src_path = os.path.join(project_path, paths.SOURCES_PATH)
-    os.makedirs(src_path, exist_ok=True)
-    for source in constants.XMIPP_SOURCES:
-      os.makedirs(os.path.join(src_path, source), exist_ok=True)
-    yield project_path
-  finally:
-    file_operations.delete_paths([
-      os.path.join(project_path, file_name) for file_name in [
-        paths.VERSION_INFO_FILE,
-        paths.BUILD_PATH,
-        paths.CONFIG_FILE,
-        paths.LOG_FILE,
-        paths.SOURCES_PATH
-      ]
-    ])
+  init_git_repository()
+  project_path = copy_cmake_project(cmake_project_name)
+  create_versions_json_file(output_path=project_path)
+  copy_file_from_reference(
+    mode_cmake.TEST_CONFIG_FILE_PATH,
+    os.path.join(project_path, paths.CONFIG_FILE)
+  )
+  for source in constants.XMIPP_SOURCES:
+    os.makedirs(os.path.join(project_path, paths.SOURCES_PATH, source))
+  return project_path
