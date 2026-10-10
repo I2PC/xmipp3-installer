@@ -8,7 +8,6 @@ from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.repository.config_vars import variables
 from xmipp3_installer.repository.config import ConfigurationFileHandler
-from xmipp3_installer.shared import file_operations
 
 from .. import (
   get_file_content, normalize_file_line_endings,
@@ -87,19 +86,10 @@ def __change_config_cmake_path():
 @pytest.fixture
 def __setup_config_evironment(request):
   exists, copy_name = getattr(request, 'param', (False, "default.conf"))
-  try:
-    create_versions_json_file()
-    if not exists:
-      file_operations.delete_paths([paths.CONFIG_FILE, copy_name])
-    else:
-      copy_file_from_reference(
-        __get_test_config_file(copy_name, True),
-        paths.CONFIG_FILE
-      )
-    yield copy_name
-  finally:
-    file_operations.delete_paths([
-      paths.CONFIG_FILE,
-      copy_name,
-      paths.VERSION_INFO_FILE
-    ])
+  create_versions_json_file()
+  if exists:
+    copy_file_from_reference(
+      __get_test_config_file(copy_name, True),
+      paths.CONFIG_FILE
+    )
+  return copy_name

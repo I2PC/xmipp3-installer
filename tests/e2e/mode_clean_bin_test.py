@@ -6,11 +6,10 @@ import pytest
 from xmipp3_installer.application.cli.arguments import modes
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.shared import file_operations
 
 from .. import get_assertion_message, create_versions_json_file
 
-__COMPILATION_FILES_DIR = paths.get_source_path("test_so")
+__COMPILATION_FILES_DIR = os.path.join(paths.SOURCES_PATH, "test_so")
 __SO_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.so")
 __OS_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.os")
 __O_FILE = os.path.join(__COMPILATION_FILES_DIR, "test.o")
@@ -92,23 +91,11 @@ def __generate_empty_dirs():
 
 @pytest.fixture
 def __setup_environment():
-  try:
-    __generate_compilation_files()
-    __generate_empty_dirs()
-    __create_file(__DBLITE_FILE)
-    os.makedirs(os.path.join(__PYCACHE_ROOT, "__pycache__"), exist_ok=True)
-    os.makedirs(paths.BUILD_PATH, exist_ok=True)
-    create_versions_json_file()
-    os.makedirs(paths.BINARIES_PATH, exist_ok=True)
-    __create_file(__BIN_FILE)
-    yield
-  finally:
-    file_operations.delete_paths([
-      __COMPILATION_FILES_DIR,
-      paths.get_source_path(constants.XMIPP),
-      __DBLITE_FILE,
-      __PYCACHE_ROOT,
-      paths.BUILD_PATH,
-      paths.VERSION_INFO_FILE,
-      paths.BINARIES_PATH
-    ])
+  __generate_compilation_files()
+  __generate_empty_dirs()
+  __create_file(__DBLITE_FILE)
+  os.makedirs(os.path.join(__PYCACHE_ROOT, "__pycache__"))
+  os.makedirs(paths.BUILD_PATH)
+  create_versions_json_file()
+  os.makedirs(paths.BINARIES_PATH)
+  __create_file(__BIN_FILE)

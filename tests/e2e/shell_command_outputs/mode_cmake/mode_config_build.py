@@ -3,13 +3,13 @@ import re
 from xmipp3_installer.application.logger import predefined_messages
 
 from . import (
-  CMAKE_EXECUTABLE, VALID_PROJECT,
-  get_project_abs_subpath, get_predefined_error
+  CMAKE_EXECUTABLE,
+  get_project_subpath, get_predefined_error
 )
 
 EXECUTION_TIME = "X.Y"
 BUILD_FILES_WRITTEN_MESSAGE_START = "-- Build files have been written to: "
-VALID_PATH = get_project_abs_subpath(VALID_PROJECT, "build")
+BUILD_PATH = get_project_subpath("build")
 
 __COMMON_SECTION = f"""------------------ Configuring with CMake ------------------
 {CMAKE_EXECUTABLE} -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=False -DCMAKE_CXX_FLAGS=-mtune=native -DCMAKE_C_FLAGS=-mtune=native -DCMAKE_INSTALL_PREFIX=dist -DCMAKE_SKIP_RPATH=True -DXMIPP_LINK_TO_SCIPION=False -DXMIPP_USE_CUDA=False -DXMIPP_USE_MATLAB=False -DXMIPP_USE_MPI=False"""
@@ -17,7 +17,7 @@ __COMMON_SECTION = f"""------------------ Configuring with CMake ---------------
 SUCCESS = f"""{__COMMON_SECTION}
 -- Configuring done ({EXECUTION_TIME}s)
 -- Generating done ({EXECUTION_TIME}s)
-{BUILD_FILES_WRITTEN_MESSAGE_START}{VALID_PATH}
+{BUILD_FILES_WRITTEN_MESSAGE_START}{BUILD_PATH}
 {predefined_messages.get_done_message()}
 """
 

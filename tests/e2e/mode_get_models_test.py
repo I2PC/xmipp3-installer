@@ -6,9 +6,7 @@ import pytest
 
 from xmipp3_installer.application.cli import arguments, cli
 from xmipp3_installer.application.cli.arguments import modes, params
-from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
-from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_get_models
@@ -94,10 +92,4 @@ def __mock_os_path_isdir(request):
 
 @pytest.fixture
 def __setup_environment():
-  try:
-    create_versions_json_file()
-    yield
-  finally:
-    file_operations.delete_paths([
-      paths.VERSION_INFO_FILE
-    ])
+  create_versions_json_file()

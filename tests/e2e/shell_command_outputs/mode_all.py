@@ -1,13 +1,7 @@
 from xmipp3_installer.application.logger import predefined_messages
 
-from . import mode_cmake
 from .mode_cmake import mode_config_build, mode_compile_and_install
 
-def __get_build_project_subpath(project_name: str) -> str:
-  return mode_cmake.get_project_abs_subpath(
-    project_name,
-    "build"
-  )
 __COMMON_SECTION = f"""------------------- Managing config file -------------------
 Reading config file...
 {predefined_messages.get_done_message()}
@@ -25,16 +19,16 @@ __COMMON_CONFIG_SUCCESS = "\n".join(
   mode_config_build.SUCCESS.splitlines()[:-2]
 )
 __CONFIG_SUCCESS_BUILD_FAILURE = f"""{__COMMON_CONFIG_SUCCESS}
-{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{__get_build_project_subpath(mode_cmake.BUILD_ERROR_PROJECT)}
+{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.BUILD_PATH}
 {predefined_messages.get_done_message()}
 """
 __CONFIG_SUCCESS_INSTALL_FAILURE = f"""{__COMMON_CONFIG_SUCCESS}
-{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{__get_build_project_subpath(mode_cmake.INSTALL_ERROR_PROJECT)}
+{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.BUILD_PATH}
 {predefined_messages.get_done_message()}
 """
 
 __CONFIG_SUCCESS = f"""{__COMMON_CONFIG_SUCCESS}
-{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{__get_build_project_subpath(mode_cmake.VALID_PROJECT)}
+{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.BUILD_PATH}
 {predefined_messages.get_done_message()}
 """
 

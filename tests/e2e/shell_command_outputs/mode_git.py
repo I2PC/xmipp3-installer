@@ -6,7 +6,6 @@ from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.handlers import shell_handler
 
 __INITIAL_MESSAGE = "Running command 'git branch' for all xmipp sources..."
-__GIT_COMMAND_OUTPUT = shell_handler.run_shell_command("git branch")[1]
 
 def __get_abs_source_path(source_name):
   return os.path.abspath(paths.get_source_path(source_name))
@@ -22,6 +21,7 @@ def __get_non_existing_source_message(source_name):
   )
 
 def get_git_command(exists_xmipp: bool, exists_xmippcore:bool, exists_xmippviz: bool):
+  git_command_output = shell_handler.run_shell_command("git branch")[1]
   message_lines = [
     __INITIAL_MESSAGE,
     ""
@@ -33,7 +33,7 @@ def get_git_command(exists_xmipp: bool, exists_xmippcore:bool, exists_xmippviz: 
   ]:
     message_lines.append(__get_source_run_message(source))
     if exists:
-      message_lines.append(__GIT_COMMAND_OUTPUT)
+      message_lines.append(git_command_output)
     else:
       message_lines.append(__get_non_existing_source_message(source))
     message_lines.append("")

@@ -1,4 +1,4 @@
-import os
+import shutil
 import sys
 from io import StringIO
 from unittest.mock import patch
@@ -8,9 +8,7 @@ import pytest
 from xmipp3_installer.application.cli import cli
 from xmipp3_installer.application.cli import arguments
 from xmipp3_installer.application.cli.arguments import modes, params
-from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_sync import mode_sync_executor
-from xmipp3_installer.shared import file_operations
 
 from .shell_command_outputs import mode_sync
 from .shell_command_outputs.mode_sync import mode_add_model
@@ -19,7 +17,7 @@ from .. import (
   create_versions_json_file, get_test_file
 )
 
-__MODEL_PATH = os.path.join(TEST_FILES_DIR, mode_add_model.MODEL_NAME)
+__MODEL_PATH = mode_add_model.MODEL_NAME # Copied into the current directory, where its .tgz is generated
 
 @pytest.mark.parametrize(
   "__mock_sys_argv,__mock_sync_program_path,update,"
@@ -113,8 +111,7 @@ def __mock_sync_program_name():
 
 @pytest.fixture(autouse=True)
 def __mock_sync_program_path(request):
-  model_path = os.path.dirname(__MODEL_PATH)
-  new_value = model_path if getattr(request, 'param', False) else mode_sync_executor._SYNC_PROGRAM_PATH
+  new_value = TEST_FILES_DIR if getattr(request, 'param', False) else mode_sync_executor._SYNC_PROGRAM_PATH
   with patch.object(
     mode_sync_executor,
     "_SYNC_PROGRAM_PATH",
@@ -124,11 +121,5 @@ def __mock_sync_program_path(request):
 
 @pytest.fixture
 def __setup_environment():
-  try:
-    create_versions_json_file()
-    yield
-  finally:
-    file_operations.delete_paths([
-      paths.VERSION_INFO_FILE,
-      get_test_file(f"xmipp_model_{mode_add_model.MODEL_NAME}.tgz")
-    ])
+  create_versions_json_file()
+  shutil.copytree(get_test_file(mode_add_model.MODEL_NAME), __MODEL_PATH)

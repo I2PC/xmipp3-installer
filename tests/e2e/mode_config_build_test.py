@@ -5,9 +5,8 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import modes, params
 from xmipp3_installer.installer.constants import paths
-from xmipp3_installer.shared import file_operations
 
-from . import get_cmake_project_path
+from . import copy_cmake_project
 from .shell_command_outputs import mode_cmake
 from .shell_command_outputs.mode_cmake import mode_config_build
 from .. import (
@@ -57,27 +56,17 @@ def __normalize_paths(raw_output: str) -> str: # Absolute paths are different pe
   for line in raw_output_lines:
     new_line = line
     if line.startswith(mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START):
-      new_line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.VALID_PATH}\n"
+      new_line = f"{mode_config_build.BUILD_FILES_WRITTEN_MESSAGE_START}{mode_config_build.BUILD_PATH}\n"
     new_lines.append(new_line)
   return "".join(new_lines)
 
 @pytest.fixture
 def __setup_evironment(request):
   cmake_project_name = mode_cmake.VALID_PROJECT if getattr(request, 'param', True) else mode_cmake.CONFIG_ERROR_PROJECT
-  project_path = get_cmake_project_path(cmake_project_name)
-  try:
-    create_versions_json_file(output_path=project_path)
-    copy_file_from_reference(
-      mode_cmake.TEST_CONFIG_FILE_PATH,
-      os.path.join(project_path, paths.CONFIG_FILE)
-    )
-    yield get_cmake_project_path(cmake_project_name)
-  finally:
-    file_operations.delete_paths([
-      os.path.join(project_path, file_name) for file_name in [
-        paths.VERSION_INFO_FILE,
-        paths.BUILD_PATH,
-        paths.CONFIG_FILE,
-        paths.LOG_FILE
-      ]
-    ])
+  project_path = copy_cmake_project(cmake_project_name)
+  create_versions_json_file(output_path=project_path)
+  copy_file_from_reference(
+    mode_cmake.TEST_CONFIG_FILE_PATH,
+    os.path.join(project_path, paths.CONFIG_FILE)
+  )
+  return project_path
