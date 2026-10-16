@@ -9,6 +9,7 @@ from __future__ import annotations
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer.modes import (
+  mode_conda_dependencies_executor,
   mode_config_executor,
   mode_executor,
   mode_get_sources_executor,
@@ -17,6 +18,7 @@ from xmipp3_installer.installer.modes.mode_cmake import (
   mode_compile_and_install_executor,
   mode_config_build_executor,
 )
+from xmipp3_installer.repository.config_vars import variables
 
 
 class ModeAllExecutor(mode_executor.ModeExecutor):
@@ -45,12 +47,16 @@ class ModeAllExecutor(mode_executor.ModeExecutor):
     compile_and_install_executor = mode_compile_and_install_executor.ModeCompileAndInstallExecutor(
       context
     )
-    self.executors = [
-      config_executor,
+    self.executors = [config_executor]
+    if context[variables.INSTALL_CONDA_DEPENDENCIES]:
+      self.executors.append(
+        mode_conda_dependencies_executor.ModeCondaDependenciesExecutor(context)
+      )
+    self.executors.extend([
       get_sources_executor,
       config_build_executor,
       compile_and_install_executor
-    ]
+    ])
     super().__init__(context)
 
   def _set_executor_config(self):

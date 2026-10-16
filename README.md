@@ -14,6 +14,29 @@ To run such help, once the package is installed, run:
 xmipp3_installer -h
 ```
 
+## Installing dependencies with Conda
+By default, Xmipp is built against the libraries found in your system. Alternatively, the installer can install Xmipp's dependencies into the **currently active** Conda environment before compiling:
+```
+conda create -n xmipp3 python
+conda activate xmipp3
+pip install xmipp3-installer
+XMIPP3_INSTALL_CONDA_DEPENDENCIES=ON ./xmipp all
+```
+The environment is selected from the ones Xmipp defines, according to your NVIDIA driver (or without CUDA if `XMIPP_USE_CUDA=OFF` or no driver is found). To skip the detection, for example on a cluster's login node without GPU, set `XMIPP3_CONDA_ENVIRONMENT` to the id of the environment to use (such as `CUDA12`). In this mode, CUDA is taken only from the Conda environment.
+
+Both variables can also be set in `xmipp.conf` (`INSTALL_CONDA_DEPENDENCIES` and `CONDA_ENVIRONMENT`).
+
+Xmipp's repository must provide `conda/environments.json`, listing its environments by preference, with file paths relative to the repository's root. The first one whose `min_driver_version` the driver meets is selected, and the one without it is the fallback:
+```json
+{
+  "environments": [
+    {"id": "CUDA12", "file": "conda/xmipp_CUDA12.yml", "min_driver_version": "525.60.13"},
+    {"id": "CPU",    "file": "conda/xmipp_CPU.yml"}
+  ]
+}
+```
+Environment files must not pin a different `python` than the environment's (the installer runs inside it), and CUDA ones must include `nvcc`.
+
 ## Installation telemetry
 This installer collects **basic information about your installation environment** (such as library versions, system architecture, and operating system) to improve compatibility, performance, and stability.
 

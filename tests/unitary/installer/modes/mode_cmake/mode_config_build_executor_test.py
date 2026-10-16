@@ -4,6 +4,7 @@ import pytest
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors
+from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import constants
 from xmipp3_installer.installer.constants import paths
 from xmipp3_installer.installer.modes.mode_cmake import mode_config_build_executor
@@ -48,8 +49,16 @@ __CONTEXT = {
   __VAR2_KEY: __VAR2_VALUE,
   __VAR3_KEY: __VAR3_VALUE,
   __BUILD_TYPE: "Release",
-  __CMAKE: "/path/to/cmake"
+  __CMAKE: "/path/to/cmake",
+  variables.INSTALL_CONDA_DEPENDENCIES: False,
+  variables.CUDA: True,
+  variables.CUDA_COMPILER: None
 }
+__CONDA_CUDA_CONTEXT = {**__CONTEXT, variables.INSTALL_CONDA_DEPENDENCIES: True}
+__CONDA_NVCC = "/path/to/conda/bin/nvcc"
+__NO_CONDA_NVCC_WARNING = logger.yellow(
+  "The Conda environment does not provide a CUDA compiler. Building without CUDA."
+)
 
 def test_implements_interface_mode_cmake_executor():
   executor = ModeConfigBuildExecutor(__CONTEXT.copy())
@@ -123,6 +132,110 @@ def test_returns_expected_cmake_vars(__mock_get_non_internal_config_vars, expect
   assert (
     cmake_vars == expected_cmake_vars
   ), get_assertion_message("CMake variables", expected_cmake_vars, cmake_vars)
+
+def test_calls_get_conda_cuda_values_when_getting_cmake_vars(
+  __mock_get_conda_cuda_values
+):
+  ModeConfigBuildExecutor(__CONTEXT.copy())._get_cmake_vars()
+  __mock_get_conda_cuda_values.assert_called_once_with()
+
+@pytest.mark.parametrize(
+  "__mock_get_conda_cuda_values,expected_cmake_vars",
+  [
+    pytest.param({}, __CMAKE_VARS),
+    pytest.param(
+      {__VAR1_KEY: "override"},
+      f"-D{__VAR1_KEY}=override -D{__VAR2_KEY}={__VAR2_VALUE} -D{__VAR3_KEY}={__VAR3_VALUE}"
+    ),
+    pytest.param(
+      {__VAR2_KEY: ""},
+      f"-D{__VAR1_KEY}={__VAR1_VALUE} -D{__VAR3_KEY}={__VAR3_VALUE}"
+    )
+  ],
+  indirect=["__mock_get_conda_cuda_values"]
+)
+def test_returns_cmake_vars_with_conda_cuda_values_when_getting_cmake_vars(
+  __mock_get_conda_cuda_values,
+  expected_cmake_vars
+):
+  cmake_vars = ModeConfigBuildExecutor(__CONTEXT.copy())._get_cmake_vars()
+  assert (
+    cmake_vars == expected_cmake_vars
+  ), get_assertion_message("CMake variables", expected_cmake_vars, cmake_vars)
+
+@pytest.mark.parametrize(
+  "context",
+  [
+    pytest.param(__CONTEXT),
+    pytest.param({**__CONDA_CUDA_CONTEXT, variables.CUDA: False}),
+    pytest.param({**__CONDA_CUDA_CONTEXT, variables.CUDA_COMPILER: "/path/to/nvcc"})
+  ]
+)
+def test_returns_no_values_if_conda_cuda_is_not_applicable_when_getting_conda_cuda_values(
+  context,
+  __mock_get_cuda_compiler_path
+):
+  conda_cuda_values = ModeConfigBuildExecutor(context.copy())._get_conda_cuda_values()
+  assert (
+    conda_cuda_values == {}
+  ), get_assertion_message("Conda CUDA values", {}, conda_cuda_values)
+
+@pytest.mark.parametrize(
+  "context",
+  [
+    pytest.param(__CONTEXT),
+    pytest.param({**__CONDA_CUDA_CONTEXT, variables.CUDA: False}),
+    pytest.param({**__CONDA_CUDA_CONTEXT, variables.CUDA_COMPILER: "/path/to/nvcc"})
+  ]
+)
+def test_does_not_call_get_cuda_compiler_path_if_conda_cuda_is_not_applicable_when_getting_conda_cuda_values(
+  context,
+  __mock_get_cuda_compiler_path
+):
+  ModeConfigBuildExecutor(context.copy())._get_conda_cuda_values()
+  __mock_get_cuda_compiler_path.assert_not_called()
+
+def test_calls_get_cuda_compiler_path_if_conda_cuda_is_applicable_when_getting_conda_cuda_values(
+  __mock_get_cuda_compiler_path
+):
+  ModeConfigBuildExecutor(__CONDA_CUDA_CONTEXT.copy())._get_conda_cuda_values()
+  __mock_get_cuda_compiler_path.assert_called_once_with()
+
+@pytest.mark.parametrize(
+  "__mock_get_cuda_compiler_path,expected_values",
+  [
+    pytest.param(__CONDA_NVCC, {variables.CUDA_COMPILER: __CONDA_NVCC}),
+    pytest.param(None, {variables.CUDA: False})
+  ],
+  indirect=["__mock_get_cuda_compiler_path"]
+)
+def test_returns_expected_values_if_conda_cuda_is_applicable_when_getting_conda_cuda_values(
+  __mock_get_cuda_compiler_path,
+  expected_values
+):
+  conda_cuda_values = ModeConfigBuildExecutor(__CONDA_CUDA_CONTEXT.copy())._get_conda_cuda_values()
+  assert (
+    conda_cuda_values == expected_values
+  ), get_assertion_message("Conda CUDA values", expected_values, conda_cuda_values)
+
+@pytest.mark.parametrize(
+  "__mock_get_cuda_compiler_path",
+  [pytest.param(None)],
+  indirect=["__mock_get_cuda_compiler_path"]
+)
+def test_calls_logger_with_warning_if_conda_has_no_nvcc_when_getting_conda_cuda_values(
+  __mock_get_cuda_compiler_path,
+  __mock_logger
+):
+  ModeConfigBuildExecutor(__CONDA_CUDA_CONTEXT.copy())._get_conda_cuda_values()
+  __mock_logger.assert_called_once_with(__NO_CONDA_NVCC_WARNING)
+
+def test_does_not_call_logger_if_conda_has_nvcc_when_getting_conda_cuda_values(
+  __mock_get_cuda_compiler_path,
+  __mock_logger
+):
+  ModeConfigBuildExecutor(__CONDA_CUDA_CONTEXT.copy())._get_conda_cuda_values()
+  __mock_logger.assert_not_called()
 
 def test_calls_get_section_message_when_running_cmake_mode(
   __mock_get_section_message,
@@ -278,6 +391,22 @@ def __mock_get_non_internal_config_vars(request):
     "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor._get_non_internal_config_vars"
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', __NON_INTERNAL_VARIABLES)
+    yield mock_method
+
+@pytest.fixture
+def __mock_get_conda_cuda_values(request):
+  with patch(
+    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.ModeConfigBuildExecutor._get_conda_cuda_values"
+  ) as mock_method:
+    mock_method.return_value = getattr(request, 'param', {})
+    yield mock_method
+
+@pytest.fixture
+def __mock_get_cuda_compiler_path(request):
+  with patch(
+    "xmipp3_installer.installer.handlers.conda_handler.get_cuda_compiler_path"
+  ) as mock_method:
+    mock_method.return_value = getattr(request, 'param', __CONDA_NVCC)
     yield mock_method
 
 @pytest.fixture(autouse=True)

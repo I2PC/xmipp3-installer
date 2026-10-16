@@ -32,5 +32,7 @@ CONFIG_DEFAULT_VALUES = {
   variables.LINK_SCIPION: ON,
   variables.BUILD_TESTING: OFF,
   variables.SKIP_RPATH: ON,
-  variables.BUILD_TYPE: "Release"
+  variables.BUILD_TYPE: "Release",
+  variables.INSTALL_CONDA_DEPENDENCIES: OFF,
+  variables.CONDA_ENVIRONMENT: None
 }

@@ -26,6 +26,21 @@ actual work). `installer/handlers/` wraps external tools (git, shell,
 cmake, conda). `repository/config.py` reads/writes the config file.
 `api_client/` sends anonymous installation telemetry (see README).
 
+## Conda dependencies mode
+
+Opt-in (`INSTALL_CONDA_DEPENDENCIES`, OFF by default): the installer
+never creates Conda environments, it installs into whichever one is
+active. Whoever wraps the installer (e.g. scipion-em-xmipp) creates it.
+`conda/environments.json` and its YAMLs live in xmipp's repository, not
+here, because dependencies change with xmipp's code; their format is a
+contract documented in the README. Don't add hardcoded environment or
+driver tables to the installer, they belong in that manifest.
+
+The conda step is only appended to mode `all` when the toggle is on, so
+the default output stays byte-identical. The CUDA rule in configbuild
+(`_get_conda_cuda_values`) is derived from the environment's state, not
+from what the conda step did, so `configBuild` also works on its own.
+
 ## Running tests — always use the script
 
 **Never invoke `pytest` directly on this repo.** Use:
