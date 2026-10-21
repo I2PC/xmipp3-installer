@@ -8,7 +8,7 @@ jobs:
     name: Build and test
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner || 'ubuntu-latest' }}
 
     strategy:
       matrix:
@@ -20,6 +20,12 @@ jobs:
         - '3.12'
         - '3.13'
         - '3.14'
+        # setup-python has no builds of these versions for newer Ubuntu releases
+        include:
+        - python-version: '3.8'
+          runner: ubuntu-24.04
+        - python-version: '3.9'
+          runner: ubuntu-24.04
 
     steps:
       - name: Set up Python
@@ -71,7 +77,7 @@ jobs:
           python -m coverage xml
           zip reports.zip coverage.xml report.xml
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: matrix.python-version == '3.14'
         with:
           name: test-reports
