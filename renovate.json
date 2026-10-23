@@ -55,11 +55,6 @@
       ],
       "matchDepNames": ["distro"],
       "rangeStrategy": "widen"
-    },
-    {
-      "description": "Security advisories bypass the 14-day delay",
-      "matchUpdateTypes": ["security"],
-      "minimumReleaseAge": "0 days"
     }
   ]
 }
