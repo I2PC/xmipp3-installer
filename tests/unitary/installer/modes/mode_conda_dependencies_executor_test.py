@@ -17,7 +17,7 @@ from .... import get_assertion_message
 __CONTEXT = {
   params.PARAM_KEEP_OUTPUT: False,
   variables.CUDA: True,
-  variables.CONDA_ENVIRONMENT: None
+  variables.CONDA_ENVIRONMENT_ID: None
 }
 __CONDA_EXECUTABLE = "/path/to/conda/bin/conda"
 __CONDA_PREFIX = "/path/to/conda/envs/xmipp"
@@ -39,6 +39,7 @@ __INSTALLING_MESSAGE = (
 )
 __CUDA_DISABLED_MESSAGE = "CUDA is disabled, selecting environment without CUDA."
 __NO_DRIVER_MESSAGE = logger.yellow("Could not detect the NVIDIA driver, selecting environment without CUDA.")
+__REACTIVATION_ERROR_MESSAGE = "Could not reactivate the Conda environment after installing Xmipp's dependencies."
 __OLD_DRIVER_MESSAGE = logger.yellow(
   f"NVIDIA driver {__DRIVER_VERSION} is too old for any CUDA environment, selecting environment without CUDA."
 )
@@ -87,7 +88,7 @@ def test_stores_expected_values_when_initializing(
   executor = ModeCondaDependenciesExecutor({
     params.PARAM_KEEP_OUTPUT: keep_output,
     variables.CUDA: use_cuda,
-    variables.CONDA_ENVIRONMENT: forced_environment_id
+    variables.CONDA_ENVIRONMENT_ID: forced_environment_id
   })
   values = (executor.substitute, executor.use_cuda, executor.forced_environment_id)
   expected_values = (not keep_output, use_cuda, forced_environment_id)
@@ -265,6 +266,57 @@ def test_returns_expected_result_when_running_executor(
     result == expected_result
   ), get_assertion_message("executor run result", expected_result, result)
 
+def test_calls_reactivate_environment_if_update_succeeds_when_running_executor(
+  __mock_reactivate_environment,
+  __mock_select_environment
+):
+  ModeCondaDependenciesExecutor(__CONTEXT.copy()).run()
+  __mock_reactivate_environment.assert_called_once_with(__CONDA_EXECUTABLE)
+
+@pytest.mark.parametrize(
+  "__mock_run_shell_command_in_streaming",
+  [pytest.param(1)],
+  indirect=["__mock_run_shell_command_in_streaming"]
+)
+def test_does_not_call_reactivate_environment_if_update_fails_when_running_executor(
+  __mock_run_shell_command_in_streaming,
+  __mock_reactivate_environment,
+  __mock_select_environment
+):
+  ModeCondaDependenciesExecutor(__CONTEXT.copy()).run()
+  __mock_reactivate_environment.assert_not_called()
+
+@pytest.mark.parametrize(
+  "__mock_reactivate_environment",
+  [pytest.param(False)],
+  indirect=["__mock_reactivate_environment"]
+)
+def test_returns_error_if_reactivation_fails_when_running_executor(
+  __mock_reactivate_environment,
+  __mock_select_environment
+):
+  result = ModeCondaDependenciesExecutor(__CONTEXT.copy()).run()
+  expected_result = (errors.CONDA_DEPENDENCIES_ERROR, __REACTIVATION_ERROR_MESSAGE)
+  assert (
+    result == expected_result
+  ), get_assertion_message("executor run result", expected_result, result)
+
+@pytest.mark.parametrize(
+  "__mock_reactivate_environment",
+  [pytest.param(False)],
+  indirect=["__mock_reactivate_environment"]
+)
+def test_does_not_call_logger_with_done_message_if_reactivation_fails_when_running_executor(
+  __mock_reactivate_environment,
+  __mock_logger,
+  __mock_select_environment
+):
+  ModeCondaDependenciesExecutor(__CONTEXT.copy()).run()
+  expected_calls = [call(__SECTION_MESSAGE), call(__INSTALLING_MESSAGE)]
+  assert (
+    __mock_logger.mock_calls == expected_calls
+  ), get_assertion_message("logger calls", expected_calls, __mock_logger.mock_calls)
+
 @pytest.mark.parametrize(
   "__mock_run_shell_command_in_streaming,expected_calls",
   [
@@ -307,7 +359,7 @@ def test_calls_get_fallback_environment_if_cuda_is_disabled_when_selecting_envir
   ModeCondaDependenciesExecutor({
     **__CONTEXT,
     variables.CUDA: False,
-    variables.CONDA_ENVIRONMENT: forced_environment_id
+    variables.CONDA_ENVIRONMENT_ID: forced_environment_id
   })._select_environment(__ENVIRONMENTS)
   __mock_get_fallback_environment.assert_called_once_with(__ENVIRONMENTS)
 
@@ -339,7 +391,7 @@ def test_calls_get_environment_by_id_if_environment_is_forced_when_selecting_env
   __mock_get_environment_by_id
 ):
   ModeCondaDependenciesExecutor(
-    {**__CONTEXT, variables.CONDA_ENVIRONMENT: "cuda11"}
+    {**__CONTEXT, variables.CONDA_ENVIRONMENT_ID: "cuda11"}
   )._select_environment(__ENVIRONMENTS)
   __mock_get_environment_by_id.assert_called_once_with(__ENVIRONMENTS, "cuda11")
 
@@ -348,7 +400,7 @@ def test_does_not_call_get_driver_version_if_environment_is_forced_when_selectin
   __mock_get_driver_version
 ):
   ModeCondaDependenciesExecutor(
-    {**__CONTEXT, variables.CONDA_ENVIRONMENT: "cuda11"}
+    {**__CONTEXT, variables.CONDA_ENVIRONMENT_ID: "cuda11"}
   )._select_environment(__ENVIRONMENTS)
   __mock_get_driver_version.assert_not_called()
 
@@ -356,7 +408,7 @@ def test_returns_environment_by_id_if_environment_is_forced_when_selecting_envir
   __mock_get_environment_by_id
 ):
   result = ModeCondaDependenciesExecutor(
-    {**__CONTEXT, variables.CONDA_ENVIRONMENT: "cuda11"}
+    {**__CONTEXT, variables.CONDA_ENVIRONMENT_ID: "cuda11"}
   )._select_environment(__ENVIRONMENTS)
   assert (
     result == __mock_get_environment_by_id()
@@ -584,14 +636,14 @@ def test_returns_expected_environment_if_it_exists_when_getting_environment_by_i
 def test_calls_logger_if_environment_exists_when_getting_environment_by_id(__mock_logger):
   mode_conda_dependencies_executor._get_environment_by_id(__ENVIRONMENTS, "cuda11")
   __mock_logger.assert_called_once_with(
-    f"Selecting environment 'cuda11' set in {variables.CONDA_ENVIRONMENT}."
+    f"Selecting environment 'cuda11' set in {variables.CONDA_ENVIRONMENT_ID}."
   )
 
 def test_returns_error_message_if_environment_does_not_exist_when_getting_environment_by_id():
   result = mode_conda_dependencies_executor._get_environment_by_id(__ENVIRONMENTS, "cuda10")
   expected_result = (
     None,
-    f"Conda environment 'cuda10' set in {variables.CONDA_ENVIRONMENT} does not exist. "
+    f"Conda environment 'cuda10' set in {variables.CONDA_ENVIRONMENT_ID} does not exist. "
     "Available environments: cuda12, cuda11, nocuda."
   )
   assert (
@@ -762,4 +814,12 @@ def __mock_is_driver_compatible(request):
     "xmipp3_installer.installer.handlers.nvidia_handler.is_driver_compatible"
   ) as mock_method:
     mock_method.side_effect = getattr(request, 'param', [True])
+    yield mock_method
+
+@pytest.fixture(autouse=True)
+def __mock_reactivate_environment(request):
+  with patch(
+    "xmipp3_installer.installer.handlers.conda_handler.reactivate_environment"
+  ) as mock_method:
+    mock_method.return_value = getattr(request, 'param', True)
     yield mock_method

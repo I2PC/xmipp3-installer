@@ -45,7 +45,7 @@ __COMPILATION_FLAGS_SECTION_LINES = [
   "CMAKE_C_FLAGS=-mtune=native",
   "CMAKE_CXX_FLAGS=-mtune=native",
   "BUILD_TYPE=Release",
-  "CONDA_ENVIRONMENT=",
+  "CONDA_ENVIRONMENT_ID=",
   ""
 ]
 

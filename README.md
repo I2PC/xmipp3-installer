@@ -22,9 +22,11 @@ conda activate xmipp3
 pip install xmipp3-installer
 XMIPP3_INSTALL_CONDA_DEPENDENCIES=ON ./xmipp all
 ```
-The environment is selected from the ones Xmipp defines, according to your NVIDIA driver (or without CUDA if `XMIPP_USE_CUDA=OFF` or no driver is found). To skip the detection, for example on a cluster's login node without GPU, set `XMIPP3_CONDA_ENVIRONMENT` to the id of the environment to use (such as `CUDA12`). In this mode, CUDA is taken only from the Conda environment.
+The environment is selected from the ones Xmipp defines, according to your NVIDIA driver (or without CUDA if `XMIPP_USE_CUDA=OFF` or no driver is found). To skip the detection, for example on a cluster's login node without GPU, set `XMIPP3_CONDA_ENVIRONMENT_ID` to the id of the environment to use (such as `CUDA12`). In this mode, CUDA is taken only from the Conda environment, and the environment is reactivated after installing the dependencies, so the activation scripts of the new packages (such as the ones setting Conda's compilers) take effect.
 
-Both variables can also be set in `xmipp.conf` (`INSTALL_CONDA_DEPENDENCIES` and `CONDA_ENVIRONMENT`).
+`CMAKE_PREFIX_PATH` is empty by default, so CMake finds the dependencies of the active environment through its `PATH`. Set it only to search other locations first.
+
+Both variables can also be set in `xmipp.conf` (`INSTALL_CONDA_DEPENDENCIES` and `CONDA_ENVIRONMENT_ID`).
 
 Xmipp's repository must provide `conda/environments.json`, listing its environments by preference, with file paths relative to the repository's root. The first one whose `min_driver_version` the driver meets is selected, and the one without it is the fallback:
 ```json

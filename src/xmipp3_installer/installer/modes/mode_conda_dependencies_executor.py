@@ -43,7 +43,7 @@ class ModeCondaDependenciesExecutor(mode_executor.ModeExecutor):
     super().__init__(context)
     self.substitute = not context[params.PARAM_KEEP_OUTPUT]
     self.use_cuda = context[variables.CUDA]
-    self.forced_environment_id = context[variables.CONDA_ENVIRONMENT]
+    self.forced_environment_id = context[variables.CONDA_ENVIRONMENT_ID]
 
   def run(self) -> tuple[int, str]:
     """
@@ -73,6 +73,10 @@ class ModeCondaDependenciesExecutor(mode_executor.ModeExecutor):
     ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
     if ret_code:
       return errors.CONDA_DEPENDENCIES_ERROR, ""
+    if not conda_handler.reactivate_environment(conda_executable):
+      return errors.CONDA_DEPENDENCIES_ERROR, (
+        "Could not reactivate the Conda environment after installing Xmipp's dependencies."
+      )
     logger(predefined_messages.get_done_message(), substitute=self.substitute)
     return 0, ""
 
@@ -144,11 +148,11 @@ def _get_environment_by_id(
   """
   for environment in environments:
     if environment[_ID_KEY] == environment_id:
-      logger(f"Selecting environment '{environment_id}' set in {variables.CONDA_ENVIRONMENT}.")
+      logger(f"Selecting environment '{environment_id}' set in {variables.CONDA_ENVIRONMENT_ID}.")
       return environment, ""
   available_ids = ", ".join(environment[_ID_KEY] for environment in environments)
   return None, (
-    f"Conda environment '{environment_id}' set in {variables.CONDA_ENVIRONMENT} does not exist. "
+    f"Conda environment '{environment_id}' set in {variables.CONDA_ENVIRONMENT_ID} does not exist. "
     f"Available environments: {available_ids}."
   )
 

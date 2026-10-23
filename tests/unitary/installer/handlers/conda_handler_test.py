@@ -119,6 +119,88 @@ def test_returns_expected_environment_update_command(
     command == expected_command
   ), get_assertion_message("environment update command", expected_command, command)
 
+@pytest.mark.parametrize(
+  "conda_executable,expected_command",
+  [
+    pytest.param(
+      "/conda/bin/conda",
+      "bash -c 'eval \"$(/conda/bin/conda shell.bash reactivate)\" && env -0'"
+    ),
+    pytest.param(
+      "/my conda/bin/conda",
+      "bash -c 'eval \"$('\"'\"'/my conda/bin/conda'\"'\"' shell.bash reactivate)\" && env -0'"
+    )
+  ]
+)
+def test_returns_expected_reactivation_command(conda_executable, expected_command):
+  command = conda_handler._get_reactivation_command(conda_executable)
+  assert (
+    command == expected_command
+  ), get_assertion_message("reactivation command", expected_command, command)
+
+@pytest.mark.parametrize(
+  "output,expected_environment",
+  [
+    pytest.param("", {}),
+    pytest.param("A=1\0B=2\0", {"A": "1", "B": "2"}),
+    pytest.param("A=x=y\0B=\0", {"A": "x=y", "B": ""}),
+    pytest.param("A=multi\nline\0", {"A": "multi\nline"})
+  ]
+)
+def test_returns_expected_environment_when_parsing_environment(output, expected_environment):
+  environment = conda_handler._parse_environment(output)
+  assert (
+    environment == expected_environment
+  ), get_assertion_message("environment", expected_environment, environment)
+
+def test_calls_run_shell_command_with_reactivation_command_when_reactivating_environment(
+  __mock_run_shell_command
+):
+  with patch.dict('os.environ', {}):
+    conda_handler.reactivate_environment("/conda/bin/conda")
+  __mock_run_shell_command.assert_called_once_with(
+    conda_handler._get_reactivation_command("/conda/bin/conda")
+  )
+
+@pytest.mark.parametrize(
+  "__mock_run_shell_command,expected_result",
+  [
+    pytest.param((0, "CC=gcc\0"), True),
+    pytest.param((1, "CC=gcc\0"), False),
+    pytest.param((0, ""), False)
+  ],
+  indirect=["__mock_run_shell_command"]
+)
+def test_returns_expected_result_when_reactivating_environment(
+  __mock_run_shell_command,
+  expected_result
+):
+  with patch.dict('os.environ', {}):
+    result = conda_handler.reactivate_environment("/conda/bin/conda")
+  assert (
+    result == expected_result
+  ), get_assertion_message("reactivation result", expected_result, result)
+
+@pytest.mark.parametrize(
+  "__mock_run_shell_command,expected_environment",
+  [
+    pytest.param((0, "CC=gcc\0PATH=/env/bin\0"), {"CC": "gcc", "PATH": "/env/bin"}),
+    pytest.param((1, "CC=gcc\0"), {"OLD": "value"}),
+    pytest.param((0, ""), {"OLD": "value"})
+  ],
+  indirect=["__mock_run_shell_command"]
+)
+def test_sets_expected_environment_when_reactivating_environment(
+  __mock_run_shell_command,
+  expected_environment
+):
+  with patch.dict('os.environ', {"OLD": "value"}, clear=True):
+    conda_handler.reactivate_environment("/conda/bin/conda")
+    environment = dict(os.environ)
+  assert (
+    environment == expected_environment
+  ), get_assertion_message("environment", expected_environment, environment)
+
 @pytest.fixture
 def __mock_get_conda_prefix_path(request):
   with patch(
@@ -144,3 +226,11 @@ def __mock_env(request):
     'os.environ', {'CONDA_PREFIX': getattr(request, 'param', "/path/to/conda/env")}
   ):
     yield getattr(request, 'param', "/path/to/conda/env")
+
+@pytest.fixture
+def __mock_run_shell_command(request):
+  with patch(
+    "xmipp3_installer.installer.handlers.shell_handler.run_shell_command"
+  ) as mock_method:
+    mock_method.return_value = getattr(request, 'param', (0, "CC=gcc\0"))
+    yield mock_method
