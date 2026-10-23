@@ -55,11 +55,6 @@
       ],
       "matchDepNames": ["distro"],
       "rangeStrategy": "widen"
-    },
-    {
-      "description": "Security advisories bypass the 14-day delay",
-      "matchJsonata": ["$exists(vulnerabilityFixVersion)"],
-      "minimumReleaseAge": "0 days"
     }
   ]
 }
