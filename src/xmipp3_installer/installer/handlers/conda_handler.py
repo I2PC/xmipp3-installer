@@ -100,6 +100,8 @@ def _parse_environment(output: str) -> dict[str, str]:
   #### Returns:
   - (dict(str, str)): Environment variables.
   """
-  return dict(
-    entry.split("=", maxsplit=1) for entry in output.split("\0") if "=" in entry
-  )
+  return {
+    key: value
+    for key, separator, value in (entry.partition("=") for entry in output.split("\0"))
+    if separator
+  }
