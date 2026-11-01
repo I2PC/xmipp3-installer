@@ -31,7 +31,7 @@ jobs:
       - name: Install project
         run: |
           pip install --only-binary :all: --require-hashes -r conf/requirements-test.txt
-          pip install --only-binary :all: --no-deps .
+          pip install --only-binary :all: --no-deps -e .
 
       - name: Run unitary tests
         env:
