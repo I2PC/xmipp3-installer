@@ -50,10 +50,9 @@
     },
     {
       "description": [
-        "distro is a range, not a pin, because Scipion (usually installed alongside) pins its own distro version and lags behind.",
-        "widen keeps the lower bound and only raises the upper one (>=1.8.0,<=1.9.0 -> >=1.8.0,<=1.10.0); the default replace would raise both, breaking compatibility again."
+        "A range's ceiling is the exact newest version CI has passed; any later release makes widen raise it, and CI decides whether it merges. Narrowing a range is a person's decision."
       ],
-      "matchDepNames": ["distro"],
+      "matchDepTypes": ["project.dependencies"],
       "rangeStrategy": "widen"
     }
   ]
