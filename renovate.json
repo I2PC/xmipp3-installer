@@ -14,6 +14,10 @@
     "description": "pip-compile already updates pyproject.toml through pep621; leaving it enabled would open a second PR per bump without the lockfile.",
     "enabled": false
   },
+  "pip_requirements": {
+    "description": "Its default pattern also matches the pip-compile lockfile, where it bumps locked lines one by one, ignoring their python_version markers.",
+    "enabled": false
+  },
   "pip-compile": {
     "description": "The lockfile header holds the uv command Renovate reruns, so options it doesn't support (e.g. --only-binary) must stay out of it.",
     "managerFilePatterns": ["/^conf/requirements-test\\.txt$/"]
