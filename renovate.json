@@ -10,6 +10,18 @@
     "description": "Not a poetry project, but supersedes default pep manager if left enabled.",
     "enabled": false
   },
+  "pep621": {
+    "description": "pip-compile already updates pyproject.toml through pep621; leaving it enabled would open a second PR per bump without the lockfile.",
+    "enabled": false
+  },
+  "pip-compile": {
+    "description": "The lockfile header holds the uv command Renovate reruns, so options it doesn't support (e.g. --only-binary) must stay out of it.",
+    "managerFilePatterns": ["/^conf/requirements-test\\.txt$/"]
+  },
+  "lockFileMaintenance": {
+    "description": "Transitive pins are only in the lockfile, so nothing else would ever bump them.",
+    "enabled": true
+  },
   "packageRules": [
     {
       "matchDepNames": ["python"],
@@ -50,10 +62,9 @@
     },
     {
       "description": [
-        "distro is a range, not a pin, because Scipion (usually installed alongside) pins its own distro version and lags behind.",
-        "widen keeps the lower bound and only raises the upper one (>=1.8.0,<=1.9.0 -> >=1.8.0,<=1.10.0); the default replace would raise both, breaking compatibility again."
+        "A range's ceiling is the exact newest version CI has passed; any later release makes widen raise it, and CI decides whether it merges. Narrowing a range is a person's decision."
       ],
-      "matchDepNames": ["distro"],
+      "matchDepTypes": ["project.dependencies"],
       "rangeStrategy": "widen"
     }
   ]
