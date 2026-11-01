@@ -46,11 +46,11 @@ jobs:
 
       - name: Install project (Python == 3.8)
         if: matrix.python-version == '3.8'
-        run: pip install . --group test -v
+        run: pip-sync pyproject.toml --group test
 
       - name: Install project (Python > 3.8)
         if: matrix.python-version != '3.8'
-        run: pip-sync pyproject.toml --group test
+        run: pip install . --group test -v
 
       - name: Use CLI standalone
         run: ${{ vars.MODULE_NAME }} -h
