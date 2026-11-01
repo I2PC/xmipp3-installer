@@ -39,14 +39,16 @@ jobs:
 
       - name: Install pip-tools
         if: matrix.python-version == '3.8'
-        run: python -m pip install "pip-tools>=8.0.0"
+        run: python -m pip install dependency-groups
 
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install project (Python == 3.8)
         if: matrix.python-version == '3.8'
-        run: pip-sync pyproject.toml --group test
+        run: |
+          pip-install-dependency-groups test
+          pip install .
 
       - name: Install project (Python > 3.8)
         if: matrix.python-version != '3.8'
