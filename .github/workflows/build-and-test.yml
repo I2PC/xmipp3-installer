@@ -3,6 +3,10 @@ on:
   workflow_dispatch:
   pull_request:
 
+concurrency:
+  group: build-standalone-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     name: Build and test
