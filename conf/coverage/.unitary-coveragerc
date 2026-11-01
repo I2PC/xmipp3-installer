@@ -1,6 +1,9 @@
 [run]
 branch=True
 data_file = ./conf/coverage/.coverage.unitary
+source =
+  src
+  tests/unitary
 
 [report]
 skip_empty = true
