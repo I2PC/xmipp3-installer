@@ -3,6 +3,10 @@ on:
   workflow_dispatch:
   pull_request:
 
+concurrency:
+  group: build-standalone-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     name: Build and test
@@ -20,6 +24,7 @@ jobs:
         - '3.12'
         - '3.13'
         - '3.14'
+        - '3.15'
         # setup-python has no builds of these versions for newer Ubuntu releases
         include:
         - python-version: '3.8'
@@ -37,8 +42,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install project
-        working-directory: ${{ github.workspace }}
-        run: pip install -e .[test]
+        run: |
+          pip install --only-binary :all: --require-hashes -r conf/requirements-test.txt
+          pip install --only-binary :all: --no-deps .
 
       - name: Use CLI standalone
         run: ${{ vars.MODULE_NAME }} -h
@@ -71,14 +77,14 @@ jobs:
           $SCRIPT_PATH e2e
 
       - name: Generate report files
-        if: matrix.python-version == '3.14'
+        if: matrix.python-version == '3.15'
         run: |
           python -m coverage combine ./conf/coverage
           python -m coverage xml
           zip reports.zip coverage.xml report.xml
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        if: matrix.python-version == '3.14'
+        if: matrix.python-version == '3.15'
         with:
           name: test-reports
           path: reports.zip
