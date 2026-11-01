@@ -10,6 +10,18 @@
     "description": "Not a poetry project, but supersedes default pep manager if left enabled.",
     "enabled": false
   },
+  "pep621": {
+    "description": "pip-compile already updates pyproject.toml through pep621; leaving it enabled would open a second PR per bump without the lockfile.",
+    "enabled": false
+  },
+  "pip-compile": {
+    "description": "The lockfile header holds the uv command Renovate reruns, so options it doesn't support (e.g. --only-binary) must stay out of it.",
+    "managerFilePatterns": ["/^conf/requirements-test\\.txt$/"]
+  },
+  "lockFileMaintenance": {
+    "description": "Transitive pins are only in the lockfile, so nothing else would ever bump them.",
+    "enabled": true
+  },
   "packageRules": [
     {
       "matchDepNames": ["python"],

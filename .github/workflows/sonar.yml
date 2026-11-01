@@ -29,8 +29,9 @@ jobs:
           fetch-depth: 0
 
       - name: Install project
-        working-directory: ${{ github.workspace }}
-        run: pip install -e .[test]
+        run: |
+          pip install --only-binary :all: --require-hashes -r conf/requirements-test.txt
+          pip install --only-binary :all: --no-deps .
 
       - name: Run unitary tests
         env:
