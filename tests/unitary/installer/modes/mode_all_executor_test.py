@@ -9,14 +9,17 @@ from xmipp3_installer.installer.modes.mode_all_executor import ModeAllExecutor
 from xmipp3_installer.installer.modes.mode_config_executor import ModeConfigExecutor
 from xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor import ModeConfigBuildExecutor
 from xmipp3_installer.installer.modes.mode_cmake.mode_compile_and_install_executor import ModeCompileAndInstallExecutor
+from xmipp3_installer.installer.modes.mode_conda_dependencies_executor import ModeCondaDependenciesExecutor
+from xmipp3_installer.repository.config_vars import variables
 
 from .... import get_assertion_message
 
 __PARAM_OVERWRITE = "param_overwrite"
-__DUMMY_CONTEXT = {"key": "value"}
+__DUMMY_CONTEXT = {"key": "value", variables.INSTALL_CONDA_DEPENDENCIES: False}
+__CONDA_DEPENDENCIES_CONTEXT = {**__DUMMY_CONTEXT, variables.INSTALL_CONDA_DEPENDENCIES: True}
 
 def test_implements_interface_mode_cmake_executor():
-  executor = ModeAllExecutor({})
+  executor = ModeAllExecutor(__DUMMY_CONTEXT)
   assert (
     isinstance(executor, ModeExecutor)
   ), get_assertion_message(
@@ -27,7 +30,7 @@ def test_implements_interface_mode_cmake_executor():
 
 def test_overrides_expected_parent_config_values(__dummy_test_mode_cmake_executor):
   base_executor = __dummy_test_mode_cmake_executor({})
-  executor = ModeAllExecutor({})
+  executor = ModeAllExecutor(__DUMMY_CONTEXT)
   base_config = (
     not base_executor.logs_to_file,
     not base_executor.prints_with_substitution,
@@ -64,15 +67,48 @@ def test_calls_compile_and_install_executor_when_initializing(__mock_compile_and
     __DUMMY_CONTEXT
   )
 
+def test_calls_conda_dependencies_executor_if_enabled_when_initializing(
+  __mock_conda_dependencies_executor
+):
+  ModeAllExecutor(__CONDA_DEPENDENCIES_CONTEXT)
+  __mock_conda_dependencies_executor.assert_called_once_with(
+    __CONDA_DEPENDENCIES_CONTEXT
+  )
+
+def test_does_not_call_conda_dependencies_executor_if_disabled_when_initializing(
+  __mock_conda_dependencies_executor
+):
+  ModeAllExecutor(__DUMMY_CONTEXT)
+  __mock_conda_dependencies_executor.assert_not_called()
+
 def test_instantiates_expected_executors_when_initializing(
   __mock_config_executor,
   __mock_get_sources_executor,
   __mock_config_build_executor,
   __mock_compile_and_install_executor
 ):
-  executor = ModeAllExecutor({})
+  executor = ModeAllExecutor(__DUMMY_CONTEXT)
   expected_executors = [
     __mock_config_executor(),
+    __mock_get_sources_executor(),
+    __mock_config_build_executor(),
+    __mock_compile_and_install_executor()
+  ]
+  assert (
+    executor.executors == expected_executors
+  ), get_assertion_message("stored executors", expected_executors, executor.executors)
+
+def test_instantiates_expected_executors_if_conda_dependencies_enabled_when_initializing(
+  __mock_config_executor,
+  __mock_conda_dependencies_executor,
+  __mock_get_sources_executor,
+  __mock_config_build_executor,
+  __mock_compile_and_install_executor
+):
+  executor = ModeAllExecutor(__CONDA_DEPENDENCIES_CONTEXT)
+  expected_executors = [
+    __mock_config_executor(),
+    __mock_conda_dependencies_executor(),
     __mock_get_sources_executor(),
     __mock_config_build_executor(),
     __mock_compile_and_install_executor()
@@ -84,13 +120,13 @@ def test_instantiates_expected_executors_when_initializing(
 def test_calls_config_executor_run_when_running_executor(
   __mock_config_executor
 ):
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
   __mock_config_executor().run.assert_called_once_with()
 
 def test_calls_get_sources_executor_run_if_config_executor_run_succeeds_when_running_executor(
   __mock_get_sources_executor
 ):
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
   __mock_get_sources_executor().run.assert_called_once_with()
 
 def test_does_not_call_get_sources_executor_run_if_config_executor_run_fails_when_running_executor(
@@ -98,13 +134,27 @@ def test_does_not_call_get_sources_executor_run_if_config_executor_run_fails_whe
   __mock_get_sources_executor
 ):
   __mock_config_executor().run.return_value = (1, "error")
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
+  __mock_get_sources_executor().run.assert_not_called()
+
+def test_calls_conda_dependencies_executor_run_if_enabled_when_running_executor(
+  __mock_conda_dependencies_executor
+):
+  ModeAllExecutor(__CONDA_DEPENDENCIES_CONTEXT).run()
+  __mock_conda_dependencies_executor().run.assert_called_once_with()
+
+def test_does_not_call_get_sources_executor_run_if_conda_dependencies_executor_run_fails_when_running_executor(
+  __mock_conda_dependencies_executor,
+  __mock_get_sources_executor
+):
+  __mock_conda_dependencies_executor().run.return_value = (1, "error")
+  ModeAllExecutor(__CONDA_DEPENDENCIES_CONTEXT).run()
   __mock_get_sources_executor().run.assert_not_called()
 
 def test_calls_config_build_executor_run_if_config_get_sources_executor_run_succeed_when_running_executor(
   __mock_config_build_executor
 ):
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
   __mock_config_build_executor().run.assert_called_once_with()
 
 @pytest.mark.parametrize(
@@ -121,13 +171,13 @@ def test_does_not_call_config_build_executor_run_if_config_or_get_sources_execut
   __mock_get_sources_executor,
   __mock_config_build_executor
 ):
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
   __mock_config_build_executor().run.assert_not_called()
 
 def test_calls_compile_and_install_executor_run_if_other_executors_run_succeed_when_running_executor(
   __mock_compile_and_install_executor
 ):
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
   __mock_compile_and_install_executor().run.assert_called_once_with()
 
 @pytest.mark.parametrize(
@@ -149,7 +199,7 @@ def test_does_not_call_compile_and_install_executor_run_if_any_of_other_executor
   __mock_config_build_executor,
   __mock_compile_and_install_executor
 ):
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
   __mock_compile_and_install_executor().run.assert_not_called()
 
 @pytest.mark.parametrize(
@@ -189,7 +239,7 @@ def test_calls_logger_expected_amount_of_times_when_running_executor(
   expected_call_number,
   __mock_logger
 ):
-  ModeAllExecutor({}).run()
+  ModeAllExecutor(__DUMMY_CONTEXT).run()
   expected_calls = [call("") for _ in range(expected_call_number)]
   __mock_logger.assert_has_calls(expected_calls)
   assert (
@@ -231,7 +281,7 @@ def test_returns_expected_result_when_running_executor(
   __mock_compile_and_install_executor,
   expected_result
 ):
-  result = ModeAllExecutor({}).run()
+  result = ModeAllExecutor(__DUMMY_CONTEXT).run()
   assert (
     result == expected_result
   ), get_assertion_message("executor run result", expected_result, result)
@@ -250,6 +300,16 @@ def __mock_config_executor(request):
   executor.run.return_value = getattr(request, 'param', (0, ""))
   with patch(
     "xmipp3_installer.installer.modes.mode_config_executor.ModeConfigExecutor"
+  ) as mock_class:
+    mock_class.return_value = executor
+    yield mock_class
+
+@pytest.fixture(autouse=True)
+def __mock_conda_dependencies_executor(request):
+  executor = MagicMock(spec=ModeCondaDependenciesExecutor)
+  executor.run.return_value = getattr(request, 'param', (0, ""))
+  with patch(
+    "xmipp3_installer.installer.modes.mode_conda_dependencies_executor.ModeCondaDependenciesExecutor"
   ) as mock_class:
     mock_class.return_value = executor
     yield mock_class
