@@ -20,6 +20,7 @@ LOG_FILE = 'compilation.log'
 LIBRARY_VERSIONS_FILE = os.path.join(BUILD_PATH, 'versions.txt')
 CONFIG_FILE = 'xmipp.conf'
 VERSION_INFO_FILE = "version-info.json"
+CONDA_ENVIRONMENTS_FILE = os.path.join("conda", "environments.json")
 
 # Source paths
 def get_source_path(source: str) -> str:
