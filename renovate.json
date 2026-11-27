@@ -20,7 +20,7 @@
   },
   "pip-compile": {
     "description": "The lockfile header holds the uv command Renovate reruns, so options it doesn't support (e.g. --only-binary) must stay out of it.",
-    "managerFilePatterns": ["/^conf/requirements-test\\.txt$/"]
+    "managerFilePatterns": ["/^conf/requirements-(test|release)\\.txt$/"]
   },
   "lockFileMaintenance": {
     "description": "Transitive pins are only in the lockfile, so nothing else would ever bump them.",
