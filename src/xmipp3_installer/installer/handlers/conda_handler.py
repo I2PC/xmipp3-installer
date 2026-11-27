@@ -53,7 +53,13 @@ def get_environment_update_command(conda_executable: str, conda_prefix: str, env
 
   #### Returns:
   - (str): The command.
+
+  #### Raises:
+  - ValueError: Raised when the prefix or the environment file would be taken as an option.
   """
+  for argument in (conda_prefix, environment_file):
+    if argument.startswith("-"):
+      raise ValueError(f"'{argument}' would be taken as an option by Conda")
   return (
     f"{shlex.quote(conda_executable)} env update "
     f"--prefix={shlex.quote(conda_prefix)} --file={shlex.quote(environment_file)}"
