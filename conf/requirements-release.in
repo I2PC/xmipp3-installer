@@ -1,0 +1,5 @@
+# Tools used by the release workflow, locked in requirements-release.txt.
+build==1.6.1
+twine==7.0.0
+setuptools==84.2.1
+wheel==0.48.0

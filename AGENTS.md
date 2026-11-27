@@ -192,9 +192,12 @@ something's wrong with the edit itself.
   value in that command must use `=` (`--group=test`): Renovate's
   pip-compile manager silently skips lockfiles whose header doesn't.
 - The release workflow installs `build`, `twine`, `setuptools` and
-  `wheel` from `conf/requirements-release.txt` (group `release`, same
-  mechanism) and builds with `--no-isolation`, so nothing unpinned is
-  downloaded in the job that holds the PyPI credentials.
+  `wheel` from `conf/requirements-release.txt`, locked the same way from
+  `conf/requirements-release.in`, and builds with `--no-isolation`, so
+  nothing unpinned is downloaded in the job that holds the PyPI
+  credentials. They're in their own `.in` file, not a `pyproject.toml`
+  group: Renovate looks for every `pyproject.toml` dependency in every
+  lockfile generated from it, and warns about each one it doesn't find.
 - CI installs the project itself as editable (`-e .`). Coverage only
   counts files under `src/`, so a regular install would run the tests
   against `site-packages` and leave the package out of the report. The
