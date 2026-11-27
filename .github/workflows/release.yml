@@ -20,7 +20,8 @@ jobs:
         python-version: '3.13'
     
     - name: Install dependencies
-      run: pip install --only-binary :all: --require-hashes -r conf/requirements-release.txt
+      run: |
+        pip install --only-binary :all: --require-hashes -r conf/requirements-release.txt
     
     - name: Get package version
       id: version
