@@ -1,6 +1,6 @@
 """### Contains a generic singleton class."""
 
-from typing_extensions import Self
+from typing import Self
 
 
 class Singleton:

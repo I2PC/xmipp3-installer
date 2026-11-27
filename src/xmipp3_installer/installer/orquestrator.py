@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import multiprocessing
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def run_parallel_jobs(
@@ -23,7 +24,7 @@ def run_parallel_jobs(
   - (list): List containing the return of each function.
   """
   with multiprocessing.Pool(n_jobs) as p:
-    return p.starmap(__run_lambda, zip(funcs, func_args))
+    return p.starmap(__run_lambda, zip(funcs, func_args, strict=True))
 
 def __run_lambda(func: Callable, args: tuple[Any, ...]) -> Any:
   """

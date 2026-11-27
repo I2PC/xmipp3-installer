@@ -1,6 +1,5 @@
 import os
-from datetime import datetime, timezone
-from typing import Dict
+from datetime import datetime, UTC
 from unittest.mock import patch, mock_open, Mock, call
 
 import pytest
@@ -627,7 +626,7 @@ def test_calls_now_strftime_when_writing_config(
 	config_handler = ConfigurationFileHandler()
 	config_handler.values = __CONFIG_VALUES.copy()
 	config_handler.write_config()
-	__mock_datetime_now.now.assert_called_once_with(timezone.utc)
+	__mock_datetime_now.now.assert_called_once_with(UTC)
 
 def test_calls_strftime_when_writing_config(
 	__mock_read_config,
@@ -668,7 +667,7 @@ def test_calls_get_toggle_lines_when_writing_config(
 	__mock_get_file_values_from_context_values
 ):
 	call_params = []
-	def __record_input_params_in_mock(section: str, variables: Dict):
+	def __record_input_params_in_mock(section: str, variables: dict):
 		call_params.append((section, variables.copy()))
 		return __mimick_get_toggle_lines(section, variables)
 	__mock_get_toggle_lines.side_effect = __record_input_params_in_mock
@@ -788,7 +787,7 @@ def test_calls_file_writelines_when_writing_config(
 		f"\n# {ConfigurationFileHandler._LAST_MODIFIED_TEXT} {__mock_datetime_strftime.now().strftime()}\n"
 	])
 
-def __mimick_get_toggle_lines(section: str, variables: Dict):
+def __mimick_get_toggle_lines(section: str, variables: dict):
 	lines = []
 	variables_copy = variables.copy()
 	for variable in variables_copy:
@@ -797,7 +796,7 @@ def __mimick_get_toggle_lines(section: str, variables: Dict):
 			variables.pop(variable, None)
 	return lines
 
-def __add_unknown_variable_lines(unknown_variables: Dict, get_unkown_variable_lines):
+def __add_unknown_variable_lines(unknown_variables: dict, get_unkown_variable_lines):
 	lines = []
 	if unknown_variables:
 		lines.append("\n##### UNKNOWN VARIABLES #####\n")

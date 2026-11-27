@@ -70,7 +70,7 @@ def __setup_evironment(request):
   sources_exist = getattr(request, 'param', (False, False, False))
   create_versions_json_file()
   init_git_repository()
-  for exists, source in zip(sources_exist, [constants.XMIPP, *constants.XMIPP_SOURCES]):
+  for exists, source in zip(sources_exist, [constants.XMIPP, *constants.XMIPP_SOURCES], strict=True):
     if exists:
       os.makedirs(os.path.join(paths.SOURCES_PATH, source))
   return sources_exist

@@ -22,7 +22,7 @@ def test_calls_zip_when_running_parallel_jobs(__mock_pool, __mock_starmap, __moc
   functions = [max, min, sum]
   args = [(1, 2), (1, 2), (1, 2)]
   orquestrator.run_parallel_jobs(functions, args)
-  __mock_zip.assert_called_once_with(functions, args)
+  __mock_zip.assert_called_once_with(functions, args, strict=True)
 
 def test_calls_pool_starmap_when_running_parallel_jobs(
   __mock_starmap,

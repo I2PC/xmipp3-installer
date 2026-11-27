@@ -2,7 +2,7 @@
 Python package that handles the installation of [xmipp3](https://github.com/I2PC/xmipp3).
 
 ## Installation
-To install the package, simply run:
+Requires Python 3.11 or newer. To install the package, simply run:
 ```
 pip install xmipp3-installer
 ```

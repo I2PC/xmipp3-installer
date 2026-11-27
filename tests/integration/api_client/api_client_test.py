@@ -139,7 +139,7 @@ def __mock_log_tail(fake_process):
 def __mock_run_parallel_jobs():
   def __mimick_run_parallel_jobs(funcs, func_args, _=1):
     results = []
-    for func, args in zip(funcs, func_args):
+    for func, args in zip(funcs, func_args, strict=True):
       results.append(func(*args))
     return results
   with patch("xmipp3_installer.installer.orquestrator.run_parallel_jobs") as mock_method:
