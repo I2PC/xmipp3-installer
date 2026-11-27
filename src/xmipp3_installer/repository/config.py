@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 
 from xmipp3_installer.application.logger.logger import logger
@@ -80,7 +80,7 @@ class ConfigurationFileHandler(Singleton):
     if overwrite:
       self.values = config_values_adapter.get_context_values_from_file_values(default_values.CONFIG_DEFAULT_VALUES)
     values = config_values_adapter.get_file_values_from_context_values(self.values.copy())
-    self.last_modified = datetime.now(timezone.utc).strftime('%d-%m-%Y %H:%M.%S')
+    self.last_modified = datetime.now(UTC).strftime('%d-%m-%Y %H:%M.%S')
     
     lines = [
       "##### TOGGLE SECTION #####\n",

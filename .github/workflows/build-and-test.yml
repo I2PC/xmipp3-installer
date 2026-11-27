@@ -12,25 +12,16 @@ jobs:
     name: Build and test
     permissions:
       contents: read
-    runs-on: ${{ matrix.runner || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
         python-version:
-        - '3.8'
-        - '3.9'
-        - '3.10'
         - '3.11'
         - '3.12'
         - '3.13'
         - '3.14'
         - '3.15'
-        # setup-python has no builds of these versions for newer Ubuntu releases
-        include:
-        - python-version: '3.8'
-          runner: ubuntu-24.04
-        - python-version: '3.9'
-          runner: ubuntu-24.04
 
     steps:
       - name: Set up Python

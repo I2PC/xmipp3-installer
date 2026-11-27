@@ -1,5 +1,4 @@
 import os
-from typing import List
 
 from xmipp3_installer.application.logger.logger import logger
 from xmipp3_installer.installer import urls
@@ -17,7 +16,7 @@ NON_EXISTING_BASHRC_FILE_PATH = os.path.join(
 __NO_BASHRC_FILE_ERROR = f"File {NON_EXISTING_BASHRC_FILE_PATH} does not exist."
 NON_BASHRC_FILE = logger.red(f"{__NO_BASHRC_FILE_ERROR}\n\n{shell_command_outputs.IO_ERROR_NO_FORMAT}") + "\n"
 
-def get_test_messages_section(test_names: List[str]) -> str:
+def get_test_messages_section(test_names: list[str]) -> str:
   if not test_names:
     return test.MESSAGE
   test_names_str = ', '.join(test_names)
