@@ -367,7 +367,8 @@ def test_calls_logger_when_running_executor_in_long_format(
   __mock_exist_config_and_library_versions,
   __mock_get_library_versions_section,
   __mock_are_all_sources_present,
-  __mock_get_configuration_warning_message
+  __mock_get_configuration_warning_message,
+  __mock_get_conda_environment_info
 ):
   version_executor = ModeVersionExecutor(__CONTEXT.copy())
   version_executor.short = False
@@ -377,6 +378,7 @@ def test_calls_logger_when_running_executor_in_long_format(
     f"{logger.bold(expected_title)}\n",
     __mock_get_dates_section(),
     f"{__mock_add_padding_spaces('System version: ')}{__mock_get_os_release_name()}",
+    __mock_get_conda_environment_info(),
     __mock_get_sources_info(),
   ]
   if __mock_exist_config_and_library_versions(paths.LIBRARY_VERSIONS_FILE):
@@ -447,6 +449,7 @@ def test_calls_get_dates_section_when_running_executor_in_long_format(
   __mock_get_dates_section.assert_called_once_with()
 
 def test_calls_add_padding_spaces_when_running_executor_in_long_format(
+  __mock_get_conda_environment_info,
   __mock_logger,
   __mock_is_tag,
   __mock_get_current_branch,
@@ -764,4 +767,59 @@ def __mock_get_configuration_warning_message():
     "xmipp3_installer.installer.modes.mode_version_executor._get_configuration_warning_message"
   ) as mock_method:
     mock_method.return_value = "Warning message"
+    yield mock_method
+
+@pytest.mark.parametrize(
+  "__mock_get_stored_conda_environment,expected_info",
+  [
+    pytest.param(None, "Conda environment: -"),
+    pytest.param(
+      "/path/to/envs/xmipp3",
+      "Conda environment: xmipp3 (/path/to/envs/xmipp3)"
+    )
+  ],
+  indirect=["__mock_get_stored_conda_environment"]
+)
+def test_returns_expected_conda_environment_info(
+  __mock_get_stored_conda_environment,
+  expected_info,
+  __mock_add_padding_spaces
+):
+  info = ModeVersionExecutor(__CONTEXT.copy())._get_conda_environment_info()
+  assert (
+    info == expected_info
+  ), get_assertion_message("Conda environment info", expected_info, info)
+
+@pytest.mark.parametrize(
+  "content,expected_environment",
+  [
+    pytest.param(None, None),
+    pytest.param("", None),
+    pytest.param("/path/to/envs/xmipp3\n", "/path/to/envs/xmipp3")
+  ]
+)
+def test_returns_expected_stored_conda_environment(content, expected_environment, tmp_path):
+  environment_file = tmp_path / "conda-environment.txt"
+  if content is not None:
+    environment_file.write_text(content, encoding="utf-8")
+  with patch.object(paths, "CONDA_ENVIRONMENT_FILE", str(environment_file)):
+    environment = mode_version_executor._get_stored_conda_environment()
+  assert (
+    environment == expected_environment
+  ), get_assertion_message("stored Conda environment", expected_environment, environment)
+
+@pytest.fixture
+def __mock_get_conda_environment_info():
+  with patch(
+    "xmipp3_installer.installer.modes.mode_version_executor.ModeVersionExecutor._get_conda_environment_info"
+  ) as mock_method:
+    mock_method.return_value = "Conda environment: -"
+    yield mock_method
+
+@pytest.fixture
+def __mock_get_stored_conda_environment(request):
+  with patch(
+    "xmipp3_installer.installer.modes.mode_version_executor._get_stored_conda_environment"
+  ) as mock_method:
+    mock_method.return_value = getattr(request, 'param', None)
     yield mock_method

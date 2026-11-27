@@ -28,6 +28,8 @@ The environment is selected from the ones Xmipp defines, according to your NVIDI
 
 Both variables can also be set in `xmipp.conf` (`INSTALL_CONDA_DEPENDENCIES` and `CONDA_ENVIRONMENT_ID`).
 
+Mode `version` shows the Conda environment Xmipp was built with (`Conda environment`), or `-` if this mode was not used.
+
 Xmipp's repository must provide `conda/environments.json`, listing its environments by preference, with file paths relative to the repository's root. The first one whose `min_driver_version` the driver meets is selected, and the one without it is the fallback:
 ```json
 {
