@@ -37,6 +37,11 @@ def send_installation_attempt(installation_info: dict | None):
       logger.yellow("There was a timeout while sending installation data."),
       show_in_terminal=False
     )
+  except (OSError, http.client.HTTPException) as error:
+    logger(
+      logger.yellow(f"Could not send installation data: {error}"),
+      show_in_terminal=False
+    )
   finally:
     if conn is not None:
       conn.close()

@@ -1,5 +1,6 @@
 import http.client
 import json
+import ssl
 from unittest.mock import patch
 from urllib.parse import urlparse
 
@@ -56,6 +57,44 @@ def test_calls_logger_when_sending_installation_attempt_and_receives_timeout(
 		 __mock_logger_yellow("There was a timeout while sending installation data."),
 		 show_in_terminal=False
 	)
+
+@pytest.mark.parametrize(
+	"error",
+	[
+		pytest.param(ConnectionRefusedError(111, "Connection refused")),
+		pytest.param(OSError("Network is unreachable")),
+		pytest.param(ssl.SSLError("certificate verify failed")),
+		pytest.param(http.client.RemoteDisconnected("Remote end closed connection")),
+		pytest.param(http.client.BadStatusLine("bad")),
+	]
+)
+def test_does_not_raise_when_sending_installation_attempt_and_api_is_unavailable(
+	error,
+	__mock_httpsconnection,
+	__mock_logger,
+	__mock_logger_yellow
+):
+	__mock_httpsconnection().request.side_effect = error
+	api_client.send_installation_attempt({})
+	__mock_logger.assert_called_once_with(
+		__mock_logger_yellow(f"Could not send installation data: {error}"),
+		show_in_terminal=False
+	)
+
+@pytest.mark.parametrize(
+	"error",
+	[
+		pytest.param(ConnectionRefusedError(111, "Connection refused")),
+		pytest.param(http.client.BadStatusLine("bad")),
+	]
+)
+def test_calls_connection_close_when_sending_installation_attempt_and_api_is_unavailable(
+	error,
+	__mock_httpsconnection
+):
+	__mock_httpsconnection().request.side_effect = error
+	api_client.send_installation_attempt({})
+	__mock_httpsconnection().close.assert_called_once_with()
 
 def test_calls_connection_close_when_sending_installation_attempt(
 	__mock_httpsconnection
