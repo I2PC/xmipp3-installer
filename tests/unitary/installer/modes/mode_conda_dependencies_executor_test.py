@@ -1,4 +1,5 @@
 import json
+import os
 from unittest.mock import patch, call
 
 import pytest
@@ -557,9 +558,13 @@ def test_returns_fallback_environment_if_driver_is_too_old_when_selecting_enviro
 def test_returns_expected_environments_when_reading_environments(environments, tmp_path):
   environments_file = __write_environments_file(tmp_path, {"environments": environments})
   read_environments = mode_conda_dependencies_executor._read_environments(environments_file)
+  expected_environments = [
+    {**environment, "file": os.path.realpath(environment["file"])}
+    for environment in environments
+  ]
   assert (
-    read_environments == environments
-  ), get_assertion_message("environments", environments, read_environments)
+    read_environments == expected_environments
+  ), get_assertion_message("environments", expected_environments, read_environments)
 
 @pytest.mark.parametrize(
   "environments",
@@ -695,6 +700,43 @@ def test_returns_error_message_if_there_is_no_fallback_when_getting_fallback_env
   assert (
     result == expected_result
   ), get_assertion_message("fallback environment", expected_result, result)
+
+@pytest.mark.parametrize(
+  "environment_file",
+  [
+    pytest.param("conda/env.yml"),
+    pytest.param("-env.yml"),
+    pytest.param("conda/../env.yml")
+  ]
+)
+def test_returns_absolute_path_inside_repository_when_getting_environment_file_path(environment_file):
+  file_path = mode_conda_dependencies_executor._get_environment_file_path(environment_file)
+  expected_path = os.path.realpath(environment_file)
+  assert (
+    file_path == expected_path
+  ), get_assertion_message("environment file path", expected_path, file_path)
+
+@pytest.mark.parametrize(
+  "environment_file",
+  [
+    pytest.param("../env.yml"),
+    pytest.param("/etc/env.yml"),
+    pytest.param("conda/../../env.yml"),
+    pytest.param(".")
+  ]
+)
+def test_raises_value_error_if_path_is_outside_repository_when_getting_environment_file_path(
+  environment_file
+):
+  with pytest.raises(ValueError, match="outside the repository"):
+    mode_conda_dependencies_executor._get_environment_file_path(environment_file)
+
+def test_raises_value_error_if_file_is_outside_repository_when_reading_environments(tmp_path):
+  environments_file = __write_environments_file(
+    tmp_path, {"environments": [{"id": "env", "file": "../env.yml"}]}
+  )
+  with pytest.raises(ValueError, match="outside the repository"):
+    mode_conda_dependencies_executor._read_environments(environments_file)
 
 def __write_environments_file(directory, content) -> str:
   environments_file = directory / "environments.json"

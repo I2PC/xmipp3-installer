@@ -98,15 +98,15 @@ def test_returns_expected_cuda_compiler_path(
   [
     pytest.param(
       "/conda/bin/conda", "/conda/envs/xmipp", "conda/env.yml",
-      "/conda/bin/conda env update --prefix /conda/envs/xmipp --file conda/env.yml"
+      "/conda/bin/conda env update --prefix=/conda/envs/xmipp --file=conda/env.yml"
     ),
     pytest.param(
       "/my conda/bin/mamba", "/my conda/envs/x y", "conda/cuda 12.yml",
-      "'/my conda/bin/mamba' env update --prefix '/my conda/envs/x y' --file 'conda/cuda 12.yml'"
+      "'/my conda/bin/mamba' env update --prefix='/my conda/envs/x y' --file='conda/cuda 12.yml'"
     ),
     pytest.param(
       "/conda/bin/conda", '/envs/"$(id)"', "conda/$(touch pwned).yml",
-      '/conda/bin/conda env update --prefix \'/envs/"$(id)"\' --file \'conda/$(touch pwned).yml\''
+      '/conda/bin/conda env update --prefix=\'/envs/"$(id)"\' --file=\'conda/$(touch pwned).yml\''
     )
   ]
 )

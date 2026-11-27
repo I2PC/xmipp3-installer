@@ -35,7 +35,7 @@ def test_does_not_run_injected_commands_when_running_environment_update_command(
   ).stdout.splitlines()
   values = (output, (tmp_path / "pwned").exists())
   expected_values = (
-    ["env", "update", "--prefix", '/envs/"$(touch pwned)"', "--file", "conda/`touch pwned`.yml"],
+    ["env", "update", '--prefix=/envs/"$(touch pwned)"', "--file=conda/`touch pwned`.yml"],
     False
   )
   assert (
