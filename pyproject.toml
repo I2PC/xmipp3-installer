@@ -40,6 +40,12 @@ test = [
   "cmake==4.4.4",
   "ninja==1.13.2"
 ]
+release = [
+  "build==1.6.1",
+  "twine==7.0.0",
+  "setuptools==84.2.1",
+  "wheel==0.48.0"
+]
 
 [project.urls]
 Homepage = "https://github.com/I2PC/xmipp3-installer"
