@@ -38,7 +38,9 @@ test = [
   "pytest-localserver==0.10.0.post0",
   "ruff==0.17.5",
   "cmake==4.4.4",
-  "ninja==1.13.2"
+  "ninja==1.13.2",
+  "setuptools==84.2.1",
+  "wheel==0.48.0"
 ]
 
 [project.urls]
