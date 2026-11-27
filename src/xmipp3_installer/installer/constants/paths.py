@@ -18,6 +18,7 @@ SCIPION_SOFTWARE_EM = os.path.join("scipionfiles", "downloads", "scipion", "soft
 # General file paths
 LOG_FILE = 'compilation.log'
 LIBRARY_VERSIONS_FILE = os.path.join(BUILD_PATH, 'versions.txt')
+CONDA_ENVIRONMENT_FILE = os.path.join(BUILD_PATH, 'conda-environment.txt')
 CONFIG_FILE = 'xmipp.conf'
 VERSION_INFO_FILE = "version-info.json"
 CONDA_ENVIRONMENTS_FILE = os.path.join("conda", "environments.json")

@@ -476,3 +476,59 @@ def __mock_get_error_code(request):
   ) as mock_method:
     mock_method.return_value = getattr(request, 'param', 1)
     yield mock_method
+
+@pytest.mark.parametrize(
+  "__mock_run_shell_command_in_streaming,expected_calls",
+  [pytest.param(0, 1), pytest.param(1, 0)],
+  indirect=["__mock_run_shell_command_in_streaming"]
+)
+def test_calls_store_conda_environment_only_if_command_succeeds_when_running_cmake_mode(
+  __mock_run_shell_command_in_streaming,
+  expected_calls,
+  __mock_get_cmake_vars,
+  __mock_store_conda_environment
+):
+  ModeConfigBuildExecutor(__CONTEXT.copy())._run_cmake_mode(__CMAKE)
+  assert (
+    __mock_store_conda_environment.call_count == expected_calls
+  ), get_assertion_message("call count", expected_calls, __mock_store_conda_environment.call_count)
+
+@pytest.mark.parametrize(
+  "install_conda_dependencies,conda_prefix,previous_content,expected_content",
+  [
+    pytest.param(True, "/path/to/envs/xmipp3", None, "/path/to/envs/xmipp3"),
+    pytest.param(True, "/path/to/envs/xmipp3", "/path/to/envs/old", "/path/to/envs/xmipp3"),
+    pytest.param(True, None, "/path/to/envs/old", None),
+    pytest.param(False, "/path/to/envs/xmipp3", "/path/to/envs/old", None),
+    pytest.param(False, "/path/to/envs/xmipp3", None, None)
+  ]
+)
+def test_stores_expected_conda_environment(
+  install_conda_dependencies,
+  conda_prefix,
+  previous_content,
+  expected_content,
+  tmp_path
+):
+  environment_file = tmp_path / "conda-environment.txt"
+  if previous_content is not None:
+    environment_file.write_text(previous_content, encoding="utf-8")
+  with patch.object(paths, "CONDA_ENVIRONMENT_FILE", str(environment_file)), patch(
+    "xmipp3_installer.installer.handlers.conda_handler.get_conda_prefix_path",
+    return_value=conda_prefix
+  ):
+    ModeConfigBuildExecutor({
+      **__CONTEXT,
+      variables.INSTALL_CONDA_DEPENDENCIES: install_conda_dependencies
+    })._store_conda_environment()
+  content = environment_file.read_text(encoding="utf-8") if environment_file.exists() else None
+  assert (
+    content == expected_content
+  ), get_assertion_message("stored Conda environment", expected_content, content)
+
+@pytest.fixture
+def __mock_store_conda_environment():
+  with patch(
+    "xmipp3_installer.installer.modes.mode_cmake.mode_config_build_executor.ModeConfigBuildExecutor._store_conda_environment"
+  ) as mock_method:
+    yield mock_method

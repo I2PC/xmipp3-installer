@@ -6,6 +6,7 @@ This module contains the class to configure the build using CMake.
 
 from __future__ import annotations
 
+import os
 from typing import Union, cast
 
 from xmipp3_installer.application.logger import errors, predefined_messages
@@ -39,8 +40,23 @@ class ModeConfigBuildExecutor(mode_cmake_executor.ModeCMakeExecutor):
     ret_code = shell_handler.run_shell_command_in_streaming(cmd, show_output=True, substitute=self.substitute)
     if ret_code:
       return self._get_error_code(ret_code, errors.CMAKE_CONFIGURE_ERROR), ""
+    self._store_conda_environment()
     logger(predefined_messages.get_done_message(), substitute=self.substitute)
     return 0, ""
+
+  def _store_conda_environment(self):
+    """
+    ### Stores the Conda environment the build was configured with, so mode version can show it.
+
+    Without Conda dependencies, any previously stored environment is removed,
+    as the build no longer uses it.
+    """
+    conda_prefix = conda_handler.get_conda_prefix_path()
+    if self.context[variables.INSTALL_CONDA_DEPENDENCIES] and conda_prefix:
+      with open(paths.CONDA_ENVIRONMENT_FILE, 'w', encoding="utf-8") as environment_file:
+        environment_file.write(conda_prefix)
+    elif os.path.exists(paths.CONDA_ENVIRONMENT_FILE):
+      os.remove(paths.CONDA_ENVIRONMENT_FILE)
   
   def _get_cmake_vars(self) -> str:
     """

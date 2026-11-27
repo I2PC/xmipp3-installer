@@ -27,7 +27,8 @@ def __get_common_section(compilation_date: str) -> str:
 
 Release date:            {JSON_XMIPP_RELEASE_DATE}
 Compilation date:        {compilation_date}
-System version:          {installation_info_assembler.get_os_release_name()}"""
+System version:          {installation_info_assembler.get_os_release_name()}
+Conda environment:       -"""
 
 __SOURCES_NOT_FOUND_SECTION = f"""xmippCore branch:        {__SOURCE_NOT_FOUND_MESSAGE}
 xmippViz branch:         {__SOURCE_NOT_FOUND_MESSAGE}"""

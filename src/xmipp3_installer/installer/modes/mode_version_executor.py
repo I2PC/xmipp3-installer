@@ -63,14 +63,16 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     #### Returns:
     - (str): Long version of the installation info.
     """
-    installation_info_lines = []
     version_type = 'release' if git_handler.is_tag() else git_handler.get_current_branch()
     title = f"Xmipp {self.xmipp_version_number} ({version_type})"
-    installation_info_lines.append(f"{logger.bold(title)}\n")
-    installation_info_lines.append(self._get_dates_section())
     system_version_left_text = self._add_padding_spaces("System version: ")
-    installation_info_lines.append(f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}")
-    installation_info_lines.append(self._get_sources_info())
+    installation_info_lines = [
+      f"{logger.bold(title)}\n",
+      self._get_dates_section(),
+      f"{system_version_left_text}{installation_info_assembler.get_os_release_name()}",
+      self._get_conda_environment_info(),
+      self._get_sources_info()
+    ]
     if self.version_file_exists:
       installation_info_lines.append(f"\n{self._get_library_versions_section()}")
     if not self.is_configured or not _are_all_sources_present():
@@ -89,6 +91,19 @@ class ModeVersionExecutor(mode_executor.ModeExecutor):
     last_modified = self.context.get(variables.LAST_MODIFIED_KEY)
     dates_section += last_modified if last_modified else '-'
     return dates_section
+
+  def _get_conda_environment_info(self) -> str:
+    """
+    ### Returns the info message related to the Conda environment the build was configured with.
+
+    #### Returns:
+    - (str): Conda environment info message, with '-' if Conda dependencies were not used.
+    """
+    left_text = self._add_padding_spaces("Conda environment: ")
+    conda_prefix = _get_stored_conda_environment()
+    if not conda_prefix:
+      return f"{left_text}-"
+    return f"{left_text}{os.path.basename(conda_prefix)} ({conda_prefix})"
 
   def _get_sources_info(self) -> str:
     """
@@ -164,6 +179,18 @@ def _are_all_sources_present() -> bool:
     if not os.path.exists(source_package):
       return False
   return True
+
+def _get_stored_conda_environment() -> str | None:
+  """
+  ### Returns the Conda environment stored when configuring the build.
+
+  #### Returns:
+  - (str | None): Path to the Conda environment, or None if there is none.
+  """
+  if not os.path.exists(paths.CONDA_ENVIRONMENT_FILE):
+    return None
+  with open(paths.CONDA_ENVIRONMENT_FILE, encoding="utf-8") as environment_file:
+    return environment_file.read().strip() or None
 
 def _get_configuration_warning_message() -> str:
   """
