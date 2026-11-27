@@ -54,7 +54,10 @@ def get_environment_update_command(conda_executable: str, conda_prefix: str, env
   #### Returns:
   - (str): The command.
   """
-  return f'"{conda_executable}" env update --prefix "{conda_prefix}" --file "{environment_file}"'
+  return (
+    f"{shlex.quote(conda_executable)} env update "
+    f"--prefix {shlex.quote(conda_prefix)} --file {shlex.quote(environment_file)}"
+  )
 
 def reactivate_environment(conda_executable: str) -> bool:
   """
