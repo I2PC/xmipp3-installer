@@ -82,18 +82,18 @@ class ConfigurationFileHandler(Singleton):
     values = config_values_adapter.get_file_values_from_context_values(self.values.copy())
     self.last_modified = datetime.now(timezone.utc).strftime('%d-%m-%Y %H:%M.%S')
     
-    lines = ["##### TOGGLE SECTION #####\n"]
-    lines.append(f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n")
-    lines.extend(self._get_section_lines(variables.TOGGLES, values))
-
-    lines.append("\n##### PACKAGE HOME SECTION #####\n")
-    lines.append("# Use this variables to use custom installation paths for the required packages.\n")
-    lines.append("# If left empty, CMake will search for those packages within your system.\n")
-    lines.extend(self._get_section_lines(variables.LOCATIONS, values))
-    
-    lines.append("\n##### COMPILATION FLAGS #####\n")
-    lines.append("# We recommend not modifying this variables unless you know what you are doing.\n")
-    lines.extend(self._get_section_lines(variables.COMPILATION_FLAGS, values))
+    lines = [
+      "##### TOGGLE SECTION #####\n",
+      f"# Activate or deactivate this features using values {default_values.ON}/{default_values.OFF}\n",
+      *self._get_section_lines(variables.TOGGLES, values),
+      "\n##### PACKAGE HOME SECTION #####\n",
+      "# Use this variables to use custom installation paths for the required packages.\n",
+      "# If left empty, CMake will search for those packages within your system.\n",
+      *self._get_section_lines(variables.LOCATIONS, values),
+      "\n##### COMPILATION FLAGS #####\n",
+      "# We recommend not modifying this variables unless you know what you are doing.\n",
+      *self._get_section_lines(variables.COMPILATION_FLAGS, values)
+    ]
     
     if values:
       lines.append("\n##### UNKNOWN VARIABLES #####\n")

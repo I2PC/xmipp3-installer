@@ -7,6 +7,7 @@ This module contains the class to install Xmipp's dependencies in the current Co
 from __future__ import annotations
 
 import json
+import os
 
 from xmipp3_installer.application.cli.arguments import params
 from xmipp3_installer.application.logger import errors, predefined_messages
@@ -112,9 +113,33 @@ class ModeCondaDependenciesExecutor(mode_executor.ModeExecutor):
     ))
     return _get_fallback_environment(environments)
 
+def _get_environment_file_path(environment_file: str) -> str:
+  """
+  ### Returns the absolute path of the given environment file, checking it is inside the repository.
+
+  The path comes from the environments file, so it is validated before being
+  passed to Conda: being absolute, it can never be taken as an option.
+
+  #### Params:
+  - environment_file (str): Path to the environment file, relative to the repository's root.
+
+  #### Returns:
+  - (str): Absolute path to the environment file.
+
+  #### Raises:
+  - ValueError: Raised when the path points outside the repository.
+  """
+  repository_path = os.path.realpath(os.getcwd())
+  file_path = os.path.realpath(os.path.join(repository_path, environment_file))
+  if not file_path.startswith(repository_path + os.sep):
+    raise ValueError(f"environment file '{environment_file}' is outside the repository")
+  return file_path
+
 def _read_environments(environments_file: str) -> list[dict[str, str]]:
   """
   ### Reads the environments defined in the given Conda environments file.
+
+  Environment file paths are returned as absolute paths, checked to be inside the repository.
 
   #### Params:
   - environments_file (str): Path to the Conda environments file.
@@ -130,6 +155,7 @@ def _read_environments(environments_file: str) -> list[dict[str, str]]:
     min_driver_version = environment.get(_MIN_DRIVER_VERSION_KEY)
     if min_driver_version is not None and not nvidia_handler.is_valid_driver_version(min_driver_version):
       raise ValueError(f"invalid {_MIN_DRIVER_VERSION_KEY} '{min_driver_version}' in environment '{environment[_ID_KEY]}'")
+    environment[_FILE_KEY] = _get_environment_file_path(environment[_FILE_KEY])
   return environments
 
 def _get_environment_by_id(

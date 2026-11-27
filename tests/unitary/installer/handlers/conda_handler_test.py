@@ -98,11 +98,15 @@ def test_returns_expected_cuda_compiler_path(
   [
     pytest.param(
       "/conda/bin/conda", "/conda/envs/xmipp", "conda/env.yml",
-      '"/conda/bin/conda" env update --prefix "/conda/envs/xmipp" --file "conda/env.yml"'
+      "/conda/bin/conda env update --prefix=/conda/envs/xmipp --file=conda/env.yml"
     ),
     pytest.param(
       "/my conda/bin/mamba", "/my conda/envs/x y", "conda/cuda 12.yml",
-      '"/my conda/bin/mamba" env update --prefix "/my conda/envs/x y" --file "conda/cuda 12.yml"'
+      "'/my conda/bin/mamba' env update --prefix='/my conda/envs/x y' --file='conda/cuda 12.yml'"
+    ),
+    pytest.param(
+      "/conda/bin/conda", '/envs/"$(id)"', "conda/$(touch pwned).yml",
+      '/conda/bin/conda env update --prefix=\'/envs/"$(id)"\' --file=\'conda/$(touch pwned).yml\''
     )
   ]
 )
@@ -200,6 +204,20 @@ def test_sets_expected_environment_when_reactivating_environment(
   assert (
     environment == expected_environment
   ), get_assertion_message("environment", expected_environment, environment)
+
+@pytest.mark.parametrize(
+  "conda_prefix,environment_file",
+  [
+    pytest.param("--help", "conda/env.yml"),
+    pytest.param("/conda/envs/xmipp", "-env.yml")
+  ]
+)
+def test_raises_value_error_if_argument_would_be_an_option_when_getting_environment_update_command(
+  conda_prefix,
+  environment_file
+):
+  with pytest.raises(ValueError, match="would be taken as an option"):
+    conda_handler.get_environment_update_command("/conda/bin/conda", conda_prefix, environment_file)
 
 @pytest.fixture
 def __mock_get_conda_prefix_path(request):
