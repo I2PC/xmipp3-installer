@@ -10,6 +10,7 @@
   ],
   "minimumReleaseAge": "14 days",
   "internalChecksFilter": "strict",
+  "automerge": true,
   "poetry": {
     "description": "Not a poetry project, but supersedes default pep manager if left enabled.",
     "enabled": false
