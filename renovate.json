@@ -19,7 +19,7 @@
     "enabled": false
   },
   "pip-compile": {
-    "description": "The lockfile header holds the uv command Renovate reruns, so options it doesn't support (e.g. --only-binary) must stay out of it.",
+    "description": "The lockfile header holds the uv command Renovate reruns. Options it doesn't support (e.g. --only-binary) must stay out of it, and options with a value must use '=' (--group=test, not --group test), or Renovate skips the file.",
     "managerFilePatterns": ["/^conf/requirements-(test|release)\\.txt$/"]
   },
   "lockFileMaintenance": {
