@@ -202,7 +202,12 @@ something's wrong with the edit itself.
   counts files under `src/`, so a regular install would run the tests
   against `site-packages` and leave the package out of the report. The
   unitary coverage config sets `source` so that fails the 100% gate
-  instead of silently reporting 0% to Sonar.
+  instead of silently reporting 0% to Sonar. It uses
+  `--no-build-isolation`, so `setuptools` and `wheel` come from the
+  test lockfile instead of being downloaded unpinned; they're in the
+  `test` group for that, and because Renovate warns about any
+  `pyproject.toml` dependency (`[build-system]` included) missing from
+  the lockfile.
 - Small, single-purpose branches/PRs are preferred over bundling
   unrelated changes (e.g. a line-ending normalization and a rename are
   separate PRs even when one motivated the other).
